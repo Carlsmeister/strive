@@ -1,0 +1,54 @@
+name: Parent issue
+description: One step of the roadmap; its sub-issues are written when it is next
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What exists when this step is done, in one paragraph.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      value: |
+        **In:**
+        -
+
+        **Out:**
+        -
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance
+      description: What is checked on the phone when every sub-issue is closed.
+    validations:
+      required: true
+  - type: textarea
+    id: decided-open
+    attributes:
+      label: Decided / Open
+      description: Open questions are settled when the sub-issues are written.
+      value: |
+        **Decided:**
+        -
+
+        **Open:**
+        -
+  - type: input
+    id: order
+    attributes:
+      label: Order
+      description: Position in the roadmap, e.g. "step 3, after #N".
+  - type: checkboxes
+    id: dod
+    attributes:
+      label: Definition of Done
+      description: From docs/definition-of-done.md.
+      options:
+        - label: All sub-issues closed
+        - label: The parent's acceptance criteria checked on the phone
+        - label: "Close-out written: what we did, what surprised us, what a developer should know"

@@ -1,0 +1,81 @@
+name: Sub-issue
+description: One piece of work under a parent issue
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why this exists, and a link to the parent issue.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What is in, and explicitly what is not.
+      value: |
+        **In:**
+        -
+
+        **Out:**
+        -
+    validations:
+      required: true
+  - type: textarea
+    id: design
+    attributes:
+      label: Design
+      description: The options weighed, the choice and why. A choice that reaches beyond this issue becomes an ADR in docs/adr/ and is linked here.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance
+      description: Checkable criteria, as Given / When / Then.
+      value: |
+        - [ ] Given … when … then …
+    validations:
+      required: true
+  - type: textarea
+    id: test-plan
+    attributes:
+      label: Test plan
+      description: Unit, integration, UI and manual on the phone — and which parts are proved by tests and which only by running the app.
+    validations:
+      required: true
+  - type: textarea
+    id: evaluation
+    attributes:
+      label: Evaluation
+      description: How we measure that it turned out well, with a number where one exists.
+    validations:
+      required: true
+  - type: textarea
+    id: decided-open
+    attributes:
+      label: Decided / Open
+      value: |
+        **Decided:**
+        -
+
+        **Open:**
+        -
+  - type: input
+    id: order
+    attributes:
+      label: Order
+      description: Position within the parent, e.g. "2 of 3, after #N".
+  - type: checkboxes
+    id: dod
+    attributes:
+      label: Definition of Done
+      description: From docs/definition-of-done.md. An item that does not apply is ticked with "n/a — reason" in a comment.
+      options:
+        - label: Every acceptance criterion checked
+        - label: Tests written before the code, and green (shared code)
+        - label: CI green
+        - label: Run on Carl's iPhone
+        - label: Run on Android
+        - label: Reviewed in a pull request against dev
+        - label: Docs and ADRs updated
