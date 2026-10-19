@@ -17,7 +17,7 @@ Definition of Done and the architecture decision records. Code starts with the s
 ## Version 1
 
 1. Spike: background GPS on iPhone with a free Apple ID
-2. Design: the whole of version 1 in Figma (runs in parallel with the spike)
+2. Design: the whole of version 1 as browser prototypes in `docs/design/` (runs in parallel with the spike)
 3. Foundation: project structure, local database, design system, tests and CI
 4. Strength training
 5. Running
