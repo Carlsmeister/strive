@@ -1,0 +1,5 @@
+{
+  "env": {
+    "NO_UPDATE_NOTIFIER": "1"
+  }
+}
