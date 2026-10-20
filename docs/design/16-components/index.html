@@ -47,41 +47,208 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .option .words { font-weight: 600; }
 .option p { color: var(--muted); font-size: 14px; }
 
-/* A stage is a piece of the phone. Only tokens.css from here on, except the sketch values marked below. */
+.comps { display: grid; gap: 32px; }
+.comp { display: grid; gap: 8px; min-width: 0; }
+.comp h3 { font-size: 17px; }
+.comp .used { color: var(--muted); font-size: 14px; }
+.tablewrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; }
+th, td { text-align: left; padding: 6px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+.hig li q { font-style: italic; }
+.states { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); align-items: start; }
+.comp.wide .states { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.state { display: grid; gap: var(--space-8); min-width: 0; align-content: start; }
+.state.na { margin: 0; font: var(--type-body-small); color: var(--color-on-surface-variant); }
+/* ===== Components (strive#16). From here to the Considered block, every value comes from tokens.css (checked in strive#20).
+   Chart and icon geometry (stroke widths, radii of points) are SVG user units, not CSS values. ===== */
 .stage { background: var(--color-background); color: var(--color-on-surface); font: var(--type-body-large);
   border-radius: var(--shape-extra-large); padding: var(--space-16); display: grid; gap: var(--space-16); }
 .stage, .stage * { box-sizing: border-box; }
 .stage .caption { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); align-items: end; }
-.pair > div { display: grid; gap: var(--space-4); min-width: 0; }
-.press { -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; -webkit-user-select: none;
-  position: relative; overflow: hidden; }
-.btn { font: var(--type-label-large); padding: var(--space-16); text-align: center; width: 100%; }
-.btn.filled { background: var(--color-primary); color: var(--color-on-primary); }
-.btn.tinted { background: var(--color-surface-container-highest); color: var(--color-primary); }
-.list { background: var(--color-surface); border-radius: var(--shape-large); overflow: hidden; }
-.row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-12); width: 100%; text-align: left;
-  padding: var(--space-12) var(--space-16); color: var(--color-on-surface); font: var(--type-body-large); }
-.row { position: relative; }
-.list .row + .row::after { content: ""; position: absolute; top: 0; left: var(--space-16); right: 0;
-  border-top: 1px solid var(--color-outline-variant); } /* sketch: hairline width becomes a token */
-.row small { display: block; font: var(--type-body-small); color: var(--color-on-surface-variant); }
-.row .chev { color: var(--color-on-surface-variant); }
-.segc { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--color-surface-container-highest);
-  border-radius: var(--shape-small); padding: var(--space-4); gap: var(--space-4); }
-.segc button { font: var(--type-title-small); border-radius: var(--shape-extra-small); padding: var(--space-8); color: var(--color-on-surface); }
-.segc [aria-pressed="true"] { background: var(--color-surface); }
+.en { display: none; }
+[data-lang="en"] .en { display: revert; }
+[data-lang="en"] .sv { display: none; }
+svg.icon { width: var(--size-icon); height: var(--size-icon); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
-/* Pressed (Q2, P2): shrink and dim, spring back. Scale, opacity and timing are sketch values until they become tokens. */
-.btn, .segc button { transition: transform 350ms cubic-bezier(.3, 1.4, .5, 1), opacity 250ms ease-out; }
-.btn.is-pressed, .segc button.is-pressed { transform: scale(.96); opacity: .8; transition: transform 100ms ease-out, opacity 100ms ease-out; }
-.row { transition: background-color 250ms ease-out; }
+/* Press (Q2, P2): shrink and dim on touch-down, spring back. Rows turn grey instead. */
+.press { -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; -webkit-user-select: none; position: relative; }
+.btn, .segc button, .icon-btn, .tab { transition: transform var(--motion-release), opacity var(--motion-fade); }
+.btn.is-pressed, .segc button.is-pressed, .icon-btn.is-pressed, .tab.is-pressed {
+  transform: scale(var(--state-pressed-scale)); opacity: var(--state-pressed-opacity); transition: transform var(--motion-press), opacity var(--motion-press); }
+.row { transition: background-color var(--motion-fade); }
 .row.is-pressed { background: var(--color-surface-container-highest); transition: none; }
 @media (prefers-reduced-motion: reduce) {
-  .btn.is-pressed, .segc button.is-pressed { transform: none; opacity: .5; }
+  .btn.is-pressed, .segc button.is-pressed, .icon-btn.is-pressed, .tab.is-pressed { transform: none; }
 }
-/* Considered for Q2: P1 dims only, P3 is Material's ripple. */
+/* Disabled fades and stops answering. */
+.stage [disabled], .stage .is-disabled { opacity: var(--state-disabled-opacity); pointer-events: none; }
+
+/* Buttons (Q3, B3): rounded wide, capsule small. One filled button per view. */
+.btn { font: var(--type-label-large); padding: var(--space-16); text-align: center; width: 100%; min-height: var(--size-touch);
+  border-radius: var(--shape-large); display: flex; align-items: center; justify-content: center; gap: var(--space-8); }
+.btn.filled { background: var(--color-primary); color: var(--color-on-primary); }
+.btn.tinted { background: var(--color-surface-container-highest); color: var(--color-primary); }
+.btn.danger { background: var(--color-surface-container-highest); color: var(--color-error); }
+.btn.small { font: var(--type-title-small); padding: var(--space-8) var(--space-16); width: auto; min-height: 0; border-radius: var(--shape-full); white-space: nowrap; }
+.btn.small::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: var(--size-touch); transform: translateY(-50%); } /* 44 pt tap area */
+.btn.text { background: none; color: var(--color-primary); font: var(--type-body-large); padding: var(--space-8); width: auto; justify-self: start; border-radius: var(--shape-small); }
+.inline { display: flex; flex-wrap: wrap; gap: var(--space-8); align-items: center; }
+.spinner { width: 1em; height: 1em; border: var(--border-focus) solid currentColor; border-right-color: transparent; border-radius: var(--shape-full);
+  animation: spin var(--motion-spin); flex: none; }
+@keyframes spin { to { transform: rotate(1turn); } }
+
+/* Text field: grey, the same family as the number field. */
+.fieldwrap { display: grid; gap: var(--space-4); min-width: 0; font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.field { display: flex; align-items: center; gap: var(--space-8); background: var(--color-surface-container-highest); border-radius: var(--shape-medium);
+  padding: 0 var(--space-12); min-height: var(--size-touch); border: var(--border-focus) solid transparent; color: var(--color-on-surface-variant); }
+.field input { flex: 1; min-width: 0; width: 100%; border: 0; background: none; color: var(--color-on-surface); font: var(--type-body-large);
+  padding: var(--space-8) 0; outline: none; }
+.field input::placeholder { color: var(--color-on-surface-variant); }
+.field:focus-within, .field.focus { border-color: var(--color-primary); }
+.field.error { border-color: var(--color-error); }
+.field .clear { width: var(--size-touch); height: var(--size-touch); margin-right: calc(-1 * var(--space-12)); display: grid; place-items: center; color: var(--color-on-surface-variant); }
+.msg { font: var(--type-body-small); color: var(--color-error); }
+
+/* Number input (Q5, I3): last time's value as a grey hint; − and + appear while editing. */
+.numrow { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); align-items: start; }
+.numrow > label { display: grid; gap: var(--space-4); min-width: 0; font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.num { display: flex; align-items: center; gap: var(--space-4); background: var(--color-surface-container-highest); border-radius: var(--shape-medium);
+  padding: var(--space-4); min-width: 0; border: var(--border-focus) solid transparent; }
+.num input { flex: 1; min-width: 0; width: 100%; border: 0; background: none; color: var(--color-on-surface); text-align: center;
+  font: var(--type-headline-medium); font-variant-numeric: tabular-nums; padding: var(--space-4) 0; outline: none; }
+.num input::placeholder { color: var(--color-on-surface-variant); }
+.num:focus-within, .num.focus { border-color: var(--color-primary); }
+.num.error { border-color: var(--color-error); }
+.num .step { flex: none; width: var(--size-touch); height: var(--size-touch); border-radius: var(--shape-full); background: var(--color-surface);
+  color: var(--color-primary); font: var(--type-title-large); display: none; place-items: center; }
+.num:focus-within .step, .num.focus .step { display: grid; }
+
+/* Lists (Q4, rule A): a long list or a set of choices is a block with hairlines; a short list you start, edit or reorder is joined tiles. */
+.list { background: var(--color-surface); border-radius: var(--shape-large); overflow: hidden; }
+.row { position: relative; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-12); width: 100%; text-align: left;
+  padding: var(--space-12) var(--space-16); min-height: var(--size-touch); color: var(--color-on-surface); font: var(--type-body-large); }
+.list .row + .row::after { content: ""; position: absolute; top: 0; left: var(--space-16); right: 0; border-top: var(--border-hairline) solid var(--color-outline-variant); }
+.row small { display: block; font: var(--type-body-small); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+.row .chev, .row .val { color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+.row .check { color: var(--color-primary); }
+.list.tiles { background: none; display: grid; gap: var(--space-4); border-radius: 0; overflow: visible; }
+.list.tiles .row { background: var(--color-surface); border-radius: var(--shape-extra-small); }
+.list.tiles .row:first-child { border-top-left-radius: var(--shape-large); border-top-right-radius: var(--shape-large); }
+.list.tiles .row:last-child { border-bottom-left-radius: var(--shape-large); border-bottom-right-radius: var(--shape-large); }
+.list.tiles .row::after { display: none; }
+.group { display: grid; gap: var(--space-8); }
+.group > h4 { margin: 0; padding-inline: var(--space-16); font: var(--type-title-small); color: var(--color-on-surface-variant); }
+
+/* Card: one thing with its own button. */
+.card { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-16); display: grid; gap: var(--space-4); }
+.card .eyebrow { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.card .title { font: var(--type-title-large); }
+.card .meta { font: var(--type-body-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+.card .btn { margin-top: var(--space-12); }
+
+/* Stat tiles and charts (Q6, D1): a tile per number; grey marks, the selected one teal. */
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
+.stat { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-12) var(--space-16); display: grid; min-width: 0; }
+.stat .k { font: var(--type-title-small); color: var(--color-on-surface-variant); }
+.stat .v { font: var(--type-display-small); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stat .v small { font: var(--type-title-medium); color: var(--color-on-surface-variant); margin-left: var(--space-4); }
+.stat .v.none { color: var(--color-on-surface-variant); }
+.chart { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-16); display: grid; gap: var(--space-8); }
+.chart .head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-8); }
+.chart .head span { font: var(--type-title-small); }
+.chart .head b { font: var(--type-title-small); font-variant-numeric: tabular-nums; } /* plain text: teal is for what can be tapped */
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.chart .grid { stroke: var(--color-outline-variant); stroke-width: 1; }
+.chart .tick { fill: var(--color-on-surface-variant); font: var(--type-label-small); font-variant-numeric: tabular-nums; }
+.chart .bar { fill: var(--color-surface-container-highest); cursor: pointer; rx: var(--shape-extra-small); }
+.chart .bar.on { fill: var(--color-primary); }
+.chart .line { fill: none; stroke: var(--color-on-surface-variant); stroke-width: 2; }
+.chart .pt { fill: var(--color-surface); stroke: var(--color-on-surface-variant); stroke-width: 2; cursor: pointer; }
+.chart .pt.on { fill: var(--color-primary); stroke: var(--color-primary); }
+.chart .nodata { display: grid; place-items: center; text-align: center; min-height: calc(3 * var(--size-touch)); font: var(--type-body-medium);
+  color: var(--color-on-surface-variant); border: var(--border-hairline) dashed var(--color-outline-variant); border-radius: var(--shape-medium); padding: var(--space-16); }
+
+/* Segmented control. */
+.segc { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--color-surface-container-highest);
+  border-radius: var(--shape-small); padding: var(--space-4); gap: var(--space-4); }
+.segc button { font: var(--type-title-small); border-radius: var(--shape-extra-small); padding: var(--space-8); color: var(--color-on-surface); white-space: nowrap; }
+.segc [aria-pressed="true"] { background: var(--color-surface); }
+
+/* Overlays: something floating over content. Glass on controls and overlays (G2). */
+.overlay { position: relative; display: grid; gap: var(--space-4); }
+.scrim { position: absolute; inset: 0; background: var(--color-scrim); opacity: var(--state-scrim-opacity); border-radius: var(--shape-large); }
+.glass { background: var(--material-regular); -webkit-backdrop-filter: blur(var(--material-blur)); backdrop-filter: blur(var(--material-blur));
+  border: var(--border-hairline) solid var(--material-edge); box-shadow: var(--material-shadow); }
+
+/* Rest timer (Q7, T5 in glass with K2). */
+.float { position: absolute; left: var(--space-16); right: var(--space-16); bottom: var(--space-16); border-radius: var(--shape-large);
+  padding: var(--space-16); display: grid; gap: var(--space-12); }
+.float .mini { display: flex; align-items: center; gap: var(--space-16); }
+.float .stack { display: grid; }
+.timer .k, .timer-done .k { font: var(--type-title-small); color: var(--color-on-surface-variant); }
+.float .time { font: var(--type-display-small); font-variant-numeric: tabular-nums; }
+.ring { position: relative; width: var(--size-ring-small); aspect-ratio: 1; flex: none; }
+.ring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring .track { fill: none; stroke: var(--color-surface-container-highest); stroke-width: 12; }
+.ring .prog { fill: none; stroke: var(--color-tertiary); stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset var(--motion-tick); }
+.float .actions { display: flex; align-items: center; gap: var(--space-8); }
+.float .actions .skip { margin-left: auto; }
+.roundstep { display: flex; align-items: center; gap: var(--space-8); }
+.roundstep .btn { width: var(--size-touch); height: var(--size-touch); padding: 0; border-radius: var(--shape-full); font: var(--type-title-large); }
+.roundstep span { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .ring .prog, .bar-fill, .pill .drain { transition: none; } }
+
+/* Sheet: glass, grabber, Cancel leading; rows inside on the thicker material. */
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; border-radius: var(--shape-extra-large) var(--shape-extra-large) var(--shape-large) var(--shape-large);
+  padding: var(--space-8) var(--space-16) var(--space-16); display: grid; gap: var(--space-12); }
+.grabber { justify-self: center; width: var(--space-40); height: var(--space-4); border-radius: var(--shape-full); background: var(--color-outline-variant); }
+.sheet-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
+.sheet-head h5 { margin: 0; font: var(--type-title-medium); }
+.sheet .list { background: var(--material-thick); }
+
+/* Dialogs: an alert for an uncommon action that cannot be undone; an action sheet for choices after an intentional action. */
+.center { position: absolute; inset: 0; display: grid; place-items: center; padding: var(--space-24); }
+.alert { border-radius: var(--shape-extra-large); padding: var(--space-20); display: grid; gap: var(--space-8); text-align: center; background: var(--material-thick); }
+.alert h5 { margin: 0; font: var(--type-title-medium); }
+.alert p { margin: 0; font: var(--type-body-medium); }
+.alert .inline { margin-top: var(--space-8); flex-wrap: nowrap; }
+.alert .inline .btn { flex: 1; }
+.asheet { position: absolute; left: var(--space-8); right: var(--space-8); bottom: var(--space-8); display: grid; gap: var(--space-8); }
+.asheet .list { background: var(--material-thick); border-radius: var(--shape-large); }
+.asheet .row { justify-content: center; grid-template-columns: 1fr; text-align: center; color: var(--color-primary); }
+.asheet .row.head { color: var(--color-on-surface-variant); font: var(--type-body-small); min-height: 0; }
+.asheet .row.destructive { color: var(--color-error); }
+.asheet .row.cancel { font: var(--type-label-large); }
+
+/* Navigation: the floating glass tab bar with Start in the middle, and title bars with glass buttons. */
+.tabbar { position: absolute; left: var(--space-20); right: var(--space-20); bottom: var(--space-16); border-radius: var(--shape-full);
+  display: grid; grid-template-columns: repeat(5, 1fr); padding: var(--space-4); align-items: center; }
+.tab { display: grid; justify-items: center; gap: var(--space-4); font: var(--type-label-small); color: var(--color-on-surface-variant);
+  padding: var(--space-4); border-radius: var(--shape-full); min-height: var(--size-touch); }
+.tab[aria-current="page"] { color: var(--color-primary); background: var(--material-thick); }
+.tab .dot { width: var(--size-touch); height: var(--size-touch); border-radius: var(--shape-full); background: var(--color-primary); color: var(--color-on-primary);
+  display: grid; place-items: center; }
+.titlebar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--space-8); min-height: var(--size-touch); }
+.titlebar h5 { margin: 0; font: var(--type-title-medium); text-align: center; }
+.titlebar > :last-child { justify-self: end; }
+.largetitle { display: flex; justify-content: space-between; align-items: center; gap: var(--space-8); }
+.largetitle h5 { margin: 0; font: var(--type-headline-large); }
+.icon-btn { width: var(--size-touch); height: var(--size-touch); border-radius: var(--shape-full); display: grid; place-items: center; color: var(--color-on-surface); }
+
+/* Empty state. */
+.empty { display: grid; justify-items: center; text-align: center; gap: var(--space-8); padding: var(--space-32) var(--space-16); }
+.empty svg.icon { width: var(--size-touch); height: var(--size-touch); color: var(--color-on-surface-variant); stroke-width: 1.5; }
+.empty h5 { margin: 0; font: var(--type-title-medium); }
+.empty p { margin: 0; font: var(--type-body-medium); color: var(--color-on-surface-variant); max-width: 32ch; }
+.empty .btn { margin-top: var(--space-8); }
+.busy { display: flex; align-items: center; justify-content: center; gap: var(--space-8); font: var(--type-body-medium); color: var(--color-on-surface-variant); min-height: var(--size-touch); }
+
+/* ===== Considered: the sketches each decision was made from. Exempt from the token check (strive#20). ===== */
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); align-items: end; }
+.pair > div { display: grid; gap: var(--space-4); min-width: 0; }
 .p1 .btn.is-pressed, .p1 .segc button.is-pressed { transform: none; opacity: .5; transition: none; }
+.p3 .press { overflow: hidden; }
 .p3 .btn.is-pressed, .p3 .segc button.is-pressed { transform: none; opacity: 1; }
 .p3 .row.is-pressed { background: none; }
 .p3 .press::before { content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity 200ms ease-out; }
@@ -90,106 +257,49 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   animation: ripple 450ms ease-out forwards; pointer-events: none; }
 @keyframes ripple { to { transform: scale(1); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .p3 .ripple { display: none; } }
-
-/* Button sizes and kinds. Large fills the width; small sits in a row; the text button has no fill. */
-.btn.small { font: var(--type-title-small); padding: var(--space-8) var(--space-16); width: auto; }
-.btn.text { background: none; color: var(--color-primary); font: var(--type-body-large); padding: var(--space-12) var(--space-8); width: auto; justify-self: start; }
-.btn.danger { background: var(--color-surface-container-highest); color: var(--color-error); }
-.inline { display: flex; flex-wrap: wrap; gap: var(--space-8); align-items: center; }
-.inline .btn.small:first-child { margin-left: auto; }
-
-/* Corners (Q3, B3): rounded wide buttons, capsule small ones. B1 and B2 kept for the record. */
-.btn { border-radius: var(--shape-large); }
-.btn.small { border-radius: var(--shape-full); }
+.stage[data-sample="buttons"] .inline .btn.small:first-child { margin-left: auto; }
 .b1 .btn { border-radius: var(--shape-medium); }
 .b2 .btn { border-radius: var(--shape-full); }
-/* Card and section header. */
-.card { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-16); display: grid; gap: var(--space-4); }
-.card .eyebrow { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.card .title { font: var(--type-title-large); }
-.card .meta { font: var(--type-body-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.card .btn { margin-top: var(--space-12); }
-.group { display: grid; gap: var(--space-8); }
-.group > h4 { margin: 0; padding-inline: var(--space-16); font: var(--type-title-small); color: var(--color-on-surface-variant); }
-.row small { font-variant-numeric: tabular-nums; }
-
-/* Q4 sketches: how rows group. */
+.tap-show { outline: 1px dashed var(--color-outline); outline-offset: 0; }
 .l2 .list { background: none; display: grid; gap: var(--space-8); border-radius: 0; overflow: visible; }
-.l2 .list .row { background: var(--color-surface); border-radius: var(--shape-medium); }
 .l1 .list, .l2 .list .row { border-radius: var(--shape-medium); }
+.l2 .list .row { background: var(--color-surface); }
 .l2 .list .row::after { display: none; }
 .l3 { padding-inline: 0; }
 .l3 > :not(.group) { margin-inline: var(--space-16); }
 .l3 .list { border-radius: 0; }
-/* Lists (Q4, rule A): long lists and choices are a block with hairlines (.list); short lists you start, edit or reorder are joined tiles (.list.tiles). */
-.list.tiles, .m1 .list { background: none; display: grid; gap: var(--space-4); border-radius: 0; overflow: visible; }
-.list.tiles .row, .m1 .list .row { background: var(--color-surface); border-radius: var(--shape-extra-small); }
-.list.tiles .row:first-child, .m1 .list .row:first-child { border-top-left-radius: var(--shape-large); border-top-right-radius: var(--shape-large); }
-.list.tiles .row:last-child, .m1 .list .row:last-child { border-bottom-left-radius: var(--shape-large); border-bottom-right-radius: var(--shape-large); }
-.list.tiles .row::after, .m1 .list .row::after { display: none; }
-/* Number input. The field is shared; I1 adds steppers beside it, I3 only while it is being edited. */
-.numrow { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); align-items: start; }
-.i1 .numrow { grid-template-columns: 1fr; } /* 82,5 and two steppers do not fit in half an iPhone's width */
-.numrow > label { display: grid; gap: var(--space-4); min-width: 0; font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.num { display: flex; align-items: center; gap: var(--space-4); background: var(--color-surface-container-highest); border-radius: var(--shape-medium);
-  padding: var(--space-4); min-width: 0; border: 2px solid transparent; } /* sketch: the focus ring width becomes a token */
-.num input { flex: 1; min-width: 0; width: 100%; border: 0; background: none; color: var(--color-on-surface); text-align: center;
-  font: var(--type-headline-medium); font-variant-numeric: tabular-nums; padding: var(--space-4) 0; outline: none; }
-.num input::placeholder { color: var(--color-on-surface-variant); }
-.num:focus-within, .num.focus { border-color: var(--color-primary); }
-.num.error { border-color: var(--color-error); }
-.num.disabled { opacity: .5; } /* sketch: disabled opacity becomes a token */
-.num .step { flex: none; width: var(--space-40); height: var(--space-40); border-radius: var(--shape-full); background: var(--color-surface);
-  color: var(--color-primary); font: var(--type-title-large); display: grid; place-items: center; } /* 40 pt visible, 44 pt with the field's padding */
-.numrow .msg { font: var(--type-body-small); color: var(--color-error); }
-.num .step, .i2 .num .step { display: none; }
-.num:focus-within .step, .num.focus .step, .i1 .num .step { display: grid; }
-.i2 .num:focus-within .step, .i2 .num.focus .step { display: none; }
-/* Stats and charts. */
-.stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
-.stat { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-12) var(--space-16); display: grid; min-width: 0; }
-.stat .k { font: var(--type-title-small); color: var(--color-on-surface-variant); }
-.stat .v { font: var(--type-display-small); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.stat .v small { font: var(--type-title-medium); color: var(--color-on-surface-variant); margin-left: var(--space-4); }
+.m1 .list { background: none; display: grid; gap: var(--space-4); border-radius: 0; overflow: visible; }
+.m1 .list .row { background: var(--color-surface); border-radius: var(--shape-extra-small); }
+.m1 .list .row:first-child { border-top-left-radius: var(--shape-large); border-top-right-radius: var(--shape-large); }
+.m1 .list .row:last-child { border-bottom-left-radius: var(--shape-large); border-bottom-right-radius: var(--shape-large); }
+.m1 .list .row::after { display: none; }
+.i1 .numrow { grid-template-columns: 1fr; }
+.i1 .num .step { display: grid; width: var(--space-40); height: var(--space-40); }
+.i2 .num .step, .i2 .num:focus-within .step, .i2 .num.focus .step { display: none; }
+.numbers-sketch .num .step { width: var(--space-40); height: var(--space-40); }
 .d2 .stats { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-16); gap: var(--space-16) var(--space-12); }
 .d2 .stat { background: none; padding: 0; border-radius: 0; }
 .d2 .stat .k { order: 2; font: var(--type-label-medium); }
 .d2 .stat .v { font: var(--type-headline-medium); }
+.d2 .chart .bar { fill: var(--color-primary); opacity: .55; }
+.d2 .chart .bar.on { opacity: 1; }
 .d3 .stats { display: none; }
 .statrows { display: none; }
 .d3 .statrows { display: block; }
-.statrows .row { font-variant-numeric: tabular-nums; }
 .statrows .row b { font: var(--type-title-medium); }
-.chart { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-16); display: grid; gap: var(--space-8); }
-.chart .head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-8); }
-.chart .head span { font: var(--type-title-small); }
-.chart .head b { font: var(--type-title-small); font-variant-numeric: tabular-nums; } /* plain text: teal is for what can be tapped */
-.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
-.chart .grid { stroke: var(--color-outline-variant); stroke-width: 1; }
-.chart .tick { fill: var(--color-on-surface-variant); font: var(--type-label-small); font-variant-numeric: tabular-nums; }
-.chart .bar { fill: var(--color-surface-container-highest); cursor: pointer; }
-.chart .bar.on { fill: var(--color-primary); }
-.d2 .chart .bar { fill: var(--color-primary); opacity: .55; }
-.d2 .chart .bar.on { opacity: 1; }
-.chart .line { fill: none; stroke: var(--color-on-surface-variant); stroke-width: 2; }
-.chart .pt { fill: var(--color-surface); stroke: var(--color-on-surface-variant); stroke-width: 2; cursor: pointer; }
-.chart .pt.on { fill: var(--color-primary); stroke: var(--color-primary); }
-/* Rest timer. Progress is tertiary (amber); time is tabular. */
-.stage.tall { position: relative; min-height: 460px; align-content: start; } /* sketch: room for a pinned timer */
-.timer .time { font-variant-numeric: tabular-nums; }
-.timer .k { font: var(--type-title-small); color: var(--color-on-surface-variant); }
-.timer .ctrl { display: flex; gap: var(--space-8); justify-content: center; flex-wrap: wrap; }
+.stage.tall { position: relative; min-height: 460px; align-content: start; }
+.t3.tall { min-height: 320px; }
+.t6.tall, .t7.tall { min-height: 340px; }
 .ring-card { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-16); display: grid; justify-items: center; gap: var(--space-12); }
-.ring { position: relative; width: 168px; aspect-ratio: 1; display: grid; place-items: center; } /* sketch: ring size */
-.ring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
-.ring .track { fill: none; stroke: var(--color-surface-container-highest); stroke-width: 8; }
-.ring .prog { fill: none; stroke: var(--color-tertiary); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
-.ring .inner { display: grid; justify-items: center; }
-.ring .time { font: var(--type-display-large); }
+.ring-card .ring { width: 168px; display: grid; place-items: center; }
+.ring-card .ring .track, .ring-card .ring .prog { stroke-width: 8; }
+.ring .inner { display: grid; justify-items: center; position: relative; }
+.ring-card .time { font: var(--type-display-large); font-variant-numeric: tabular-nums; }
+.timer .ctrl { display: flex; gap: var(--space-8); justify-content: center; flex-wrap: wrap; }
 .strip { position: absolute; left: 0; right: 0; bottom: 0; background: var(--color-surface); border-radius: var(--shape-extra-large) var(--shape-extra-large) 0 0;
   padding: var(--space-16); display: grid; gap: var(--space-12); }
-.strip .top { display: flex; justify-content: space-between; align-items: baseline; }
-.strip .time { font: var(--type-display-small); }
+.strip .top, .float .top { display: flex; justify-content: space-between; align-items: baseline; }
+.strip .time { font: var(--type-display-small); font-variant-numeric: tabular-nums; }
 .bar-track { height: var(--space-8); border-radius: var(--shape-full); background: var(--color-surface-container-highest); overflow: hidden; }
 .bar-fill { height: 100%; background: var(--color-tertiary); border-radius: inherit; transition: width 1s linear; }
 .pill { position: absolute; left: var(--space-16); right: var(--space-16); bottom: var(--space-16); border-radius: var(--shape-full); overflow: hidden;
@@ -197,41 +307,18 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   border: 1px solid var(--material-edge); box-shadow: var(--material-shadow); }
 .pill .drain { position: absolute; inset: 0 auto 0 0; background: var(--color-tertiary-container); transition: width 1s linear; }
 .pill .body { position: relative; display: flex; align-items: center; justify-content: space-between; gap: var(--space-8); padding: var(--space-8) var(--space-8) var(--space-8) var(--space-20); width: 100%; color: var(--color-on-surface); text-align: left; }
-.pill .time { font: var(--type-headline-small); }
-.t3.tall { min-height: 320px; } /* the pill floats over the last sets, so the glass has something behind it */
+.pill .time { font: var(--type-headline-small); font-variant-numeric: tabular-nums; }
 .pill .ctrl { display: none; }
 .pill.open .ctrl { display: flex; }
 .pill .k { color: var(--color-on-surface); }
-/* T4 and T5: the strip as a floating card, steppers on the left, skip far right as a text button. */
-.float { position: absolute; left: var(--space-16); right: var(--space-16); bottom: var(--space-16); background: var(--color-surface);
-  border-radius: var(--shape-large); padding: var(--space-16); display: grid; gap: var(--space-12); box-shadow: var(--material-shadow); }
-.float .top { display: flex; justify-content: space-between; align-items: baseline; }
-.float .time { font: var(--type-display-small); }
-.float .actions { display: flex; align-items: center; gap: var(--space-8); }
+.float.solid { background: var(--color-surface); box-shadow: var(--material-shadow); }
 .float .actions .btn.text { margin-left: auto; padding-inline: var(--space-8); }
-.float .mini { display: flex; align-items: center; gap: var(--space-16); }
-.float .mini .ring { width: 64px; } /* sketch: small ring size */
-.float .mini .ring .track, .float .mini .ring .prog { stroke-width: 12; }
-.float .mini .stack { display: grid; }
-/* T5 in glass, with two control sets: K1 a joined −/+ capsule, K2 round − and + around the step. Skip is a capsule at the far right in both. */
-.float.glass { background: var(--material-regular); -webkit-backdrop-filter: blur(var(--material-blur)); backdrop-filter: blur(var(--material-blur));
-  border: 1px solid var(--material-edge); }
-.t6.tall, .t7.tall { min-height: 340px; } /* the card floats over sets 3 and 4, so the glass has something behind it */
+.considered-roundstep .roundstep .btn { width: var(--space-40); height: var(--space-40); }
 .joined { display: flex; background: var(--color-surface-container-highest); border-radius: var(--shape-full); overflow: hidden; }
-.joined button { position: relative; font: var(--type-title-small); color: var(--color-primary); padding: var(--space-8) var(--space-12); white-space: nowrap; }
-.joined button + button::before { content: ""; position: absolute; left: 0; top: var(--space-8); bottom: var(--space-8);
-  border-left: 1px solid var(--color-outline); } /* a short divider, as iOS draws a stepper; sketch: hairline width becomes a token */
-.float .actions .btn { white-space: nowrap; }
-.joined button, .roundstep .btn { transition: transform 350ms cubic-bezier(.3, 1.4, .5, 1), opacity 250ms ease-out; }
-.joined button.is-pressed, .roundstep .btn.is-pressed { transform: scale(.96); opacity: .8; transition: transform 100ms ease-out, opacity 100ms ease-out; }
-.float .actions .skip { margin-left: auto; }
-.roundstep { display: flex; align-items: center; gap: var(--space-8); }
-.roundstep .btn { width: var(--space-40); height: var(--space-40); padding: 0; border-radius: var(--shape-full); font: var(--type-title-large); display: grid; place-items: center; }
-.roundstep span { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-@media (prefers-reduced-motion: reduce) { .ring .prog, .bar-fill, .pill .drain { transition: none; } }
-.stage .btn.text { border-radius: var(--shape-small); }
-.tap-show { outline: 1px dashed var(--color-outline); outline-offset: 0; } /* sketch only: shows the tap area */
-</style>
+.joined button { position: relative; font: var(--type-title-small); color: var(--color-primary); padding: var(--space-8) var(--space-12); white-space: nowrap;
+  transition: transform var(--motion-release), opacity var(--motion-fade); }
+.joined button.is-pressed { transform: scale(var(--state-pressed-scale)); opacity: var(--state-pressed-opacity); }
+.joined button + button::before { content: ""; position: absolute; left: 0; top: var(--space-8); bottom: var(--space-8); border-left: 1px solid var(--color-outline); }</style>
 
 <div class="wrap">
   <header>
@@ -248,6 +335,49 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     <button type="button" data-scheme="scheme-dark-hc" aria-pressed="false">Dark +</button>
   </div>
 
+  <div class="seg" role="group" aria-label="Language">
+    <button type="button" data-lang-btn="sv" aria-pressed="true">Svenska</button>
+    <button type="button" data-lang-btn="en" aria-pressed="false">English</button>
+  </div>
+
+  <section aria-labelledby="cat">
+    <h2 id="cat">Components</h2>
+    <p>Every component in every state that applies to it, built from the decisions below and Apple's defaults where nothing was decided. Press anything; − and + work; the timer counts down. A state that does not apply says why. Judge sizes on the phone: the desktop browser misleads.</p>
+    <p>Glass cannot show its Reduce Transparency fallback here: Safari does not report the setting. In the app, every glass surface turns solid (surface in light mode, surface-container-high in dark) when it is on.</p>
+    <div class="tablewrap"><table id="matrix"></table></div>
+    <div class="comps" id="catalog"></div>
+  </section>
+
+  <section aria-labelledby="hig">
+    <h2 id="hig">Apple HIG review</h2>
+    <p>Run on this page with apple-hig-review on 2026-10-20. Each rule below comes from a HIG page read that day; the rest is marked judgment.</p>
+    <ul class="hig">
+      <li><strong>Tap areas are 44 × 44 pt.</strong> Accessibility: default 44 × 44 pt, minimum 28 × 28 pt. Small capsules are 36 pt tall to the eye with a 44 pt tap area; round steppers and title-bar buttons are 44 pt.</li>
+      <li><strong>Every button has a press state.</strong> Buttons: <q>Always include a press state for a custom button.</q> It starts on touch-down (Q2).</li>
+      <li><strong>One filled button per view; destructive is never filled.</strong> Buttons: keep prominent buttons to one or two per view, and do not give the primary role to a destructive action.</li>
+      <li><strong>Waiting shows a spinner and a specific label.</strong> Buttons (iOS) puts the activity indicator in the button with a changed label, like Exporterar…; Progress indicators: avoid vague words like loading, so the GPS spinner says what it is looking for.</li>
+      <li><strong>Fields have a label above and a hint inside; search has a clear button; numbers use the decimal keypad and the locale's format.</strong> Text fields, all four.</li>
+      <li><strong>Steppers sit with a field and change an obvious value.</strong> Steppers: pair a stepper with a field when large changes are likely. I3 shows them while the field is being edited.</li>
+      <li><strong>Rows that open something have a chevron; choices get a checkmark.</strong> Lists and tables: a disclosure indicator to drill in, a checkmark for a selected option.</li>
+      <li><strong>Segmented controls: up to five segments, nouns, equal widths.</strong> Segmented controls.</li>
+      <li><strong>Sheets: a grabber, Cancel on the leading edge, one sheet at a time, swipe to dismiss.</strong> Sheets (iOS).</li>
+      <li><strong>An alert only for an uncommon action that cannot be undone; an action sheet for choices after an intentional one.</strong> Alerts. Ta bort is not red: Carl chose to delete, and Alerts reserves the destructive style for a result people did not deliberately choose. Släng passet is red: he tapped Avsluta, not discard.</li>
+      <li><strong>Charts: short axis labels, units in the title, grid lines light.</strong> Charts. The selected bar is teal and its value is written in the title, so colour is never the only signal; the chart has a spoken summary.</li>
+      <li><strong>Tabs are never disabled or hidden; labels are single words; the bar floats on glass.</strong> Tab bars.</li>
+      <li><strong>Back is the standard chevron without text; Done is prominent and trailing; tab roots use a large title.</strong> Toolbars.</li>
+      <li><strong>Reduce Motion drops the press's scale and keeps the dim.</strong> Accessibility. <em>Judgment:</em> the spinner keeps turning, because a still indicator reads as a stalled task (Progress indicators).</li>
+    </ul>
+    <p>Sources opened: accessibility, buttons, text-fields, steppers, lists-and-tables, segmented-controls, sheets, alerts, progress-indicators, charts, tab-bars, toolbars.</p>
+  </section>
+
+  <section aria-labelledby="devs">
+    <h2 id="devs">Deviations from Apple's guidelines</h2>
+    <p>Accepted for now, because Carl is the only user. Listed so they are cheap to fix if Strive is ever submitted to the App Store.</p>
+    <ul>
+      <li><strong>Start is an action in the tab bar</strong> (from strive#14). Apple, Tab bars: <q>Use a tab bar to support navigation, not to provide actions.</q> The fix is a Start button in the title bar of Home and Plan.</li>
+    </ul>
+  </section>
+
   <section aria-labelledby="dec">
     <h2 id="dec">Decided</h2>
     <ul>
@@ -257,13 +387,13 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       <li><strong>Two list styles, chosen by what the row is (rule A):</strong> a long list or a set of choices is a block with hairlines, split into groups where the data has them (History by week, Library by muscle, Settings, Profile, Onboarding, Export). A short list you start, edit or reorder is joined tiles (templates in Plan, exercises in a template, the sets in Active workout). One thing with its own button is a card. Separate tiles (L2) are not used (Carl, 2026-10-20, Q4).</li>
       <li><strong>Number input (I3):</strong> a grey field with the number in headline-medium and last time’s value as a grey hint; − and + appear while it is being edited, in 2,5 kg and 1 rep steps. Weight and reps fit side by side (Carl, 2026-10-20, Q5).</li>
       <li><strong>Numbers and charts (D1):</strong> a tile per number, label above, value in display-small (34 pt) with a small unit. Chart marks are grey; the selected bar or point is teal. Units go in the chart's title, axis labels stay short (Carl, 2026-10-20, Q6).</li>
-      <li><strong>Rest timer (T5 in glass, K1):</strong> a glass card floating over the set list, inset from the edges and the bottom, with a 64 pt amber ring, the time in display-small (34 pt), −15 s and +15 s joined in one capsule with a divider, and Hoppa över as its own capsule at the far right so it is not hit by mistake. Glass because it floats over content (G2) (Carl, 2026-10-20, Q7).</li>
+      <li><strong>Rest timer (T5 in glass, K1):</strong> a glass card floating over the set list, inset from the edges and the bottom, with a 64 pt amber ring, the time in display-small (34 pt), round − and + with the 15 s step between them, and Hoppa över as its own capsule at the far right so it is not hit by mistake. Glass because it floats over content (G2). Judged on the phone, where it looked best; the desktop browser misled on size (Carl, 2026-10-20, Q7).</li>
       <li><strong>The timer is a component although only Active workout uses it.</strong> The issue's rule is two screens; Carl keeps it (Carl, 2026-10-20, Q1).</li>
     </ul>
   </section>
 
   <section aria-labelledby="q7">
-    <h2 id="q7">Considered: the rest timer (T5 in glass with K1 chosen)</h2>
+    <h2 id="q7">Considered: the rest timer (T5 in glass with K2 chosen)</h2>
     <p><strong>Newest:</strong> T5 in glass, as G2 decided for things that float over content, with two control sets. K1 joins −15 s and +15 s into one capsule; K2 uses round − and + around the step. Hoppa över is a capsule of its own at the far right in both.</p>
     <p><strong>Before that:</strong> T4 and T5, Carl's strip as a floating card. −15 and +15 sit together on the left; Hoppa över is a text button at the far right, so it is not hit by mistake.</p>
     <p>Rest starts by itself when a set is logged, counts down from your default rest, and ends with a sound and a buzz on the phone. The countdown below is live and loops. Progress is amber, the tertiary role, so teal keeps meaning "tap". Each option has −15 s, +15 s and Hoppa över.</p>
@@ -533,7 +663,7 @@ const SAMPLES = {
     <div class="row"><span>Set 3<small>Förra: 80 kg × 8</small></span><span></span></div>
     <div class="row"><span>Set 4<small>Förra: 80 kg × 7</small></span><span></span></div>
   </div>
-  <div class="float timer"><div class="top"><span class="k">Vila</span><span class="time" role="timer">1:30</span></div><div class="bar-track"><div class="bar-fill"></div></div><div class="actions"><button type="button" class="press btn small tinted" data-add="-15">−15 s</button><button type="button" class="press btn small tinted" data-add="15">+15 s</button><button type="button" class="press btn text" data-skip>Hoppa över</button></div></div>`,
+  <div class="float solid timer"><div class="top"><span class="k">Vila</span><span class="time" role="timer">1:30</span></div><div class="bar-track"><div class="bar-fill"></div></div><div class="actions"><button type="button" class="press btn small tinted" data-add="-15">−15 s</button><button type="button" class="press btn small tinted" data-add="15">+15 s</button><button type="button" class="press btn text" data-skip>Hoppa över</button></div></div>`,
   timerFloatRing: `
   <div class="list tiles">
     <div class="row"><span>Set 1<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
@@ -541,7 +671,7 @@ const SAMPLES = {
     <div class="row"><span>Set 3<small>Förra: 80 kg × 8</small></span><span></span></div>
     <div class="row"><span>Set 4<small>Förra: 80 kg × 7</small></span><span></span></div>
   </div>
-  <div class="float timer"><div class="mini"><div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="50"/><circle class="prog" cx="60" cy="60" r="50" pathLength="100" stroke-dasharray="100"/></svg></div>
+  <div class="float solid timer"><div class="mini"><div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="50"/><circle class="prog" cx="60" cy="60" r="50" pathLength="100" stroke-dasharray="100"/></svg></div>
     <div class="stack"><span class="k">Vila</span><span class="time" role="timer">1:30</span></div></div><div class="actions"><button type="button" class="press btn small tinted" data-add="-15">−15 s</button><button type="button" class="press btn small tinted" data-add="15">+15 s</button><button type="button" class="press btn text" data-skip>Hoppa över</button></div></div>`,
   timerGlassK1: `
   <div class="list tiles">
@@ -579,6 +709,148 @@ const SAMPLES = {
 };
 document.querySelectorAll(".stage[data-sample]").forEach(s => s.innerHTML = SAMPLES[s.dataset.sample]);
 
+// The component catalogue: every component in every state that applies to it, in Swedish or English.
+const T = (sv, en) => `<span class="sv">${sv}</span><span class="en">${en}</span>`;
+const ICON = {
+  home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+  food: '<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-2 6 0 8v10"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  plan: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  you: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  clear: '<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',
+  lift: '<path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/>',
+};
+const icon = name => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${ICON[name]}</svg>`;
+const ring = (left, label) => `<div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="50"/><circle class="prog" cx="60" cy="60" r="50" pathLength="100" stroke-dasharray="100" style="stroke-dashoffset: ${100 - left * 100}"/></svg></div>`;
+const SETS = `<div class="list tiles">
+  <div class="row"><span>Set 1<small>80 kg × 8 · ${T("klar", "done")}</small></span><span class="chev" aria-hidden="true">✓</span></div>
+  <div class="row"><span>Set 2<small>80 kg × 8 · ${T("klar", "done")}</small></span><span class="chev" aria-hidden="true">✓</span></div>
+  <div class="row"><span>Set 3<small>${T("Förra", "Last time")}: 80 kg × 8</small></span><span></span></div>
+  <div class="row"><span>Set 4<small>${T("Förra", "Last time")}: 80 kg × 7</small></span><span></span></div></div>`;
+const STEPPERS = `<div class="actions"><div class="roundstep"><button type="button" class="press btn tinted" data-add="-15" aria-label="15 s shorter">−</button><span>15 s</span><button type="button" class="press btn tinted" data-add="15" aria-label="15 s longer">+</button></div><button type="button" class="press btn small tinted skip" data-skip>${T("Hoppa över", "Skip")}</button></div>`;
+const ACTIVITIES = `<div class="list">
+  <button type="button" class="press row"><span>${T("Push-dag", "Push day")}<small>${T("Idag · 52 min · 9 400 kg", "Today · 52 min · 9,400 kg")}</small></span><span class="chev" aria-hidden="true">›</span></button>
+  <button type="button" class="press row"><span>${T("Långpass", "Long run")}<small>${T("Lör · 14,2 km · 5:31 /km", "Sat · 14.2 km · 5:31 /km")}</small></span><span class="chev" aria-hidden="true">›</span></button>
+  <button type="button" class="press row"><span>${T("Pull-dag", "Pull day")}<small>${T("Tors · 48 min · 7 850 kg", "Thu · 48 min · 7,850 kg")}</small></span><span class="chev" aria-hidden="true">›</span></button></div>`;
+
+// Each component: where it is used, then one cell per state. A state that does not apply says why.
+const CATALOG = [
+  { name: "Buttons", used: "Every screen", states: {
+    default: `<button type="button" class="press btn filled">${T("Starta passet", "Start workout")}</button>
+      <button type="button" class="press btn tinted">${T("Lägg till övning", "Add exercise")}</button>
+      <div class="inline"><button type="button" class="press btn small tinted">${T("Avbryt", "Cancel")}</button><button type="button" class="press btn small filled">${T("Spara mall", "Save template")}</button></div>
+      <button type="button" class="press btn text">${T("Sätt ett mål", "Set a target")}</button>
+      <button type="button" class="press btn danger">${T("Avsluta utan att spara", "End without saving")}</button>`,
+    pressed: `<button type="button" class="btn filled is-pressed" tabindex="-1">${T("Starta passet", "Start workout")}</button>
+      <button type="button" class="btn tinted is-pressed" tabindex="-1">${T("Lägg till övning", "Add exercise")}</button>`,
+    disabled: `<button type="button" class="btn filled" disabled>${T("Spara mall", "Save template")}</button>
+      <button type="button" class="btn tinted" disabled>${T("Lägg till övning", "Add exercise")}</button>`,
+    loading: `<button type="button" class="btn filled" aria-busy="true" aria-disabled="true"><span class="spinner" aria-hidden="true"></span>${T("Exporterar…", "Exporting…")}</button>`,
+    error: "n/a: a button holds no error; the field or a dialog says what went wrong." } },
+  { name: "Text field", used: "Exercise library (search), Template editor (name), Onboarding, Profile, Settings", states: {
+    default: `<label class="fieldwrap">${T("Sök", "Search")}<span class="field">${icon("search")}<input data-ph-sv="Sök övning" data-ph-en="Search exercises" aria-label="Search"></span></label>`,
+    pressed: `<label class="fieldwrap">${T("Redigeras", "Editing")}<span class="field focus">${icon("search")}<input value="Bänk" tabindex="-1" aria-label="Search"><button type="button" class="press clear" aria-label="Clear">${icon("clear")}</button></span></label>`,
+    disabled: `<label class="fieldwrap">${T("Namn", "Name")}<span class="field is-disabled"><input data-ph-sv="Push-dag" data-ph-en="Push day" disabled aria-label="Name"></span></label>`,
+    loading: "n/a: search filters the local list as you type; nothing to wait for.",
+    error: `<label class="fieldwrap">${T("Namn", "Name")}<span class="field error"><input value="Push-dag" tabindex="-1" aria-label="Name" aria-invalid="true"></span><span class="msg">${T("Det namnet finns redan", "That name is already used")}</span></label>` } },
+  { name: "Number input", used: "Active workout, Template editor, Onboarding, Profile", states: {
+    default: `<div class="numrow"><label>${T("Vikt (kg)", "Weight (kg)")}<span class="num"><button type="button" class="press step" data-step="-1" aria-label="-2.5 kg">−</button><input inputmode="decimal" placeholder="80" aria-label="kg"><button type="button" class="press step" data-step="1" aria-label="+2.5 kg">+</button></span></label>
+      <label>Reps<span class="num"><button type="button" class="press step" data-step="-1" aria-label="-1">−</button><input inputmode="numeric" placeholder="8" aria-label="Reps"><button type="button" class="press step" data-step="1" aria-label="+1">+</button></span></label></div>`,
+    pressed: `<div class="numrow" style="grid-template-columns: 1fr"><label>${T("Vikt (kg), redigeras", "Weight (kg), editing")}<span class="num focus"><button type="button" class="press step" data-step="-1" tabindex="-1">−</button><input value="82,5" tabindex="-1" aria-label="kg"><button type="button" class="press step" data-step="1" tabindex="-1">+</button></span></label></div>`,
+    disabled: `<div class="numrow"><label>${T("Vikt (kg)", "Weight (kg)")}<span class="num is-disabled"><input placeholder="80" disabled aria-label="kg"></span></label><label>Reps<span class="num is-disabled"><input placeholder="8" disabled aria-label="Reps"></span></label></div>`,
+    loading: "n/a: the value is local.",
+    error: `<div class="numrow"><label>${T("Vikt (kg)", "Weight (kg)")}<span class="num"><input value="82,5" tabindex="-1" aria-label="kg"></span></label><label>Reps<span class="num error"><input value="0" tabindex="-1" aria-label="Reps" aria-invalid="true"></span><span class="msg">${T("Minst 1 rep", "At least 1 rep")}</span></label></div>` } },
+  { name: "List rows · block", used: "History, Exercise library, Settings, Profile, Onboarding, Export", wide: true, states: {
+    default: `<div class="group"><h4>${T("Den här veckan", "This week")}</h4>${ACTIVITIES}</div>
+      <div class="list"><button type="button" class="press row"><span>${T("Enheter", "Units")}</span><span class="val">kg ›</span></button>
+      <button type="button" class="press row"><span>${T("Standardvila", "Default rest")}</span><span class="val">1:30 ›</span></button></div>`,
+    pressed: `<div class="list"><div class="row is-pressed"><span>${T("Enheter", "Units")}</span><span class="val">kg ›</span></div></div>
+      <div class="list"><button type="button" class="press row"><span>Kilogram</span><span class="check" aria-label="selected">✓</span></button><button type="button" class="press row"><span>${T("Pund", "Pounds")}</span><span></span></button></div>`,
+    disabled: `<div class="list"><div class="row is-disabled"><span>${T("Importera", "Import")}<small>${T("Kommer med import", "Comes with import")}</small></span><span class="chev">›</span></div></div>`,
+    loading: "n/a: lists read the local database.", error: "n/a: a row holds no input." } },
+  { name: "List rows · joined tiles", used: "Plan (templates), Template editor (exercises), Active workout (sets)", states: {
+    default: `<div class="list tiles"><button type="button" class="press row"><span>${T("Push-dag", "Push day")}<small>${T("6 övningar", "6 exercises")}</small></span><span class="chev">›</span></button>
+      <button type="button" class="press row"><span>${T("Pull-dag", "Pull day")}<small>${T("5 övningar", "5 exercises")}</small></span><span class="chev">›</span></button>
+      <button type="button" class="press row"><span>${T("Ben", "Legs")}<small>${T("5 övningar", "5 exercises")}</small></span><span class="chev">›</span></button></div>`,
+    pressed: `<div class="list tiles"><div class="row"><span>${T("Push-dag", "Push day")}</span><span class="chev">›</span></div><div class="row is-pressed"><span>${T("Pull-dag", "Pull day")}</span><span class="chev">›</span></div><div class="row"><span>${T("Ben", "Legs")}</span><span class="chev">›</span></div></div>`,
+    disabled: `<div class="list tiles"><div class="row"><span>Set 3<small>${T("Förra", "Last time")}: 80 kg × 8</small></span><span></span></div><div class="row is-disabled"><span>Set 4<small>${T("Efter set 3", "After set 3")}</small></span><span></span></div></div>`,
+    loading: "n/a", error: "n/a" } },
+  { name: "Card", used: "Home (today's plan), Plan (the programme)", states: {
+    default: `<div class="card"><span class="eyebrow">${T("Planerat idag", "Planned today")}</span><span class="title">${T("Push-dag", "Push day")}</span><span class="meta">${T("6 övningar · cirka 55 min", "6 exercises · about 55 min")}</span><button type="button" class="press btn filled">${T("Starta passet", "Start workout")}</button></div>`,
+    pressed: "Its button presses; the card itself is not a button.", disabled: "n/a", loading: "n/a", error: "n/a" } },
+  { name: "Stat tiles", used: "Workout summary, Run summary, Live run, Session detail, Progress", states: {
+    default: `<div class="stats"><div class="stat"><span class="k">${T("Volym", "Volume")}</span><span class="v">${T("9 400", "9,400")}<small>kg</small></span></div>
+      <div class="stat"><span class="k">${T("Tid", "Time")}</span><span class="v">52<small>min</small></span></div>
+      <div class="stat"><span class="k">${T("Distans", "Distance")}</span><span class="v">${T("14,2", "14.2")}<small>km</small></span></div>
+      <div class="stat"><span class="k">${T("Tempo", "Pace")}</span><span class="v">5:31<small>/km</small></span></div></div>`,
+    pressed: "n/a: a tile is not a button.", disabled: "n/a",
+    loading: `<div class="stats"><div class="stat"><span class="k">${T("Tempo", "Pace")}</span><span class="v none">–:––<small>/km</small></span></div><div class="stat"><span class="k">${T("Distans", "Distance")}</span><span class="v">0,0<small>km</small></span></div></div><span class="caption">${T("Före första kilometern", "Before the first kilometre")}</span>`,
+    error: "n/a" } },
+  { name: "Chart", used: "Progress, Run summary (pace), Exercise detail", states: {
+    default: `<div class="chart"><div class="head"><span>${T("Volym per vecka, ton", "Volume per week, tonnes")}</span><b></b></div><svg viewBox="0 0 320 150" role="img"></svg></div>`,
+    pressed: "Tap a bar: it turns teal and the title shows its value.", disabled: "n/a", loading: "n/a", error: "n/a" },
+    more: [["Empty", `<div class="chart"><div class="head"><span>${T("Volym per vecka, ton", "Volume per week, tonnes")}</span></div><div class="nodata">${T("Inga pass de senaste 8 veckorna", "No workouts in the last 8 weeks")}</div></div>`]] },
+  { name: "Rest timer", used: "Active workout", wide: true, states: {
+    default: `<div class="overlay">${SETS}<div class="float glass timer"><div class="mini">${ring(1)}<div class="stack"><span class="k">${T("Vila", "Rest")}</span><span class="time" role="timer">1:30</span></div></div>${STEPPERS}</div></div>`,
+    pressed: "−, + and Hoppa över press as buttons do.", disabled: "n/a", loading: "n/a", error: "n/a" },
+    more: [["Done", `<div class="overlay">${SETS}<div class="float glass timer-done"><div class="mini">${ring(0)}<div class="stack"><span class="k">${T("Vila klar", "Rest over")}</span><span class="time">0:00</span></div></div><div class="actions"><button type="button" class="press btn small filled skip">${T("Nästa set", "Next set")}</button></div></div></div><span class="caption">${T("Klar: ljud och vibration, sedan nästa set", "Done: a sound and a buzz, then the next set")}</span>`]] },
+  { name: "Segmented control", used: "History (type), Progress (volume or km), Export (period)", states: {
+    default: `<div class="segc" role="group" aria-label="Period"><button type="button" class="press" aria-pressed="true">${T("Vecka", "Week")}</button><button type="button" class="press" aria-pressed="false">${T("Månad", "Month")}</button><button type="button" class="press" aria-pressed="false">${T("År", "Year")}</button></div>`,
+    pressed: `<div class="segc"><button type="button" aria-pressed="true" tabindex="-1">${T("Vecka", "Week")}</button><button type="button" class="is-pressed" aria-pressed="false" tabindex="-1">${T("Månad", "Month")}</button><button type="button" aria-pressed="false" tabindex="-1">${T("År", "Year")}</button></div>`,
+    disabled: `<div class="segc is-disabled"><button type="button" aria-pressed="true" tabindex="-1">${T("Styrka", "Strength")}</button><button type="button" aria-pressed="false" tabindex="-1">${T("Löpning", "Running")}</button></div>`,
+    loading: "n/a", error: "n/a" } },
+  { name: "Sheet", used: "Start, Add exercise", wide: true, states: {
+    default: `<div class="overlay">${ACTIVITIES}${ACTIVITIES}<div class="scrim"></div><div class="sheet glass"><span class="grabber" aria-hidden="true"></span>
+      <div class="sheet-head"><button type="button" class="press btn text">${T("Avbryt", "Cancel")}</button><h5>Start</h5><span></span></div>
+      <div class="list"><button type="button" class="press row"><span>${T("Tomt pass", "Empty workout")}</span><span class="chev">›</span></button><button type="button" class="press row"><span>${T("Push-dag", "Push day")}<small>${T("Mall · 6 övningar", "Template · 6 exercises")}</small></span><span class="chev">›</span></button><button type="button" class="press row"><span>${T("Löprunda", "Run")}</span><span class="chev">›</span></button></div></div></div>`,
+    pressed: "Rows and Cancel press as everywhere else.", disabled: "n/a", loading: "n/a", error: "n/a" } },
+  { name: "Dialogs", used: "Template editor (delete), Active workout and Live run (end)", wide: true, states: {
+    default: `<div class="overlay">${ACTIVITIES}<div class="scrim"></div><div class="center"><div class="alert glass" role="alertdialog" aria-label="Delete template"><h5>${T("Ta bort mallen Push-dag?", "Delete the template Push day?")}</h5><p>${T("Pass du redan har loggat finns kvar.", "Workouts you have logged stay.")}</p>
+      <div class="inline"><button type="button" class="press btn small tinted">${T("Avbryt", "Cancel")}</button><button type="button" class="press btn small tinted">${T("Ta bort", "Delete")}</button></div></div></div></div>
+      <span class="caption">${T("Alert: ovanligt och går inte att ångra", "Alert: uncommon and cannot be undone")}</span>`,
+    pressed: "Buttons and rows press as everywhere else.", disabled: "n/a", loading: "n/a", error: "n/a" },
+    more: [["Action sheet", `<div class="overlay">${ACTIVITIES}${ACTIVITIES}<div class="scrim"></div><div class="asheet"><div class="list glass"><div class="row head">${T("Avsluta passet?", "End the workout?")}</div><button type="button" class="press row">${T("Spara passet", "Save workout")}</button><button type="button" class="press row destructive">${T("Släng passet", "Discard workout")}</button></div>
+      <div class="list glass"><button type="button" class="press row cancel">${T("Fortsätt passet", "Keep going")}</button></div></div></div>
+      <span class="caption">${T("Action sheet: val efter en avsiktlig handling", "Action sheet: choices after an intentional action")}</span>`]] },
+  { name: "Navigation bars", used: "Tab bar on every tab; title bars on every screen", wide: true, states: {
+    default: `<div class="largetitle"><h5>Plan</h5><button type="button" class="press icon-btn glass" aria-label="New template">${icon("plus")}</button></div>
+      <div class="titlebar"><button type="button" class="press icon-btn glass" aria-label="Back">${icon("back")}</button><h5>${T("Push-dag", "Push day")}</h5><button type="button" class="press btn small filled">${T("Klar", "Done")}</button></div>
+      <div class="overlay">${ACTIVITIES}<span></span><span></span><nav class="tabbar glass" aria-label="Tabs">
+        <button type="button" class="press tab" aria-current="page">${icon("home")}${T("Hem", "Home")}</button>
+        <button type="button" class="press tab">${icon("food")}${T("Mat", "Food")}</button>
+        <button type="button" class="press tab"><span class="dot">${icon("plus")}</span></button>
+        <button type="button" class="press tab">${icon("plan")}Plan</button>
+        <button type="button" class="press tab">${icon("you")}${T("Du", "You")}</button></nav></div>`,
+    pressed: `<div class="titlebar"><button type="button" class="icon-btn glass is-pressed" tabindex="-1" aria-label="Back">${icon("back")}</button><h5></h5><span></span></div>`,
+    disabled: "n/a: Apple asks that tabs are never disabled or hidden; Food is empty until strive#9 and says so.", loading: "n/a", error: "n/a" } },
+  { name: "Empty state", used: "History, Plan (templates), Progress, Food", states: {
+    default: `<div class="empty">${icon("lift")}<h5>${T("Inga pass än", "No workouts yet")}</h5><p>${T("Pass och löprundor du loggar hamnar här.", "Workouts and runs you log show up here.")}</p><button type="button" class="press btn small tinted">${T("Starta ett pass", "Start a workout")}</button></div>`,
+    pressed: "n/a", disabled: "n/a", loading: "n/a", error: "n/a" } },
+  { name: "Activity indicator", used: "Run start (GPS), Export", states: {
+    default: `<div class="busy"><span class="spinner" aria-hidden="true"></span>${T("Söker GPS-signal…", "Finding a GPS signal…")}</div>`,
+    pressed: "n/a", disabled: "n/a", loading: "This is the loading state other components borrow.", error: `<div class="busy">${T("Ingen GPS-signal. Gå utomhus och vänta en stund.", "No GPS signal. Go outside and wait a moment.")}</div>` } },
+];
+const STATES = [["default", "Default"], ["pressed", "Pressed"], ["disabled", "Disabled"], ["error", "Error"], ["loading", "Loading"]];
+document.getElementById("catalog").innerHTML = CATALOG.map(c => `
+  <article class="comp${c.wide ? " wide" : ""}">
+    <h3>${c.name}</h3>
+    <p class="used">Used on: ${c.used}</p>
+    <div class="stage states">${STATES.map(([k, label]) => c.states[k].trimStart().startsWith("<")
+      ? `<div class="state"><span class="caption">${label}</span>${c.states[k]}</div>`
+      : `<p class="state na"><b>${label}</b> ${c.states[k]}</p>`).join("")}${(c.more || []).map(([l, h]) => `<div class="state"><span class="caption">${l}</span>${h}</div>`).join("")}</div>
+  </article>`).join("");
+document.getElementById("matrix").innerHTML = `<tr><th>Component</th>${STATES.map(([, l]) => `<th>${l}</th>`).join("")}<th>Also</th></tr>` + CATALOG.map(c =>
+  `<tr><td>${c.name}</td>${STATES.map(([k]) => `<td>${c.states[k].trimStart().startsWith("<") ? "drawn" : "n/a"}</td>`).join("")}<td>${(c.more || []).map(([l]) => l).join(", ")}</td></tr>`).join("");
+function setLang(lang) {
+  document.documentElement.dataset.lang = lang;
+  document.querySelectorAll("[data-ph-sv]").forEach(i => i.placeholder = i.dataset["ph" + (lang === "en" ? "En" : "Sv")]);
+  document.querySelectorAll("[data-lang-btn]").forEach(b => b.setAttribute("aria-pressed", b.dataset.langBtn === lang));
+}
+document.querySelectorAll("[data-lang-btn]").forEach(b => b.addEventListener("click", () => setLang(b.dataset.langBtn)));
+setLang("sv");
+
 // Eight weeks of volume, drawn to one scale: bars in D1 and D2, a line in D3.
 const WEEKS = [[36, 18.2], [37, 21.4], [38, 19.8], [39, 24.1], [40, 22.6], [41, 12.3], [42, 25.8], [43, 9.4]];
 function drawChart(svg, line, selected) {
@@ -598,7 +870,7 @@ let total = REST, left = REST;
 function tick() {
   const m = Math.floor(left / 60), sec = String(left % 60).padStart(2, "0"), frac = left / total;
   document.querySelectorAll(".timer .time").forEach(t => t.textContent = `${m}:${sec}`);
-  document.querySelectorAll(".ring .prog").forEach(c => c.style.strokeDashoffset = 100 - frac * 100);
+  document.querySelectorAll(".timer .ring .prog").forEach(c => c.style.strokeDashoffset = 100 - frac * 100);
   document.querySelectorAll(".bar-fill, .pill .drain").forEach(b => b.style.width = frac * 100 + "%");
 }
 setInterval(() => { left = left > 0 ? left - 1 : (total = REST); tick(); }, 1000);
@@ -620,7 +892,7 @@ document.querySelectorAll(".chart svg").forEach(svg => {
 // Pressed starts on touch-down; :active alone does not fire reliably in iOS Safari.
 document.addEventListener("pointerdown", e => {
   const el = e.target.closest(".press");
-  if (!el) return;
+  if (!el || el.disabled || el.closest(".is-disabled")) return;
   el.classList.add("is-pressed");
   if (el.closest(".p3") && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const r = el.getBoundingClientRect(), size = Math.hypot(r.width, r.height) * 2;
