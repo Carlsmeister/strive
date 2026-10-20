@@ -1,0 +1,549 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Strive Tokens</title>
+<link rel="stylesheet" href="tokens.css">
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: a working document, like 14-navigation. Three visual directions on the same Home screen, side by side (stacked on a phone), each with its live contrast ratios. Phone colours use the Material 3 role names decided in Q1. */
+:root {
+  --bg: #f6f6f4;
+  --paper: #ffffff;
+  --fg: #1d1d1b;
+  --muted: #6b6b66;
+  --line: #d9d9d4;
+  --box: #ebebe7;
+  --accent: #2f5bd3;
+  --good: #1f7a3a;
+  --bad: #b3261e;
+  --font-ui: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141413; --paper: #1d1d1b; --fg: #ececea; --muted: #a3a39d; --line: #3a3a37;
+    --box: #2a2a28; --accent: #8fa9f5; --good: #7dd492; --bad: #f2b8b5; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141413; --paper: #1d1d1b; --fg: #ececea; --muted: #a3a39d; --line: #3a3a37;
+  --box: #2a2a28; --accent: #8fa9f5; --good: #7dd492; --bad: #f2b8b5; color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--font-ui); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 40px; }
+h1 { font-size: 28px; line-height: 1.2; margin: 0; text-wrap: balance; }
+h2 { font-size: 19px; margin: 0 0 12px; text-wrap: balance; }
+h3 { font-size: 16px; margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.lede { color: var(--muted); margin-top: 8px; }
+.label { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+section { display: grid; gap: 12px; }
+ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 72ch; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.seg { display: inline-flex; background: var(--box); border-radius: 9px; padding: 2px; justify-self: start; }
+.seg button { padding: 6px 14px; border-radius: 7px; font-size: 14px; }
+.seg button[aria-pressed="true"] { background: var(--paper); font-weight: 600; }
+.phones { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px 24px; align-items: start; }
+.option { display: grid; gap: 10px; min-width: 0; }
+.option .words { font-weight: 600; }
+.option p { color: var(--muted); font-size: 14px; }
+.ratios { font-size: 13px; display: grid; gap: 2px; }
+.ratios div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding: 3px 0; }
+.ratios b { font-variant-numeric: tabular-nums; font-weight: 600; }
+.ratios .pass { color: var(--good); }
+.ratios .fail { color: var(--bad); }
+
+/* The phone. Everything inside reads the direction's own tokens. */
+.phone { width: min(100%, 340px); max-width: 100%; aspect-ratio: 393 / 800; margin: 0 auto; border-radius: 40px; overflow: hidden;
+  border: 6px solid #2b2b2b; display: flex; flex-direction: column; position: relative;
+  background: var(--color-background); color: var(--color-on-surface); font-family: var(--font-ui); }
+.ph-status { padding: 10px 26px 0; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.ph-scroll { flex: 1; overflow-y: auto; padding: 6px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+.ph-scroll > * { flex-shrink: 0; }
+.ph-large { font-size: 32px; line-height: 1.15; font-weight: var(--weight-title); letter-spacing: var(--title-tracking); text-transform: var(--title-case); }
+.ph-date { color: var(--color-on-surface-variant); font-size: 14px; margin-top: -10px; }
+.ph-card { background: var(--color-surface); border-radius: var(--shape-large); padding: 16px; display: grid; gap: 4px; border: var(--card-border); }
+.ph-eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--color-on-surface-variant); }
+.ph-title { font-size: 22px; font-weight: var(--weight-title); line-height: 1.2; }
+.ph-meta { font-size: 14px; color: var(--color-on-surface-variant); }
+.ph-primary { margin-top: 10px; background: var(--color-primary); color: var(--color-on-primary); border-radius: var(--shape-medium);
+  padding: 14px; font-weight: 700; font-size: 16px; text-align: center; }
+.ph-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; background: var(--color-surface); border-radius: var(--shape-large); padding: 12px 8px; border: var(--card-border); }
+.ph-week span { display: grid; justify-items: center; gap: 6px; font-size: 12px; color: var(--color-on-surface-variant); }
+.ph-week i { width: 22px; height: 22px; border-radius: var(--shape-dot); border: 2px solid var(--color-outline-variant); }
+.ph-week .done i { background: var(--color-primary); border-color: var(--color-primary); }
+.ph-week .today { color: var(--color-on-surface); font-weight: 700; }
+.ph-week .today i { border-color: var(--color-on-surface); }
+.ph-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ph-stat { background: var(--color-surface); border-radius: var(--shape-large); padding: 12px 14px; display: grid; border: var(--card-border); }
+.ph-num { font-family: var(--font-number); font-size: 28px; font-weight: var(--weight-number); font-variant-numeric: tabular-nums; line-height: 1.1; letter-spacing: var(--number-tracking); }
+.ph-num small { font-size: 15px; font-weight: 600; color: var(--color-on-surface-variant); margin-left: 3px; letter-spacing: 0; }
+.ph-cap { font-size: 13px; color: var(--color-on-surface-variant); }
+.ph-set { background: var(--color-surface-container); border-radius: var(--shape-large); padding: 14px; display: grid; gap: 2px; }
+.ph-set .row { display: flex; justify-content: space-between; align-items: baseline; }
+.ph-set .big { font-family: var(--font-number); font-size: 34px; font-weight: var(--weight-number); font-variant-numeric: tabular-nums; letter-spacing: var(--number-tracking); }
+.ph-tabs { display: flex; align-items: end; padding: 6px 6px 20px; background: var(--color-surface); border-top: 1px solid var(--color-outline-variant); }
+.ph-tabs span { flex: 1; display: grid; justify-items: center; gap: 3px; font-size: 10px; font-weight: 500; color: var(--color-on-surface-variant); }
+.ph-tabs span::before { content: ""; width: 22px; height: 22px; border-radius: 6px; background: currentColor; opacity: .55; }
+.ph-tabs .on { color: var(--color-on-surface); font-weight: 700; }
+.ph-tabs .on::before { opacity: 1; background: var(--color-primary); }
+.ph-tabs .start::before { width: 48px; height: 48px; border-radius: 24px; background: var(--color-primary); opacity: 1; margin-top: -18px; box-shadow: 0 0 0 4px var(--color-surface); }
+
+/* A · Energetic, bold, loud. The old Strive's orange, dark first, heavy numbers. */
+.dir-a { --color-background: #f4f3f1; --color-surface: #ffffff; --color-surface-container: #e9e6e2; --color-on-surface: #141210;
+  --color-on-surface-variant: #5c5650; --color-outline-variant: #d6d1cb; --color-primary: #ff6b00; --color-on-primary: #000000;
+  --shape-large: 18px; --shape-medium: 14px; --shape-dot: 6px; --weight-title: 800; --weight-number: 800; --title-tracking: -.02em;
+  --title-case: none; --number-tracking: -.02em; --font-number: var(--font-ui); --card-border: 0; }
+.dir-a.dark { --color-background: #000000; --color-surface: #1c1c1e; --color-surface-container: #2c2c2e; --color-on-surface: #ffffff;
+  --color-on-surface-variant: #a1a1a6; --color-outline-variant: #3a3a3c; --color-primary: #ff7a1a; --color-on-primary: #000000; }
+
+/* B · Calm, clear, native. iOS grouped backgrounds, a teal tint, regular weights. */
+.dir-b { --color-background: #f2f2f7; --color-surface: #ffffff; --color-surface-container: #e5e5ea; --color-on-surface: #000000;
+  --color-on-surface-variant: #636366; --color-outline-variant: #d1d1d6; --color-primary: #0a7a73; --color-on-primary: #ffffff;
+  --shape-large: 12px; --shape-medium: 12px; --shape-dot: 11px; --weight-title: 700; --weight-number: 600; --title-tracking: 0;
+  --title-case: none; --number-tracking: 0; --font-number: var(--font-ui); --card-border: 0; }
+.dir-b.dark { --color-background: #000000; --color-surface: #1c1c1e; --color-surface-container: #2c2c2e; --color-on-surface: #ffffff;
+  --color-on-surface-variant: #98989f; --color-outline-variant: #38383a; --color-primary: #40c8bd; --color-on-primary: #00201e; }
+
+/* C · Focused, precise, technical. Near monochrome, cobalt signal, monospaced numbers as in the old app's Type.kt. */
+.dir-c { --color-background: #ffffff; --color-surface: #ffffff; --color-surface-container: #eef0f4; --color-on-surface: #0b0d12;
+  --color-on-surface-variant: #545a66; --color-outline-variant: #d5d9e0; --color-primary: #2440e6; --color-on-primary: #ffffff;
+  --shape-large: 6px; --shape-medium: 4px; --shape-dot: 2px; --weight-title: 700; --weight-number: 500; --title-tracking: .04em;
+  --title-case: uppercase; --number-tracking: -.03em; --font-number: var(--font-mono); --card-border: 1px solid var(--color-outline-variant); }
+.dir-c.dark { --color-background: #0b0d12; --color-surface: #11141b; --color-surface-container: #1b2030; --color-on-surface: #f2f4f8;
+  --color-on-surface-variant: #9aa3b5; --color-outline-variant: #2a3142; --color-primary: #8ea2ff; --color-on-primary: #0b0d12; }
+
+/* Glass. Apple-style materials: translucent, blurred, with a light edge. The fallback is the solid surface. */
+.phone { --material-regular: rgb(255 255 255 / .62); --material-thick: rgb(255 255 255 / .82); --material-edge: rgb(255 255 255 / .7); --material-blur: 24px; }
+.phone.dark { --material-regular: rgb(28 28 30 / .58); --material-thick: rgb(28 28 30 / .8); --material-edge: rgb(255 255 255 / .1); }
+.glass { background: var(--material-regular); -webkit-backdrop-filter: blur(var(--material-blur)) saturate(180%); backdrop-filter: blur(var(--material-blur)) saturate(180%);
+  border: 1px solid var(--material-edge); box-shadow: 0 8px 24px rgb(0 0 0 / .12); }
+@media (prefers-reduced-transparency: reduce) { .glass { background: var(--color-surface); -webkit-backdrop-filter: none; backdrop-filter: none; } }
+.gphone .ph-scroll { padding-bottom: 110px; }
+.gphone .ph-tabs { position: absolute; left: 12px; right: 12px; bottom: 14px; border-radius: 32px; padding: 8px 6px 8px; align-items: center; }
+.gphone .ph-tabs .start::before { box-shadow: none; margin-top: 0; width: 44px; height: 44px; }
+.ph-map { height: 210px; border-radius: var(--shape-large); position: relative; overflow: hidden;
+  background: radial-gradient(circle at 20% 30%, #b9dfb0 0 18%, transparent 19%), radial-gradient(circle at 75% 70%, #9fd0e8 0 22%, transparent 23%),
+  repeating-linear-gradient(35deg, transparent 0 22px, rgb(255 255 255 / .7) 22px 25px), #e4e7dc; }
+.dark .ph-map { background: radial-gradient(circle at 20% 30%, #23402a 0 18%, transparent 19%), radial-gradient(circle at 75% 70%, #183a4c 0 22%, transparent 23%),
+  repeating-linear-gradient(35deg, transparent 0 22px, rgb(255 255 255 / .12) 22px 25px), #1b1f1c; }
+.ph-map svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ph-map .glass { position: absolute; left: 10px; bottom: 10px; border-radius: 14px; padding: 6px 10px; font-size: 13px; font-weight: 600; }
+.ph-map .plain { position: absolute; left: 10px; bottom: 10px; border-radius: 14px; padding: 6px 10px; font-size: 13px; font-weight: 600; background: var(--color-surface); }
+.ph-sheet { position: absolute; left: 8px; right: 8px; bottom: 8px; border-radius: 30px; padding: 10px 14px 18px; display: grid; gap: 8px; }
+.ph-sheet::before { content: ""; width: 36px; height: 5px; border-radius: 3px; background: var(--color-on-surface-variant); opacity: .5; justify-self: center; }
+.ph-sheet .ph-row { background: var(--material-thick); border-radius: 14px; padding: 12px 14px; display: flex; justify-content: space-between; font-size: 15px; }
+.ph-sheet .ph-row span:last-child { color: var(--color-on-surface-variant); }
+.ph-dim { position: absolute; inset: 0; background: rgb(0 0 0 / .18); }
+.g3 { --color-background: #dff1ee; }
+.g3.dark { --color-background: #04211f; }
+.g3 .ph-scroll { background: linear-gradient(170deg, var(--color-background), transparent 70%); }
+.g3 .ph-card, .g3 .ph-week, .g3 .ph-stat { background: var(--material-regular); -webkit-backdrop-filter: blur(var(--material-blur)) saturate(180%); backdrop-filter: blur(var(--material-blur)) saturate(180%); border: 1px solid var(--material-edge); }
+
+/* Numbers. The active workout, full screen, with three number faces. */
+.nphone .ph-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px 0; font-size: 16px; }
+.nphone .ph-bar b { font-weight: 600; }
+.nphone .ph-bar span:last-child { color: var(--color-primary); font-weight: 600; }
+.ph-clock { text-align: center; font-family: var(--font-number); font-size: 56px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: var(--number-tracking); line-height: 1; padding: 8px 0 2px; }
+.ph-clock + .ph-cap { text-align: center; margin-top: -6px; }
+.ph-sets { background: var(--color-surface); border-radius: var(--shape-large); display: grid; }
+.ph-sets div { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: baseline; padding: 11px 14px; border-top: 1px solid var(--color-outline-variant); }
+.ph-sets div:first-child { border-top: 0; }
+.ph-sets .n { color: var(--color-on-surface-variant); font-size: 13px; }
+.ph-sets .w { font-family: var(--font-number); font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: var(--number-tracking); }
+.ph-sets .ok { color: var(--color-primary); font-weight: 700; }
+.ph-sets .next .w { color: var(--color-on-surface-variant); }
+.ph-rest { position: absolute; left: 50%; transform: translateX(-50%); bottom: 18px; border-radius: 28px; padding: 10px 22px; display: flex; gap: 10px; align-items: baseline; white-space: nowrap; }
+.ph-rest .w { font-family: var(--font-number); font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.num-sf { --font-number: var(--font-ui); --number-tracking: 0; }
+.num-rounded { --font-number: ui-rounded, "SF Pro Rounded", var(--font-ui); --number-tracking: 0; }
+.num-mono { --font-number: var(--font-mono); --number-tracking: -.03em; }
+
+/* The token page. Tables come from tokens.json; the preview device below uses Strive's tokens and nothing else. */
+.tablewrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; }
+.tablewrap table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.tablewrap th, .tablewrap td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; white-space: nowrap; }
+.tablewrap th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+.tablewrap tr:last-child td { border-bottom: 0; }
+.tablewrap .group td { background: var(--box); font-weight: 600; }
+.hex, code { font-family: var(--font-mono); font-size: 12px; }
+.sw { display: inline-block; width: 28px; height: 18px; border-radius: 4px; border: 1px solid var(--line); vertical-align: middle; margin-right: 6px; }
+.num { font-variant-numeric: tabular-nums; text-align: right; }
+.pass { color: var(--good); } .fail { color: var(--bad); font-weight: 700; }
+.split { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; align-items: start; }
+.typerow td:nth-child(2) { white-space: normal; min-width: 260px; }
+.typerow .en { display: block; } .typerow .sv { display: block; color: var(--muted); }
+.bars { display: grid; gap: 6px; font-size: 13px; }
+.bars div { display: grid; grid-template-columns: 90px 1fr; align-items: center; gap: 8px; }
+.bars i { display: block; height: 14px; background: var(--accent); border-radius: 2px; }
+.shapes { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; }
+.shapes div { width: 96px; height: 64px; background: var(--box); border: 1px solid var(--line); display: grid; place-items: center; text-align: center; }
+
+.device { width: min(100%, 340px); max-width: 100%; aspect-ratio: 393 / 800; margin: 0 auto; border-radius: 40px; overflow: hidden;
+  border: 6px solid #2b2b2b; display: flex; flex-direction: column; position: relative;
+  background: var(--color-background); color: var(--color-on-background); font: var(--type-body-large); }
+.dv-status { padding: var(--space-8) var(--space-24) 0; font: var(--type-title-small); font-variant-numeric: tabular-nums; }
+.dv-scroll { flex: 1; overflow-y: auto; padding: var(--space-4) var(--space-16) calc(2 * var(--space-48) + var(--space-16)); display: flex; flex-direction: column; gap: var(--space-12); }
+.dv-scroll > * { flex-shrink: 0; margin: 0; }
+.dv-title { font: var(--type-headline-large); }
+.dv-sub { font: var(--type-body-medium); color: var(--color-on-surface-variant); }
+.dv-card { background: var(--color-surface); color: var(--color-on-surface); border-radius: var(--shape-large); padding: var(--space-16); display: grid; gap: var(--space-4); }
+.dv-eyebrow { font: var(--type-label-medium); text-transform: uppercase; letter-spacing: .06em; color: var(--color-on-surface-variant); }
+.dv-headline { font: var(--type-headline-small); }
+.dv-primary { margin-top: var(--space-8); background: var(--color-primary); color: var(--color-on-primary); border-radius: var(--shape-medium); padding: var(--space-12); font: var(--type-label-large); text-align: center; }
+.dv-link { color: var(--color-primary); font: var(--type-label-large); text-align: left; padding: 0; }
+.dv-stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
+.dv-num { font: var(--type-display-small); font-variant-numeric: tabular-nums; }
+.dv-num small { font: var(--type-title-medium); color: var(--color-on-surface-variant); margin-left: var(--space-4); }
+.dv-alert { background: var(--color-error-container); color: var(--color-on-error-container); border-radius: var(--shape-large); padding: var(--space-12) var(--space-16); font: var(--type-body-medium); }
+.dv-map { height: 200px; border-radius: var(--shape-large); position: relative; overflow: hidden; background:
+  radial-gradient(circle at 22% 30%, var(--color-primary-container) 0 18%, transparent 19%),
+  radial-gradient(circle at 76% 72%, var(--color-secondary-container) 0 22%, transparent 23%), var(--color-surface-container-high); }
+.dv-map svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dv-glass { background: var(--material-regular); -webkit-backdrop-filter: blur(var(--material-blur)) saturate(180%); backdrop-filter: blur(var(--material-blur)) saturate(180%);
+  border: 1px solid var(--material-edge); box-shadow: var(--material-shadow); color: var(--color-on-surface); }
+.dv-chip { position: absolute; left: var(--space-12); bottom: var(--space-12); border-radius: var(--shape-full); padding: var(--space-4) var(--space-12); font: var(--type-title-small); }
+.dv-tabs { position: absolute; left: var(--space-12); right: var(--space-12); bottom: var(--space-16); border-radius: var(--shape-full); display: flex; align-items: center; padding: var(--space-8) var(--space-4); }
+.dv-tabs span { flex: 1; display: grid; justify-items: center; gap: var(--space-4); font: var(--type-label-small); color: var(--color-on-surface-variant); }
+.dv-tabs span::before { content: ""; width: var(--space-24); height: var(--space-24); border-radius: var(--shape-extra-small); background: currentColor; }
+.dv-tabs .on { color: var(--color-primary); }
+.dv-tabs .start::before { width: var(--space-48); height: var(--space-48); border-radius: var(--shape-full); background: var(--color-primary); }
+.dv-tabs .start { color: var(--color-on-surface); }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="label">strive#15 · Tokens</div>
+    <h1>Strive tokens</h1>
+    <p class="lede">Every colour, text size, space, corner and glass value Strive uses, named after Material 3 so strive#3 can carry them into Compose one to one. The values live in <code>tokens.py</code>, which checks contrast and writes <code>tokens.css</code>; later prototypes link that file instead of writing values of their own.</p>
+  </header>
+
+  <section aria-labelledby="prev">
+    <h2 id="prev">Preview</h2>
+    <p class="lede">Home with the tokens and nothing else. System follows your phone, including Increase Contrast (Settings › Accessibility › Display &amp; Text Size).</p>
+    <div class="seg" role="group" aria-label="Preview scheme" id="scheme">
+      <button type="button" data-scheme="" aria-pressed="true">System</button>
+      <button type="button" data-scheme="scheme-light" aria-pressed="false">Light</button>
+      <button type="button" data-scheme="scheme-dark" aria-pressed="false">Dark</button>
+      <button type="button" data-scheme="scheme-light-hc" aria-pressed="false">Light +</button>
+      <button type="button" data-scheme="scheme-dark-hc" aria-pressed="false">Dark +</button>
+    </div>
+    <div class="device" id="device">
+      <div class="dv-status">9:41</div>
+      <div class="dv-scroll">
+        <h3 class="dv-title">Home</h3>
+        <p class="dv-sub">Wednesday 21 October</p>
+        <div class="dv-card">
+          <span class="dv-eyebrow">Planned today</span>
+          <span class="dv-headline">Push day</span>
+          <span class="dv-sub">6 exercises · about 55 min</span>
+          <button type="button" class="dv-primary">Start Push day</button>
+        </div>
+        <div class="dv-stats">
+          <div class="dv-card"><span class="dv-num">2</span><span class="dv-sub">workouts this week</span></div>
+          <div class="dv-card"><span class="dv-num">14.2<small>km</small></span><span class="dv-sub">run this week</span></div>
+        </div>
+        <div class="dv-alert">Last run saved without GPS for 0.4 km. The route has a gap.</div>
+        <div class="dv-map"><svg viewBox="0 0 300 200" aria-hidden="true"><path d="M30 160 C 60 110, 90 140, 120 90 S 190 30, 230 60 S 270 140, 210 160" fill="none" stroke="var(--color-primary)" stroke-width="5" stroke-linecap="round"/></svg><span class="dv-glass dv-chip">Sat · Long run · 14.2 km</span></div>
+        <div class="dv-card"><span class="dv-eyebrow">Food today</span><span class="dv-sub">Comes with nutrition, later</span><button type="button" class="dv-link">Set a target</button></div>
+      </div>
+      <nav class="dv-tabs dv-glass"><span class="on">Home</span><span>Food</span><span class="start">Start</span><span>Plan</span><span>You</span></nav>
+    </div>
+  </section>
+
+  <section aria-labelledby="col">
+    <h2 id="col">Colour</h2>
+    <p class="lede">All 48 roles of Material 3's <code>ColorScheme</code> in four schemes. Light and dark follow the phone; the two + schemes are Increase Contrast. Leaving a role out would let Compose fill it with Material's default purple.</p>
+    <div class="tablewrap"><table id="colours"></table></div>
+  </section>
+
+  <section aria-labelledby="con">
+    <h2 id="con">Contrast</h2>
+    <p class="lede">Every pair that carries text, computed by <code>tokens.py</code>, which refuses to write the tokens if one fails. Text needs 4.5:1 (WCAG AA) and 7:1 under Increase Contrast (AAA); borders need 3:1. Text on glass depends on what is behind it, so glass thickens under Increase Contrast instead of getting a number.</p>
+    <div class="tablewrap"><table id="contrast"></table></div>
+  </section>
+
+  <section aria-labelledby="typ">
+    <h2 id="typ">Type</h2>
+    <p class="lede">Apple's text styles under Material 3's names, in the system face: SF Pro on iPhone, Roboto on Android. Each row in English and Swedish, since Swedish runs longer and writes 82,5 where English writes 82.5. Numbers always use tabular figures.</p>
+    <div class="tablewrap"><table id="type"></table></div>
+  </section>
+
+  <section aria-labelledby="lay">
+    <h2 id="lay">Space, corners and glass</h2>
+    <div class="split">
+      <div><h3>Space</h3><p class="lede">Steps of 4 points. Material has no spacing tokens, so these are Strive's own.</p><div class="bars" id="space"></div></div>
+      <div><h3>Corners</h3><p class="lede">Material's shape names with iOS-like values. Cards and buttons are medium or large, sheets extra large, capsules full.</p><div class="shapes" id="shape"></div></div>
+      <div><h3>Glass</h3><p class="lede">Regular for bars and labels, thick for rows inside a sheet. Blur 24 points. There is no elevation scale: layers come from the surface roles, and only glass casts a shadow.</p><div class="tablewrap"><table id="glasses"></table></div></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="map">
+    <h2 id="map">Compose mapping</h2>
+    <p class="lede">What strive#3 writes for each token. Colour, type and shape go into <code>MaterialTheme</code>; space and glass are Strive's own, because Material has no slot for them.</p>
+    <div class="tablewrap"><table id="mapping"></table></div>
+  </section>
+
+
+  <section aria-labelledby="hig">
+    <h2 id="hig">Apple HIG review</h2>
+    <p class="lede">Run on this page with <code>apple-hig-review</code> on 2026-10-20. Every rule quoted below comes from a HIG page read that day; the rest is marked judgment.</p>
+    <ul>
+      <li><strong>Contrast meets Apple's minimum.</strong> Accessibility: 4.5:1 for text up to 17 pt. Every text pair passes in light and dark, and 7:1 under Increase Contrast. Dark Mode adds: "For custom foreground and background colors, strive for a contrast ratio of 7:1, especially in small text." Standard schemes do not reach that; listed as a deviation.</li>
+      <li><strong>Increase Contrast is covered.</strong> Color: "If you define a custom color, make sure to supply light and dark variants, and an increased contrast option for each variant." The two + schemes are that option.</li>
+      <li><strong>Custom colours instead of system colours.</strong> Color: "Avoid hard-coding system color values in your app." Strive's greys copy Apple's system greys as fixed values, because Compose draws its own colours. Listed as a deviation.</li>
+      <li><strong>Text sizes are Apple's.</strong> Typography: body 17 pt, minimum 11 pt; the smallest token, label-small, is 11. <strong>Larger Text is not supported yet:</strong> Accessibility asks for "at least 200 percent". Compose Multiplatform 1.12 does not scale text with the iPhone setting; 1.13 (in alpha) adds it. A requirement for strive#3, not a token.</li>
+      <li><strong>The app follows the phone's appearance.</strong> Dark Mode: "Avoid offering an app-specific appearance setting." This matches Q6. strive#14's Settings screen still lists "appearance", which this rule argues against.</li>
+      <li><strong>Glass is used sparingly, on the right layer, with one exception.</strong> Materials: Liquid Glass is "a distinct functional layer for controls and navigation elements — like tab bars", and "Don't use Liquid Glass in the content layer." The tab bar and sheets follow it; the label on the run map does not and is listed below. Tab bars: "A tab bar floats above content", which the preview does.</li>
+      <li><strong>For strive#16 (judgment):</strong> text links need a 44 × 44 pt tap area (Accessibility: default 44 × 44, minimum 28 × 28), while "Set a target" is only 22 pt tall. Sheets in dark mode take <code>surface-container-high</code>, Apple's elevated background (Dark Mode: base and elevated backgrounds). Primary teal marks what can be tapped and the selected state, never plain text (Color: "Avoid using the same color to mean different things").</li>
+    </ul>
+    <p class="lede">Sources opened: accessibility, color, dark-mode, typography, tab-bars, materials.</p>
+  </section>
+
+  <section aria-labelledby="dec">
+    <h2 id="dec">Decided</h2>
+    <ul>
+      <li><strong>Direction B: calm, clear, native.</strong> Grey grouped background, white cards, one teal tint, regular weights (Carl, 2026-10-20, Q2).</li>
+      <li><strong>Glass on controls and overlays (G2):</strong> the tab bar, sheets such as Start, and labels laid over maps and images. Cards and lists stay solid. With Reduce Transparency on, the app shows the solid surface instead; strive#3 reads the setting and picks the blur library (Haze is the candidate: iOS and Android, Apache-2.0, a translucent fill without blur on Android 11 and older) (Carl, 2026-10-20, Q3).</li>
+      <li><strong>Apple's text styles under Material 3's names:</strong> body is 17/22, the screen title 34/41, captions 11–13 (Carl, 2026-10-20, Q4).</li>
+      <li><strong>Numbers in the system face (N1)</strong>, SF Pro on iPhone and Roboto on Android, always with tabular figures (Carl, 2026-10-20, Q5).</li>
+      <li><strong>Every one of the 48 colour roles has a value in every scheme</strong>; Increase Contrast is two schemes of its own, aiming for 7:1; the app follows the phone's light or dark setting; space in steps of 4; corners as listed; no elevation scale, layers come from the surface roles and glass; every later prototype is checked for hard-coded values in strive#20 (Carl, 2026-10-20, Q6).</li>
+      <li><strong>Token names follow Material 3's roles</strong> for colour, type and shape (<code>--color-on-primary</code> is <code>colorScheme.onPrimary</code>), plus a spacing scale of Strive's own, which Material does not have (Carl, 2026-10-20, Q1).</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="dev">
+    <h2 id="dev">Deviations from Apple's guidelines</h2>
+    <p class="lede">Accepted for now, because Carl is the only user. Listed so they are cheap to fix if Strive is ever submitted to the App Store.</p>
+    <ul>
+      <li><strong>Fixed colour values instead of Apple's system colours.</strong> Apple: "Avoid hard-coding system color values in your app." Compose draws its own colours, so Strive copies Apple's greys as fixed values and will not follow Apple's future adjustments. The fix on iPhone is reading UIKit's dynamic colours in strive#3.</li>
+      <li><strong>4.5:1, not 7:1, in the standard schemes.</strong> Apple: "For custom foreground and background colors, strive for a contrast ratio of 7:1, especially in small text." Strive meets 7:1 only under Increase Contrast. The fix is the + schemes' values everywhere, at the cost of a darker, heavier look.</li>
+      <li><strong>Glass labels on maps and images (G2).</strong> Apple: "Don't use Liquid Glass in the content layer." A label laid over a run map sits in that layer. The fix is a solid label (G1's map).</li>
+    </ul>
+  </section>
+  <section aria-labelledby="cons">
+    <h2 id="cons">Considered</h2>
+    <p class="lede">The sketches each decision was made from, kept as the record of why. Their values are sketches, not tokens. The switch sets every sketch phone.</p>
+    <div class="seg" role="group" aria-label="Phone appearance">
+      <button type="button" data-mode="system" aria-pressed="true">System</button>
+      <button type="button" data-mode="light" aria-pressed="false">Light</button>
+      <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+    </div>
+  </section>
+
+  <section aria-labelledby="nums">
+    <h2 id="nums">Considered: numbers (N1 chosen)</h2>
+    <p class="lede">The active workout, where numbers matter most: the session clock, each set, the rest timer. The same screen in three number faces. Rounded needs an iPhone or a Mac; other browsers show the default face.</p>
+    <div class="phones">
+      <div class="option">
+        <h3>N1 · System, like Apple's own apps</h3>
+        <p>SF Pro on iPhone, Roboto on Android. Tabular figures so the clock does not jump.</p>
+        <div class="phone dir-b nphone num-sf"></div>
+      </div>
+      <div class="option">
+        <h3>N2 · Rounded, like Apple Fitness</h3>
+        <p>SF Pro Rounded on iPhone. Android has no SF; it needs a rounded face of its own (an open licence font, bundled).</p>
+        <div class="phone dir-b nphone num-rounded"></div>
+      </div>
+      <div class="option">
+        <h3>N3 · Monospaced, like the old Strive</h3>
+        <p>SF Mono on iPhone. The old app's Type.kt used monospace for numbers. Wider, so long values crowd sooner.</p>
+        <div class="phone dir-b nphone num-mono"></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="glass">
+    <h2 id="glass">Considered: where glass goes (G2 chosen)</h2>
+    <p class="lede">Direction B with Apple-style glass in three amounts. Scroll each phone: the run map passes under the tab bar. The app falls back to the solid surface when Reduce Transparency is on; Safari does not report that setting, so this page cannot show it.</p>
+    <div class="phones">
+      <div class="option">
+        <h3>G1 · Controls only</h3>
+        <p>The tab bar floats as glass. Cards and lists stay solid. Apple's own rule for glass in iOS 26.</p>
+        <div class="phone dir-b gphone" data-glass="1"></div>
+      </div>
+      <div class="option">
+        <h3>G2 · Controls and overlays</h3>
+        <p>As G1, plus sheets and labels laid over content: the Start sheet, the label on the run map.</p>
+        <div class="phone dir-b gphone" data-glass="2"></div>
+      </div>
+      <div class="option">
+        <h3>G3 · Everywhere</h3>
+        <p>Cards are glass too, over a tinted background. The most glass, and the least calm.</p>
+        <div class="phone dir-b gphone g3" data-glass="3"></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="dir">
+    <h2 id="dir">Considered: visual direction (B chosen)</h2>
+    <p class="lede">The three directions B was chosen from, with each one's contrast.</p>
+    <div class="phones">
+      <div class="option" data-dir="a">
+        <h3>A · Energetic, bold, loud</h3>
+        <p>The old Strive: orange on black, heavy titles and numbers. Orange is a fill with black text on it, never text on white.</p>
+        <div class="phone dir-a"></div>
+        <div class="ratios"></div>
+      </div>
+      <div class="option" data-dir="b">
+        <h3>B · Calm, clear, native</h3>
+        <p>Looks like an Apple app: grey grouped background, white cards, one teal tint, regular weights.</p>
+        <div class="phone dir-b"></div>
+        <div class="ratios"></div>
+      </div>
+      <div class="option" data-dir="c">
+        <h3>C · Focused, precise, technical</h3>
+        <p>A training instrument: near monochrome, hairline borders, small corners, cobalt for action, monospaced numbers.</p>
+        <div class="phone dir-c"></div>
+        <div class="ratios"></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const DAYS = [["M", "done"], ["T", "done"], ["W", "today"], ["T", ""], ["F", ""], ["S", ""], ["S", ""]];
+const PHONE = `
+  <div class="ph-status">9:41</div>
+  <div class="ph-scroll">
+    <div class="ph-large">Home</div>
+    <div class="ph-date">Wednesday 21 October</div>
+    <div class="ph-card">
+      <div class="ph-eyebrow">Planned today</div>
+      <div class="ph-title">Push day</div>
+      <div class="ph-meta">6 exercises · about 55 min</div>
+      <button type="button" class="ph-primary">Start Push day</button>
+    </div>
+    <div class="ph-week">${DAYS.map(([d, c]) => `<span class="${c}">${d}<i></i></span>`).join("")}</div>
+    <div class="ph-stats">
+      <div class="ph-stat"><span class="ph-num">2</span><span class="ph-cap">workouts this week</span></div>
+      <div class="ph-stat"><span class="ph-num">14.2<small>km</small></span><span class="ph-cap">run this week</span></div>
+    </div>
+    <div class="ph-set">
+      <div class="ph-eyebrow">Last set · Bench press</div>
+      <div class="row"><span class="big">80 kg × 8</span><span class="ph-cap">Set 2 of 4</span></div>
+    </div>
+  </div>
+  <nav class="ph-tabs"><span class="on">Home</span><span>Food</span><span class="start">Start</span><span>Plan</span><span>You</span></nav>`;
+
+const ROUTE = `<svg viewBox="0 0 300 210" aria-hidden="true"><path d="M30 170 C 60 120, 90 150, 120 100 S 190 40, 230 70 S 270 150, 210 170" fill="none" stroke="var(--color-primary)" stroke-width="5" stroke-linecap="round"/></svg>`;
+const glassPhone = n => `
+  <div class="ph-status">9:41</div>
+  <div class="ph-scroll">
+    <div class="ph-large">Home</div>
+    <div class="ph-date">Wednesday 21 October</div>
+    <div class="ph-card">
+      <div class="ph-eyebrow">Planned today</div>
+      <div class="ph-title">Push day</div>
+      <div class="ph-meta">6 exercises · about 55 min</div>
+      <button type="button" class="ph-primary">Start Push day</button>
+    </div>
+    <div class="ph-week">${DAYS.map(([d, c]) => `<span class="${c}">${d}<i></i></span>`).join("")}</div>
+    <div class="ph-stats">
+      <div class="ph-stat"><span class="ph-num">2</span><span class="ph-cap">workouts this week</span></div>
+      <div class="ph-stat"><span class="ph-num">14.2<small>km</small></span><span class="ph-cap">run this week</span></div>
+    </div>
+    <div class="ph-map">${ROUTE}<span class="${n > 1 ? "glass" : "plain"}">Sat · Long run · 14.2 km</span></div>
+    <div class="ph-card"><div class="ph-eyebrow">Food today</div><div class="ph-meta">Comes with nutrition, later</div></div>
+  </div>
+  <nav class="ph-tabs glass"><span class="on">Home</span><span>Food</span><span class="start">Start</span><span>Plan</span><span>You</span></nav>
+  ${n === 2 ? `<div class="ph-dim"></div><div class="ph-sheet glass"><div class="ph-row"><span>Empty workout</span><span>›</span></div><div class="ph-row"><span>Push day</span><span>Template</span></div><div class="ph-row"><span>Pull day</span><span>Template</span></div><div class="ph-row"><span>Run</span><span>GPS ready</span></div></div>` : ""}`;
+
+const numPhone = () => `
+  <div class="ph-status">9:41</div>
+  <div class="ph-bar"><span>End</span><b>Push day</b><span>Finish</span></div>
+  <div class="ph-scroll">
+    <div class="ph-clock">32:14</div><div class="ph-cap">Session time</div>
+    <div class="ph-eyebrow">Bench press</div>
+    <div class="ph-sets">
+      <div><span class="n">1</span><span class="w">80 kg × 8</span><span class="ok">✓</span></div>
+      <div><span class="n">2</span><span class="w">82.5 kg × 8</span><span class="ok">✓</span></div>
+      <div class="next"><span class="n">3</span><span class="w">82.5 kg × 8</span><span></span></div>
+    </div>
+    <div class="ph-eyebrow">Overhead press</div>
+    <div class="ph-sets">
+      <div class="next"><span class="n">1</span><span class="w">45 kg × 10</span><span></span></div>
+      <div class="next"><span class="n">2</span><span class="w">47.5 kg × 8</span><span></span></div>
+    </div>
+  </div>
+  <div class="ph-rest glass"><span class="ph-cap">Rest</span><span class="w">1:24</span></div>`;
+
+// WCAG 2 contrast from the phone's own tokens, recomputed whenever the appearance changes.
+const PAIRS = [["Text on surface", "on-surface", "surface"], ["Secondary text on surface", "on-surface-variant", "surface"],
+  ["Secondary text on background", "on-surface-variant", "background"], ["Button label on primary", "on-primary", "primary"],
+  ["Primary on background (as text or icon)", "primary", "background"]];
+const lum = hex => { const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(v => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+
+const media = matchMedia("(prefers-color-scheme: dark)");
+let mode = "system";
+function render() {
+  const dark = mode === "dark" || (mode === "system" && media.matches);
+  document.querySelectorAll(".phone").forEach(p => p.classList.toggle("dark", dark));
+  document.querySelectorAll(".option[data-dir]").forEach(opt => {
+    const phone = opt.querySelector(".phone");
+    const css = getComputedStyle(phone), v = n => css.getPropertyValue("--color-" + n).trim();
+    opt.querySelector(".ratios").innerHTML = PAIRS.map(([label, fg, bg]) => {
+      const r = ratio(v(fg), v(bg));
+      return `<div><span>${label}</span><b class="${r >= 4.5 ? "pass" : "fail"}">${r.toFixed(1)}:1 ${r >= 4.5 ? "AA" : r >= 3 ? "large only" : "fails"}</b></div>`;
+    }).join("");
+  });
+}
+document.querySelectorAll(".phone").forEach(p => { p.innerHTML = p.dataset.glass ? glassPhone(+p.dataset.glass) : p.classList.contains("nphone") ? numPhone() : PHONE; });
+document.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => {
+  mode = b.dataset.mode;
+  document.querySelectorAll("[data-mode]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  render();
+}));
+media.addEventListener("change", render);
+render();
+
+// The token tables, built from tokens.json, which tokens.py writes beside tokens.css.
+const camel = s => s.replace(/-(\w)/g, (_, c) => c.toUpperCase());
+const NAMES = { light: "Light", dark: "Dark", "light-hc": "Light +", "dark-hc": "Dark +" };
+const SAMPLES = { "display-large": ["32:14", "32:14"], "display-medium": ["14.2 km", "14,2 km"], "display-small": ["82.5 kg", "82,5 kg"],
+  "headline-large": ["Home", "Hem"], "headline-medium": ["Progress", "Framsteg"], "headline-small": ["Push day", "Pushdag"],
+  "title-large": ["Workout templates", "Träningsmallar"], "title-medium": ["Bench press", "Bänkpress"], "title-small": ["Planned today", "Planerat i dag"],
+  "body-large": ["6 exercises · about 55 min", "6 övningar · cirka 55 min"], "body-medium": ["Wednesday 21 October", "onsdag 21 oktober"],
+  "body-small": ["Last backup 20 Oct", "Senaste säkerhetskopia 20 okt."], "label-large": ["Start Push day", "Starta pushdag"],
+  "label-medium": ["Set 2 of 4", "Set 2 av 4"], "label-small": ["Food", "Mat"] };
+const GROUPS = [["Primary", /^(on-)?primary(-container)?$|inverse-primary/], ["Secondary", /^(on-)?secondary(-container)?$/], ["Tertiary", /^(on-)?tertiary(-container)?$/],
+  ["Error", /error/], ["Surfaces", /surface|background/], ["Lines and scrim", /outline|scrim/], ["Fixed (same in light and dark)", /fixed/]];
+function tokenTables(t) {
+  const schemes = Object.keys(t.schemes), roles = Object.keys(t.schemes.light);
+  const head = `<tr><th>Token</th>${schemes.map(n => `<th>${NAMES[n]}</th>`).join("")}</tr>`;
+  const seen = new Set();
+  document.getElementById("colours").innerHTML = head + GROUPS.map(([label, re]) => {
+    const rows = roles.filter(r => re.test(r) && !seen.has(r));
+    rows.forEach(r => seen.add(r));
+    return `<tr class="group"><td colspan="${schemes.length + 1}">${label}</td></tr>` + rows.map(r =>
+      `<tr><td><code>--color-${r}</code></td>${schemes.map(n => `<td><span class="sw" style="background:${t.schemes[n][r]}"></span><span class="hex">${t.schemes[n][r]}</span></td>`).join("")}</tr>`).join("");
+  }).join("");
+  document.getElementById("contrast").innerHTML = `<tr><th>Pair</th>${schemes.map(n => `<th class="num">${NAMES[n]}</th>`).join("")}</tr>` + t.pairs.map(p =>
+    `<tr><td>${p.fg} on ${p.bg}${p.kind === "non-text" ? " (border)" : ""}</td>${schemes.map(n => {
+      const min = p.kind === "non-text" ? 3 : n.endsWith("-hc") ? 7 : 4.5, r = p.ratio[n];
+      return `<td class="num ${r >= min ? "pass" : "fail"}">${r.toFixed(1)}:1</td>`; }).join("")}</tr>`).join("");
+  document.getElementById("type").innerHTML = `<tr><th>Token</th><th>Sample</th><th class="num">Weight · size / line</th></tr>` + Object.entries(t.type).map(([role, [w, sz, lh]]) =>
+    `<tr class="typerow"><td><code>--type-${role}</code></td><td style="font: var(--type-${role}); font-variant-numeric: tabular-nums"><span class="en">${SAMPLES[role][0]}</span><span class="sv">${SAMPLES[role][1]}</span></td><td class="num">${w} · ${sz} / ${lh}</td></tr>`).join("");
+  document.getElementById("space").innerHTML = t.space.map(n => `<div><code>--space-${n}</code><i style="width: var(--space-${n})"></i></div>`).join("");
+  document.getElementById("shape").innerHTML = Object.entries(t.shape).map(([name, v]) => `<div style="border-radius: var(--shape-${name})"><span><code>${name}</code><br>${name === "full" ? "capsule" : v}</span></div>`).join("");
+  document.getElementById("glasses").innerHTML = `<tr><th>Token</th>${schemes.map(n => `<th>${NAMES[n]}</th>`).join("")}</tr>` + Object.keys(t.materials.light).map(k =>
+    `<tr><td><code>--material-${k}</code></td>${schemes.map(n => `<td class="hex">${t.materials[n][k]}</td>`).join("")}</tr>`).join("");
+  const map = [...roles.map(r => [`--color-${r}`, `MaterialTheme.colorScheme.${camel(r)}`, "lightColorScheme, darkColorScheme, and the two + schemes"]),
+    ...Object.entries(t.type).map(([r, [w, sz, lh]]) => [`--type-${r}`, `MaterialTheme.typography.${camel(r)}`, `FontWeight(${w}), ${sz}.sp, lineHeight ${lh}.sp, FontFamily.Default`]),
+    ...Object.entries(t.shape).map(([r, v]) => [`--shape-${r}`, r === "full" ? "CircleShape" : `MaterialTheme.shapes.${camel(r)}`, r === "full" ? "Material's Shapes has no full slot" : `RoundedCornerShape(${parseInt(v)}.dp)`]),
+    ...t.space.map(n => [`--space-${n}`, `Spacing.s${n}`, `${n}.dp, Strive's own`]),
+    ...Object.keys(t.materials.light).map(k => [`--material-${k}`, `StriveMaterials.${k}`, "Strive's own; blur through the library strive#3 picks"]),
+    ["--material-blur", "StriveMaterials.blur", "24.dp"], ["--font-family", "FontFamily.Default", "SF Pro on iPhone, Roboto on Android"]];
+  document.getElementById("mapping").innerHTML = `<tr><th>CSS</th><th>Compose</th><th>Note</th></tr>` + map.map(([a, b, c]) => `<tr><td><code>${a}</code></td><td><code>${b}</code></td><td>${c}</td></tr>`).join("");
+}
+fetch("tokens.json").then(r => r.json()).then(tokenTables).catch(e => { document.getElementById("colours").innerHTML = `<tr><td>Could not load tokens.json: ${e.message}</td></tr>`; });
+document.querySelectorAll("[data-scheme]").forEach(b => b.addEventListener("click", () => {
+  const device = document.getElementById("device");
+  device.className = "device " + b.dataset.scheme;
+  document.querySelectorAll("[data-scheme]").forEach(x => x.setAttribute("aria-pressed", x === b));
+}));
+</script>
