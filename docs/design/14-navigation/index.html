@@ -1,0 +1,349 @@
+<title>Strive Navigation</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: a working document of grey wireframes. Inventory, then three clickable phones side by side (stacked on a phone), then tap counts and deviations. Structure only: no visual design until strive#15. */
+:root {
+  --bg: #f6f6f4;
+  --paper: #ffffff;
+  --fg: #1d1d1b;
+  --muted: #6b6b66;
+  --line: #d9d9d4;
+  --box: #ebebe7;
+  --box-strong: #d3d3cd;
+  --accent: #2f5bd3;
+  --later: #8a6d1f;
+  --font-ui: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141413; --paper: #1d1d1b; --fg: #ececea; --muted: #a3a39d; --line: #3a3a37;
+    --box: #2a2a28; --box-strong: #3d3d3a; --accent: #8fa9f5; --later: #d9b65a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141413; --paper: #1d1d1b; --fg: #ececea; --muted: #a3a39d; --line: #3a3a37;
+  --box: #2a2a28; --box-strong: #3d3d3a; --accent: #8fa9f5; --later: #d9b65a; color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--font-ui); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 40px; }
+h1 { font-size: 28px; line-height: 1.2; margin: 0; text-wrap: balance; }
+h2 { font-size: 19px; margin: 0 0 12px; text-wrap: balance; }
+h3 { font-size: 16px; margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.lede { color: var(--muted); margin-top: 8px; }
+.label { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+section { display: grid; gap: 12px; }
+.tablewrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 14px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+tr:last-child td { border-bottom: 0; }
+.ver { font-family: var(--font-mono); font-size: 12px; white-space: nowrap; }
+.ver.later { color: var(--later); }
+.phones { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; align-items: start; }
+.option { display: grid; gap: 10px; min-width: 0; }
+.option p { color: var(--muted); font-size: 14px; }
+.phone { width: min(100%, 340px); aspect-ratio: 393 / 760; margin: 0 auto; background: var(--paper);
+  border: 2px solid var(--box-strong); border-radius: 36px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+.bar { display: grid; grid-template-columns: 64px 1fr 64px; align-items: center; padding: 14px 12px 8px; gap: 4px; min-height: 52px; }
+.bar .title { text-align: center; font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar button { justify-self: start; } .bar .right { justify-self: end; } .bar .title { justify-self: stretch; }
+.screen { flex: 1; overflow-y: auto; padding: 8px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+.tabs { display: flex; border-top: 1px solid var(--line); padding: 6px 4px 14px; }
+.tabs button { flex: 1; min-width: 0; display: grid; justify-items: center; gap: 2px; font-size: 10px; color: var(--muted); padding: 4px 0; }
+.tabs button::before { content: ""; width: 22px; height: 22px; border-radius: 6px; background: var(--box-strong); }
+.tabs button[aria-current="page"] { color: var(--accent); }
+.tabs button[aria-current="page"]::before { background: var(--accent); }
+.tabs button.center::before { width: 40px; height: 40px; border-radius: 20px; background: var(--fg); margin-top: -12px; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.link { color: var(--accent); font-size: 14px; }
+.primary { background: var(--fg); color: var(--paper); border-radius: 12px; padding: 14px; text-align: center; font-weight: 600; }
+.secondary { background: var(--box); border-radius: 12px; padding: 12px; text-align: center; font-weight: 600; }
+.row { background: var(--box); border-radius: 10px; padding: 10px 12px; display: grid; gap: 2px; }
+.row .sub { color: var(--muted); font-size: 12px; }
+.row.go::after { content: "›"; justify-self: end; margin-top: -22px; color: var(--muted); }
+.card { border: 1px dashed var(--box-strong); border-radius: 12px; padding: 12px; display: grid; gap: 4px; }
+.card .sub { color: var(--muted); font-size: 12px; }
+.block { background: var(--box); border-radius: 12px; display: grid; place-items: center; color: var(--muted); font-size: 12px; }
+.note { color: var(--muted); font-size: 12px; text-align: center; padding: 4px; }
+.seg { display: flex; background: var(--box); border-radius: 9px; padding: 2px; }
+.seg button { flex: 1; text-align: center; padding: 6px; border-radius: 7px; font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--paper); font-weight: 600; }
+.sheet { position: absolute; inset: auto 0 0 0; background: var(--paper); border-top: 1px solid var(--line);
+  border-radius: 18px 18px 0 0; padding: 14px 14px 22px; display: grid; gap: 8px; box-shadow: 0 -8px 24px rgb(0 0 0 / .12); }
+.counter { display: flex; justify-content: center; gap: 16px; align-items: center; font-size: 13px; color: var(--muted); }
+.counter strong { color: var(--fg); font-variant-numeric: tabular-nums; }
+.taps td:not(:first-child), .taps th:not(:first-child) { text-align: center; font-variant-numeric: tabular-nums; width: 90px; }
+.taps .best { font-weight: 700; }
+ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 72ch; }
+@media (prefers-reduced-motion: no-preference) { .sheet { animation: up .25s ease-out; } @keyframes up { from { transform: translateY(40%); opacity: .6 } } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="label">strive#14 · Information architecture</div>
+    <h1>Strive navigation</h1>
+    <p class="lede">Every screen the app will have, the navigation chosen for it, and the options it was chosen from. Grey boxes only: this decides structure, not looks. Each phone is clickable and counts your taps; tap a phone's title bar to reset it.</p>
+  </header>
+
+  <section aria-labelledby="inv">
+    <h2 id="inv">Every screen</h2>
+    <p class="lede">All features are decided now. <span class="ver later">later</span> screens get their visual design in their own issue.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Area</th><th>Screen</th><th>What it does</th><th>When</th></tr></thead>
+      <tbody>
+        <tr><td>Start</td><td>Onboarding</td><td>Units, body data, location permission. First launch only</td><td class="ver">v1 · #3</td></tr>
+        <tr><td>Strength</td><td>Exercise library</td><td>Search and filter by muscle and equipment</td><td class="ver">v1 · #4</td></tr>
+        <tr><td></td><td>Exercise detail</td><td>How to do it, your history, best set</td><td class="ver">v1 · #4</td></tr>
+        <tr><td>Plan</td><td>Week plan</td><td>This week's planned workouts and runs, as a calendar</td><td class="ver">v1 · #4</td></tr>
+        <tr><td></td><td>Programme</td><td>The active block: weeks, split, deload. Coach guidance joins it later</td><td class="ver">v1 · #4 · Coach #7</td></tr>
+        <tr><td>Strength</td><td>Workout templates</td><td>Your saved workouts</td><td class="ver">v1 · #4</td></tr>
+        <tr><td></td><td>Template editor</td><td>Exercises, sets, reps, rest; reorder</td><td class="ver">v1 · #4</td></tr>
+        <tr><td></td><td>Active workout</td><td>Full screen: log sets, rest timer, add exercise, finish</td><td class="ver">v1 · #4</td></tr>
+        <tr><td></td><td>Workout summary</td><td>Volume, time, records, save as template</td><td class="ver">v1 · #4</td></tr>
+        <tr><td>Running</td><td>Run start</td><td>GPS signal, start</td><td class="ver">v1 · #5</td></tr>
+        <tr><td></td><td>Live run</td><td>Full screen: map, pace, distance, time, pause, lap</td><td class="ver">v1 · #5</td></tr>
+        <tr><td></td><td>Run summary</td><td>Route, splits, pace chart</td><td class="ver">v1 · #5</td></tr>
+        <tr><td>History</td><td>History</td><td>Workouts and runs by date, filter by type</td><td class="ver">v1 · #4 #5</td></tr>
+        <tr><td></td><td>Session detail</td><td>One workout or run, as logged</td><td class="ver">v1 · #4 #5</td></tr>
+        <tr><td></td><td>Progress</td><td>Per exercise and weekly volume, km per week</td><td class="ver">v1 · #4 #5</td></tr>
+        <tr><td>Data</td><td>Export</td><td>What, which period, format, then the share sheet</td><td class="ver">v1 · #6</td></tr>
+        <tr><td></td><td>Import</td><td>From Strong, Strava or a file; preview, then confirm</td><td class="ver later">later · #7</td></tr>
+        <tr><td></td><td>Account and sync</td><td>Sign in, sync status, last backup</td><td class="ver later">later · #8</td></tr>
+        <tr><td>Nutrition</td><td>Today's food</td><td>Calories and macros against your target</td><td class="ver later">later · #9</td></tr>
+        <tr><td></td><td>Log food</td><td>Search, recent, portion</td><td class="ver later">later · #9</td></tr>
+        <tr><td></td><td>Nutrition targets</td><td>Calories and macros per day</td><td class="ver later">later · #9</td></tr>
+        <tr><td>You</td><td>Profile</td><td>Body data and goals</td><td class="ver">v1 · #3</td></tr>
+        <tr><td></td><td>Settings</td><td>Units, default rest, GPS accuracy, appearance</td><td class="ver">v1 · #3</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section aria-labelledby="chosen">
+    <h2 id="chosen">Chosen navigation</h2>
+    <p class="lede">Home is today, Plan is ahead, You is behind. Start, the round button in the middle, begins every workout and run. Plan becomes Coach once guidance from the Carlsmeister OS coach arrives through import (strive#7).</p>
+    <div class="phones">
+      <div class="option" data-opt="g">
+        <h3>Home · Food · Start · Plan · You</h3>
+        <div class="phone" aria-label="Chosen navigation prototype"></div>
+        <div class="counter">Taps <strong>0</strong> <button class="link" data-reset>Reset</button></div>
+      </div>
+      <div class="option">
+        <h3>Main flows</h3>
+        <ul>
+          <li><strong>Start a workout:</strong> Home › Start Push day (1), or Start › Empty workout or a template (2). Full screen until Finish.</li>
+          <li><strong>Start a run:</strong> Start › Run (2). Full screen until End.</li>
+          <li><strong>Look at history:</strong> You shows recent activities (1); All activities (2); Progress (1).</li>
+          <li><strong>Export:</strong> You › Export (2), then what, period and format, then the share sheet.</li>
+          <li><strong>Plan the week:</strong> Plan shows the week, the programme, templates and the library (1); edit a template (2).</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="dec">
+    <h2 id="dec">Decided</h2>
+    <ul>
+      <li><strong>Tabs:</strong> Home, Food, Start, Plan, You. Start is a round action button in the middle, as in the old app (Carl, 2026-10-20).</li>
+      <li><strong>Templates and the library live in Plan</strong>, with the week plan and the programme. History and progress live in You, as in Strava.</li>
+      <li><strong>Plan becomes Coach</strong> once guidance from the Carlsmeister OS coach arrives through import (strive#7). No second set of training rules in the app.</li>
+      <li><strong>Workouts and runs run full screen</strong>, without the tab bar, until Finish or End.</li>
+      <li><strong>The same navigation on iPhone and Android.</strong> Designed for iPhone first; Android gets the same structure.</li>
+      <li><strong>The app follows the system language.</strong> English and Swedish at first; any other language falls back to English; more languages later, each one a new resource file (strive#3).</li>
+      <li><strong>Header buttons</strong> such as search or community wait until they are needed.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="opts">
+    <h2 id="opts">Considered</h2>
+    <p class="lede">The options compared on the way to the chosen navigation. Kept as the record of why.</p>
+    <div class="phones">
+      <div class="option" data-opt="e">
+        <h3>E · One Training tab</h3>
+        <p>Home, Food, Start, Training, You. Training holds templates, the exercise library and your history on one screen, in that order. Home keeps today and the week.</p>
+        <div class="phone" aria-label="Option E prototype"></div>
+        <div class="counter">Taps <strong>0</strong> <button class="link" data-reset>Reset</button></div>
+      </div>
+      <div class="option" data-opt="f">
+        <h3>F · History under You, like Strava</h3>
+        <p>Home, Food, Start, Train, You. You shows your activities and progress above your profile and settings. Train holds templates and the library.</p>
+        <div class="phone" aria-label="Option F prototype"></div>
+        <div class="counter">Taps <strong>0</strong> <button class="link" data-reset>Reset</button></div>
+      </div>
+      <div class="option" data-opt="d">
+        <h3>D · Carl's layout</h3>
+        <p>Home, Food, Start, History, You. Start is the round action button from the old app. Home holds today's plan, the week, templates and the library.</p>
+        <div class="phone" aria-label="Option D prototype"></div>
+        <div class="counter">Taps <strong>0</strong> <button class="link" data-reset>Reset</button></div>
+      </div>
+      <div class="option" data-opt="a">
+        <h3>A · Five tabs, like the old app</h3>
+        <p>Workouts, Run, Food, History, Library. Start buttons sit at the top of the Workouts and Run tabs. You and Settings behind the avatar.</p>
+        <div class="phone" aria-label="Option A prototype"></div>
+        <div class="counter">Taps <strong>0</strong> <button class="link" data-reset>Reset</button></div>
+      </div>
+      <div class="option" data-opt="b">
+        <h3>B · A Today screen first</h3>
+        <p>Today, Train, Food, History, You. Today starts a workout or a run in one tap and shows the week. Library and templates live in Train.</p>
+        <div class="phone" aria-label="Option B prototype"></div>
+        <div class="counter">Taps <strong>0</strong> <button class="link" data-reset>Reset</button></div>
+      </div>
+      <div class="option" data-opt="c">
+        <h3>C · A Start button in the middle</h3>
+        <p>Train, History, Start, Food, You. Start opens a sheet: empty workout, a template, or a run. Closest to the old Strive.</p>
+        <div class="phone" aria-label="Option C prototype"></div>
+        <div class="counter">Taps <strong>0</strong> <button class="link" data-reset>Reset</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="taps">
+    <h2 id="taps">Taps from the start screen</h2>
+    <p class="lede">Counted from each option's first screen. The goal in strive#14 is two taps or fewer for every version 1 feature.</p>
+    <div class="tablewrap"><table class="taps">
+      <thead><tr><th>Action</th><th>Chosen</th><th>E</th><th>F</th><th>D</th><th>A</th><th>B</th><th>C</th></tr></thead>
+      <tbody>
+        <tr><td>Start today's planned workout</td><td class="best">1</td><td class="best">1</td><td class="best">1</td><td class="best">1</td><td class="best">1</td><td class="best">1</td><td>2</td></tr>
+        <tr><td>Start an empty workout</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="best">1</td><td class="best">1</td><td>2</td></tr>
+        <tr><td>Start any other template</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="best">1</td><td>none</td><td>2</td></tr>
+        <tr><td>Start a run</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="best">1</td><td>2</td></tr>
+        <tr><td>See history</td><td class="best">1</td><td class="best">1</td><td class="best">1</td><td class="best">1</td><td class="best">1</td><td class="best">1</td><td class="best">1</td></tr>
+        <tr><td>See progress</td><td class="best">1</td><td>2</td><td class="best">1</td><td>2</td><td>2</td><td>2</td><td>2</td></tr>
+        <tr><td>Open the exercise library</td><td>2</td><td>2</td><td>2</td><td class="best">1</td><td class="best">1</td><td>2</td><td class="best">1</td></tr>
+        <tr><td>Edit a template</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="best">1</td><td>2</td><td class="best">1</td></tr>
+        <tr><td>Export</td><td class="best">2</td><td class="best">2</td><td class="best">2</td><td class="best">2</td><td class="best">2</td><td class="best">2</td><td class="best">2</td></tr>
+        <tr><td>See today's food (later)</td><td class="best">1</td><td class="best">1</td><td class="best">1</td><td class="best">1</td><td class="best">1</td><td class="best">1</td><td class="best">1</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section aria-labelledby="dev">
+    <h2 id="dev">Deviations from Apple's guidelines</h2>
+    <p class="lede">Accepted for now, because Carl is the only user. Listed so they are cheap to fix if Strive is ever submitted to the App Store.</p>
+    <ul>
+      <li><strong>All options:</strong> the Food tab is empty until strive#9. Apple: tabs are never hidden or disabled; an empty tab is the nearest thing.</li>
+      <li><strong>Chosen, C, D, E, F:</strong> Start is an action in the tab bar, a round floating button from Android's Material design. Apple: "Use a tab bar to support navigation, not to provide actions."</li>
+    </ul>
+  </section>
+
+  
+</div>
+
+<script>
+const T = (label, sub, go) => ({ t: "row", label, sub, go });
+const COMMON = {
+  workout: { title: "Push day", modal: true, left: "End", right: "Finish", blocks: [
+    { t: "note", text: "Full screen, no tab bar" },
+    T("Bench press", "Set 1 · 80 kg × 8"), T("Bench press", "Set 2 · 80 kg × 8"), T("Overhead press", "Set 1 · 45 kg × 8"),
+    { t: "block", h: 54, text: "Rest timer 1:30" }, { t: "secondary", label: "Add exercise" }] },
+  run: { title: "Run", modal: true, left: "End", right: "Pause", blocks: [
+    { t: "note", text: "Full screen, no tab bar" }, { t: "block", h: 220, text: "Map" },
+    { t: "block", h: 70, text: "5:12 /km · 3.4 km · 17:40" }, { t: "secondary", label: "Lap" }] },
+  runstart: { title: "Run", left: "back", blocks: [{ t: "block", h: 200, text: "Map · GPS ready" }, { t: "primary", label: "Start run", go: "run" }] },
+  templates: { title: "Templates", left: "back", blocks: [T("Push day", "6 exercises", "workout"), T("Pull day", "5 exercises", "workout"), T("Legs", "5 exercises", "workout"), { t: "secondary", label: "New template", go: "editor" }] },
+  editor: { title: "Push day", left: "back", right: "Save", blocks: [T("Bench press", "4 × 8 · rest 2:00"), T("Overhead press", "3 × 8 · rest 1:30"), { t: "secondary", label: "Add exercise" }] },
+  library: { title: "Library", left: "back", blocks: [{ t: "block", h: 36, text: "Search" }, T("Bench press", "Chest · barbell", "exercise"), T("Squat", "Legs · barbell", "exercise"), T("Pull-up", "Back · bodyweight", "exercise")] },
+  exercise: { title: "Bench press", left: "back", blocks: [{ t: "block", h: 120, text: "How to" }, { t: "block", h: 120, text: "Your history · best set" }] },
+  history: { title: "History", blocks: [{ t: "seg", items: ["All", "Workouts", "Runs"] }, T("Today · Push day", "52 min · 9 400 kg", "session"), T("Sat · Long run", "14.2 km · 5:31 /km", "session"), T("Thu · Pull day", "48 min", "session"), { t: "secondary", label: "Progress", go: "progress" }] },
+  session: { title: "Push day", left: "back", blocks: [{ t: "block", h: 260, text: "Sets as logged" }] },
+  programme: { title: "Programme", left: "back", blocks: [{ t: "block", h: 120, text: "Hybrid block · 6 weeks · deload in week 6" }, T("Week 3", "Push · Easy run · Pull · Intervals · Long run"), T("Week 4", "Same split, +1 set on main lifts"), { t: "card", label: "Coach comes later", sub: "Guidance from the Carlsmeister OS coach arrives through import (strive#7)" }] },
+  progress: { title: "Progress", left: "back", blocks: [{ t: "block", h: 160, text: "Volume per week" }, { t: "block", h: 160, text: "Km per week" }] },
+  food: { title: "Food", blocks: [{ t: "card", label: "Nutrition comes later", sub: "strive#9 fills this tab" }] },
+  you: { title: "You", blocks: [T("Profile", "Body data, goals"), T("Settings", "Units, rest, GPS"), { t: "note", text: "Data" }, T("Export", "Share sheet", "export"), T("Import", "later · #7"), T("Account and sync", "later · #8")] },
+  export: { title: "Export", left: "back", blocks: [{ t: "seg", items: ["Workouts", "Runs", "All"] }, { t: "block", h: 44, text: "Period: last 30 days" }, { t: "block", h: 44, text: "Format" }, { t: "primary", label: "Share…" }] },
+};
+const OPTIONS = {
+  a: { tabs: [["Workouts", "a_workouts"], ["Run", "a_run"], ["Food", "food"], ["History", "history"], ["Library", "a_library"]],
+    avatar: true,
+    screens: {
+      a_workouts: { title: "Workouts", blocks: [{ t: "primary", label: "Start empty workout", go: "workout" }, { t: "note", text: "Templates" }, T("Push day", "Tap to start · ⋯ to edit", "workout"), T("Pull day", "Tap to start", "workout"), T("Legs", "Tap to start", "workout"), { t: "secondary", label: "Edit templates", go: "editor" }] },
+      a_run: { title: "Run", blocks: [{ t: "block", h: 200, text: "Map · GPS ready" }, { t: "primary", label: "Start run", go: "run" }, T("Last run", "Sat · 14.2 km")] },
+      a_library: { title: "Library", blocks: COMMON.library.blocks },
+    } },
+  b: { tabs: [["Today", "b_today"], ["Train", "b_train"], ["Food", "food"], ["History", "history"], ["You", "you"]],
+    screens: {
+      b_today: { title: "Today", blocks: [{ t: "card", label: "Planned: Push day", sub: "From your programme" }, { t: "primary", label: "Start Push day", go: "workout" }, { t: "secondary", label: "Start run", go: "run" }, { t: "secondary", label: "Empty workout", go: "workout" }, { t: "block", h: 70, text: "This week · 3 workouts · 22 km" }, { t: "block", h: 54, text: "Food today · later" }] },
+      b_train: { title: "Train", blocks: [{ t: "seg", items: ["Templates", "Library"] }, T("Push day", "6 exercises", "editor"), T("Pull day", "5 exercises", "editor"), T("Legs", "5 exercises", "editor"), { t: "secondary", label: "Exercise library", go: "library" }] },
+    } },
+  g: { tabs: [["Home", "e_home"], ["Food", "food"], ["Start", "@sheet", true], ["Plan", "g_plan"], ["You", "f_you"]],
+    screens: {
+      e_home: { title: "Home", blocks: [{ t: "card", label: "Planned: Push day", sub: "From your programme" }, { t: "primary", label: "Start Push day", go: "workout" }, { t: "block", h: 64, text: "This week · 3 workouts · 22 km" }, { t: "block", h: 54, text: "Food today · later" }] },
+      g_plan: { title: "Plan", blocks: [{ t: "block", h: 96, text: "This week · Mon Push · Tue Easy 8 km · Wed Pull · Thu Intervals · Sat Long run" }, T("Programme", "Hybrid block · week 3 of 6", "programme"), { t: "note", text: "Templates" }, T("Push day", "6 exercises · edit", "editor"), T("Pull day", "5 exercises · edit", "editor"), { t: "secondary", label: "New template", go: "editor" }, T("Exercise library", "Search and filter", "library")] },
+      f_you: { title: "You", blocks: [T("Progress", "Volume and km per week", "progress"), { t: "note", text: "Activities" }, T("Today · Push day", "52 min · 9 400 kg", "session"), T("Sat · Long run", "14.2 km", "session"), { t: "secondary", label: "All activities", go: "history" }, { t: "note", text: "Account" }, T("Profile and settings", "Body data, units, rest, GPS"), T("Export", "Share sheet", "export"), T("Import · Sync", "later · #7 #8")] },
+    },
+    sheet: [{ t: "primary", label: "Empty workout", go: "workout" }, T("Push day", "Template", "workout"), T("Pull day", "Template", "workout"), { t: "secondary", label: "Run", go: "run" }] },
+  e: { tabs: [["Home", "e_home"], ["Food", "food"], ["Start", "@sheet", true], ["Training", "e_training"], ["You", "you"]],
+    screens: {
+      e_home: { title: "Home", blocks: [{ t: "card", label: "Planned: Push day", sub: "From your programme" }, { t: "primary", label: "Start Push day", go: "workout" }, { t: "block", h: 64, text: "This week · 3 workouts · 22 km" }, { t: "block", h: 54, text: "Food today · later" }] },
+      e_training: { title: "Training", blocks: [{ t: "note", text: "Templates" }, T("Push day", "6 exercises · edit", "editor"), T("Pull day", "5 exercises · edit", "editor"), { t: "secondary", label: "New template", go: "editor" }, T("Exercise library", "Search and filter", "library"), { t: "note", text: "History" }, T("Today · Push day", "52 min · 9 400 kg", "session"), T("Sat · Long run", "14.2 km · 5:31 /km", "session"), T("Progress", "Volume and km per week", "progress"), { t: "secondary", label: "All history", go: "history" }] },
+    },
+    sheet: [{ t: "primary", label: "Empty workout", go: "workout" }, T("Push day", "Template", "workout"), T("Pull day", "Template", "workout"), { t: "secondary", label: "Run", go: "run" }] },
+  f: { tabs: [["Home", "e_home"], ["Food", "food"], ["Start", "@sheet", true], ["Train", "f_train"], ["You", "f_you"]],
+    screens: {
+      e_home: { title: "Home", blocks: [{ t: "card", label: "Planned: Push day", sub: "From your programme" }, { t: "primary", label: "Start Push day", go: "workout" }, { t: "block", h: 64, text: "This week · 3 workouts · 22 km" }, { t: "block", h: 54, text: "Food today · later" }] },
+      f_train: { title: "Train", blocks: [{ t: "note", text: "Templates" }, T("Push day", "6 exercises · edit", "editor"), T("Pull day", "5 exercises · edit", "editor"), T("Legs", "5 exercises · edit", "editor"), { t: "secondary", label: "New template", go: "editor" }, T("Exercise library", "Search and filter", "library")] },
+      f_you: { title: "You", blocks: [T("Progress", "Volume and km per week", "progress"), { t: "note", text: "Activities" }, T("Today · Push day", "52 min · 9 400 kg", "session"), T("Sat · Long run", "14.2 km", "session"), { t: "secondary", label: "All activities", go: "history" }, { t: "note", text: "Account" }, T("Profile and settings", "Body data, units, rest, GPS"), T("Export", "Share sheet", "export"), T("Import · Sync", "later · #7 #8")] },
+    },
+    sheet: [{ t: "primary", label: "Empty workout", go: "workout" }, T("Push day", "Template", "workout"), T("Pull day", "Template", "workout"), { t: "secondary", label: "Run", go: "run" }] },
+  d: { tabs: [["Home", "d_home"], ["Food", "food"], ["Start", "@sheet", true], ["History", "history"], ["You", "you"]],
+    screens: {
+      d_home: { title: "Home", blocks: [{ t: "card", label: "Planned: Push day", sub: "From your programme" }, { t: "primary", label: "Start Push day", go: "workout" }, { t: "block", h: 64, text: "This week · 3 workouts · 22 km" }, { t: "note", text: "Train" }, T("Templates", "3 saved", "d_templates"), T("Exercise library", "Search and filter", "library")] },
+      d_templates: { title: "Templates", left: "back", blocks: [T("Push day", "Edit", "editor"), T("Pull day", "Edit", "editor"), T("Legs", "Edit", "editor"), { t: "secondary", label: "New template", go: "editor" }] },
+    },
+    sheet: [{ t: "primary", label: "Empty workout", go: "workout" }, T("Push day", "Template", "workout"), T("Pull day", "Template", "workout"), { t: "secondary", label: "Run", go: "run" }] },
+  c: { tabs: [["Train", "c_train"], ["History", "history"], ["Start", "@sheet", true], ["Food", "food"], ["You", "you"]],
+    screens: {
+      c_train: { title: "Train", blocks: [T("Push day", "Edit template", "editor"), T("Pull day", "Edit template", "editor"), { t: "secondary", label: "Exercise library", go: "library" }] },
+    },
+    sheet: [{ t: "primary", label: "Empty workout", go: "workout" }, T("Push day", "Template", "workout"), T("Pull day", "Template", "workout"), { t: "secondary", label: "Run", go: "run" }] },
+};
+
+function mount(el, key) {
+  const opt = OPTIONS[key], phone = el.querySelector(".phone"), count = el.querySelector(".counter strong");
+  const screens = { ...COMMON, ...opt.screens };
+  let stack, tab, taps, sheet;
+  const reset = () => { tab = opt.tabs[0][1]; stack = [tab]; taps = 0; sheet = false; draw(); };
+  const tap = () => { taps++; };
+  const go = id => { tap(); sheet = false; stack.push(id); draw(); };
+  function btn(cls, label, onClick) { const b = document.createElement("button"); b.className = cls; b.textContent = label; if (onClick) b.addEventListener("click", onClick); return b; }
+  function block(b) {
+    if (b.t === "row") { const r = btn("row" + (b.go ? " go" : ""), "", b.go ? () => go(b.go) : null); r.innerHTML = `<span>${b.label}</span>${b.sub ? `<span class="sub">${b.sub}</span>` : ""}`; if (!b.go) r.disabled = true; return r; }
+    if (b.t === "primary" || b.t === "secondary") return btn(b.t, b.label, b.go ? () => go(b.go) : () => { tap(); draw(); });
+    if (b.t === "card") { const d = document.createElement("div"); d.className = "card"; d.innerHTML = `<strong>${b.label}</strong><span class="sub">${b.sub}</span>`; return d; }
+    if (b.t === "note") { const d = document.createElement("div"); d.className = "note"; d.textContent = b.text; return d; }
+    if (b.t === "block") { const d = document.createElement("div"); d.className = "block"; d.style.minHeight = b.h + "px"; d.textContent = b.text; return d; }
+    if (b.t === "seg") { const d = document.createElement("div"); d.className = "seg"; b.items.forEach((s, i) => { const x = btn("", s, () => { tap(); d.querySelectorAll("button").forEach(y => y.setAttribute("aria-pressed", y === x)); count.textContent = taps; }); x.setAttribute("aria-pressed", i === 0); d.append(x); }); return d; }
+  }
+  function draw() {
+    const id = stack[stack.length - 1], s = screens[id];
+    phone.replaceChildren();
+    const bar = document.createElement("div"); bar.className = "bar";
+    const back = s.left === "back" ? btn("link", "‹ Back", () => { tap(); stack.pop(); draw(); })
+      : s.left ? btn("link", s.left, () => { tap(); stack = [tab]; draw(); }) : document.createElement("span");
+    const title = btn("title", s.title, reset); title.title = "Reset this phone";
+    const right = s.right ? btn("link right", s.right, () => { tap(); stack = [tab]; draw(); })
+      : (opt.avatar && !s.modal && stack.length === 1) ? btn("link right", "You", () => go("you")) : document.createElement("span");
+    bar.append(back, title, right);
+    const scr = document.createElement("div"); scr.className = "screen"; s.blocks.forEach(b => scr.append(block(b)));
+    phone.append(bar, scr);
+    if (!s.modal) {
+      const tabs = document.createElement("nav"); tabs.className = "tabs";
+      opt.tabs.forEach(([label, target, center]) => {
+        const b = btn(center ? "center" : "", label, () => { tap(); if (target === "@sheet") { sheet = true; draw(); return; } tab = target; stack = [target]; sheet = false; draw(); });
+        if (target === tab && stack.length === 1) b.setAttribute("aria-current", "page");
+        tabs.append(b);
+      });
+      phone.append(tabs);
+    }
+    if (sheet && opt.sheet) { const sh = document.createElement("div"); sh.className = "sheet"; opt.sheet.forEach(b => sh.append(block(b))); sh.append(btn("link", "Cancel", () => { tap(); sheet = false; draw(); })); phone.append(sh); }
+    count.textContent = taps;
+  }
+  el.querySelector("[data-reset]").addEventListener("click", reset);
+  reset();
+}
+document.querySelectorAll(".option[data-opt]").forEach(el => mount(el, el.dataset.opt));
+</script>
