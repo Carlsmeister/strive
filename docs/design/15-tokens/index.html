@@ -537,7 +537,16 @@ function tokenTables(t) {
     ...Object.entries(t.shape).map(([r, v]) => [`--shape-${r}`, r === "full" ? "CircleShape" : `MaterialTheme.shapes.${camel(r)}`, r === "full" ? "Material's Shapes has no full slot" : `RoundedCornerShape(${parseInt(v)}.dp)`]),
     ...t.space.map(n => [`--space-${n}`, `Spacing.s${n}`, `${n}.dp, Strive's own`]),
     ...Object.keys(t.materials.light).map(k => [`--material-${k}`, `StriveMaterials.${k}`, "Strive's own; blur through the library strive#3 picks"]),
-    ["--material-blur", "StriveMaterials.blur", "24.dp"], ["--font-family", "FontFamily.Default", "SF Pro on iPhone, Roboto on Android"]];
+    ["--material-blur", "StriveMaterials.blur", "24.dp"], ["--font-family", "FontFamily.Default", "SF Pro on iPhone, Roboto on Android"],
+    ...Object.entries(t.size || {}).map(([k, v]) => [`--size-${k}`, `Sizes.${camel(k)}`, `${parseInt(v)}.dp, Strive's own (strive#16)`]),
+    ["--border-hairline", "Dp.Hairline", "One device pixel, as iOS draws separators; .5px in the prototype (strive#16)"],
+    ["--border-focus", "Borders.focus", "2.dp (strive#16)"],
+    ...Object.entries(t.state || {}).map(([k, v]) => [`--state-${k}`, `StriveState.${camel(k)}`, `${v}f (strive#16, Q2)`]),
+    ["--motion-press", "StriveMotion.press", "tween(100, easing = FastOutSlowInEasing) (strive#16, Q2)"],
+    ["--motion-release", "StriveMotion.release", "spring(dampingRatio = 0.6f, stiffness = Spring.StiffnessMedium); the CSS curve approximates it, strive#3 tunes it on the phone (strive#16, Q2)"],
+    ["--motion-fade", "StriveMotion.fade", "tween(250) (strive#16, Q2)"],
+    ["--motion-spin", "CircularProgressIndicator", "The platform's own spinner; 900 ms a turn in the prototype (strive#16)"],
+    ["--motion-tick", "StriveMotion.tick", "tween(1000, easing = LinearEasing): a countdown moves once a second (strive#16)"]];
   document.getElementById("mapping").innerHTML = `<tr><th>CSS</th><th>Compose</th><th>Note</th></tr>` + map.map(([a, b, c]) => `<tr><td><code>${a}</code></td><td><code>${b}</code></td><td>${c}</td></tr>`).join("");
 }
 fetch("tokens.json").then(r => r.json()).then(tokenTables).catch(e => { document.getElementById("colours").innerHTML = `<tr><td>Could not load tokens.json: ${e.message}</td></tr>`; });
