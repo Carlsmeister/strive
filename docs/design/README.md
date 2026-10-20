@@ -15,7 +15,8 @@ Version 1 is designed here as clickable HTML and CSS prototypes before app code 
 - **Serve it, don't open it as a file.** The Playwright CLI blocks `file:` URLs:
   `python3 -m http.server --bind 127.0.0.1 --directory docs/design`.
 - **Look at it as an iPhone does:** `npx --no-install playwright-cli open --browser=webkit --device="iPhone 15" <url>`,
-  then `set-color-scheme dark` for the dark screenshot.
+  then `set-color-scheme dark` for the dark screenshot. After running `tokens.py`, `close` and `open` again:
+  WebKit keeps the old `tokens.css` across reloads, and the page then renders with tokens missing.
 - **Carl reviews on his iPhone** through the page's private claude.ai link, listed above. Size,
   reach and wrapping are judged there, never in a desktop browser: in #16 the desktop made a
   timer's buttons look too large and hid a label that wrapped on the phone.
