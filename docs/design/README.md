@@ -22,6 +22,8 @@ Version 1 is designed here as clickable HTML and CSS prototypes before app code 
   [`15-tokens/tokens.py`](15-tokens/tokens.py). Change a value there and run
   `python3 docs/design/15-tokens/tokens.py`: it refuses to write if a text pair fails contrast,
   and otherwise writes `tokens.css`, which a prototype links. Never edit `tokens.css` by hand.
-- **Publishing a page that links `tokens.css`** sends the file along through the Artifact
-  tool's `files`, as `15-tokens/` does. How a page in another folder links it on its private
-  page is not yet checked; #16 is the first to need it.
+- **A page links `tokens.css` beside itself, never `../15-tokens/tokens.css`.** Outside
+  `15-tokens/`, that file is a symlink: `ln -s ../15-tokens/tokens.css tokens.css`. The private
+  page is served from a folder of its own (`/_f/<version>/`), so `../` leads out of the
+  published files; checked on the phone for #16. Publishing sends the real file through the
+  Artifact tool's `files`, as `{"tokens.css": "<path to 15-tokens/tokens.css>"}`.

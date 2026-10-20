@@ -1,0 +1,386 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Strive Components</title>
+<link rel="stylesheet" href="tokens.css">
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: a working document, like 15-tokens. The page's own chrome uses the tokens below; everything inside a .stage reads only tokens.css. */
+:root {
+  --bg: #f6f6f4;
+  --paper: #ffffff;
+  --fg: #1d1d1b;
+  --muted: #6b6b66;
+  --line: #d9d9d4;
+  --box: #ebebe7;
+  --accent: #2f5bd3;
+  --font-ui: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141413; --paper: #1d1d1b; --fg: #ececea; --muted: #a3a39d; --line: #3a3a37;
+    --box: #2a2a28; --accent: #8fa9f5; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141413; --paper: #1d1d1b; --fg: #ececea; --muted: #a3a39d; --line: #3a3a37;
+  --box: #2a2a28; --accent: #8fa9f5; color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--font-ui); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 40px; }
+h1 { font-size: 28px; line-height: 1.2; margin: 0; text-wrap: balance; }
+h2 { font-size: 19px; margin: 0 0 12px; text-wrap: balance; }
+h3 { font-size: 16px; margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.lede { color: var(--muted); margin-top: 8px; }
+.label { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+section { display: grid; gap: 12px; }
+ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 72ch; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.seg { display: inline-flex; flex-wrap: wrap; background: var(--box); border-radius: 9px; padding: 2px; justify-self: start; }
+.seg button { padding: 6px 14px; border-radius: 7px; font-size: 14px; }
+.seg button[aria-pressed="true"] { background: var(--paper); font-weight: 600; }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.options { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px 24px; align-items: start; }
+.option { display: grid; gap: 10px; min-width: 0; }
+.option .words { font-weight: 600; }
+.option p { color: var(--muted); font-size: 14px; }
+
+/* A stage is a piece of the phone. Only tokens.css from here on, except the sketch values marked below. */
+.stage { background: var(--color-background); color: var(--color-on-surface); font: var(--type-body-large);
+  border-radius: var(--shape-extra-large); padding: var(--space-16); display: grid; gap: var(--space-16); }
+.stage .caption { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); align-items: end; }
+.pair > div { display: grid; gap: var(--space-4); min-width: 0; }
+.press { -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; -webkit-user-select: none;
+  position: relative; overflow: hidden; }
+.btn { font: var(--type-label-large); padding: var(--space-16); text-align: center; width: 100%; }
+.btn.filled { background: var(--color-primary); color: var(--color-on-primary); }
+.btn.tinted { background: var(--color-surface-container-highest); color: var(--color-primary); }
+.list { background: var(--color-surface); border-radius: var(--shape-large); overflow: hidden; }
+.row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-12); width: 100%; text-align: left;
+  padding: var(--space-12) var(--space-16); color: var(--color-on-surface); font: var(--type-body-large); }
+.row { position: relative; }
+.list .row + .row::after { content: ""; position: absolute; top: 0; left: var(--space-16); right: 0;
+  border-top: 1px solid var(--color-outline-variant); } /* sketch: hairline width becomes a token */
+.row small { display: block; font: var(--type-body-small); color: var(--color-on-surface-variant); }
+.row .chev { color: var(--color-on-surface-variant); }
+.segc { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--color-surface-container-highest);
+  border-radius: var(--shape-small); padding: var(--space-4); gap: var(--space-4); }
+.segc button { font: var(--type-title-small); border-radius: var(--shape-extra-small); padding: var(--space-8); color: var(--color-on-surface); }
+.segc [aria-pressed="true"] { background: var(--color-surface); }
+
+/* Pressed (Q2, P2): shrink and dim, spring back. Scale, opacity and timing are sketch values until they become tokens. */
+.btn, .segc button { transition: transform 350ms cubic-bezier(.3, 1.4, .5, 1), opacity 250ms ease-out; }
+.btn.is-pressed, .segc button.is-pressed { transform: scale(.96); opacity: .8; transition: transform 100ms ease-out, opacity 100ms ease-out; }
+.row { transition: background-color 250ms ease-out; }
+.row.is-pressed { background: var(--color-surface-container-highest); transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .btn.is-pressed, .segc button.is-pressed { transform: none; opacity: .5; }
+}
+/* Considered for Q2: P1 dims only, P3 is Material's ripple. */
+.p1 .btn.is-pressed, .p1 .segc button.is-pressed { transform: none; opacity: .5; transition: none; }
+.p3 .btn.is-pressed, .p3 .segc button.is-pressed { transform: none; opacity: 1; }
+.p3 .row.is-pressed { background: none; }
+.p3 .press::before { content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity 200ms ease-out; }
+.p3 .press.is-pressed::before { opacity: .12; transition: none; }
+.p3 .ripple { position: absolute; border-radius: var(--shape-full); background: currentColor; opacity: .16; transform: scale(0);
+  animation: ripple 450ms ease-out forwards; pointer-events: none; }
+@keyframes ripple { to { transform: scale(1); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .p3 .ripple { display: none; } }
+
+/* Button sizes and kinds. Large fills the width; small sits in a row; the text button has no fill. */
+.btn.small { font: var(--type-title-small); padding: var(--space-8) var(--space-16); width: auto; }
+.btn.text { background: none; color: var(--color-primary); font: var(--type-body-large); padding: var(--space-12) var(--space-8); width: auto; justify-self: start; }
+.btn.danger { background: var(--color-surface-container-highest); color: var(--color-error); }
+.inline { display: flex; flex-wrap: wrap; gap: var(--space-8); align-items: center; }
+.inline .btn.small:first-child { margin-left: auto; }
+
+/* Corners (Q3, B3): rounded wide buttons, capsule small ones. B1 and B2 kept for the record. */
+.btn { border-radius: var(--shape-large); }
+.btn.small { border-radius: var(--shape-full); }
+.b1 .btn { border-radius: var(--shape-medium); }
+.b2 .btn { border-radius: var(--shape-full); }
+/* Card and section header. */
+.card { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-16); display: grid; gap: var(--space-4); }
+.card .eyebrow { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.card .title { font: var(--type-title-large); }
+.card .meta { font: var(--type-body-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+.card .btn { margin-top: var(--space-12); }
+.group { display: grid; gap: var(--space-8); }
+.group > h4 { margin: 0; padding-inline: var(--space-16); font: var(--type-title-small); color: var(--color-on-surface-variant); }
+.row small { font-variant-numeric: tabular-nums; }
+
+/* Q4 sketches: how rows group. */
+.l2 .list { background: none; display: grid; gap: var(--space-8); border-radius: 0; overflow: visible; }
+.l2 .list .row { background: var(--color-surface); border-radius: var(--shape-medium); }
+.l1 .list, .l2 .list .row { border-radius: var(--shape-medium); }
+.l2 .list .row::after { display: none; }
+.l3 { padding-inline: 0; }
+.l3 > :not(.group) { margin-inline: var(--space-16); }
+.l3 .list { border-radius: 0; }
+/* Lists (Q4, rule A): long lists and choices are a block with hairlines (.list); short lists you start, edit or reorder are joined tiles (.list.tiles). */
+.list.tiles, .m1 .list { background: none; display: grid; gap: var(--space-4); border-radius: 0; overflow: visible; }
+.list.tiles .row, .m1 .list .row { background: var(--color-surface); border-radius: var(--shape-extra-small); }
+.list.tiles .row:first-child, .m1 .list .row:first-child { border-top-left-radius: var(--shape-large); border-top-right-radius: var(--shape-large); }
+.list.tiles .row:last-child, .m1 .list .row:last-child { border-bottom-left-radius: var(--shape-large); border-bottom-right-radius: var(--shape-large); }
+.list.tiles .row::after, .m1 .list .row::after { display: none; }
+/* Number input. The field is shared; I1 adds steppers beside it, I3 only while it is being edited. */
+.numrow { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); align-items: start; }
+.i1 .numrow { grid-template-columns: 1fr; } /* 82,5 and two steppers do not fit in half an iPhone's width */
+.numrow > label { display: grid; gap: var(--space-4); min-width: 0; font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.num { display: flex; align-items: center; gap: var(--space-4); background: var(--color-surface-container-highest); border-radius: var(--shape-medium);
+  padding: var(--space-4); min-width: 0; border: 2px solid transparent; } /* sketch: the focus ring width becomes a token */
+.num input { flex: 1; min-width: 0; width: 100%; border: 0; background: none; color: var(--color-on-surface); text-align: center;
+  font: var(--type-headline-medium); font-variant-numeric: tabular-nums; padding: var(--space-4) 0; outline: none; }
+.num input::placeholder { color: var(--color-on-surface-variant); }
+.num:focus-within, .num.focus { border-color: var(--color-primary); }
+.num.error { border-color: var(--color-error); }
+.num.disabled { opacity: .5; } /* sketch: disabled opacity becomes a token */
+.num .step { flex: none; width: var(--space-40); height: var(--space-40); border-radius: var(--shape-full); background: var(--color-surface);
+  color: var(--color-primary); font: var(--type-title-large); display: grid; place-items: center; } /* 40 pt visible, 44 pt with the field's padding */
+.numrow .msg { font: var(--type-body-small); color: var(--color-error); }
+.i2 .num .step, .i3 .num .step { display: none; }
+.i3 .num:focus-within .step, .i3 .num.focus .step { display: grid; }
+.stage .btn.text { border-radius: var(--shape-small); }
+.tap-show { outline: 1px dashed var(--color-outline); outline-offset: 0; } /* sketch only: shows the tap area */
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="label">strive#16 · Core components</div>
+    <h1>Strive components</h1>
+    <p class="lede">The pieces every version 1 screen is built from, in every state, made only of the tokens in <code>15-tokens/tokens.css</code>. Strings are Swedish where they are longer than English.</p>
+  </header>
+
+  <div class="seg" role="group" aria-label="Scheme" id="scheme">
+    <button type="button" data-scheme="" aria-pressed="true">System</button>
+    <button type="button" data-scheme="scheme-light" aria-pressed="false">Light</button>
+    <button type="button" data-scheme="scheme-dark" aria-pressed="false">Dark</button>
+    <button type="button" data-scheme="scheme-light-hc" aria-pressed="false">Light +</button>
+    <button type="button" data-scheme="scheme-dark-hc" aria-pressed="false">Dark +</button>
+  </div>
+
+  <section aria-labelledby="q5">
+    <h2 id="q5">Deciding: Q5, entering weight and reps</h2>
+    <p>The number input logs every set, between sets, often one-handed. Each option shows the default, the field being edited, an error, and disabled (a set you have not reached). The field opens the phone's decimal keypad; the browser cannot show it, so a tap here only focuses. 2,5 kg steps, Swedish decimal comma.</p>
+    <div class="options">
+      <div class="option">
+        <div class="words">I1 · Stepper beside the number</div>
+        <div class="stage i1" data-sample="numbers"></div>
+        <p>− and + either side of the value; tap the value to type. Apple's Steppers page pairs a stepper with a field for exactly this. Adjusting last time's 80 kg by one step is one tap. The cost: 82,5 and two steppers do not fit in half an iPhone's width, so weight and reps take a row each.</p>
+      </div>
+      <div class="option">
+        <div class="words">I2 · Field only, last time as a hint</div>
+        <div class="stage i2" data-sample="numbers"></div>
+        <p>A grey field with the number large; empty fields show last time's value in grey, and logging accepts it as it is. Compact enough for weight and reps side by side in one row, as Strong does. A change always means typing.</p>
+      </div>
+      <div class="option">
+        <div class="words">I3 · Field, steppers while editing</div>
+        <div class="stage i3" data-sample="numbers"></div>
+        <p>I2 at rest; − and + appear while the field is being edited. Compact in a set list, quick when you are changing it. The steppers are hidden until you tap, so they are found by trying.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="dec">
+    <h2 id="dec">Decided</h2>
+    <ul>
+      <li><strong>Components:</strong> buttons, inputs, list rows, cards, stat tiles, chart style, timer, dialogs, navigation bars (the tab bar and the title bar), plus a segmented control, a sheet and an empty state. The last three are each needed by at least two version 1 screens (Carl, 2026-10-20, Q1).</li>
+      <li><strong>A press shrinks and dims (P2):</strong> buttons and segments scale to 96 % and spring back, rows turn grey, feedback starts on touch-down. With Reduce Motion on, a press only dims (Carl, 2026-10-20, Q2).</li>
+      <li><strong>Button corners (B3):</strong> shape-large (16 pt) on full-width buttons, a capsule on small buttons in a row. One filled button per view (Carl, 2026-10-20, Q3).</li>
+      <li><strong>Two list styles, chosen by what the row is (rule A):</strong> a long list or a set of choices is a block with hairlines, split into groups where the data has them (History by week, Library by muscle, Settings, Profile, Onboarding, Export). A short list you start, edit or reorder is joined tiles (templates in Plan, exercises in a template, the sets in Active workout). One thing with its own button is a card. Separate tiles (L2) are not used (Carl, 2026-10-20, Q4).</li>
+      <li><strong>The timer is a component although only Active workout uses it.</strong> The issue's rule is two screens; Carl keeps it (Carl, 2026-10-20, Q1).</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="q4">
+    <h2 id="q4">Considered: how list rows group (rule A chosen: L1 and M2 are one block style, M1 the tiles)</h2>
+    <p>Rows carry History, Plan, You, the exercise library and Settings. A card holds one thing with its own action, like today's planned workout, and sits above the rows in every option. Numbers follow the locale: a decimal comma and a space between thousands in Swedish.</p>
+    <div class="options">
+      <div class="option">
+        <div class="words">L1 · Inset grouped, like Settings</div>
+        <div class="stage l1" data-sample="rows"></div>
+        <p>Rows share one white block with 16 pt corners and hairlines between them. iOS's default for grouped content; the card and the block look like the same family.</p>
+      </div>
+      <div class="option">
+        <div class="words">L2 · Every row a tile</div>
+        <div class="stage l2" data-sample="rows"></div>
+        <p>Each row is its own rounded tile with a gap, as the 14-navigation wireframes drew them. Each activity reads as an object; long lists take more height.</p>
+      </div>
+      <div class="option">
+        <div class="words">L3 · Edge to edge, like Mail</div>
+        <div class="stage l3" data-sample="rows"></div>
+        <p>Rows run the full width with hairlines, no corners. Densest; suits a long history, and the card above is the only rounded object.</p>
+      </div>
+      <div class="option">
+        <div class="words">M1 · Joined tiles (L1 + L2)</div>
+        <div class="stage m1" data-sample="rows"></div>
+        <p>Every row is its own tile, 4 pt apart, but only the group's outer corners are round (16 pt); the inner ones are 6 pt. Reads as one group and as separate activities at once. Android 16's grouped lists look like this; iOS draws hairlines instead.</p>
+      </div>
+      <div class="option">
+        <div class="words">M2 · One block per group (L1 + L2)</div>
+        <div class="stage m2" data-sample="weeks"></div>
+        <p>L1's block, but each week is its own tile with space between, so a long history breaks into objects. Plain iOS: Settings does the same with its sections.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="q3">
+    <h2 id="q3">Considered: button corners (B3 chosen)</h2>
+    <p>The hierarchy is fixed by Apple's Buttons page: one filled button for the most likely action, tinted for the rest, text buttons for small actions, and red text for something destructive. What is open is the corner. The text button's dashed outline shows its 44 × 44 pt tap area.</p>
+    <div class="options">
+      <div class="option">
+        <div class="words">B1 · Rounded rectangle, 12 pt</div>
+        <div class="stage b1" data-sample="buttons"></div>
+        <p>What the tokens page sketched: shape-medium on every button. Reads as a card's sibling; steady in a vertical stack.</p>
+      </div>
+      <div class="option">
+        <div class="words">B2 · Capsule everywhere</div>
+        <div class="stage b2" data-sample="buttons"></div>
+        <p>shape-full on every button: iOS 26's look for buttons on glass. Softest; a wide capsule at the bottom of a screen reads as one target from a distance.</p>
+      </div>
+      <div class="option">
+        <div class="words">B3 · Rounded wide, capsule small</div>
+        <div class="stage" data-sample="buttons"></div>
+        <p>shape-large (16 pt) on full-width buttons, capsule on small ones in a row. Apple's own split for stacks and rows (stated on the Buttons page for visionOS).</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="q2">
+    <h2 id="q2">Considered: what a press looks like (P2 chosen)</h2>
+    <p>Every tappable component inherits this. Press and hold each button, row and segment; the right-hand copy is frozen in its pressed state. Feedback starts on touch-down, as Apple's motion guidance asks.</p>
+    <div class="options" id="q2-options">
+      <div class="option">
+        <div class="words">P1 · Dim, like iOS</div>
+        <div class="stage p1" data-sample="press"></div>
+        <p>Buttons and segments fade to half strength while held; rows turn grey. Fades back in 250 ms. What UIKit buttons and table rows do, and the calmest of the three.</p>
+      </div>
+      <div class="option">
+        <div class="words">P2 · Shrink and dim</div>
+        <div class="stage p2" data-sample="press"></div>
+        <p>Buttons and segments shrink to 96 % and spring back; rows turn grey as in P1. Closer to iOS 26's Liquid Glass controls, and the most physical. With Reduce Motion on, it falls back to P1.</p>
+      </div>
+      <div class="option">
+        <div class="words">P3 · Ripple, like Android</div>
+        <div class="stage p3" data-sample="press"></div>
+        <p>A 12 % layer of the text colour, plus a ring that spreads from the finger. Material 3's state layer; it reads as Android on an iPhone.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+// Samples drawn into each .stage by its data-sample. In "press", the second copy carries is-pressed for good.
+const SAMPLES = {
+  press: `
+  <div class="pair">
+    <div><span class="caption">Default</span><button type="button" class="press btn filled">Starta passet</button></div>
+    <div><span class="caption">Pressed</span><button type="button" class="btn filled is-pressed" tabindex="-1">Starta passet</button></div>
+  </div>
+  <div class="pair">
+    <div><button type="button" class="press btn tinted">Lägg till övning</button></div>
+    <div><button type="button" class="btn tinted is-pressed" tabindex="-1">Lägg till övning</button></div>
+  </div>
+  <div class="list">
+    <button type="button" class="press row"><span>Bänkpress<small>3 set · 80 kg × 8</small></span><span class="chev" aria-hidden="true">›</span></button>
+    <button type="button" class="row is-pressed" tabindex="-1"><span>Marklyft<small>Pressed</small></span><span class="chev" aria-hidden="true">›</span></button>
+  </div>
+  <div class="segc" role="group" aria-label="Period">
+    <button type="button" class="press" aria-pressed="true">Vecka</button>
+    <button type="button" class="press" aria-pressed="false">Månad</button>
+    <button type="button" class="is-pressed" aria-pressed="false" tabindex="-1">År</button>
+  </div>`,
+  buttons: `
+  <button type="button" class="press btn filled">Starta passet</button>
+  <button type="button" class="press btn tinted">Lägg till övning</button>
+  <div class="inline">
+    <button type="button" class="press btn small tinted">Avbryt</button>
+    <button type="button" class="press btn small filled">Spara mall</button>
+  </div>
+  <button type="button" class="press btn text tap-show">Sätt ett mål</button>
+  <button type="button" class="press btn danger">Avsluta utan att spara</button>`,
+  rows: `
+  <div class="card">
+    <span class="eyebrow">Planerat idag</span>
+    <span class="title">Push-dag</span>
+    <span class="meta">6 övningar · cirka 55 min</span>
+    <button type="button" class="press btn filled">Starta passet</button>
+  </div>
+  <div class="group">
+    <h4>Aktiviteter</h4>
+    <div class="list">
+      <button type="button" class="press row"><span>Push-dag<small>Idag · 52 min · 9 400 kg</small></span><span class="chev" aria-hidden="true">›</span></button>
+      <button type="button" class="press row"><span>Långpass<small>Lör · 14,2 km · 5:31 /km</small></span><span class="chev" aria-hidden="true">›</span></button>
+      <button type="button" class="press row"><span>Pull-dag<small>Tors · 48 min · 7 850 kg</small></span><span class="chev" aria-hidden="true">›</span></button>
+      <button type="button" class="press row"><span>Intervaller<small>Tis · 8,0 km · 4:48 /km</small></span><span class="chev" aria-hidden="true">›</span></button>
+    </div>
+  </div>`,
+  numbers: `
+  <div class="numrow"><label>Vikt (kg)<span class="num"><button type="button" class="press step" aria-label="Minska 2,5 kg">−</button><input inputmode="decimal" value="80" aria-label="Vikt i kg"><button type="button" class="press step" aria-label="Öka 2,5 kg">+</button></span></label>
+    <label>Reps<span class="num"><button type="button" class="press step" aria-label="Minska en rep">−</button><input inputmode="numeric" placeholder="8" aria-label="Reps"><button type="button" class="press step" aria-label="Öka en rep">+</button></span></label></div>
+  <span class="caption">Editing</span>
+  <div class="numrow"><label>Vikt (kg)<span class="num focus"><button type="button" class="press step" tabindex="-1">−</button><input value="82,5" tabindex="-1" aria-label="Vikt i kg, redigeras"><button type="button" class="press step" tabindex="-1">+</button></span></label>
+    <label>Reps<span class="num"><button type="button" class="press step" tabindex="-1">−</button><input placeholder="8" tabindex="-1" aria-label="Reps"><button type="button" class="press step" tabindex="-1">+</button></span></label></div>
+  <span class="caption">Error</span>
+  <div class="numrow"><label>Vikt (kg)<span class="num"><button type="button" class="press step" tabindex="-1">−</button><input value="82,5" tabindex="-1" aria-label="Vikt i kg"><button type="button" class="press step" tabindex="-1">+</button></span></label>
+    <label>Reps<span class="num error"><button type="button" class="press step" tabindex="-1">−</button><input value="0" tabindex="-1" aria-label="Reps, fel"><button type="button" class="press step" tabindex="-1">+</button></span><span class="msg">Minst 1 rep</span></label></div>
+  <span class="caption">Disabled</span>
+  <div class="numrow"><label>Vikt (kg)<span class="num disabled"><button type="button" class="step" tabindex="-1" disabled>−</button><input placeholder="80" disabled aria-label="Vikt i kg"><button type="button" class="step" tabindex="-1" disabled>+</button></span></label>
+    <label>Reps<span class="num disabled"><button type="button" class="step" tabindex="-1" disabled>−</button><input placeholder="8" disabled aria-label="Reps"><button type="button" class="step" tabindex="-1" disabled>+</button></span></label></div>`,
+  weeks: `
+  <div class="group">
+    <h4>Den här veckan</h4>
+    <div class="list">
+      <button type="button" class="press row"><span>Push-dag<small>Idag · 52 min · 9 400 kg</small></span><span class="chev" aria-hidden="true">›</span></button>
+      <button type="button" class="press row"><span>Långpass<small>Lör · 14,2 km · 5:31 /km</small></span><span class="chev" aria-hidden="true">›</span></button>
+    </div>
+  </div>
+  <div class="group">
+    <h4>Förra veckan</h4>
+    <div class="list">
+      <button type="button" class="press row"><span>Pull-dag<small>Tors · 48 min · 7 850 kg</small></span><span class="chev" aria-hidden="true">›</span></button>
+      <button type="button" class="press row"><span>Intervaller<small>Tis · 8,0 km · 4:48 /km</small></span><span class="chev" aria-hidden="true">›</span></button>
+    </div>
+  </div>`,
+};
+document.querySelectorAll(".stage[data-sample]").forEach(s => s.innerHTML = SAMPLES[s.dataset.sample]);
+
+// Pressed starts on touch-down; :active alone does not fire reliably in iOS Safari.
+document.addEventListener("pointerdown", e => {
+  const el = e.target.closest(".press");
+  if (!el) return;
+  el.classList.add("is-pressed");
+  if (el.closest(".p3") && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const r = el.getBoundingClientRect(), size = Math.hypot(r.width, r.height) * 2;
+    const ring = document.createElement("span");
+    ring.className = "ripple";
+    Object.assign(ring.style, { width: size + "px", height: size + "px", left: e.clientX - r.left - size / 2 + "px", top: e.clientY - r.top - size / 2 + "px" });
+    el.append(ring);
+    ring.addEventListener("animationend", () => ring.remove());
+  }
+  const release = () => { el.classList.remove("is-pressed"); ["pointerup", "pointercancel", "pointerleave"].forEach(t => el.removeEventListener(t, release)); };
+  ["pointerup", "pointercancel", "pointerleave"].forEach(t => el.addEventListener(t, release));
+});
+document.addEventListener("click", e => {
+  const step = e.target.closest(".num .step");
+  if (step) {
+    const input = step.parentElement.querySelector("input"), kg = input.inputMode === "decimal";
+    const now = parseFloat((input.value || input.placeholder).replace(",", ".")) || 0;
+    const next = Math.max(0, now + (step.textContent === "+" ? 1 : -1) * (kg ? 2.5 : 1));
+    input.value = next.toLocaleString("sv-SE");
+  }
+  const seg = e.target.closest(".segc .press");
+  if (seg) seg.parentElement.querySelectorAll(".press").forEach(b => b.setAttribute("aria-pressed", b === seg));
+});
+document.querySelectorAll("[data-scheme]").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".stage").forEach(s => {
+    s.classList.remove("scheme-light", "scheme-dark", "scheme-light-hc", "scheme-dark-hc");
+    if (b.dataset.scheme) s.classList.add(b.dataset.scheme);
+  });
+  document.querySelectorAll("[data-scheme]").forEach(x => x.setAttribute("aria-pressed", x === b));
+}));
+</script>
