@@ -6,6 +6,7 @@ Version 1 is designed here as clickable HTML and CSS prototypes before app code 
 | Folder | Issue | Private page |
 |---|---|---|
 | [`14-navigation/`](14-navigation/index.html) | #14 Information architecture and navigation | https://claude.ai/artifact/4k4iruXJJDBqG6352uVkZH |
+| [`15-tokens/`](15-tokens/index.html) | #15 Tokens as CSS custom properties | https://claude.ai/artifact/7A2qZDPnvdxupjX9aXuv3H |
 
 ## How a prototype is made
 
@@ -17,4 +18,10 @@ Version 1 is designed here as clickable HTML and CSS prototypes before app code 
 - **Carl reviews on his iPhone** through the page's private claude.ai link, listed above.
 - **Every deliberate deviation from Apple's guidelines** is listed on the page that makes it. For now Carl's own
   use beats the guidelines; the list keeps a later App Store release cheap.
-- Until #15, prototypes are grey wireframes: structure, not looks.
+- **Every value comes from the tokens.** Colour, type, space, corners and glass live in
+  [`15-tokens/tokens.py`](15-tokens/tokens.py). Change a value there and run
+  `python3 docs/design/15-tokens/tokens.py`: it refuses to write if a text pair fails contrast,
+  and otherwise writes `tokens.css`, which a prototype links. Never edit `tokens.css` by hand.
+- **Publishing a page that links `tokens.css`** sends the file along through the Artifact
+  tool's `files`, as `15-tokens/` does. How a page in another folder links it on its private
+  page is not yet checked; #16 is the first to need it.
