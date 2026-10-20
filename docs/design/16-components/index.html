@@ -50,6 +50,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 /* A stage is a piece of the phone. Only tokens.css from here on, except the sketch values marked below. */
 .stage { background: var(--color-background); color: var(--color-on-surface); font: var(--type-body-large);
   border-radius: var(--shape-extra-large); padding: var(--space-16); display: grid; gap: var(--space-16); }
+.stage, .stage * { box-sizing: border-box; }
 .stage .caption { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
 .pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); align-items: end; }
 .pair > div { display: grid; gap: var(--space-4); min-width: 0; }
@@ -141,8 +142,93 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .num .step { flex: none; width: var(--space-40); height: var(--space-40); border-radius: var(--shape-full); background: var(--color-surface);
   color: var(--color-primary); font: var(--type-title-large); display: grid; place-items: center; } /* 40 pt visible, 44 pt with the field's padding */
 .numrow .msg { font: var(--type-body-small); color: var(--color-error); }
-.i2 .num .step, .i3 .num .step { display: none; }
-.i3 .num:focus-within .step, .i3 .num.focus .step { display: grid; }
+.num .step, .i2 .num .step { display: none; }
+.num:focus-within .step, .num.focus .step, .i1 .num .step { display: grid; }
+.i2 .num:focus-within .step, .i2 .num.focus .step { display: none; }
+/* Stats and charts. */
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
+.stat { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-12) var(--space-16); display: grid; min-width: 0; }
+.stat .k { font: var(--type-title-small); color: var(--color-on-surface-variant); }
+.stat .v { font: var(--type-display-small); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stat .v small { font: var(--type-title-medium); color: var(--color-on-surface-variant); margin-left: var(--space-4); }
+.d2 .stats { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-16); gap: var(--space-16) var(--space-12); }
+.d2 .stat { background: none; padding: 0; border-radius: 0; }
+.d2 .stat .k { order: 2; font: var(--type-label-medium); }
+.d2 .stat .v { font: var(--type-headline-medium); }
+.d3 .stats { display: none; }
+.statrows { display: none; }
+.d3 .statrows { display: block; }
+.statrows .row { font-variant-numeric: tabular-nums; }
+.statrows .row b { font: var(--type-title-medium); }
+.chart { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-16); display: grid; gap: var(--space-8); }
+.chart .head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-8); }
+.chart .head span { font: var(--type-title-small); }
+.chart .head b { font: var(--type-title-small); font-variant-numeric: tabular-nums; } /* plain text: teal is for what can be tapped */
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.chart .grid { stroke: var(--color-outline-variant); stroke-width: 1; }
+.chart .tick { fill: var(--color-on-surface-variant); font: var(--type-label-small); font-variant-numeric: tabular-nums; }
+.chart .bar { fill: var(--color-surface-container-highest); cursor: pointer; }
+.chart .bar.on { fill: var(--color-primary); }
+.d2 .chart .bar { fill: var(--color-primary); opacity: .55; }
+.d2 .chart .bar.on { opacity: 1; }
+.chart .line { fill: none; stroke: var(--color-on-surface-variant); stroke-width: 2; }
+.chart .pt { fill: var(--color-surface); stroke: var(--color-on-surface-variant); stroke-width: 2; cursor: pointer; }
+.chart .pt.on { fill: var(--color-primary); stroke: var(--color-primary); }
+/* Rest timer. Progress is tertiary (amber); time is tabular. */
+.stage.tall { position: relative; min-height: 460px; align-content: start; } /* sketch: room for a pinned timer */
+.timer .time { font-variant-numeric: tabular-nums; }
+.timer .k { font: var(--type-title-small); color: var(--color-on-surface-variant); }
+.timer .ctrl { display: flex; gap: var(--space-8); justify-content: center; flex-wrap: wrap; }
+.ring-card { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-16); display: grid; justify-items: center; gap: var(--space-12); }
+.ring { position: relative; width: 168px; aspect-ratio: 1; display: grid; place-items: center; } /* sketch: ring size */
+.ring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring .track { fill: none; stroke: var(--color-surface-container-highest); stroke-width: 8; }
+.ring .prog { fill: none; stroke: var(--color-tertiary); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.ring .inner { display: grid; justify-items: center; }
+.ring .time { font: var(--type-display-large); }
+.strip { position: absolute; left: 0; right: 0; bottom: 0; background: var(--color-surface); border-radius: var(--shape-extra-large) var(--shape-extra-large) 0 0;
+  padding: var(--space-16); display: grid; gap: var(--space-12); }
+.strip .top { display: flex; justify-content: space-between; align-items: baseline; }
+.strip .time { font: var(--type-display-small); }
+.bar-track { height: var(--space-8); border-radius: var(--shape-full); background: var(--color-surface-container-highest); overflow: hidden; }
+.bar-fill { height: 100%; background: var(--color-tertiary); border-radius: inherit; transition: width 1s linear; }
+.pill { position: absolute; left: var(--space-16); right: var(--space-16); bottom: var(--space-16); border-radius: var(--shape-full); overflow: hidden;
+  background: var(--material-regular); -webkit-backdrop-filter: blur(var(--material-blur)); backdrop-filter: blur(var(--material-blur));
+  border: 1px solid var(--material-edge); box-shadow: var(--material-shadow); }
+.pill .drain { position: absolute; inset: 0 auto 0 0; background: var(--color-tertiary-container); transition: width 1s linear; }
+.pill .body { position: relative; display: flex; align-items: center; justify-content: space-between; gap: var(--space-8); padding: var(--space-8) var(--space-8) var(--space-8) var(--space-20); width: 100%; color: var(--color-on-surface); text-align: left; }
+.pill .time { font: var(--type-headline-small); }
+.t3.tall { min-height: 320px; } /* the pill floats over the last sets, so the glass has something behind it */
+.pill .ctrl { display: none; }
+.pill.open .ctrl { display: flex; }
+.pill .k { color: var(--color-on-surface); }
+/* T4 and T5: the strip as a floating card, steppers on the left, skip far right as a text button. */
+.float { position: absolute; left: var(--space-16); right: var(--space-16); bottom: var(--space-16); background: var(--color-surface);
+  border-radius: var(--shape-large); padding: var(--space-16); display: grid; gap: var(--space-12); box-shadow: var(--material-shadow); }
+.float .top { display: flex; justify-content: space-between; align-items: baseline; }
+.float .time { font: var(--type-display-small); }
+.float .actions { display: flex; align-items: center; gap: var(--space-8); }
+.float .actions .btn.text { margin-left: auto; padding-inline: var(--space-8); }
+.float .mini { display: flex; align-items: center; gap: var(--space-16); }
+.float .mini .ring { width: 64px; } /* sketch: small ring size */
+.float .mini .ring .track, .float .mini .ring .prog { stroke-width: 12; }
+.float .mini .stack { display: grid; }
+/* T5 in glass, with two control sets: K1 a joined −/+ capsule, K2 round − and + around the step. Skip is a capsule at the far right in both. */
+.float.glass { background: var(--material-regular); -webkit-backdrop-filter: blur(var(--material-blur)); backdrop-filter: blur(var(--material-blur));
+  border: 1px solid var(--material-edge); }
+.t6.tall, .t7.tall { min-height: 340px; } /* the card floats over sets 3 and 4, so the glass has something behind it */
+.joined { display: flex; background: var(--color-surface-container-highest); border-radius: var(--shape-full); overflow: hidden; }
+.joined button { position: relative; font: var(--type-title-small); color: var(--color-primary); padding: var(--space-8) var(--space-12); white-space: nowrap; }
+.joined button + button::before { content: ""; position: absolute; left: 0; top: var(--space-8); bottom: var(--space-8);
+  border-left: 1px solid var(--color-outline); } /* a short divider, as iOS draws a stepper; sketch: hairline width becomes a token */
+.float .actions .btn { white-space: nowrap; }
+.joined button, .roundstep .btn { transition: transform 350ms cubic-bezier(.3, 1.4, .5, 1), opacity 250ms ease-out; }
+.joined button.is-pressed, .roundstep .btn.is-pressed { transform: scale(.96); opacity: .8; transition: transform 100ms ease-out, opacity 100ms ease-out; }
+.float .actions .skip { margin-left: auto; }
+.roundstep { display: flex; align-items: center; gap: var(--space-8); }
+.roundstep .btn { width: var(--space-40); height: var(--space-40); padding: 0; border-radius: var(--shape-full); font: var(--type-title-large); display: grid; place-items: center; }
+.roundstep span { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .ring .prog, .bar-fill, .pill .drain { transition: none; } }
 .stage .btn.text { border-radius: var(--shape-small); }
 .tap-show { outline: 1px dashed var(--color-outline); outline-offset: 0; } /* sketch only: shows the tap area */
 </style>
@@ -162,8 +248,88 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     <button type="button" data-scheme="scheme-dark-hc" aria-pressed="false">Dark +</button>
   </div>
 
+  <section aria-labelledby="dec">
+    <h2 id="dec">Decided</h2>
+    <ul>
+      <li><strong>Components:</strong> buttons, inputs, list rows, cards, stat tiles, chart style, timer, dialogs, navigation bars (the tab bar and the title bar), plus a segmented control, a sheet and an empty state. The last three are each needed by at least two version 1 screens (Carl, 2026-10-20, Q1).</li>
+      <li><strong>A press shrinks and dims (P2):</strong> buttons and segments scale to 96 % and spring back, rows turn grey, feedback starts on touch-down. With Reduce Motion on, a press only dims (Carl, 2026-10-20, Q2).</li>
+      <li><strong>Button corners (B3):</strong> shape-large (16 pt) on full-width buttons, a capsule on small buttons in a row. One filled button per view (Carl, 2026-10-20, Q3).</li>
+      <li><strong>Two list styles, chosen by what the row is (rule A):</strong> a long list or a set of choices is a block with hairlines, split into groups where the data has them (History by week, Library by muscle, Settings, Profile, Onboarding, Export). A short list you start, edit or reorder is joined tiles (templates in Plan, exercises in a template, the sets in Active workout). One thing with its own button is a card. Separate tiles (L2) are not used (Carl, 2026-10-20, Q4).</li>
+      <li><strong>Number input (I3):</strong> a grey field with the number in headline-medium and last time’s value as a grey hint; − and + appear while it is being edited, in 2,5 kg and 1 rep steps. Weight and reps fit side by side (Carl, 2026-10-20, Q5).</li>
+      <li><strong>Numbers and charts (D1):</strong> a tile per number, label above, value in display-small (34 pt) with a small unit. Chart marks are grey; the selected bar or point is teal. Units go in the chart's title, axis labels stay short (Carl, 2026-10-20, Q6).</li>
+      <li><strong>Rest timer (T5 in glass, K1):</strong> a glass card floating over the set list, inset from the edges and the bottom, with a 64 pt amber ring, the time in display-small (34 pt), −15 s and +15 s joined in one capsule with a divider, and Hoppa över as its own capsule at the far right so it is not hit by mistake. Glass because it floats over content (G2) (Carl, 2026-10-20, Q7).</li>
+      <li><strong>The timer is a component although only Active workout uses it.</strong> The issue's rule is two screens; Carl keeps it (Carl, 2026-10-20, Q1).</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="q7">
+    <h2 id="q7">Considered: the rest timer (T5 in glass with K1 chosen)</h2>
+    <p><strong>Newest:</strong> T5 in glass, as G2 decided for things that float over content, with two control sets. K1 joins −15 s and +15 s into one capsule; K2 uses round − and + around the step. Hoppa över is a capsule of its own at the far right in both.</p>
+    <p><strong>Before that:</strong> T4 and T5, Carl's strip as a floating card. −15 and +15 sit together on the left; Hoppa över is a text button at the far right, so it is not hit by mistake.</p>
+    <p>Rest starts by itself when a set is logged, counts down from your default rest, and ends with a sound and a buzz on the phone. The countdown below is live and loops. Progress is amber, the tertiary role, so teal keeps meaning "tap". Each option has −15 s, +15 s and Hoppa över.</p>
+    <div class="options">
+      <div class="option">
+        <div class="words">T5 in glass · K1 joined capsule</div>
+        <div class="stage t6" data-sample="timerGlassK1"></div>
+        <p>One capsule for −15 s and +15 s with a hairline between, the way iOS draws a stepper. Hoppa över is a separate capsule, same height, as far from them as the card allows.</p>
+      </div>
+      <div class="option">
+        <div class="words">T5 in glass · K2 round buttons</div>
+        <div class="stage t7" data-sample="timerGlassK2"></div>
+        <p>Round − and + of 40 pt with the step between them, like a volume control. Shortest labels; the step size is said once.</p>
+      </div>
+      <div class="option">
+        <div class="words">T4 · Floating card, bar</div>
+        <div class="stage t4" data-sample="timerFloatBar"></div>
+        <p>T2's content in a card like the rest of the app: 16 pt corners, inset from the edges and the bottom, time in 34 pt over an amber bar. Solid, with the glass shadow so it lifts off the list.</p>
+      </div>
+      <div class="option">
+        <div class="words">T5 · Floating card, small ring</div>
+        <div class="stage t5" data-sample="timerFloatRing"></div>
+        <p>The same card with a 64 pt ring instead of the bar, and the time in 34 pt beside it. The ring reads as a clock at a glance; the time stays as large as in T4.</p>
+      </div>
+      <div class="option">
+        <div class="words">T1 · Ring card</div>
+        <div class="stage t1" data-sample="timerRing"></div>
+        <p>A card in the set list with a ring and the time in 56 pt, like the Clock app's timer. Readable from a bench; it pushes the next sets down while you rest.</p>
+      </div>
+      <div class="option">
+        <div class="words">T2 · Strip above the button</div>
+        <div class="stage t2" data-sample="timerBar"></div>
+        <p>A solid strip pinned to the bottom of the screen: time, a bar, the buttons. The set list keeps its place. Smaller time, still 34 pt.</p>
+      </div>
+      <div class="option">
+        <div class="words">T3 · Glass pill</div>
+        <div class="stage t3" data-sample="timerPill"></div>
+        <p>A floating glass pill over the list (glass on controls, as G2 decided), its fill drains as rest runs out. The most compact; tap it to get −15/+15. Time in 22 pt is the hardest to read from a distance.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="q6">
+    <h2 id="q6">Considered: numbers and charts (D1 chosen)</h2>
+    <p>Stat tiles carry summaries, the live run and Progress; the chart style carries Progress and the run summary. Same workout and the same eight weeks in each option. The chart's units sit in its title and its axis labels stay short, as Apple's Charts page asks for small screens. Tap a bar or point to select it.</p>
+    <div class="options">
+      <div class="option">
+        <div class="words">D1 · Tiles, grey bars</div>
+        <div class="stage" data-sample="stats"></div>
+        <p>Each number is its own tile: label above, value in 34 pt, unit small. Bars are grey; the selected week is teal, so teal still means "selected", as the tokens decided. Close to Apple's Fitness and Health.</p>
+      </div>
+      <div class="option">
+        <div class="words">D2 · One summary card, teal bars</div>
+        <div class="stage d2" data-sample="stats"></div>
+        <p>The four numbers share one card, value above label, like Strava's summary. Every bar is teal and the selected one stronger. Livelier, but teal then also means "data", which the tokens page ruled out.</p>
+      </div>
+      <div class="option">
+        <div class="words">D3 · Numbers as rows, a line</div>
+        <div class="stage d3" data-sample="stats"></div>
+        <p>Label left, value right, in a block (rule A). The chart is a line with points; the selected point is teal. Densest, reads like Settings; the numbers lose their weight.</p>
+      </div>
+    </div>
+  </section>
+
   <section aria-labelledby="q5">
-    <h2 id="q5">Deciding: Q5, entering weight and reps</h2>
+    <h2 id="q5">Considered: entering weight and reps (I3 chosen)</h2>
     <p>The number input logs every set, between sets, often one-handed. Each option shows the default, the field being edited, an error, and disabled (a set you have not reached). The field opens the phone's decimal keypad; the browser cannot show it, so a tap here only focuses. 2,5 kg steps, Swedish decimal comma.</p>
     <div class="options">
       <div class="option">
@@ -178,21 +344,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       </div>
       <div class="option">
         <div class="words">I3 · Field, steppers while editing</div>
-        <div class="stage i3" data-sample="numbers"></div>
+        <div class="stage" data-sample="numbers"></div>
         <p>I2 at rest; − and + appear while the field is being edited. Compact in a set list, quick when you are changing it. The steppers are hidden until you tap, so they are found by trying.</p>
       </div>
     </div>
-  </section>
-
-  <section aria-labelledby="dec">
-    <h2 id="dec">Decided</h2>
-    <ul>
-      <li><strong>Components:</strong> buttons, inputs, list rows, cards, stat tiles, chart style, timer, dialogs, navigation bars (the tab bar and the title bar), plus a segmented control, a sheet and an empty state. The last three are each needed by at least two version 1 screens (Carl, 2026-10-20, Q1).</li>
-      <li><strong>A press shrinks and dims (P2):</strong> buttons and segments scale to 96 % and spring back, rows turn grey, feedback starts on touch-down. With Reduce Motion on, a press only dims (Carl, 2026-10-20, Q2).</li>
-      <li><strong>Button corners (B3):</strong> shape-large (16 pt) on full-width buttons, a capsule on small buttons in a row. One filled button per view (Carl, 2026-10-20, Q3).</li>
-      <li><strong>Two list styles, chosen by what the row is (rule A):</strong> a long list or a set of choices is a block with hairlines, split into groups where the data has them (History by week, Library by muscle, Settings, Profile, Onboarding, Export). A short list you start, edit or reorder is joined tiles (templates in Plan, exercises in a template, the sets in Active workout). One thing with its own button is a card. Separate tiles (L2) are not used (Carl, 2026-10-20, Q4).</li>
-      <li><strong>The timer is a component although only Active workout uses it.</strong> The issue's rule is two screens; Carl keeps it (Carl, 2026-10-20, Q1).</li>
-    </ul>
   </section>
 
   <section aria-labelledby="q4">
@@ -331,6 +486,81 @@ const SAMPLES = {
   <span class="caption">Disabled</span>
   <div class="numrow"><label>Vikt (kg)<span class="num disabled"><button type="button" class="step" tabindex="-1" disabled>−</button><input placeholder="80" disabled aria-label="Vikt i kg"><button type="button" class="step" tabindex="-1" disabled>+</button></span></label>
     <label>Reps<span class="num disabled"><button type="button" class="step" tabindex="-1" disabled>−</button><input placeholder="8" disabled aria-label="Reps"><button type="button" class="step" tabindex="-1" disabled>+</button></span></label></div>`,
+  stats: `
+  <div class="stats">
+    <div class="stat"><span class="k">Volym</span><span class="v">9 400<small>kg</small></span></div>
+    <div class="stat"><span class="k">Tid</span><span class="v">52<small>min</small></span></div>
+    <div class="stat"><span class="k">Set</span><span class="v">18</span></div>
+    <div class="stat"><span class="k">Rekord</span><span class="v">2</span></div>
+  </div>
+  <div class="list statrows">
+    <div class="row"><span>Volym</span><b>9 400 kg</b></div>
+    <div class="row"><span>Tid</span><b>52 min</b></div>
+    <div class="row"><span>Set</span><b>18</b></div>
+    <div class="row"><span>Rekord</span><b>2</b></div>
+  </div>
+  <div class="chart"><div class="head"><span>Volym per vecka, ton</span><b></b></div><svg viewBox="0 0 320 150" role="img"></svg></div>`,
+  timerRing: `
+  <div class="ring-card timer"><div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="54"/><circle class="prog" cx="60" cy="60" r="54" pathLength="100" stroke-dasharray="100"/></svg>
+    <div class="inner"><span class="k">Vila</span><span class="time" role="timer">1:30</span></div></div>
+    <div class="ctrl"><button type="button" class="press btn small tinted" data-add="-15">−15 s</button><button type="button" class="press btn small tinted" data-add="15">+15 s</button><button type="button" class="press btn small tinted" data-skip>Hoppa över</button></div></div>
+  <div class="list tiles">
+    <div class="row"><span>Set 1<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
+    <div class="row"><span>Set 2<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
+    <div class="row"><span>Set 3<small>Förra: 80 kg × 8</small></span><span></span></div>
+    <div class="row"><span>Set 4<small>Förra: 80 kg × 7</small></span><span></span></div>
+  </div>`,
+  timerBar: `
+  <div class="list tiles">
+    <div class="row"><span>Set 1<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
+    <div class="row"><span>Set 2<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
+    <div class="row"><span>Set 3<small>Förra: 80 kg × 8</small></span><span></span></div>
+    <div class="row"><span>Set 4<small>Förra: 80 kg × 7</small></span><span></span></div>
+  </div>
+  <div class="strip timer"><div class="top"><span class="k">Vila</span><span class="time" role="timer">1:30</span></div><div class="bar-track"><div class="bar-fill"></div></div><div class="ctrl"><button type="button" class="press btn small tinted" data-add="-15">−15 s</button><button type="button" class="press btn small tinted" data-add="15">+15 s</button><button type="button" class="press btn small tinted" data-skip>Hoppa över</button></div></div>`,
+  timerPill: `
+  <div class="list tiles">
+    <div class="row"><span>Set 1<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
+    <div class="row"><span>Set 2<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
+    <div class="row"><span>Set 3<small>Förra: 80 kg × 8</small></span><span></span></div>
+    <div class="row"><span>Set 4<small>Förra: 80 kg × 7</small></span><span></span></div>
+  </div>
+  <div class="pill timer"><div class="drain"></div><button type="button" class="press body" data-open aria-expanded="false"><span class="k">Vila</span><span class="time" role="timer">1:30</span><span class="caption">Mer</span></button><div class="ctrl" style="position: relative; padding: 0 var(--space-8) var(--space-8);"><button type="button" class="press btn small tinted" data-add="-15">−15 s</button><button type="button" class="press btn small tinted" data-add="15">+15 s</button><button type="button" class="press btn small tinted" data-skip>Hoppa över</button></div></div>`,
+  timerFloatBar: `
+  <div class="list tiles">
+    <div class="row"><span>Set 1<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
+    <div class="row"><span>Set 2<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
+    <div class="row"><span>Set 3<small>Förra: 80 kg × 8</small></span><span></span></div>
+    <div class="row"><span>Set 4<small>Förra: 80 kg × 7</small></span><span></span></div>
+  </div>
+  <div class="float timer"><div class="top"><span class="k">Vila</span><span class="time" role="timer">1:30</span></div><div class="bar-track"><div class="bar-fill"></div></div><div class="actions"><button type="button" class="press btn small tinted" data-add="-15">−15 s</button><button type="button" class="press btn small tinted" data-add="15">+15 s</button><button type="button" class="press btn text" data-skip>Hoppa över</button></div></div>`,
+  timerFloatRing: `
+  <div class="list tiles">
+    <div class="row"><span>Set 1<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
+    <div class="row"><span>Set 2<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
+    <div class="row"><span>Set 3<small>Förra: 80 kg × 8</small></span><span></span></div>
+    <div class="row"><span>Set 4<small>Förra: 80 kg × 7</small></span><span></span></div>
+  </div>
+  <div class="float timer"><div class="mini"><div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="50"/><circle class="prog" cx="60" cy="60" r="50" pathLength="100" stroke-dasharray="100"/></svg></div>
+    <div class="stack"><span class="k">Vila</span><span class="time" role="timer">1:30</span></div></div><div class="actions"><button type="button" class="press btn small tinted" data-add="-15">−15 s</button><button type="button" class="press btn small tinted" data-add="15">+15 s</button><button type="button" class="press btn text" data-skip>Hoppa över</button></div></div>`,
+  timerGlassK1: `
+  <div class="list tiles">
+    <div class="row"><span>Set 1<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
+    <div class="row"><span>Set 2<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
+    <div class="row"><span>Set 3<small>Förra: 80 kg × 8</small></span><span></span></div>
+    <div class="row"><span>Set 4<small>Förra: 80 kg × 7</small></span><span></span></div>
+  </div>
+  <div class="float glass timer"><div class="mini"><div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="50"/><circle class="prog" cx="60" cy="60" r="50" pathLength="100" stroke-dasharray="100"/></svg></div>
+    <div class="stack"><span class="k">Vila</span><span class="time" role="timer">1:30</span></div></div><div class="actions"><div class="joined" role="group" aria-label="Ändra vilan"><button type="button" class="press" data-add="-15">−15 s</button><button type="button" class="press" data-add="15">+15 s</button></div><button type="button" class="press btn small tinted skip" data-skip>Hoppa över</button></div></div>`,
+  timerGlassK2: `
+  <div class="list tiles">
+    <div class="row"><span>Set 1<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
+    <div class="row"><span>Set 2<small>80 kg × 8 · klar</small></span><span class="chev" aria-hidden="true">✓</span></div>
+    <div class="row"><span>Set 3<small>Förra: 80 kg × 8</small></span><span></span></div>
+    <div class="row"><span>Set 4<small>Förra: 80 kg × 7</small></span><span></span></div>
+  </div>
+  <div class="float glass timer"><div class="mini"><div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="50"/><circle class="prog" cx="60" cy="60" r="50" pathLength="100" stroke-dasharray="100"/></svg></div>
+    <div class="stack"><span class="k">Vila</span><span class="time" role="timer">1:30</span></div></div><div class="actions"><div class="roundstep"><button type="button" class="press btn tinted" data-add="-15" aria-label="15 sekunder kortare">−</button><span>15 s</span><button type="button" class="press btn tinted" data-add="15" aria-label="15 sekunder längre">+</button></div><button type="button" class="press btn small tinted skip" data-skip>Hoppa över</button></div></div>`,
   weeks: `
   <div class="group">
     <h4>Den här veckan</h4>
@@ -348,6 +578,44 @@ const SAMPLES = {
   </div>`,
 };
 document.querySelectorAll(".stage[data-sample]").forEach(s => s.innerHTML = SAMPLES[s.dataset.sample]);
+
+// Eight weeks of volume, drawn to one scale: bars in D1 and D2, a line in D3.
+const WEEKS = [[36, 18.2], [37, 21.4], [38, 19.8], [39, 24.1], [40, 22.6], [41, 12.3], [42, 25.8], [43, 9.4]];
+function drawChart(svg, line, selected) {
+  const W = 290, H = 120, top = 8, max = 30, x = i => 8 + i * (W - 16) / (WEEKS.length - 1), y = v => top + H - v / max * H, bw = 22;
+  const ticks = [0, 10, 20, 30].map(t => `<line class="grid" x1="0" x2="${W}" y1="${y(t)}" y2="${y(t)}"/><text class="tick" x="${W + 6}" y="${y(t) + 4}">${t}</text>`).join("");
+  const labels = WEEKS.map(([w], i) => `<text class="tick" x="${x(i)}" y="${top + H + 18}" text-anchor="middle">v.${w}</text>`).join("");
+  const marks = line
+    ? `<polyline class="line" points="${WEEKS.map(([, v], i) => `${x(i)},${y(v)}`).join(" ")}"/>` + WEEKS.map(([w, v], i) => `<circle class="pt${i === selected ? " on" : ""}" data-i="${i}" cx="${x(i)}" cy="${y(v)}" r="5"><title>Vecka ${w}: ${v.toLocaleString("sv-SE")} ton</title></circle>`).join("")
+    : WEEKS.map(([w, v], i) => `<rect class="bar${i === selected ? " on" : ""}" data-i="${i}" x="${x(i) - bw / 2}" y="${y(v)}" width="${bw}" height="${y(0) - y(v)}" rx="4"><title>Vecka ${w}: ${v.toLocaleString("sv-SE")} ton</title></rect>`).join("");
+  svg.innerHTML = ticks + marks + labels;
+  svg.setAttribute("aria-label", `Volym per vecka i ton, vecka ${WEEKS[0][0]} till ${WEEKS.at(-1)[0]}: ` + WEEKS.map(([w, v]) => `vecka ${w} ${v.toLocaleString("sv-SE")}`).join(", "));
+  const [w, v] = WEEKS[selected];
+  svg.closest(".chart").querySelector(".head b").textContent = `v.${w} · ${v.toLocaleString("sv-SE")} t`;
+}
+const REST = 90;
+let total = REST, left = REST;
+function tick() {
+  const m = Math.floor(left / 60), sec = String(left % 60).padStart(2, "0"), frac = left / total;
+  document.querySelectorAll(".timer .time").forEach(t => t.textContent = `${m}:${sec}`);
+  document.querySelectorAll(".ring .prog").forEach(c => c.style.strokeDashoffset = 100 - frac * 100);
+  document.querySelectorAll(".bar-fill, .pill .drain").forEach(b => b.style.width = frac * 100 + "%");
+}
+setInterval(() => { left = left > 0 ? left - 1 : (total = REST); tick(); }, 1000);
+tick();
+document.addEventListener("click", e => {
+  const add = e.target.closest("[data-add]"), skip = e.target.closest("[data-skip]"), open = e.target.closest("[data-open]");
+  if (add) { left = Math.max(0, left + +add.dataset.add); total = Math.max(total, left); tick(); }
+  if (skip) { left = 0; tick(); }
+  if (open) { const pill = open.closest(".pill"); pill.classList.toggle("open"); open.setAttribute("aria-expanded", pill.classList.contains("open")); }
+});
+document.querySelectorAll(".t1, .t2, .t3, .t4, .t5, .t6, .t7").forEach(s => s.classList.add("tall"));
+
+document.querySelectorAll(".chart svg").forEach(svg => {
+  const line = !!svg.closest(".d3");
+  drawChart(svg, line, WEEKS.length - 1);
+  svg.addEventListener("click", e => { const m = e.target.closest("[data-i]"); if (m) drawChart(svg, line, +m.dataset.i); });
+});
 
 // Pressed starts on touch-down; :active alone does not fire reliably in iOS Safari.
 document.addEventListener("pointerdown", e => {
