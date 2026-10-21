@@ -31,3 +31,9 @@ Version 1 is designed here as clickable HTML and CSS prototypes before app code 
   page is served from a folder of its own (`/_f/<version>/`), so `../` leads out of the
   published files; checked on the phone for #16. Publishing sends the real file through the
   Artifact tool's `files`, as `{"tokens.css": "<path to 15-tokens/tokens.css>"}`.
+- **Screens are built from the components, never from copies of them.** Their CSS and behaviour
+  live in `16-components/components.css` and `components.js`; a page from 17 on links both the
+  way it links `tokens.css`: symlinks beside the page, sent through `files` when published, and
+  `components.js` loaded before the page's own script. A component goes inside a `.stage`, the
+  only element that sets the components' base. A screen that needs something the catalogue
+  lacks asks Carl first; if he agrees, it goes into the catalogue, not onto the screen.

@@ -60,190 +60,9 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .comp.wide .states { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
 .state { display: grid; gap: var(--space-8); min-width: 0; align-content: start; }
 .state.na { margin: 0; font: var(--type-body-small); color: var(--color-on-surface-variant); }
-/* ===== Components (strive#16). From here to the Considered block, every value comes from tokens.css (checked in strive#20).
-   Chart and icon geometry (stroke widths, radii of points) are SVG user units, not CSS values. ===== */
-.stage { background: var(--color-background); color: var(--color-on-surface); font: var(--type-body-large);
-  border-radius: var(--shape-extra-large); padding: var(--space-16); display: grid; gap: var(--space-16); }
-.stage, .stage * { box-sizing: border-box; }
-.stage .caption { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.en { display: none; }
-[data-lang="en"] .en { display: revert; }
-[data-lang="en"] .sv { display: none; }
-svg.icon { width: var(--size-icon); height: var(--size-icon); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
-
-/* Press (Q2, P2): shrink and dim on touch-down, spring back. Rows turn grey instead. */
-.press { -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; -webkit-user-select: none; position: relative; }
-.btn, .segc button, .icon-btn, .tab { transition: transform var(--motion-release), opacity var(--motion-fade); }
-.btn.is-pressed, .segc button.is-pressed, .icon-btn.is-pressed, .tab.is-pressed {
-  transform: scale(var(--state-pressed-scale)); opacity: var(--state-pressed-opacity); transition: transform var(--motion-press), opacity var(--motion-press); }
-.row { transition: background-color var(--motion-fade); }
-.row.is-pressed { background: var(--color-surface-container-highest); transition: none; }
-@media (prefers-reduced-motion: reduce) {
-  .btn.is-pressed, .segc button.is-pressed, .icon-btn.is-pressed, .tab.is-pressed { transform: none; }
-}
-/* Disabled fades and stops answering. */
-.stage [disabled], .stage .is-disabled { opacity: var(--state-disabled-opacity); pointer-events: none; }
-
-/* Buttons (Q3, B3): rounded wide, capsule small. One filled button per view. */
-.btn { font: var(--type-label-large); padding: var(--space-16); text-align: center; width: 100%; min-height: var(--size-touch);
-  border-radius: var(--shape-large); display: flex; align-items: center; justify-content: center; gap: var(--space-8); }
-.btn.filled { background: var(--color-primary); color: var(--color-on-primary); }
-.btn.tinted { background: var(--color-surface-container-highest); color: var(--color-primary); }
-.btn.danger { background: var(--color-surface-container-highest); color: var(--color-error); }
-.btn.small { font: var(--type-title-small); padding: var(--space-8) var(--space-16); width: auto; min-height: 0; border-radius: var(--shape-full); white-space: nowrap; }
-.btn.small::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: var(--size-touch); transform: translateY(-50%); } /* 44 pt tap area */
-.btn.text { background: none; color: var(--color-primary); font: var(--type-body-large); padding: var(--space-8); width: auto; justify-self: start; border-radius: var(--shape-small); }
-.inline { display: flex; flex-wrap: wrap; gap: var(--space-8); align-items: center; }
-.spinner { width: 1em; height: 1em; border: var(--border-focus) solid currentColor; border-right-color: transparent; border-radius: var(--shape-full);
-  animation: spin var(--motion-spin); flex: none; }
-@keyframes spin { to { transform: rotate(1turn); } }
-
-/* Text field: grey, the same family as the number field. */
-.fieldwrap { display: grid; gap: var(--space-4); min-width: 0; font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.field { display: flex; align-items: center; gap: var(--space-8); background: var(--color-surface-container-highest); border-radius: var(--shape-medium);
-  padding: 0 var(--space-12); min-height: var(--size-touch); border: var(--border-focus) solid transparent; color: var(--color-on-surface-variant); }
-.field input { flex: 1; min-width: 0; width: 100%; border: 0; background: none; color: var(--color-on-surface); font: var(--type-body-large);
-  padding: var(--space-8) 0; outline: none; }
-.field input::placeholder { color: var(--color-on-surface-variant); }
-.field:focus-within, .field.focus { border-color: var(--color-primary); }
-.field.error { border-color: var(--color-error); }
-.field .clear { width: var(--size-touch); height: var(--size-touch); margin-right: calc(-1 * var(--space-12)); display: grid; place-items: center; color: var(--color-on-surface-variant); }
-.msg { font: var(--type-body-small); color: var(--color-error); }
-
-/* Number input (Q5, I3): last time's value as a grey hint; − and + appear while editing. */
-.numrow { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); align-items: start; }
-.numrow > label { display: grid; gap: var(--space-4); min-width: 0; font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.num { display: flex; align-items: center; gap: var(--space-4); background: var(--color-surface-container-highest); border-radius: var(--shape-medium);
-  padding: var(--space-4); min-width: 0; border: var(--border-focus) solid transparent; }
-.num input { flex: 1; min-width: 0; width: 100%; border: 0; background: none; color: var(--color-on-surface); text-align: center;
-  font: var(--type-headline-medium); font-variant-numeric: tabular-nums; padding: var(--space-4) 0; outline: none; }
-.num input::placeholder { color: var(--color-on-surface-variant); }
-.num:focus-within, .num.focus { border-color: var(--color-primary); }
-.num.error { border-color: var(--color-error); }
-.num .step { flex: none; width: var(--size-touch); height: var(--size-touch); border-radius: var(--shape-full); background: var(--color-surface);
-  color: var(--color-primary); font: var(--type-title-large); display: none; place-items: center; }
-.num:focus-within .step, .num.focus .step { display: grid; }
-
-/* Lists (Q4, rule A): a long list or a set of choices is a block with hairlines; a short list you start, edit or reorder is joined tiles. */
-.list { background: var(--color-surface); border-radius: var(--shape-large); overflow: hidden; }
-.row { position: relative; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-12); width: 100%; text-align: left;
-  padding: var(--space-12) var(--space-16); min-height: var(--size-touch); color: var(--color-on-surface); font: var(--type-body-large); }
-.list .row + .row::after { content: ""; position: absolute; top: 0; left: var(--space-16); right: 0; border-top: var(--border-hairline) solid var(--color-outline-variant); }
-.row small { display: block; font: var(--type-body-small); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.row .chev, .row .val { color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.row .check { color: var(--color-primary); }
-.list.tiles { background: none; display: grid; gap: var(--space-4); border-radius: 0; overflow: visible; }
-.list.tiles .row { background: var(--color-surface); border-radius: var(--shape-extra-small); }
-.list.tiles .row:first-child { border-top-left-radius: var(--shape-large); border-top-right-radius: var(--shape-large); }
-.list.tiles .row:last-child { border-bottom-left-radius: var(--shape-large); border-bottom-right-radius: var(--shape-large); }
-.list.tiles .row::after { display: none; }
-.group { display: grid; gap: var(--space-8); }
-.group > h4 { margin: 0; padding-inline: var(--space-16); font: var(--type-title-small); color: var(--color-on-surface-variant); }
-
-/* Card: one thing with its own button. */
-.card { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-16); display: grid; gap: var(--space-4); }
-.card .eyebrow { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.card .title { font: var(--type-title-large); }
-.card .meta { font: var(--type-body-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.card .btn { margin-top: var(--space-12); }
-
-/* Stat tiles and charts (Q6, D1): a tile per number; grey marks, the selected one teal. */
-.stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
-.stat { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-12) var(--space-16); display: grid; min-width: 0; }
-.stat .k { font: var(--type-title-small); color: var(--color-on-surface-variant); }
-.stat .v { font: var(--type-display-small); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.stat .v small { font: var(--type-title-medium); color: var(--color-on-surface-variant); margin-left: var(--space-4); }
-.stat .v.none { color: var(--color-on-surface-variant); }
-.chart { background: var(--color-surface); border-radius: var(--shape-large); padding: var(--space-16); display: grid; gap: var(--space-8); }
-.chart .head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-8); }
-.chart .head span { font: var(--type-title-small); }
-.chart .head b { font: var(--type-title-small); font-variant-numeric: tabular-nums; } /* plain text: teal is for what can be tapped */
-.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
-.chart .grid { stroke: var(--color-outline-variant); stroke-width: 1; }
-.chart .tick { fill: var(--color-on-surface-variant); font: var(--type-label-small); font-variant-numeric: tabular-nums; }
-.chart .bar { fill: var(--color-surface-container-highest); cursor: pointer; rx: var(--shape-extra-small); }
-.chart .bar.on { fill: var(--color-primary); }
-.chart .line { fill: none; stroke: var(--color-on-surface-variant); stroke-width: 2; }
-.chart .pt { fill: var(--color-surface); stroke: var(--color-on-surface-variant); stroke-width: 2; cursor: pointer; }
-.chart .pt.on { fill: var(--color-primary); stroke: var(--color-primary); }
-.chart .nodata { display: grid; place-items: center; text-align: center; min-height: calc(3 * var(--size-touch)); font: var(--type-body-medium);
-  color: var(--color-on-surface-variant); border: var(--border-hairline) dashed var(--color-outline-variant); border-radius: var(--shape-medium); padding: var(--space-16); }
-
-/* Segmented control. */
-.segc { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--color-surface-container-highest);
-  border-radius: var(--shape-small); padding: var(--space-4); gap: var(--space-4); }
-.segc button { font: var(--type-title-small); border-radius: var(--shape-extra-small); padding: var(--space-8); color: var(--color-on-surface); white-space: nowrap; }
-.segc [aria-pressed="true"] { background: var(--color-surface); }
-
-/* Overlays: something floating over content. Glass on controls and overlays (G2). */
-.overlay { position: relative; display: grid; gap: var(--space-4); }
-.scrim { position: absolute; inset: 0; background: var(--color-scrim); opacity: var(--state-scrim-opacity); border-radius: var(--shape-large); }
-.glass { background: var(--material-regular); -webkit-backdrop-filter: blur(var(--material-blur)); backdrop-filter: blur(var(--material-blur));
-  border: var(--border-hairline) solid var(--material-edge); box-shadow: var(--material-shadow); }
-
-/* Rest timer (Q7, T5 in glass with K2). */
-.float { position: absolute; left: var(--space-16); right: var(--space-16); bottom: var(--space-16); border-radius: var(--shape-large);
-  padding: var(--space-16); display: grid; gap: var(--space-12); }
-.float .mini { display: flex; align-items: center; gap: var(--space-16); }
-.float .stack { display: grid; }
-.timer .k, .timer-done .k { font: var(--type-title-small); color: var(--color-on-surface-variant); }
-.float .time { font: var(--type-display-small); font-variant-numeric: tabular-nums; }
-.ring { position: relative; width: var(--size-ring-small); aspect-ratio: 1; flex: none; }
-.ring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
-.ring .track { fill: none; stroke: var(--color-surface-container-highest); stroke-width: 12; }
-.ring .prog { fill: none; stroke: var(--color-tertiary); stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset var(--motion-tick); }
-.float .actions { display: flex; align-items: center; gap: var(--space-8); }
-.float .actions .skip { margin-left: auto; }
-.roundstep { display: flex; align-items: center; gap: var(--space-8); }
-.roundstep .btn { width: var(--size-touch); height: var(--size-touch); padding: 0; border-radius: var(--shape-full); font: var(--type-title-large); }
-.roundstep span { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; white-space: nowrap; }
-@media (prefers-reduced-motion: reduce) { .ring .prog, .bar-fill, .pill .drain { transition: none; } }
-
-/* Sheet: glass, grabber, Cancel leading; rows inside on the thicker material. */
-.sheet { position: absolute; left: 0; right: 0; bottom: 0; border-radius: var(--shape-extra-large) var(--shape-extra-large) var(--shape-large) var(--shape-large);
-  padding: var(--space-8) var(--space-16) var(--space-16); display: grid; gap: var(--space-12); }
-.grabber { justify-self: center; width: var(--space-40); height: var(--space-4); border-radius: var(--shape-full); background: var(--color-outline-variant); }
-.sheet-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
-.sheet-head h5 { margin: 0; font: var(--type-title-medium); }
-.sheet .list { background: var(--material-thick); }
-
-/* Dialogs: an alert for an uncommon action that cannot be undone; an action sheet for choices after an intentional action. */
-.center { position: absolute; inset: 0; display: grid; place-items: center; padding: var(--space-24); }
-.alert { border-radius: var(--shape-extra-large); padding: var(--space-20); display: grid; gap: var(--space-8); text-align: center; background: var(--material-thick); }
-.alert h5 { margin: 0; font: var(--type-title-medium); }
-.alert p { margin: 0; font: var(--type-body-medium); }
-.alert .inline { margin-top: var(--space-8); flex-wrap: nowrap; }
-.alert .inline .btn { flex: 1; }
-.asheet { position: absolute; left: var(--space-8); right: var(--space-8); bottom: var(--space-8); display: grid; gap: var(--space-8); }
-.asheet .list { background: var(--material-thick); border-radius: var(--shape-large); }
-.asheet .row { justify-content: center; grid-template-columns: 1fr; text-align: center; color: var(--color-primary); }
-.asheet .row.head { color: var(--color-on-surface-variant); font: var(--type-body-small); min-height: 0; }
-.asheet .row.destructive { color: var(--color-error); }
-.asheet .row.cancel { font: var(--type-label-large); }
-
-/* Navigation: the floating glass tab bar with Start in the middle, and title bars with glass buttons. */
-.tabbar { position: absolute; left: var(--space-20); right: var(--space-20); bottom: var(--space-16); border-radius: var(--shape-full);
-  display: grid; grid-template-columns: repeat(5, 1fr); padding: var(--space-4); align-items: center; }
-.tab { display: grid; justify-items: center; gap: var(--space-4); font: var(--type-label-small); color: var(--color-on-surface-variant);
-  padding: var(--space-4); border-radius: var(--shape-full); min-height: var(--size-touch); }
-.tab[aria-current="page"] { color: var(--color-primary); background: var(--material-thick); }
-.tab .dot { width: var(--size-touch); height: var(--size-touch); border-radius: var(--shape-full); background: var(--color-primary); color: var(--color-on-primary);
-  display: grid; place-items: center; }
-.titlebar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--space-8); min-height: var(--size-touch); }
-.titlebar h5 { margin: 0; font: var(--type-title-medium); text-align: center; }
-.titlebar > :last-child { justify-self: end; }
-.largetitle { display: flex; justify-content: space-between; align-items: center; gap: var(--space-8); }
-.largetitle h5 { margin: 0; font: var(--type-headline-large); }
-.icon-btn { width: var(--size-touch); height: var(--size-touch); border-radius: var(--shape-full); display: grid; place-items: center; color: var(--color-on-surface); }
-
-/* Empty state. */
-.empty { display: grid; justify-items: center; text-align: center; gap: var(--space-8); padding: var(--space-32) var(--space-16); }
-.empty svg.icon { width: var(--size-touch); height: var(--size-touch); color: var(--color-on-surface-variant); stroke-width: 1.5; }
-.empty h5 { margin: 0; font: var(--type-title-medium); }
-.empty p { margin: 0; font: var(--type-body-medium); color: var(--color-on-surface-variant); max-width: 32ch; }
-.empty .btn { margin-top: var(--space-8); }
-.busy { display: flex; align-items: center; justify-content: center; gap: var(--space-8); font: var(--type-body-medium); color: var(--color-on-surface-variant); min-height: var(--size-touch); }
-
+</style>
+<link rel="stylesheet" href="components.css">
+<style>
 /* ===== Considered: the sketches each decision was made from. Exempt from the token check (strive#20). ===== */
 .pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); align-items: end; }
 .pair > div { display: grid; gap: var(--space-4); min-width: 0; }
@@ -387,7 +206,7 @@ svg.icon { width: var(--size-icon); height: var(--size-icon); fill: none; stroke
       <li><strong>Two list styles, chosen by what the row is (rule A):</strong> a long list or a set of choices is a block with hairlines, split into groups where the data has them (History by week, Library by muscle, Settings, Profile, Onboarding, Export). A short list you start, edit or reorder is joined tiles (templates in Plan, exercises in a template, the sets in Active workout). One thing with its own button is a card. Separate tiles (L2) are not used (Carl, 2026-10-20, Q4).</li>
       <li><strong>Number input (I3):</strong> a grey field with the number in headline-medium and last time’s value as a grey hint; − and + appear while it is being edited, in 2,5 kg and 1 rep steps. Weight and reps fit side by side (Carl, 2026-10-20, Q5).</li>
       <li><strong>Numbers and charts (D1):</strong> a tile per number, label above, value in display-small (34 pt) with a small unit. Chart marks are grey; the selected bar or point is teal. Units go in the chart's title, axis labels stay short (Carl, 2026-10-20, Q6).</li>
-      <li><strong>Rest timer (T5 in glass, K1):</strong> a glass card floating over the set list, inset from the edges and the bottom, with a 64 pt amber ring, the time in display-small (34 pt), round − and + with the 15 s step between them, and Hoppa över as its own capsule at the far right so it is not hit by mistake. Glass because it floats over content (G2). Judged on the phone, where it looked best; the desktop browser misled on size (Carl, 2026-10-20, Q7).</li>
+      <li><strong>Rest timer (T5 in glass, K2):</strong> a glass card floating over the set list, inset from the edges and the bottom, with a 64 pt amber ring, the time in display-small (34 pt), round − and + with the 15 s step between them, and Hoppa över as its own capsule at the far right so it is not hit by mistake. Glass because it floats over content (G2). Judged on the phone, where it looked best; the desktop browser misled on size (Carl, 2026-10-20, Q7).</li>
       <li><strong>Everything Q1–Q7 left open follows Apple's defaults</strong>, as the catalogue draws it: the tab bar, title bars, sheet, alert and action sheet, segmented control, text field, empty state and activity indicator. Approved on the phone (Carl, 2026-10-20).</li>
       <li><strong>The timer is a component although only Active workout uses it.</strong> The issue's rule is two screens; Carl keeps it (Carl, 2026-10-20, Q1).</li>
     </ul>
@@ -559,6 +378,7 @@ svg.icon { width: var(--size-icon); height: var(--size-icon); fill: none; stroke
 
 </div>
 
+<script src="components.js"></script>
 <script>
 // Samples drawn into each .stage by its data-sample. In "press", the second copy carries is-pressed for good.
 const SAMPLES = {
@@ -890,32 +710,16 @@ document.querySelectorAll(".chart svg").forEach(svg => {
   svg.addEventListener("click", e => { const m = e.target.closest("[data-i]"); if (m) drawChart(svg, line, +m.dataset.i); });
 });
 
-// Pressed starts on touch-down; :active alone does not fire reliably in iOS Safari.
+// The press itself lives in components.js; P3's ripple is only a Considered sketch.
 document.addEventListener("pointerdown", e => {
-  const el = e.target.closest(".press");
-  if (!el || el.disabled || el.closest(".is-disabled")) return;
-  el.classList.add("is-pressed");
-  if (el.closest(".p3") && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    const r = el.getBoundingClientRect(), size = Math.hypot(r.width, r.height) * 2;
-    const ring = document.createElement("span");
-    ring.className = "ripple";
-    Object.assign(ring.style, { width: size + "px", height: size + "px", left: e.clientX - r.left - size / 2 + "px", top: e.clientY - r.top - size / 2 + "px" });
-    el.append(ring);
-    ring.addEventListener("animationend", () => ring.remove());
-  }
-  const release = () => { el.classList.remove("is-pressed"); ["pointerup", "pointercancel", "pointerleave"].forEach(t => el.removeEventListener(t, release)); };
-  ["pointerup", "pointercancel", "pointerleave"].forEach(t => el.addEventListener(t, release));
-});
-document.addEventListener("click", e => {
-  const step = e.target.closest(".num .step");
-  if (step) {
-    const input = step.parentElement.querySelector("input"), kg = input.inputMode === "decimal";
-    const now = parseFloat((input.value || input.placeholder).replace(",", ".")) || 0;
-    const next = Math.max(0, now + (step.textContent === "+" ? 1 : -1) * (kg ? 2.5 : 1));
-    input.value = next.toLocaleString("sv-SE");
-  }
-  const seg = e.target.closest(".segc .press");
-  if (seg) seg.parentElement.querySelectorAll(".press").forEach(b => b.setAttribute("aria-pressed", b === seg));
+  const el = e.target.closest(".p3 .press");
+  if (!el || el.disabled || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const r = el.getBoundingClientRect(), size = Math.hypot(r.width, r.height) * 2;
+  const ring = document.createElement("span");
+  ring.className = "ripple";
+  Object.assign(ring.style, { width: size + "px", height: size + "px", left: e.clientX - r.left - size / 2 + "px", top: e.clientY - r.top - size / 2 + "px" });
+  el.append(ring);
+  ring.addEventListener("animationend", () => ring.remove());
 });
 document.querySelectorAll("[data-scheme]").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll(".stage").forEach(s => {
