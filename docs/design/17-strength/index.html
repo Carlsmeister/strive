@@ -100,7 +100,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .dock { position: absolute; left: 0; right: 0; bottom: 0; border-radius: var(--shape-extra-large) var(--shape-extra-large) 0 0;
   padding: var(--space-16); padding-bottom: calc(var(--space-16) + env(safe-area-inset-bottom, 0px)); display: grid; gap: var(--space-12); }
 .s3 .list { margin-bottom: var(--space-4); }
-.s3 .spacer { height: 0; }
+.s3 .crow { width: 100%; text-align: left; }
+.grabber-btn { justify-self: center; display: grid; place-items: center; width: var(--size-touch); height: var(--space-16); margin-top: calc(-1 * var(--space-8)); }
+.reopen { text-align: center; }
 .float.timer[hidden] { display: none; }
 </style>
 
@@ -140,7 +142,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
         <div class="counter">Last set took <strong>–</strong> taps</div>
       </div>
     </div>
-    <p><strong>Recommendation: S3.</strong> The issue asks for one hand between sets. In S3 every control for the next set stays in the bottom third of the screen, where the thumb rests, while the list above shows what you did. S1 puts ✓ at the right edge of a row that moves as you log; S2 keeps the targets large but moves them down the screen set by set.</p>
+    <p><strong>Chosen: S3, with a dock that closes</strong> (Carl, 2026-10-23). The dock is open by default and moves on to the next set after Logga. Pull it down with the grabber to close it; tap any set to open it on that set, and tap a logged set to correct it ("Spara ändring"). Three taps per set is counted with the dock open: closed, every set costs one tap more to open it. S1 and S2 stay as the record of why.</p>
   </section>
 
   <section aria-labelledby="dec">
@@ -196,23 +198,25 @@ const DRAW = {
       : `<div class="list">${line(s, i)}</div>`);
     return `<div class="ex">${head}${parts.join("")}</div>`;
   },
-  s3(sets, cur) {
-    const lines = sets.map((s, i) => `<div class="crow${i === cur ? " cur" : ""}"><span class="badge${s.warm ? " w" : ""}">${s.badge}</span><span class="v${s.done ? "" : " hint"}">${fmt(s)}</span><span class="tick">${s.done ? "✓" : ""}</span></div>`
+  s3(sets, cur, sel, open) {
+    const lines = sets.map((s, i) => `<button type="button" class="press row crow${open && i === sel ? " cur" : ""}" data-i="${i}" aria-label="Set ${s.badge}, ${fmt(s)}"><span class="badge${s.warm ? " w" : ""}">${s.badge}</span><span class="v${s.done ? "" : " hint"}">${fmt(s)}</span><span class="tick">${s.done ? "✓" : ""}</span></button>`
       + (i < sets.length - 1 ? `<div class="crest">Vila 2:00</div>` : "")).join("");
-    const s = sets[cur];
-    const dock = s ? `<div class="dock glass"><div class="focus"><div class="top"><b>Bänkpress · set ${s.badge}</b><span class="prev">Förra ${s.prev}${s.up ? '<span class="arrow">↑ 2,5 kg</span>' : ""}</span></div>
-      ${numRow(s)}${rirRow(s)}<button type="button" class="press btn filled" data-log>Logga set ${s.badge}</button></div></div>`
-      : `<div class="dock glass"><div class="focus"><div class="top"><b>Bänkpress klar</b></div><button type="button" class="press btn tinted">Nästa övning: Lutande hantelpress</button></div></div>`;
-    return `<div class="ex">${head}<div class="list">${lines}</div></div>${dock}`;
+    const s = sets[sel];
+    const grab = `<button type="button" class="press grabber-btn" data-close aria-label="Stäng loggningen"><span class="grabber"></span></button>`;
+    const dock = !open ? "" : s ? `<div class="dock glass">${grab}<div class="focus"><div class="top"><b>Bänkpress · set ${s.badge}</b><span class="prev">Förra ${s.prev}${s.up && !s.done ? '<span class="arrow">↑ 2,5 kg</span>' : ""}</span></div>
+      ${numRow(s)}${rirRow(s)}<button type="button" class="press btn filled" data-log>${s.done ? "Spara ändring" : "Logga set " + s.badge}</button></div></div>`
+      : `<div class="dock glass">${grab}<div class="focus"><div class="top"><b>Bänkpress klar</b></div><button type="button" class="press btn tinted">Nästa övning: Lutande hantelpress</button></div></div>`;
+    const hint = open ? "" : `<p class="caption reopen">Loggningen är stängd. Tryck på ett set för att öppna den.</p>`;
+    return `<div class="ex">${head}<div class="list">${lines}</div>${hint}</div>${dock}`;
   },
 };
 
 document.querySelectorAll(".stage[data-opt]").forEach(stage => {
   const opt = stage.dataset.opt, counter = stage.nextElementSibling.querySelector("strong");
-  let sets = START(), taps = 0, left = 0, total = 120, clock = null;
+  let sets = START(), taps = 0, left = 0, total = 120, clock = null, sel = 2, open = true;
   const cur = () => sets.findIndex(s => !s.done);
   function draw() {
-    stage.innerHTML = DRAW[opt](sets, cur()) + timer;
+    stage.innerHTML = DRAW[opt](sets, cur(), sel, open) + timer;
     const t = stage.querySelector(".timer"), dock = stage.querySelector(".dock");
     if (dock) t.style.bottom = `calc(${dock.offsetHeight}px + var(--space-12))`;
     tick();
@@ -224,14 +228,22 @@ document.querySelectorAll(".stage[data-opt]").forEach(stage => {
     t.querySelector(".prog").style.strokeDashoffset = 100 - left / total * 100;
   }
   stage.addEventListener("click", e => {
-    const i = cur(), s = sets[i];
+    // S3 logs the set the dock shows; S1 and S2 always log the next one.
+    const i = opt === "s3" ? sel : cur(), s = sets[i];
     const rir = e.target.closest("[data-rir]"), log = e.target.closest("[data-log]"), add = e.target.closest("[data-add]"), skip = e.target.closest("[data-skip]");
+    const row = e.target.closest("[data-i]"), close = e.target.closest("[data-close]");
+    if (close) { taps++; open = false; draw(); return; }
+    if (row) { taps++; sel = +row.dataset.i; open = true; draw(); return; }
     if (rir && s) { taps++; s.rir = +rir.dataset.rir; draw(); }
     if (log && s) {
-      taps++; s.done = true; counter.textContent = taps; taps = 0;
-      left = total = 120; clearInterval(clock);
-      clock = setInterval(() => { left = Math.max(0, left - 1); tick(); if (!left) clearInterval(clock); }, 1000);
-      if (cur() === -1) setTimeout(() => { sets = START(); draw(); }, 4000);
+      taps++; counter.textContent = taps; taps = 0;
+      if (!s.done) {
+        s.done = true;
+        left = total = 120; clearInterval(clock);
+        clock = setInterval(() => { left = Math.max(0, left - 1); tick(); if (!left) clearInterval(clock); }, 1000);
+      }
+      sel = cur() === -1 ? sets.length : cur();
+      if (cur() === -1) setTimeout(() => { sets = START(); sel = 2; open = true; draw(); }, 4000);
       draw();
     }
     if (add) { left = Math.max(0, left + +add.dataset.add); total = Math.max(total, left); tick(); }
