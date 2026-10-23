@@ -115,7 +115,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .dk .crow { width: 100%; text-align: left; grid-template-columns: var(--space-32) 1fr auto; }
 .dk .crow.cur { box-shadow: inset 0 0 0 var(--border-focus) var(--color-primary); border-radius: var(--shape-large); }
 .dk .rowwrap { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-8); padding-right: var(--space-12); }
-.dk .dock .x { position: absolute; top: var(--space-8); right: var(--space-8); }
+.dk .dock { touch-action: none; }
 .dk .num .step { display: none; }
 .dk .always .num .step { display: grid; }
 .dk .num.editing { border-color: var(--color-primary); }
@@ -167,7 +167,8 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 
   <section aria-labelledby="q-dock">
     <h2 id="q-dock">Choice 1b: how the dock opens, and what a set costs</h2>
-    <p>Carl's rule: the dock is closed until you tap a set, and closes when you tap outside it or its ✕. Four ways to keep that, at different costs. <strong>Tap a set to start.</strong> The fields open the keypad (choice 2 draws it properly); − and + step 2,5 kg or one rep. The counter counts every touch, keys included.</p>
+    <p><strong>Chosen: D3, with a grabber</strong> (Carl, 2026-10-23). Each set has its own ✓ that logs the hint as it stands; tapping the set opens the dock for changes. The dock closes when you swipe it down by its grabber or tap outside it. There is no ✕. D1, D2 and D4 stay as the record of why.</p>
+    <p>Carl's rule: the dock is closed until you tap a set, and closes when you tap outside it or swipe it down. Four ways to keep that, at different costs. <strong>Tap a set to start.</strong> The fields open the keypad (choice 2 draws it properly); − and + step 2,5 kg or one rep. The counter counts every touch, keys included.</p>
     <div class="tablewrap"><table class="costs">
       <thead><tr><th>Taps for one set</th><th>D1</th><th>D2</th><th>D3</th><th>D4</th></tr></thead>
       <tbody>
@@ -338,7 +339,7 @@ document.querySelectorAll(".stage[data-dock]").forEach(stage => {
       <input readonly data-field="${k}" value="${kp === k && typed ? typed : nf(s[k])}" aria-label="${aria}"><button type="button" class="press step" data-step="${k}" data-dir="1" aria-label="Öka">+</button></span></label>`;
     const keys = kp ? `<div class="kp">${["1", "2", "3", "−", "4", "5", "6", "+", "7", "8", "9", "⌫", ",", "0", "", "Klar"].map(k =>
       k === "" ? "<span></span>" : `<button type="button" class="press${k === "Klar" ? " done-key" : ""}" data-key="${k}">${k}</button>`).join("")}</div>` : "";
-    const dock = s ? `<div class="dock glass"><button type="button" class="press icon-btn x" data-close aria-label="Stäng">✕</button>
+    const dock = s ? `<div class="dock glass"><button type="button" class="press grabber-btn" data-close aria-label="Stäng loggningen"><span class="grabber"></span></button>
       <div class="focus"><div class="top"><b>Bänkpress · set ${s.badge}</b></div><span class="prev">Förra ${s.prev}${s.up && !s.done ? '<span class="arrow">↑ 2,5 kg</span>' : ""}</span>
       <div class="numrow${v.steps ? " always" : ""}">${field("w", "Vikt (kg)", "Vikt i kg")}${field("r", "Reps", "Reps")}</div>
       ${kp ? keys : rirRow(s)}<button type="button" class="press btn filled" data-log>${s.done ? "Spara ändring" : "Logga set " + s.badge}</button></div></div>` : "";
@@ -362,8 +363,29 @@ document.querySelectorAll(".stage[data-dock]").forEach(stage => {
     if (next === -1) setTimeout(() => { sets = fresh(); sel = -1; draw(); }, 4000);
   }
   function commit() { if (kp && typed) sets[sel][kp] = parseFloat(typed.replace(",", ".")) || sets[sel][kp]; kp = null; typed = ""; }
+  // Swipe the dock down to close it: past a third of its height it goes, short of that it springs back.
+  let drag = null, dragged = false;
+  stage.addEventListener("pointerdown", e => {
+    const d = e.target.closest(".dock");
+    if (d) { drag = { d, y: e.clientY, dy: 0 }; dragged = false; }
+  });
+  stage.addEventListener("pointermove", e => {
+    if (!drag) return;
+    drag.dy = Math.max(0, e.clientY - drag.y);
+    if (drag.dy > 8) { dragged = true; drag.d.style.transition = "none"; drag.d.style.transform = `translateY(${drag.dy}px)`; }
+  });
+  const endDrag = () => {
+    if (!drag) return;
+    const { d, dy } = drag; drag = null;
+    if (!dragged) return;
+    if (dy > d.offsetHeight / 3) { taps++; commit(); sel = -1; draw(); }
+    else { d.style.transition = `transform var(--motion-release)`; d.style.transform = ""; }
+  };
+  stage.addEventListener("pointerup", endDrag);
+  stage.addEventListener("pointercancel", endDrag);
   stage.addEventListener("click", e => {
     const el = e.target;
+    if (dragged) { dragged = false; return; }
     if (el.closest("[data-add]")) { left = Math.max(0, left + +el.closest("[data-add]").dataset.add); total = Math.max(total, left); tickD(); return; }
     if (el.closest("[data-skip]")) { left = 0; tickD(); return; }
     taps++;
