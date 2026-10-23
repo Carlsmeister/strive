@@ -103,6 +103,26 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .s3 .crow { width: 100%; text-align: left; }
 .grabber-btn { justify-self: center; display: grid; place-items: center; width: var(--size-touch); height: var(--space-16); margin-top: calc(-1 * var(--space-8)); }
 .reopen { text-align: center; }
+
+/* Choice 1b: the dock variants. */
+.tablewrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; min-width: 420px; font-size: 14px; }
+th, td { text-align: left; padding: 6px 12px; border-bottom: 1px solid var(--line); }
+th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+.costs td:not(:first-child), .costs th:not(:first-child) { text-align: center; font-variant-numeric: tabular-nums; }
+.costs .best { font-weight: 700; }
+.costs .bad { color: var(--accent); font-weight: 700; }
+.dk .crow { width: 100%; text-align: left; grid-template-columns: var(--space-32) 1fr auto; }
+.dk .crow.cur { box-shadow: inset 0 0 0 var(--border-focus) var(--color-primary); border-radius: var(--shape-large); }
+.dk .rowwrap { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-8); padding-right: var(--space-12); }
+.dk .dock .x { position: absolute; top: var(--space-8); right: var(--space-8); }
+.dk .num .step { display: none; }
+.dk .always .num .step { display: grid; }
+.dk .num.editing { border-color: var(--color-primary); }
+.kp { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-8); }
+.kp button { min-height: var(--size-touch); border-radius: var(--shape-medium); background: var(--color-surface-container-highest); color: var(--color-on-surface);
+  font: var(--type-title-large); font-variant-numeric: tabular-nums; }
+.kp .done-key { background: var(--color-primary); color: var(--color-on-primary); font: var(--type-label-large); }
 .float.timer[hidden] { display: none; }
 </style>
 
@@ -142,7 +162,47 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
         <div class="counter">Last set took <strong>–</strong> taps</div>
       </div>
     </div>
-    <p><strong>Chosen: S3, with a dock that closes</strong> (Carl, 2026-10-23). The dock is open by default and moves on to the next set after Logga. Pull it down with the grabber to close it; tap any set to open it on that set, and tap a logged set to correct it ("Spara ändring"). Three taps per set is counted with the dock open: closed, every set costs one tap more to open it. S1 and S2 stay as the record of why.</p>
+    <p><strong>Chosen: S3, a logging dock</strong> (Carl, 2026-10-23), refined below in choice 1b. S1 and S2 stay as the record of why.</p>
+  </section>
+
+  <section aria-labelledby="q-dock">
+    <h2 id="q-dock">Choice 1b: how the dock opens, and what a set costs</h2>
+    <p>Carl's rule: the dock is closed until you tap a set, and closes when you tap outside it or its ✕. Four ways to keep that, at different costs. <strong>Tap a set to start.</strong> The fields open the keypad (choice 2 draws it properly); − and + step 2,5 kg or one rep. The counter counts every touch, keys included.</p>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th>Taps for one set</th><th>D1</th><th>D2</th><th>D3</th><th>D4</th></tr></thead>
+      <tbody>
+        <tr><td>Same as the hint</td><td>2</td><td>2</td><td class="best">1</td><td>2, then 1</td></tr>
+        <tr><td>Same, plus RIR</td><td>3</td><td>3</td><td>3</td><td>3, then 2</td></tr>
+        <tr><td>One step up in weight</td><td>3</td><td class="bad">4</td><td>3</td><td>3, then 2</td></tr>
+        <tr><td>A new weight, typed (85)</td><td>5</td><td>5</td><td>5</td><td>5, then 4</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>D1 · − and + in the dock</h3>
+        <p>Weight and reps show − and + beside them in the dock. The dock closes after Logga and the rest timer takes its place.</p>
+        <div class="stage tall bleed" data-dock="d1"></div>
+        <div class="counter">Last set took <strong>–</strong> taps</div>
+      </div>
+      <div class="option">
+        <h3>D2 · A plain dock, − and + in the keypad</h3>
+        <p>The dock shows only the fields; − and + live in the keypad, as Q16 decided. The calmest dock, and a step up costs four taps.</p>
+        <div class="stage tall bleed" data-dock="d2"></div>
+        <div class="counter">Last set took <strong>–</strong> taps</div>
+      </div>
+      <div class="option">
+        <h3>D3 · ✓ on each row, the dock for changes</h3>
+        <p>Each set in the list has its own ✓ that logs the hint as it stands, without the dock. Tap the set itself to open the dock with − and + when something changes.</p>
+        <div class="stage tall bleed" data-dock="d3"></div>
+        <div class="counter">Last set took <strong>–</strong> taps</div>
+      </div>
+      <div class="option">
+        <h3>D4 · Opens on a tap, then stays</h3>
+        <p>Closed until you tap a set, as D1. After Logga it stays open on the next set until you close it, so the sets after the first cost one tap less.</p>
+        <div class="stage tall bleed" data-dock="d4"></div>
+        <div class="counter">Last set took <strong>–</strong> taps</div>
+      </div>
+    </div>
   </section>
 
   <section aria-labelledby="dec">
@@ -248,6 +308,80 @@ document.querySelectorAll(".stage[data-opt]").forEach(stage => {
     }
     if (add) { left = Math.max(0, left + +add.dataset.add); total = Math.max(total, left); tick(); }
     if (skip) { left = 0; tick(); }
+  });
+  draw();
+});
+
+// Choice 1b: the dock, closed until a set is tapped. Every touch inside the stage counts as a tap.
+const DOCKS = { d1: { steps: true }, d2: {}, d3: { steps: true, quick: true }, d4: { steps: true, stay: true } };
+const nf = v => v.toLocaleString("sv-SE");
+document.querySelectorAll(".stage[data-dock]").forEach(stage => {
+  const v = DOCKS[stage.dataset.dock], counter = stage.nextElementSibling.querySelector("strong");
+  stage.classList.add("dk");
+  const fresh = () => [
+    { badge: "W", w: 40, r: 10, rir: null, prev: "40 × 10", done: true, warm: true },
+    { badge: "1", w: 80, r: 8, rir: 2, prev: "80 × 8 @3", done: true },
+    { badge: "2", w: 82.5, r: 8, rir: null, prev: "80 × 8 @3", up: true },
+    { badge: "3", w: 82.5, r: 8, rir: null, prev: "80 × 7 @2", up: true },
+    { badge: "4", w: 82.5, r: 8, rir: null, prev: "80 × 7 @2", up: true },
+  ];
+  let sets = fresh(), sel = -1, kp = null, typed = "", taps = 0, left = 0, total = 120, clock = null;
+  const show = s => `${nf(s.w)} × ${s.r}${s.rir !== null ? " @" + RIRS[s.rir].replace("+", "") : ""}`;
+  function draw() {
+    const rows = sets.map((s, i) => {
+      const row = `<button type="button" class="press row crow${i === sel ? " cur" : ""}" data-i="${i}"><span class="badge${s.warm ? " w" : ""}">${s.badge}</span><span class="v${s.done ? "" : " hint"}">${show(s)}</span><span class="tick">${s.done ? "✓" : ""}</span></button>`;
+      const quick = v.quick && !s.done ? `<button type="button" class="press ok" data-quick="${i}" aria-label="Logga set ${s.badge} som det står">✓</button>` : "";
+      return (v.quick ? `<div class="rowwrap">${row}${quick}</div>` : row) + (i < sets.length - 1 ? `<div class="crest">Vila 2:00</div>` : "");
+    }).join("");
+    const s = sets[sel];
+    const field = (k, label, aria) => `<label>${label}<span class="num${kp === k ? " editing" : ""}"><button type="button" class="press step" data-step="${k}" data-dir="-1" aria-label="Minska">−</button>
+      <input readonly data-field="${k}" value="${kp === k && typed ? typed : nf(s[k])}" aria-label="${aria}"><button type="button" class="press step" data-step="${k}" data-dir="1" aria-label="Öka">+</button></span></label>`;
+    const keys = kp ? `<div class="kp">${["1", "2", "3", "−", "4", "5", "6", "+", "7", "8", "9", "⌫", ",", "0", "", "Klar"].map(k =>
+      k === "" ? "<span></span>" : `<button type="button" class="press${k === "Klar" ? " done-key" : ""}" data-key="${k}">${k}</button>`).join("")}</div>` : "";
+    const dock = s ? `<div class="dock glass"><button type="button" class="press icon-btn x" data-close aria-label="Stäng">✕</button>
+      <div class="focus"><div class="top"><b>Bänkpress · set ${s.badge}</b></div><span class="prev">Förra ${s.prev}${s.up && !s.done ? '<span class="arrow">↑ 2,5 kg</span>' : ""}</span>
+      <div class="numrow${v.steps ? " always" : ""}">${field("w", "Vikt (kg)", "Vikt i kg")}${field("r", "Reps", "Reps")}</div>
+      ${kp ? keys : rirRow(s)}<button type="button" class="press btn filled" data-log>${s.done ? "Spara ändring" : "Logga set " + s.badge}</button></div></div>` : "";
+    stage.innerHTML = `<div class="ex">${head}<div class="list">${rows}</div></div>${dock}${timer}`;
+    const d = stage.querySelector(".dock"), t = stage.querySelector(".timer");
+    if (d) t.style.bottom = `calc(${d.offsetHeight}px + var(--space-12))`;
+    tickD();
+  }
+  function tickD() {
+    const t = stage.querySelector(".timer");
+    t.hidden = left <= 0;
+    t.querySelector(".time").textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+    t.querySelector(".prog").style.strokeDashoffset = 100 - left / total * 100;
+  }
+  function logged(s) {
+    counter.textContent = taps; taps = 0;
+    if (!s.done) { s.done = true; left = total = 120; clearInterval(clock);
+      clock = setInterval(() => { left = Math.max(0, left - 1); tickD(); if (!left) clearInterval(clock); }, 1000); }
+    const next = sets.findIndex(x => !x.done);
+    sel = v.stay && next !== -1 ? next : -1;
+    if (next === -1) setTimeout(() => { sets = fresh(); sel = -1; draw(); }, 4000);
+  }
+  function commit() { if (kp && typed) sets[sel][kp] = parseFloat(typed.replace(",", ".")) || sets[sel][kp]; kp = null; typed = ""; }
+  stage.addEventListener("click", e => {
+    const el = e.target;
+    if (el.closest("[data-add]")) { left = Math.max(0, left + +el.closest("[data-add]").dataset.add); total = Math.max(total, left); tickD(); return; }
+    if (el.closest("[data-skip]")) { left = 0; tickD(); return; }
+    taps++;
+    const q = el.closest("[data-quick]"), row = el.closest("[data-i]"), s = sets[sel];
+    if (q) { commit(); logged(sets[+q.dataset.quick]); return draw(); }
+    if (row) { commit(); sel = +row.dataset.i; return draw(); }
+    if (!el.closest(".dock") || el.closest("[data-close]")) { commit(); sel = -1; return draw(); }
+    const step = el.closest("[data-step]"), f = el.closest("[data-field]"), key = el.closest("[data-key]"), rir = el.closest("[data-rir]");
+    if (step) { commit(); const k = step.dataset.step; s[k] = Math.max(0, s[k] + +step.dataset.dir * (k === "w" ? 2.5 : 1)); }
+    else if (f) { commit(); kp = f.dataset.field; typed = ""; }
+    else if (key) { const k = key.dataset.key;
+      if (k === "Klar") commit();
+      else if (k === "⌫") typed = typed.slice(0, -1);
+      else if (k === "−" || k === "+") { const fld = kp; commit(); s[fld] = Math.max(0, s[fld] + (k === "+" ? 1 : -1) * (fld === "w" ? 2.5 : 1)); kp = fld; }
+      else typed += k; }
+    else if (rir) s.rir = +rir.dataset.rir;
+    else if (el.closest("[data-log]")) { commit(); logged(s); }
+    draw();
   });
   draw();
 });
