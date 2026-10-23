@@ -1,0 +1,250 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Strive Strength</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: a working document, like 16-components. The page's own chrome uses the tokens below; every .stage reads only tokens.css and components.css. */
+:root {
+  --bg: #f6f6f4;
+  --paper: #ffffff;
+  --fg: #1d1d1b;
+  --muted: #6b6b66;
+  --line: #d9d9d4;
+  --box: #ebebe7;
+  --accent: #2f5bd3;
+  --font-ui: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141413; --paper: #1d1d1b; --fg: #ececea; --muted: #a3a39d; --line: #3a3a37;
+    --box: #2a2a28; --accent: #8fa9f5; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141413; --paper: #1d1d1b; --fg: #ececea; --muted: #a3a39d; --line: #3a3a37;
+  --box: #2a2a28; --accent: #8fa9f5; color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--font-ui); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 40px; }
+h1 { font-size: 28px; line-height: 1.2; margin: 0; text-wrap: balance; }
+h2 { font-size: 19px; margin: 0 0 12px; text-wrap: balance; }
+h3 { font-size: 16px; margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.lede { color: var(--muted); margin-top: 8px; }
+.label { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+section { display: grid; gap: 12px; }
+ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 72ch; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.seg { display: inline-flex; flex-wrap: wrap; background: var(--box); border-radius: 9px; padding: 2px; justify-self: start; }
+.seg button { padding: 6px 14px; border-radius: 7px; font-size: 14px; }
+.seg button[aria-pressed="true"] { background: var(--paper); font-weight: 600; }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.options { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 40px 24px; align-items: start; }
+.option { display: grid; gap: 10px; min-width: 0; }
+.option p { color: var(--muted); font-size: 14px; }
+.counter { display: flex; gap: 16px; align-items: center; font-size: 13px; color: var(--muted); }
+.counter strong { color: var(--fg); font-variant-numeric: tabular-nums; }
+/* On a phone each sketch runs edge to edge, so it is judged at the app's real width. */
+@media (max-width: 500px) {
+  .bleed { margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px))); border-radius: 0; }
+}
+
+/* ===== Considered: sketches for #17. Exempt from the token check (strive#20), but drawn from tokens all the same. ===== */
+.stage.tall { position: relative; min-height: 660px; align-content: start; overflow: hidden; }
+.exh { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-8); }
+.exh h4 { margin: 0; font: var(--type-title-medium); }
+.exh small { display: block; font: var(--type-body-small); color: var(--color-on-surface-variant); }
+.ex { display: grid; gap: var(--space-8); }
+.badge { position: relative; width: var(--space-32); height: var(--space-32); border-radius: var(--shape-full); display: grid; place-items: center;
+  background: var(--color-surface-container-highest); color: var(--color-on-surface); font: var(--type-title-small); font-variant-numeric: tabular-nums; flex: none; }
+.badge::after { content: ""; position: absolute; inset: calc((var(--space-32) - var(--size-touch)) / 2); } /* 44 pt tap area */
+.badge.w { color: var(--color-tertiary); }
+.ok { width: var(--size-touch); height: var(--size-touch); border-radius: var(--shape-medium); display: grid; place-items: center;
+  background: var(--color-surface-container-highest); color: var(--color-on-surface-variant); font: var(--type-title-medium); flex: none; }
+.done .ok, .ok.on { background: var(--color-primary); color: var(--color-on-primary); }
+.rest { text-align: center; font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+.arrow { color: var(--color-primary); font: var(--type-label-medium); margin-left: var(--space-4); }
+.prev { font: var(--type-body-small); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rirrow { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: var(--space-8); }
+.rirrow > span { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+
+/* S1: every set is one row of joined tiles. */
+.s1 .srow { display: grid; grid-template-columns: var(--space-32) 1fr var(--space-48) var(--space-40) var(--size-touch); align-items: center; gap: var(--space-8);
+  background: var(--color-surface); padding: var(--space-8) var(--space-12); border-radius: var(--shape-extra-small); }
+.s1 .srow:first-child { border-top-left-radius: var(--shape-large); border-top-right-radius: var(--shape-large); }
+.s1 .sets > :last-child { border-bottom-left-radius: var(--shape-large); border-bottom-right-radius: var(--shape-large); }
+.s1 .sets { display: grid; gap: var(--space-4); }
+.s1 .f { background: var(--color-surface-container-highest); border-radius: var(--shape-small); text-align: center; font: var(--type-title-medium);
+  font-variant-numeric: tabular-nums; padding: var(--space-8) 0; white-space: nowrap; }
+.s1 .f.hint { color: var(--color-on-surface-variant); }
+.s1 .done .f { background: none; }
+.s1 .cur-extra { background: var(--color-surface); padding: var(--space-4) var(--space-12) var(--space-12); border-radius: var(--shape-extra-small); }
+.s1 .rest { background: var(--color-surface); border-radius: var(--shape-extra-small); padding: var(--space-4); }
+
+/* S2 and S3: logged and coming sets are compact lines; the set you are on gets the big fields. */
+.crow { display: grid; grid-template-columns: var(--space-32) 1fr auto; align-items: center; gap: var(--space-12); padding: var(--space-8) var(--space-16);
+  min-height: var(--size-touch); font: var(--type-body-large); font-variant-numeric: tabular-nums; }
+.crow .v.hint { color: var(--color-on-surface-variant); }
+.crow .tick { color: var(--color-primary); font: var(--type-title-medium); }
+.crow.cur { box-shadow: inset 0 0 0 var(--border-focus) var(--color-primary); border-radius: var(--shape-large); }
+.crest { padding: 0 var(--space-16) var(--space-4) calc(var(--space-16) + var(--space-32) + var(--space-12)); font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.focus { display: grid; gap: var(--space-12); }
+.focus .top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-8); }
+.focus .top b { font: var(--type-title-medium); }
+.s2 .card.focus { margin-block: var(--space-4); }
+.dock { position: absolute; left: 0; right: 0; bottom: 0; border-radius: var(--shape-extra-large) var(--shape-extra-large) 0 0;
+  padding: var(--space-16); padding-bottom: calc(var(--space-16) + env(safe-area-inset-bottom, 0px)); display: grid; gap: var(--space-12); }
+.s3 .list { margin-bottom: var(--space-4); }
+.s3 .spacer { height: 0; }
+.float.timer[hidden] { display: none; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="label">strive#17 · Strength screens</div>
+    <h1>Strive strength</h1>
+    <p class="lede">Sketches for the strength screens, one choice at a time, built from the components in <code>16-components</code>. The content of every screen was decided first, in 47 questions on strive#17. Judge sizes on the phone: each sketch runs the full width of the screen there.</p>
+  </header>
+
+  <div class="seg" role="group" aria-label="Scheme" id="scheme">
+    <button type="button" data-scheme="" aria-pressed="true">System</button>
+    <button type="button" data-scheme="scheme-light" aria-pressed="false">Light</button>
+    <button type="button" data-scheme="scheme-dark" aria-pressed="false">Dark</button>
+  </div>
+
+  <section aria-labelledby="q-set">
+    <h2 id="q-set">Choice 1: the set row in Active workout</h2>
+    <p>Logging a set is what the app is for, so this is drawn first. Each sketch is Bänkpress with a warm-up set and one working set logged, set 2 up next, and set 3 to come. The app suggests 82,5 kg (↑) because last time reached the top of the range with RIR to spare. <strong>Tap ✓ to log set 2</strong> and the rest timer starts; tap an RIR to add it. The counter shows the taps the set took. The fields open the keypad, which is the next choice, so here they only show their hints.</p>
+    <div class="options">
+      <div class="option">
+        <h3>S1 · A row per set</h3>
+        <p>Every set is the same row of joined tiles: badge, last time, weight, reps, ✓. RIR opens under the set you are on. Everything is visible at once; the ✓ sits at the right edge of each row.</p>
+        <div class="stage tall bleed s1" data-opt="s1"></div>
+        <div class="counter">Last set took <strong>–</strong> taps</div>
+      </div>
+      <div class="option">
+        <h3>S2 · The next set opens up</h3>
+        <p>Logged and coming sets are short lines. The set you are on opens into a card with big fields, RIR and one wide "Logga set" button. Fewer, bigger targets; the card moves down the list as you go.</p>
+        <div class="stage tall bleed s2" data-opt="s2"></div>
+        <div class="counter">Last set took <strong>–</strong> taps</div>
+      </div>
+      <div class="option">
+        <h3>S3 · A logging dock at the bottom</h3>
+        <p>The sets are short lines; the one you are on is outlined. Its fields, RIR and "Logga set" sit in a glass dock at the bottom of the screen, under your thumb, whichever exercise you scroll to. The rest timer floats just above the dock.</p>
+        <div class="stage tall bleed s3" data-opt="s3"></div>
+        <div class="counter">Last set took <strong>–</strong> taps</div>
+      </div>
+    </div>
+    <p><strong>Recommendation: S3.</strong> The issue asks for one hand between sets. In S3 every control for the next set stays in the bottom third of the screen, where the thumb rests, while the list above shows what you did. S1 puts ✓ at the right edge of a row that moves as you log; S2 keeps the targets large but moves them down the screen set by set.</p>
+  </section>
+
+  <section aria-labelledby="dec">
+    <h2 id="dec">Decided</h2>
+    <p>Every screen's content is decided in the grilling on <a href="https://github.com/Carlsmeister/strive/issues/17">strive#17</a>, Q1–Q47. The rules every sketch follows: tokens only; components from 16; Strong is inspiration for functions, never for looks; teal only for what can be tapped or is selected; glass only on controls and overlays; one set logged in three taps at most.</p>
+  </section>
+
+  <section aria-labelledby="devs">
+    <h2 id="devs">Deviations from Apple's guidelines</h2>
+    <p>None on this page yet. Each one found while sketching is listed here, with its cost, before Carl decides.</p>
+  </section>
+</div>
+
+<script src="components.js"></script>
+<script>
+// One exercise, Bänkpress: a warm-up and a working set logged, set 2 next. Last time is the Förra value.
+const START = () => [
+  { badge: "W", w: "40", r: "10", rir: null, prev: "40 × 10", done: true, warm: true },
+  { badge: "1", w: "80", r: "8", rir: 2, prev: "80 × 8 @3", done: true },
+  { badge: "2", w: "82,5", r: "8", rir: null, prev: "80 × 8 @3", up: true, done: false },
+  { badge: "3", w: "82,5", r: "8", rir: null, prev: "80 × 7 @2", up: true, done: false },
+];
+const RIRS = ["0", "1", "2", "3", "4+"];
+const fmt = s => `${s.w} × ${s.r}${s.rir !== null ? " @" + RIRS[s.rir].replace("+", "") : ""}`;
+const head = `<div class="exh"><div><h4>Bänkpress</h4><small>Mål 4 × 6–8 @ 2–3 · vila 2:00</small></div>
+  <button type="button" class="press icon-btn" aria-label="Fler val för Bänkpress"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button></div>`;
+const rirRow = s => `<div class="rirrow"><span>RIR</span><div class="segc" role="group" aria-label="RIR">${RIRS.map((x, i) =>
+  `<button type="button" class="press" data-rir="${i}" aria-pressed="${s.rir === i}">${x}</button>`).join("")}</div></div>`;
+const numRow = s => `<div class="numrow"><label>Vikt (kg)<span class="num"><input inputmode="decimal" placeholder="${s.w}" readonly aria-label="Vikt i kg"></span></label>
+  <label>Reps<span class="num"><input inputmode="numeric" placeholder="${s.r}" readonly aria-label="Reps"></span></label></div>`;
+const timer = `<div class="float glass timer" hidden><div class="mini"><div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="50"/><circle class="prog" cx="60" cy="60" r="50" pathLength="100" stroke-dasharray="100"/></svg></div>
+  <div class="stack"><span class="k">Vila</span><span class="time" role="timer">2:00</span></div></div>
+  <div class="actions"><div class="roundstep"><button type="button" class="press btn tinted" data-add="-15" aria-label="15 sekunder kortare">−</button><span>15 s</span><button type="button" class="press btn tinted" data-add="15" aria-label="15 sekunder längre">+</button></div>
+  <button type="button" class="press btn small tinted skip" data-skip>Hoppa över</button></div></div>`;
+
+const DRAW = {
+  s1(sets, cur) {
+    const rows = sets.map((s, i) => {
+      const row = `<div class="srow${s.done ? " done" : ""}"><button type="button" class="press badge${s.warm ? " w" : ""}" aria-label="Settyp">${s.badge}</button>
+        <span class="prev">${s.prev}</span><span class="f${s.done ? "" : " hint"}">${s.w}${s.up && !s.done ? '<span class="arrow">↑</span>' : ""}</span><span class="f${s.done ? "" : " hint"}">${s.r}</span>
+        <button type="button" class="press ok${s.done ? " on" : ""}" ${i === cur ? "data-log" : ""} aria-label="Logga set ${s.badge}">✓</button></div>`;
+      const extra = i === cur ? `<div class="cur-extra">${rirRow(s)}</div>` : "";
+      const rest = i < sets.length - 1 ? `<div class="rest">Vila 2:00</div>` : "";
+      return row + extra + rest;
+    }).join("");
+    return `<div class="ex">${head}<div class="sets">${rows}</div></div>`;
+  },
+  s2(sets, cur) {
+    const line = (s, i) => `<div class="crow${i === cur ? " cur" : ""}"><span class="badge${s.warm ? " w" : ""}">${s.badge}</span><span class="v${s.done ? "" : " hint"}">${fmt(s)}</span><span class="tick">${s.done ? "✓" : ""}</span></div>`;
+    const parts = sets.map((s, i) => i === cur
+      ? `<div class="card focus"><div class="top"><b>Set ${s.badge}</b><span class="prev">Förra ${s.prev}${s.up ? '<span class="arrow">↑ 2,5 kg</span>' : ""}</span></div>${numRow(s)}${rirRow(s)}
+         <button type="button" class="press btn filled" data-log>Logga set ${s.badge}</button></div>`
+      : `<div class="list">${line(s, i)}</div>`);
+    return `<div class="ex">${head}${parts.join("")}</div>`;
+  },
+  s3(sets, cur) {
+    const lines = sets.map((s, i) => `<div class="crow${i === cur ? " cur" : ""}"><span class="badge${s.warm ? " w" : ""}">${s.badge}</span><span class="v${s.done ? "" : " hint"}">${fmt(s)}</span><span class="tick">${s.done ? "✓" : ""}</span></div>`
+      + (i < sets.length - 1 ? `<div class="crest">Vila 2:00</div>` : "")).join("");
+    const s = sets[cur];
+    const dock = s ? `<div class="dock glass"><div class="focus"><div class="top"><b>Bänkpress · set ${s.badge}</b><span class="prev">Förra ${s.prev}${s.up ? '<span class="arrow">↑ 2,5 kg</span>' : ""}</span></div>
+      ${numRow(s)}${rirRow(s)}<button type="button" class="press btn filled" data-log>Logga set ${s.badge}</button></div></div>`
+      : `<div class="dock glass"><div class="focus"><div class="top"><b>Bänkpress klar</b></div><button type="button" class="press btn tinted">Nästa övning: Lutande hantelpress</button></div></div>`;
+    return `<div class="ex">${head}<div class="list">${lines}</div></div>${dock}`;
+  },
+};
+
+document.querySelectorAll(".stage[data-opt]").forEach(stage => {
+  const opt = stage.dataset.opt, counter = stage.nextElementSibling.querySelector("strong");
+  let sets = START(), taps = 0, left = 0, total = 120, clock = null;
+  const cur = () => sets.findIndex(s => !s.done);
+  function draw() {
+    stage.innerHTML = DRAW[opt](sets, cur()) + timer;
+    const t = stage.querySelector(".timer"), dock = stage.querySelector(".dock");
+    if (dock) t.style.bottom = `calc(${dock.offsetHeight}px + var(--space-12))`;
+    tick();
+  }
+  function tick() {
+    const t = stage.querySelector(".timer");
+    t.hidden = left <= 0;
+    t.querySelector(".time").textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+    t.querySelector(".prog").style.strokeDashoffset = 100 - left / total * 100;
+  }
+  stage.addEventListener("click", e => {
+    const i = cur(), s = sets[i];
+    const rir = e.target.closest("[data-rir]"), log = e.target.closest("[data-log]"), add = e.target.closest("[data-add]"), skip = e.target.closest("[data-skip]");
+    if (rir && s) { taps++; s.rir = +rir.dataset.rir; draw(); }
+    if (log && s) {
+      taps++; s.done = true; counter.textContent = taps; taps = 0;
+      left = total = 120; clearInterval(clock);
+      clock = setInterval(() => { left = Math.max(0, left - 1); tick(); if (!left) clearInterval(clock); }, 1000);
+      if (cur() === -1) setTimeout(() => { sets = START(); draw(); }, 4000);
+      draw();
+    }
+    if (add) { left = Math.max(0, left + +add.dataset.add); total = Math.max(total, left); tick(); }
+    if (skip) { left = 0; tick(); }
+  });
+  draw();
+});
+
+document.querySelectorAll("[data-scheme]").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".stage").forEach(s => {
+    s.classList.remove("scheme-light", "scheme-dark");
+    if (b.dataset.scheme) s.classList.add(b.dataset.scheme);
+  });
+  document.querySelectorAll("[data-scheme]").forEach(x => x.setAttribute("aria-pressed", x === b));
+}));
+</script>

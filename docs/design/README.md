@@ -8,6 +8,7 @@ Version 1 is designed here as clickable HTML and CSS prototypes before app code 
 | [`14-navigation/`](14-navigation/index.html) | #14 Information architecture and navigation | https://claude.ai/artifact/4k4iruXJJDBqG6352uVkZH |
 | [`15-tokens/`](15-tokens/index.html) | #15 Tokens as CSS custom properties | https://claude.ai/artifact/7A2qZDPnvdxupjX9aXuv3H |
 | [`16-components/`](16-components/index.html) | #16 Core components | https://claude.ai/artifact/Q1Cu1mfmb7WKeJhNvZWwVk |
+| [`17-strength/`](17-strength/index.html) | #17 Strength screens | https://claude.ai/artifact/WsDF57N3xVnqBJ74wZfjCX |
 
 ## How a prototype is made
 
