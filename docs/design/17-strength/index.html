@@ -191,7 +191,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 @media (prefers-reduced-motion: reduce) { .swipe > .crow, .swipe .del { transition: none; } }
 
 /* Choice 5: the frame around the sets. The list scrolls under a fixed title bar. */
-.stage[data-frame] { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0; padding: 0; height: 780px; }
+.stage[data-frame], .stage[data-summary] { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0; padding: 0; height: 780px; }
 .fbar { padding: var(--space-8) var(--space-16); }
 .fbar .wtitle { transition: opacity var(--motion-fade); }
 .stage[data-frame="f2"]:not(.scrolled) .fbar .wtitle { opacity: 0; pointer-events: none; }
@@ -231,6 +231,16 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .sgroup.bracket { gap: var(--space-24); }
 .sglabel, .vround { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
 .vround { padding-inline: var(--space-16); }
+
+/* Choice 7: the workout summary, which is also the session detail (Q28–Q30). */
+.smeta { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+.stats.four { grid-template-columns: repeat(4, 1fr); gap: var(--space-8); }
+.stats.four .stat { padding: var(--space-8); }
+.stats.four .stat .v { font: var(--type-title-large); }
+.pr { color: var(--color-tertiary); }
+.pr svg.icon { width: var(--space-16); height: var(--space-16); fill: currentColor; }
+.sumlist .row { text-align: left; }
+.sumlist .crow { padding-left: var(--space-32); }
 .menu .mrow { grid-template-columns: var(--size-icon) 1fr auto; gap: var(--space-8); padding: var(--space-12) var(--space-16) var(--space-12) var(--space-12); }
 .menu .mrow + .mrow { border-top: var(--border-hairline) solid var(--color-outline-variant); }
 .menu .mrow.danger { color: var(--color-error); }
@@ -525,6 +535,45 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
     </div>
   </section>
 
+  <section aria-labelledby="q-summary">
+    <h2 id="q-summary">Choice 7: the summary after a workout</h2>
+    <p>Summary and session detail are one screen (Q29): after a workout it ends in Klar, opened from history it has Redigera instead. Its content is decided (Q28–Q30): stat tiles for time, volume, sets and records; the records listed; per exercise the best set against last time and every set as logged, records marked with a star; session RPE 1–10 and the session note; editable start and end times; week and block. <strong>The same in all three:</strong> this workout added Dips and changed a rest, so Klar asks "Uppdatera mallen Push A?" in an alert that lists the changes. The open question is the order. <strong>Tap an RPE, then Klar.</strong> Switch to "Från historiken" to see the detail.</p>
+    <div class="seg" role="group" aria-label="Opened from" id="sumview">
+      <button type="button" data-hist="0" aria-pressed="true">Efter passet</button>
+      <button type="button" data-hist="1" aria-pressed="false">Från historiken</button>
+    </div>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th></th><th>U1</th><th>U2</th><th>U3</th></tr></thead>
+      <tbody>
+        <tr><td>RPE, Klar and Uppdatera</td><td>3</td><td>3</td><td>3</td></tr>
+        <tr><td>RPE without scrolling</td><td class="bad">no, it is 1 448 pt down</td><td class="best">yes, at the top</td><td>yes</td></tr>
+        <tr><td>Every set without a tap</td><td class="best">yes</td><td class="best">yes</td><td class="bad">tap the exercise</td></tr>
+        <tr><td>Height of the page</td><td>1 814 pt</td><td>1 814 pt</td><td class="best">1 091 pt</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>U1 · The numbers first</h3>
+        <p>Tiles, records and every exercise with its sets, then RPE and the note, then the times. Reads like a report.</p>
+        <div class="stage bleed" data-summary="u1"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>U2 · How it felt first</h3>
+        <p>RPE and the note on top, where you are as you finish, then the tiles, records, exercises and times.</p>
+        <div class="stage bleed" data-summary="u2"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>U3 · Records first, exercises folded</h3>
+        <p>The records in a card on top, four small tiles, RPE and the note, then one row per exercise with its best set. Tap an exercise to see its sets.</p>
+        <div class="stage bleed" data-summary="u3"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: U2.</strong> The screen asks two things of you, how hard it was and what to remember, and U2 asks them first, while you still know. The numbers follow on the same scroll, and every set stays visible, which session detail needs when you look back. U3 is the most rewarding to open, but folds away the sets you came to check.</p>
+  </section>
+
   <section aria-labelledby="dec">
     <h2 id="dec">Decided</h2>
     <p>Every screen's content is decided in the grilling on <a href="https://github.com/Carlsmeister/strive/issues/17">strive#17</a>, Q1–Q47. The rules every sketch follows: tokens only; components from 16; Strong is inspiration for functions, never for looks; teal only for what can be tapped or is selected; glass only on controls and overlays; one set logged in three taps at most.</p>
@@ -535,6 +584,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
     <p>Accepted for now, because Carl is the only user. Listed so they are cheap to fix if Strive is ever submitted to the App Store.</p>
     <ul>
       <li><strong>RIR 4 or more</strong> is chosen from a row of 4–10 that the 4+ segment opens in the dock; the segment then shows the value (Carl, 2026-10-24). An RIR of 4 or more therefore costs one tap more, and joins Q13's listed exceptions. Not a deviation; listed here so the cost is visible.</li>
+      <li><strong>Session RPE is a segmented row of ten</strong> on the summary (Q28). Apple, Segmented controls: on iPhone, keep to about five segments. Each segment is about 34 pt wide and stays 44 pt tall. The fix is a picker or a 1–10 slider, which costs a tap or a drag more.</li>
       <li><strong>RIR segments are about 29 pt wide</strong> in the dock, because RIR shares its row with the rest time (Carl, 2026-10-24). Apple, Accessibility: a hit target of 44 × 44 pt by default, 28 × 28 pt at minimum. They stay 44 pt tall and above the minimum. The fix is RIR on a row of its own, full width, which squeezes the rest time again.</li>
     </ul>
   </section>
@@ -1114,6 +1164,70 @@ document.querySelectorAll(".stage[data-frame]").forEach(stage => {
   draw();
 });
 setInterval(() => FRAMES.forEach(f => f()), 1000);
+
+// Choice 7: the summary of Push A, which added Dips and lengthened a rest against its template.
+ICONS.star = '<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>';
+const SUM_EX = [
+  { n: "Bänkpress", best: "82,5 × 8 · ↑ +2,5 kg mot förra", note: "Kändes stark idag",
+    sets: [["W", "40 × 10"], ["1", "80 × 8 @2"], ["2", "82,5 × 8 @2", 1], ["3", "82,5 × 7 @1"]] },
+  { n: "Lutande hantelpress", best: "26 × 10 · samma som förra", sets: [["1", "26 × 10 @2"], ["2", "26 × 10 @2"], ["3", "26 × 10 @1"]] },
+  { n: "Sidolyft", best: "10 × 13 · ↑ +1 rep mot förra", sets: [["1", "10 × 12 @3"], ["2", "10 × 13 @2", 1], ["3", "10 × 12 @1"]] },
+  { n: "Dips", best: "+10 × 8 · ↓ −1 rep mot förra", sets: [["1", "+10 × 8 @2"], ["2", "+10 × 7 @1"]] },
+];
+const SUM_PR = [["Bänkpress", "82,5 × 8", "+2,5 kg"], ["Sidolyft", "10 × 13", "+1 rep"]];
+let sumHist = false;
+const SUMS = [];
+document.querySelectorAll(".stage[data-summary]").forEach(stage => {
+  const opt = stage.dataset.summary, counter = stage.nextElementSibling;
+  let rpe = null, alert = false, open = -1, taps = 0;
+  const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; };
+  const pr = on => on ? `<span class="pr" aria-label="Rekord">${ico("star")}</span>` : "<span></span>";
+  const tiles = four => `<div class="stats${four ? " four" : ""}">${[["Tid", "1:02", "h"], ["Volym", "8 420", "kg"], ["Set", "13", ""], ["Rekord", "2", ""]].map(([k, v, u]) =>
+    `<div class="stat"><span class="k">${k}</span><span class="v">${v}${u && !four ? `<small>${u}</small>` : ""}</span></div>`).join("")}</div>`;
+  const records = card => card
+    ? `<div class="card"><span class="eyebrow">2 rekord</span>${SUM_PR.map(([n, v, d]) => `<div class="exh"><div><h4>${n} · ${v}</h4><small>${d} mot förra rekordet</small></div><span class="pr">${ico("star")}</span></div>`).join("")}</div>`
+    : `<div class="group"><h4>Rekord</h4><div class="list">${SUM_PR.map(([n, v, d]) => `<div class="row"><span>${n}<small>${v}</small></span><span class="val">${d}</span></div>`).join("")}</div></div>`;
+  const feel = () => `<div class="group"><h4>Hur tungt var passet? RPE</h4><div class="segc" role="group" aria-label="RPE">${[...Array(10).keys()].map(i =>
+    `<button type="button" class="press" data-rpe="${i + 1}" aria-pressed="${rpe === i + 1}">${i + 1}</button>`).join("")}</div>
+    <div class="field"><input value="${sumHist ? "Sov dåligt, men energin var bra" : ""}" placeholder="Passanteckning: energi, sömn, smärta" aria-label="Passanteckning"></div></div>`;
+  const setLines = e => e.sets.map(([b, v, isPr]) => `<div class="crow"><span class="badge${b === "W" ? " w" : ""}">${b}</span><span class="v">${v}</span>${pr(isPr)}</div>`).join("");
+  const exercises = () => SUM_EX.map(e => `<div class="ex"><div class="exh"><div><h4>${e.n}</h4><small>Bäst ${e.best}</small></div></div>${
+    e.note ? `<div class="exnotes"><p><b>Idag</b><span>${e.note}</span></p></div>` : ""}<div class="list">${setLines(e)}</div></div>`).join("");
+  const folded = () => `<div class="group"><h4>Övningar</h4><div class="list sumlist">${SUM_EX.map((e, j) => `<button type="button" class="press row" data-open="${j}" aria-expanded="${open === j}"><span>${e.n}<small>Bäst ${e.best}</small></span><span class="chev">${ico(open === j ? "chevD" : "chevR")}</span></button>${
+    open === j ? setLines(e) : ""}`).join("")}</div></div>`;
+  const times = () => `<div class="group"><h4>Tid</h4><div class="list">${[["Start", "17:02"], ["Slut", "18:04"]].map(([k, v]) => `<button type="button" class="press row" data-time="${k}"><span>${k}</span><span class="val">${v}</span></button>`).join("")}
+    <div class="row"><span>Vecka</span><span class="val">3 · block 1</span></div></div></div>`;
+  const ORDER = {
+    u1: () => tiles() + records() + exercises() + feel() + times(),
+    u2: () => feel() + tiles() + records() + exercises() + times(),
+    u3: () => records(true) + tiles(true) + feel() + folded() + times(),
+  };
+  const alertHtml = () => `<div class="scrim"></div><div class="center"><div class="alert"><h5>Uppdatera mallen Push A?</h5><p>Passet skiljer sig från mallen:<br>Dips, 2 set, lades till<br>Vilan i Bänkpress, 2:00 → 2:30</p>
+    <div class="inline"><button type="button" class="press btn tinted" data-a="Inte nu">Inte nu</button><button type="button" class="press btn filled" data-a="Uppdatera">Uppdatera</button></div></div></div>`;
+  function draw() {
+    const top = stage.querySelector(".wscroll")?.scrollTop ?? 0;
+    stage.innerHTML = `<div class="titlebar fbar">${sumHist ? `<button type="button" class="press icon-btn glass" aria-label="Tillbaka">${ico("chevL")}</button>` : "<span></span>"}<div class="wtitle"><b>Push A</b></div>
+      <button type="button" class="press btn small ${sumHist ? "tinted" : "filled"}" data-k>${sumHist ? "Redigera" : "Klar"}</button></div>
+      <div class="wscroll"><div class="smeta">Lördag 24 okt · 17:02–18:04 · vecka 3, block 1</div>${ORDER[opt]()}</div>${alert ? alertHtml() : ""}`;
+    stage.querySelector(".wscroll").scrollTop = top;
+  }
+  stage.addEventListener("click", e => {
+    const q = sel => e.target.closest(sel); taps++;
+    if (alert) { const a = q("[data-a]"); if (!a) return taps--; alert = false; done(`Klar › ${a.dataset.a}, tillbaka dit passet startades`); return draw(); }
+    if (q("[data-rpe]")) { const v = +q("[data-rpe]").dataset.rpe; rpe = rpe === v ? null : v; return draw(); }
+    if (q("[data-open]")) { const j = +q("[data-open]").dataset.open; open = open === j ? -1 : j; return draw(); }
+    if (q("[data-time]")) return done(`${q("[data-time]").dataset.time}, som ändras med ett tidshjul`);
+    if (q("[data-k]")) { if (sumHist) return done("Redigera, med passets rader och knappsats"); alert = true; return draw(); }
+    if (!q("input")) taps--;  // a tap on nothing
+  });
+  SUMS.push(() => { rpe = sumHist ? 7 : null; alert = false; open = -1; draw(); });
+  draw();
+});
+document.querySelectorAll("[data-hist]").forEach(b => b.addEventListener("click", () => {
+  sumHist = b.dataset.hist === "1";
+  document.querySelectorAll("[data-hist]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  SUMS.forEach(f => f());
+}));
 
 document.querySelectorAll("[data-scheme]").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll(".stage").forEach(s => {
