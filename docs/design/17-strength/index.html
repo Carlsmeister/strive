@@ -227,7 +227,8 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .tag { display: inline-grid; place-items: center; min-width: var(--space-20); height: var(--space-20); margin-right: var(--space-8); border-radius: var(--shape-extra-small);
   background: var(--color-surface-container-highest); font: var(--type-label-medium); color: var(--color-on-surface-variant); }
 .sgroup { display: grid; gap: var(--space-12); }
-.sgroup.bracket { gap: var(--space-24); border-left: var(--border-focus) solid var(--color-outline-variant); padding-left: var(--space-12); }
+.sgroup.bracket, .sgroup.edge { border-left: var(--border-focus) solid var(--color-outline-variant); padding-left: var(--space-12); }
+.sgroup.bracket { gap: var(--space-24); }
 .sglabel, .vround { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
 .vround { padding-inline: var(--space-16); }
 .menu .mrow { grid-template-columns: var(--size-icon) 1fr auto; gap: var(--space-8); padding: var(--space-12) var(--space-16) var(--space-12) var(--space-12); }
@@ -513,6 +514,15 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
       </div>
     </div>
     <p><strong>Recommendation: G2.</strong> The list is the order you lift, so after each ✓ the next set is the line below, as everywhere else in the workout, and the rest sits exactly where you take it. G1 keeps each exercise readable but sends your eye between two lists every set. G3 says the same as G2 with a heading per round, at the cost of height.</p>
+    <p><strong>Chosen: G2, with G1's line at the edge</strong> (Carl, 2026-10-24). One list in the order you lift, A and B on each line, and the line at the left that holds the superset together. G1 and G3 stay above as the record of why.</p>
+    <div class="options">
+      <div class="option">
+        <h3>Chosen · G2 with the edge line</h3>
+        <p>Log A, then B: the rest starts after B.</p>
+        <div class="stage bleed" data-frame="g2b"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
   </section>
 
   <section aria-labelledby="dec">
@@ -1021,8 +1031,8 @@ document.querySelectorAll(".stage[data-frame]").forEach(stage => {
       const heads = grp.map((k, n) => `<div class="ex">${head(exs[k], k, "ABCD"[n])}</div>`).join("");
       out.push(opt === "g1"
         ? `<div class="sgroup bracket">${label}${grp.map(k => `<div class="ex">${head(exs[k], k)}<div class="list">${exs[k].sets.map((x, i) => line(x, k, i) + (k === last && i < exs[k].sets.length - 1 ? crest(e.r) : "")).join("")}</div></div>`).join("")}</div>`
-        : opt === "g2"
-        ? `<div class="sgroup">${label}${heads}<div class="list">${rounds.map(r => round(r) + (r < rounds.length - 1 ? crest(e.r) : "")).join("")}</div></div>`
+        : opt.startsWith("g2")
+        ? `<div class="sgroup${opt === "g2b" ? " edge" : ""}">${label}${heads}<div class="list">${rounds.map(r => round(r) + (r < rounds.length - 1 ? crest(e.r) : "")).join("")}</div></div>`
         : `<div class="sgroup">${label}${heads}${rounds.map(r => `<div class="vround">Varv ${r + 1}</div><div class="list">${round(r)}</div>`).join(crest(e.r))}</div>`);
     }
     return out.join("");
