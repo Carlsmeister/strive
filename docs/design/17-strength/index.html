@@ -233,7 +233,14 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .vround { padding-inline: var(--space-16); }
 
 /* Choice 7: the workout summary, which is also the session detail (Q28–Q30). */
-.smeta { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+.sdate { display: grid; gap: var(--space-4); }
+.sdate h3 { margin: 0; font: var(--type-headline-small); }
+.smeta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4) var(--space-16); font: var(--type-body-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+.smeta span { display: inline-flex; align-items: center; gap: var(--space-4); }
+.smeta svg.icon { width: var(--space-16); height: var(--space-16); }
+.stats.three { grid-template-columns: repeat(3, 1fr); gap: var(--space-8); }
+.stats.three .stat { padding: var(--space-12); }
+.stats.three .stat .v { font: var(--type-headline-small); }
 .stats.four { grid-template-columns: repeat(4, 1fr); gap: var(--space-8); }
 .stats.four .stat { padding: var(--space-8); }
 .stats.four .stat .v { font: var(--type-title-large); }
@@ -572,6 +579,25 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
       </div>
     </div>
     <p><strong>Recommendation: U2.</strong> The screen asks two things of you, how hard it was and what to remember, and U2 asks them first, while you still know. The numbers follow on the same scroll, and every set stays visible, which session detail needs when you look back. U3 is the most rewarding to open, but folds away the sets you came to check.</p>
+    <p><strong>Chosen: U1's top with U3's exercises</strong> (Carl, 2026-10-24). Tiles and records first, then one row per exercise with its best set, folded; RPE, the note and the times follow. The date heading is larger and split into time and week in all four sketches. <strong>Open: the volume tile.</strong> Carl finds kilos lifted strange for a gym session. Pick what takes its place below:</p>
+    <ul>
+      <li><strong>Snitt-RIR</strong> (recommended): how close to failure the working sets went, against the plan's target. It answers "did I train hard enough", which RIR is logged for. Empty when no RIR was logged.</li>
+      <li><strong>Hårda set</strong>: working sets at RIR 3 or less, the count hypertrophy research measures. With RIR targets of 2–3 it nearly always equals the working sets, so it repeats the Set tile.</li>
+      <li><strong>None</strong>: three tiles in a row, time, sets and records.</li>
+    </ul>
+    <div class="seg" role="group" aria-label="The fourth tile">
+      <button type="button" data-slot="rir" aria-pressed="true">Snitt-RIR</button>
+      <button type="button" data-slot="hard" aria-pressed="false">Hårda set</button>
+      <button type="button" data-slot="none" aria-pressed="false">None</button>
+    </div>
+    <div class="options">
+      <div class="option">
+        <h3>Chosen · U1 and U3</h3>
+        <p>Tap an exercise to see its sets; try the three tiles with the switch above.</p>
+        <div class="stage bleed" data-summary="u13" data-slot="rir"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
   </section>
 
   <section aria-labelledby="dec">
@@ -1182,8 +1208,9 @@ document.querySelectorAll(".stage[data-summary]").forEach(stage => {
   let rpe = null, alert = false, open = -1, taps = 0;
   const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; };
   const pr = on => on ? `<span class="pr" aria-label="Rekord">${ico("star")}</span>` : "<span></span>";
-  const tiles = four => `<div class="stats${four ? " four" : ""}">${[["Tid", "1:02", "h"], ["Volym", "8 420", "kg"], ["Set", "13", ""], ["Rekord", "2", ""]].map(([k, v, u]) =>
-    `<div class="stat"><span class="k">${k}</span><span class="v">${v}${u && !four ? `<small>${u}</small>` : ""}</span></div>`).join("")}</div>`;
+  const SLOT = { vol: ["Volym", "8 420", "kg"], rir: ["Snitt-RIR", "1,7", "mål 2–3"], hard: ["Hårda set", "11", "av 11"], none: null };
+  const tiles = four => { const t = [["Tid", "1:02", "h"], SLOT[stage.dataset.slot || "vol"], ["Set", "12", ""], ["Rekord", "2", ""]].filter(Boolean), cls = four ? " four" : t.length === 3 ? " three" : "";
+    return `<div class="stats${cls}">${t.map(([k, v, u]) => `<div class="stat"><span class="k">${k}</span><span class="v">${v}${u && !cls ? `<small>${u}</small>` : ""}</span></div>`).join("")}</div>`; };
   const records = card => card
     ? `<div class="card"><span class="eyebrow">2 rekord</span>${SUM_PR.map(([n, v, d]) => `<div class="exh"><div><h4>${n} · ${v}</h4><small>${d} mot förra rekordet</small></div><span class="pr">${ico("star")}</span></div>`).join("")}</div>`
     : `<div class="group"><h4>Rekord</h4><div class="list">${SUM_PR.map(([n, v, d]) => `<div class="row"><span>${n}<small>${v}</small></span><span class="val">${d}</span></div>`).join("")}</div></div>`;
@@ -1201,6 +1228,7 @@ document.querySelectorAll(".stage[data-summary]").forEach(stage => {
     u1: () => tiles() + records() + exercises() + feel() + times(),
     u2: () => feel() + tiles() + records() + exercises() + times(),
     u3: () => records(true) + tiles(true) + feel() + folded() + times(),
+    u13: () => tiles() + records() + folded() + feel() + times(),
   };
   const alertHtml = () => `<div class="scrim"></div><div class="center"><div class="alert"><h5>Uppdatera mallen Push A?</h5><p>Passet skiljer sig från mallen:<br>Dips, 2 set, lades till<br>Vilan i Bänkpress, 2:00 → 2:30</p>
     <div class="inline"><button type="button" class="press btn tinted" data-a="Inte nu">Inte nu</button><button type="button" class="press btn filled" data-a="Uppdatera">Uppdatera</button></div></div></div>`;
@@ -1208,7 +1236,7 @@ document.querySelectorAll(".stage[data-summary]").forEach(stage => {
     const top = stage.querySelector(".wscroll")?.scrollTop ?? 0;
     stage.innerHTML = `<div class="titlebar fbar">${sumHist ? `<button type="button" class="press icon-btn glass" aria-label="Tillbaka">${ico("chevL")}</button>` : "<span></span>"}<div class="wtitle"><b>Push A</b></div>
       <button type="button" class="press btn small ${sumHist ? "tinted" : "filled"}" data-k>${sumHist ? "Redigera" : "Klar"}</button></div>
-      <div class="wscroll"><div class="smeta">Lördag 24 okt · 17:02–18:04 · vecka 3, block 1</div>${ORDER[opt]()}</div>${alert ? alertHtml() : ""}`;
+      <div class="wscroll"><div class="sdate"><h3>Lördag 24 oktober</h3><div class="smeta"><span>${ico("clock")}17:02–18:04</span><span>${ico("plan")}Vecka 3 · block 1</span></div></div>${ORDER[opt]()}</div>${alert ? alertHtml() : ""}`;
     stage.querySelector(".wscroll").scrollTop = top;
   }
   stage.addEventListener("click", e => {
@@ -1221,8 +1249,14 @@ document.querySelectorAll(".stage[data-summary]").forEach(stage => {
     if (!q("input")) taps--;  // a tap on nothing
   });
   SUMS.push(() => { rpe = sumHist ? 7 : null; alert = false; open = -1; draw(); });
+  stage.redraw = draw;
   draw();
 });
+document.querySelectorAll("[data-slot]").forEach(b => b.addEventListener("click", () => {
+  const st = document.querySelector('[data-summary="u13"]');
+  st.dataset.slot = b.dataset.slot; st.redraw();
+  document.querySelectorAll("[data-slot]").forEach(x => x.setAttribute("aria-pressed", x === b));
+}));
 document.querySelectorAll("[data-hist]").forEach(b => b.addEventListener("click", () => {
   sumHist = b.dataset.hist === "1";
   document.querySelectorAll("[data-hist]").forEach(x => x.setAttribute("aria-pressed", x === b));
