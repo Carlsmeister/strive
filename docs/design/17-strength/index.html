@@ -151,6 +151,25 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .kp3 [data-key="−"], .kp3 [data-key="+"] { min-width: calc(var(--size-touch) + var(--space-16)); min-height: var(--size-touch); font: var(--type-title-large); }
 .grow { flex: 1; }
 .float.timer[hidden] { display: none; }
+
+/* Choice 3: the plate calculator. The bar's drawing is SVG units, like a chart's. */
+.stage.tall[data-dock^="p"] { min-height: 780px; }
+.sleeve { display: block; width: 100%; height: auto; }
+.sleeve .shaft { fill: var(--color-outline-variant); }
+.sleeve .collar { fill: var(--color-outline); }
+.sleeve .plate { fill: var(--color-on-surface); }
+.pl { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: var(--space-12); }
+.pl-txt { display: grid; text-align: right; }
+.pl-txt b { font: var(--type-title-small); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pl-txt > span { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.warn { color: var(--color-error); }
+.pline { display: flex; align-items: center; gap: var(--space-8); font-variant-numeric: tabular-nums; }
+.pline .sleeve { width: auto; height: var(--space-40); }
+.kp.k4 { grid-template-columns: repeat(4, 1fr); }
+.dk .psheet { background: var(--material-thick); }
+.psheet .total { display: flex; justify-content: space-between; align-items: center; gap: var(--space-8); }
+.psheet .total b { font: var(--type-display-small); font-variant-numeric: tabular-nums; }
+.psheet .sheet-head > :last-child { justify-self: end; font: var(--type-label-large); }
 </style>
 
 <div class="wrap">
@@ -257,6 +276,46 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
       </div>
     </div>
     <p><strong>Chosen: K3, with "Logga ›" on the rest field</strong> (Carl, 2026-10-24). Its − and + were made a little larger: a full 44 pt tall and wider than the other small keys. K1 and K2 stay as the record of why.</p>
+  </section>
+
+  <section aria-labelledby="q-plates">
+    <h2 id="q-plates">Choice 3: the plate calculator</h2>
+    <p>Q22's plate calculator, in the chosen dock and keypad. It shows the plates per side for the weight, fewest plates first, and its plate keys build a weight in reverse: each key puts that plate on both sides, ⌫ takes the outermost off, and Tom leaves the bare bar. Plates keyed in are drawn as keyed, so 20 + 10 stays 20 + 10; a typed weight is drawn fewest plates first. It appears only for barbells and plate-loaded machines. The bar is chosen per exercise; here "Stång 20" steps through them, a stand-in for the pull-down menu a later choice draws. All seven plates are ticked, as if in Settings. Skivor sits only on the weight field. <strong>Set 2 is 82,5 kg: find what to load, then log it.</strong></p>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th>Taps</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th></tr></thead>
+      <tbody>
+        <tr><td>See the next set's plates</td><td>3</td><td>3</td><td>1</td><td class="best">0</td></tr>
+        <tr><td>…then log it as it stands</td><td>4</td><td class="bad">5</td><td>2</td><td class="best">1</td></tr>
+        <tr><td>Build 80 kg from plates (20 + 10 a side)</td><td>6</td><td>7</td><td>6</td><td>6</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>P1 · Plate keys in the keypad</h3>
+        <p>Skivor swaps the digits for plate keys, and the dock draws the bar with its plates per side. 123 brings the digits back. Nothing new opens, and reading the plates costs three taps.</p>
+        <div class="stage tall bleed" data-dock="p1"></div>
+        <div class="counter">Last set took <strong>–</strong> taps</div>
+      </div>
+      <div class="option">
+        <h3>P2 · A sheet with the whole bar</h3>
+        <p>Skivor opens a sheet: the total, the bar drawn large, the bar type as a segmented control and the plates as keys. Klar writes the weight into the field, Avbryt leaves it. The most room, one layer more and a tap more to close.</p>
+        <div class="stage tall bleed" data-dock="p2"></div>
+        <div class="counter">Last set took <strong>–</strong> taps</div>
+      </div>
+      <div class="option">
+        <h3>P3 · The plates in the dock</h3>
+        <p>The bar and its plates always sit under the weight in the dock, so opening a set shows them. Skivor swaps the digits for plate keys, as in P1. One tap to read; the dock is a row taller for every barbell exercise.</p>
+        <div class="stage tall bleed" data-dock="p3"></div>
+        <div class="counter">Last set took <strong>–</strong> taps</div>
+      </div>
+      <div class="option">
+        <h3>P4 · The plates on the next set</h3>
+        <p>The set you are about to do shows its plates per side on a line under it in the list. You read them without a tap and log with the row's ✓ as before. Skivor swaps the digits for plate keys, as in P1, for building a weight.</p>
+        <div class="stage tall bleed" data-dock="p4"></div>
+        <div class="counter">Last set took <strong>–</strong> taps</div>
+      </div>
+    </div>
+    <p><strong>Recommendation: P4.</strong> At the bar the question is "what do I load?", and P4 answers it before you touch anything, beside the ✓ you log with. Only the next set gets the line, so the list grows by one line, not one per set. Building in reverse stays one key away, in the keypad.</p>
   </section>
 
   <section aria-labelledby="dec">
@@ -374,15 +433,35 @@ document.querySelectorAll(".stage[data-opt]").forEach(stage => {
 
 // Choice 1b: the dock, closed until a set is tapped. Every touch inside the stage counts as a tap.
 const DOCKS = { d1: { steps: true }, d2: {}, d3: { steps: true, quick: true }, d4: { steps: true, stay: true },
-  k1: { steps: true, quick: true, kp: "k1" }, k2: { steps: true, quick: true, kp: "k2" }, k3: { steps: true, quick: true, kp: "k3" } };
+  k1: { steps: true, quick: true, kp: "k1" }, k2: { steps: true, quick: true, kp: "k2" }, k3: { steps: true, quick: true, kp: "k3" },
+  p1: { steps: true, quick: true, kp: "k3", pk: true }, p2: { steps: true, quick: true, kp: "k3", sheet: true },
+  p3: { steps: true, quick: true, kp: "k3", pk: true, inDock: true }, p4: { steps: true, quick: true, kp: "k3", pk: true, onLine: true } };
 const nf = v => v.toLocaleString("sv-SE");
 const mmss = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 const STEP = { w: 2.5, r: 1, rest: 15 };
 const ORDER = ["w", "r", "rest"];
-// Plates per side on a 20 kg bar, fewest first (Q22).
-const plates = w => { let side = (w - 20) / 2; const out = [];
-  for (const p of [25, 20, 15, 10, 5, 2.5, 1.25]) while (side >= p - 1e-9) { out.push(nf(p)); side -= p; }
-  return w <= 20 ? "bara stången" : out.join(" + ") + (side > 1e-9 ? " (+" + nf(side) + " går inte)" : ""); };
+// Q22: the bars, and the plates, all ticked in Settings for the sketch.
+const BARS = [["Olympisk", 20], ["Kort", 15], ["EZ", 7.5], ["Hex", 25], ["Ingen", 0]];
+const PLATES = [25, 20, 15, 10, 5, 2.5, 1.25];
+// Plates per side, fewest first, and what is left per side that no plate makes.
+const load = (w, bar) => { let side = (w - bar) / 2; const out = [];
+  for (const p of PLATES) while (side >= p - 1e-9) { out.push(p); side -= p; }
+  return { out, left: side > 1e-9 ? side : 0, under: w < bar }; };
+const plates = w => { const { out, left } = load(w, 20);
+  return w <= 20 ? "bara stången" : out.map(nf).join(" + ") + (left ? " (+" + nf(left) + " går inte)" : ""); };
+const perSide = ({ out, left, under }) => under ? `<span class="warn">Lättare än stången</span>`
+    : (out.length ? out.map(nf).join(" + ") : "Tom stång") + (left ? ` <span class="warn">+${nf(left)} går inte</span>` : "");
+// One sleeve, collar on the left and plates outward, bigger plates taller.
+const PH = { 25: 64, 20: 58, 15: 52, 10: 44, 5: 34, 2.5: 28, 1.25: 22 }, PW = { 25: 16, 20: 14, 15: 13, 10: 11, 5: 9, 2.5: 8, 1.25: 7 };
+const sleeve = (out, vw = 200) => { let x = 22;
+  return `<svg class="sleeve" viewBox="0 0 ${vw} 72" aria-hidden="true"><rect class="shaft" x="0" y="32" width="${vw}" height="8" rx="2"/><rect class="collar" x="12" y="22" width="6" height="28" rx="2"/>${out.map(p => {
+    const r = `<rect class="plate" x="${x}" y="${36 - PH[p] / 2}" width="${PW[p]}" height="${PH[p]}" rx="2"/>`; x += PW[p] + 2; return r; }).join("")}</svg>`; };
+const barName = b => BARS[b][1] ? `Stång ${nf(BARS[b][1])}` : "Ingen stång";
+const panel = (l, b) => `<div class="pl">${sleeve(l.out)}<div class="pl-txt"><b>${perSide(l)}</b><span>per sida</span></div>
+  <button type="button" class="press btn small tinted" data-bar aria-label="Byt stång, nu ${BARS[b][0]} ${nf(BARS[b][1])} kg">${barName(b)}</button></div>`;
+const plateKeys = (cls, extra) => PLATES.map(p => `<button type="button" class="press${cls}" data-plate="${p}" aria-label="Lägg på ${nf(p)} kg per sida">${nf(p)}</button>`).join("")
+  + extra + `<button type="button" class="press${cls}" data-key="⌫p" aria-label="Ta av den yttersta skivan">⌫</button>`;
+const PK = '[data-plate], [data-key="Tom"], [data-key="⌫p"]';
 // Each keypad style draws the same keys; "next" is Nästa, or Logga › on the rest field.
 const KEYPADS = {
   k1: next => `<div class="kp k1">${["1","2","3","Dölj","4","5","6","Skivor","7","8","9","±",",","0","⌫",next].map(k =>
@@ -391,9 +470,12 @@ const KEYPADS = {
   k2: (next, fld) => `<div class="kp2"><div class="bigstep"><button type="button" class="press btn tinted" data-key="−">−</button><span>${fld === "rest" ? "15 s" : fld === "w" ? "2,5 kg" : "1 rep"}</span><button type="button" class="press btn tinted" data-key="+">+</button></div>
       <div class="kp k2">${["1","2","3","4","5","6","7","8","9",",","0","⌫"].map(k => `<button type="button" class="press" data-key="${k}">${k}</button>`).join("")}</div>
       <div class="inline nowrap"><button type="button" class="press btn small tinted" data-key="Dölj">Dölj</button><button type="button" class="press btn small tinted" data-key="Skivor">Skivor</button><button type="button" class="press btn filled grow" data-key="${next}">${next}</button></div></div>`,
-  k3: (next) => `<div class="kp3"><div class="inline nowrap"><button type="button" class="press btn small tinted" data-key="Dölj">Dölj</button><button type="button" class="press btn small tinted" data-key="Skivor">Skivor</button>
+  // With pm (plate mode) the digits give way to plate keys, and Skivor becomes 123.
+  k3: (next, fld, pm) => `<div class="kp3"><div class="inline nowrap"><button type="button" class="press btn small tinted" data-key="Dölj">Dölj</button>${fld !== "w" ? ""
+      : `<button type="button" class="press btn small tinted" data-key="${pm ? "123" : "Skivor"}">${pm ? "123" : "Skivor"}</button>`}
       <span class="grow"></span><button type="button" class="press btn small tinted" data-key="−">−</button><button type="button" class="press btn small tinted" data-key="+">+</button></div>
-      <div class="kp k3">${["1","2","3","4","5","6","7","8","9",",","0","⌫"].map(k => `<button type="button" class="press glass" data-key="${k}">${k}</button>`).join("")}</div>
+      <div class="kp k3">${pm ? plateKeys(" glass", `<button type="button" class="press glass small-key" data-key="Tom">Tom</button>`)
+        : ["1","2","3","4","5","6","7","8","9",",","0","⌫"].map(k => `<button type="button" class="press glass" data-key="${k}">${k}</button>`).join("")}</div>
       <button type="button" class="press btn filled" data-key="${next}">${next}</button></div>`,
 };
 document.querySelectorAll(".stage[data-dock]").forEach(stage => {
@@ -406,20 +488,48 @@ document.querySelectorAll(".stage[data-dock]").forEach(stage => {
     { badge: "3", w: 82.5, r: 8, rest: 120, rir: null, prev: "80 × 7 @2", up: true },
     { badge: "4", w: 82.5, r: 8, rest: 120, rir: null, prev: "80 × 7 @2", up: true },
   ];
-  let sets = fresh(), sel = -1, kp = null, typed = "", taps = 0, left = 0, total = 120, clock = null, showPlates = false, more = false;
+  // pm: the keypad shows plate keys. sheet, sw, sbar: P2's sheet, its weight and bar until Klar.
+  let sets = fresh(), sel = -1, kp = null, typed = "", taps = 0, left = 0, total = 120, clock = null, showPlates = false, more = false,
+    pm = false, bar = 0, sheet = false, sw = 0, sbar = 0, built = null;
   const show = s => `${nf(s.w)} × ${s.r}${s.rir !== null ? " @" + s.rir : ""}`;
+  // Plates keyed in are drawn as keyed, so 20 + 10 stays 20 + 10; a typed weight is drawn fewest plates first.
+  const loadOf = (w, kg) => { if (!built || built.w !== w || built.kg !== kg) return load(w, kg);
+    const rest = (w - kg) / 2 - built.out.reduce((a, b) => a + b, 0);
+    return { out: built.out, left: rest > 1e-9 ? rest : 0, under: w < kg }; };
+  // A plate key puts that plate on both sides, heaviest innermost; ⌫ takes the outermost off; Tom leaves the bare bar.
+  const plateKey = (el, w, kg) => {
+    const p = el.closest("[data-plate]"), out = [...loadOf(w, kg).out];
+    if (p) { out.push(+p.dataset.plate); out.sort((a, b) => b - a); w += 2 * p.dataset.plate; }
+    else if (el.closest('[data-key="Tom"]')) { out.length = 0; w = kg; }
+    else if (out.length) w -= 2 * out.pop();
+    built = { w, kg, out };
+    return w;
+  };
   function draw() {
+    if (kp !== "w") pm = false;
+    const kg = BARS[bar][1], nextI = sets.findIndex(x => !x.done);
     const rows = sets.map((s, i) => {
       const row = `<button type="button" class="press row crow${i === sel ? " cur" : ""}" data-i="${i}"><span class="badge${s.warm ? " w" : ""}">${s.badge}</span><span class="v${s.done ? "" : " hint"}">${show(s)}</span><span class="tick">${s.done ? "✓" : ""}</span></button>`;
       const quick = v.quick && !s.done ? `<button type="button" class="press ok" data-quick="${i}" aria-label="Logga set ${s.badge} som det står">✓</button>` : "";
-      return (v.quick ? `<div class="rowwrap">${row}${quick}</div>` : row) + (i < sets.length - 1 ? `<div class="crest">Vila ${mmss(s.rest)}</div>` : "");
+      const l = loadOf(s.w, kg);
+      const pline = v.onLine && i === nextI ? `<div class="crest pline">${sleeve(l.out, 110)}<span>${perSide(l)} per sida</span></div>` : "";
+      return (v.quick ? `<div class="rowwrap">${row}${quick}</div>` : row) + pline + (i < sets.length - 1 ? `<div class="crest">Vila ${mmss(s.rest)}</div>` : "");
     }).join("");
     const s = sets[sel];
+    const wNow = () => kp === "w" && typed ? parseFloat(typed.replace(",", ".")) || 0 : s.w;
+    const pPanel = s && (v.inDock || pm) ? panel(loadOf(wNow(), kg), bar) : "", sl = loadOf(sw, BARS[sbar][1]);
+    const sheetHtml = !sheet ? "" : `<div class="scrim"></div><div class="sheet glass psheet" role="dialog" aria-label="Skivor"><span class="grabber" aria-hidden="true"></span>
+      <div class="sheet-head"><button type="button" class="press btn text" data-sx="cancel">Avbryt</button><h5>Skivor</h5><button type="button" class="press btn text" data-sx="ok">Klar</button></div>
+      <div class="total"><b>${nf(sw)} kg</b><button type="button" class="press btn small tinted" data-key="Tom">Tom stång</button></div>
+      ${sleeve(sl.out)}<span class="caption">Per sida: ${perSide(sl)}</span>
+      <span class="caption">Stång (kg)</span><div class="segc" role="group" aria-label="Stång">${BARS.map(([n, b], i) =>
+        `<button type="button" class="press" data-sbar="${i}" aria-pressed="${i === sbar}" aria-label="${n} ${nf(b)} kg">${nf(b)}</button>`).join("")}</div>
+      <div class="kp k4">${plateKeys("", "")}</div></div>`;
     const val = k => kp === k && typed ? typed : k === "rest" ? mmss(s.rest) : nf(s[k]);
     const field = (k, label, aria) => `<label>${label}<span class="num${kp === k ? " editing" : ""}"><button type="button" class="press step" data-step="${k}" data-dir="-1" aria-label="Minska">−</button>
       <input readonly data-field="${k}" value="${val(k)}" aria-label="${aria}"><button type="button" class="press step" data-step="${k}" data-dir="1" aria-label="Öka">+</button></span></label>`;
     const next = kp === "rest" ? "Logga ›" : "Nästa";
-    const keys = !kp ? "" : v.kp ? KEYPADS[v.kp](next, kp)
+    const keys = !kp ? "" : v.kp ? KEYPADS[v.kp](next, kp, pm)
       : `<div class="kp">${["1", "2", "3", "−", "4", "5", "6", "+", "7", "8", "9", "⌫", ",", "0", "", "Klar"].map(k =>
         k === "" ? "<span></span>" : `<button type="button" class="press${k === "Klar" ? " done-key" : ""}" data-key="${k}">${k}</button>`).join("")}</div>`;
     const fields = !s ? "" : field("w", "Vikt (kg)", "Vikt i kg") + field("r", "Reps", "Reps") + (v.kp && kp ? field("rest", "Vila", "Vila") : "");
@@ -429,9 +539,10 @@ document.querySelectorAll(".stage[data-dock]").forEach(stage => {
     const logBtn = !s || (v.kp && kp) ? "" : `<button type="button" class="press btn filled" data-log>${s.done ? "Spara ändring" : "Logga set " + s.badge}</button>`;
     const dock = s ? `<div class="dock glass"><button type="button" class="press grabber-btn" data-close aria-label="Stäng loggningen"><span class="grabber"></span></button>
       <div class="focus"><div class="top"><b>Bänkpress · set ${s.badge}</b></div><span class="prev">Förra ${s.prev}${s.up && !s.done ? '<span class="arrow">↑ 2,5 kg</span>' : ""}</span>
-      <div class="numrow${v.steps && !kp ? " always" : ""}${v.kp && kp ? " three" : ""}">${fields}</div>${platesLine}
+      <div class="numrow${v.steps && !kp ? " always" : ""}${v.kp && kp ? " three" : ""}">${fields}</div>${platesLine}${pPanel}
       ${kp ? keys : (more ? rirMore(s) : "") + (v.kp ? split : rirRow(s))}${logBtn}</div></div>` : "";
-    stage.innerHTML = `<div class="ex">${head}<div class="list">${rows}</div></div>${dock}${timer}`;
+    // The dock steps aside while P2's sheet is open, as the keyboard does for a sheet on iOS.
+    stage.innerHTML = `<div class="ex">${head}<div class="list">${rows}</div></div>${sheet ? "" : dock}${timer}${sheetHtml}`;
     const d = stage.querySelector(".dock"), t = stage.querySelector(".timer");
     if (d) t.style.bottom = `calc(${d.offsetHeight}px + var(--space-12))`;
     tickD();
@@ -484,15 +595,28 @@ document.querySelectorAll(".stage[data-dock]").forEach(stage => {
     if (el.closest("[data-skip]")) { left = 0; tickD(); return; }
     taps++;
     const q = el.closest("[data-quick]"), row = el.closest("[data-i]"), s = sets[sel];
+    // P2's sheet takes every tap while it is open; the scrim cancels like Avbryt.
+    if (sheet) {
+      const sx = el.closest("[data-sx]"), sb = el.closest("[data-sbar]");
+      if (sx?.dataset.sx === "ok") { s.w = sw; bar = sbar; }
+      if (sx || el.closest(".scrim")) sheet = false;
+      else if (sb) sbar = +sb.dataset.sbar;
+      else if (el.closest(PK)) sw = plateKey(el, sw, BARS[sbar][1]);
+      return draw();
+    }
     if (q) { commit(); logged(sets[+q.dataset.quick]); return draw(); }
     if (row) { commit(); more = false; sel = +row.dataset.i; return draw(); }
     if (!el.closest(".dock") || el.closest("[data-close]")) { commit(); more = false; sel = -1; return draw(); }
+    if (el.closest("[data-bar]")) { bar = (bar + 1) % BARS.length; return draw(); }
+    if (el.closest(PK)) { const fld = kp; commit(); kp = fld; s.w = plateKey(el, s.w, BARS[bar][1]); return draw(); }
     const step = el.closest("[data-step]"), f = el.closest("[data-field]"), key = el.closest("[data-key]"), rir = el.closest("[data-rir]");
     if (step) { const fld = kp; commit(); const k = step.dataset.step; s[k] = Math.max(0, s[k] + +step.dataset.dir * STEP[k]); kp = fld; }
-    else if (f) { commit(); kp = f.dataset.field; typed = ""; }
+    else if (f) { commit(); kp = f.dataset.field; typed = ""; pm = false; }
     else if (key) { const k = key.dataset.key;
       if (k === "Klar" || k === "Dölj") commit();
-      else if (k === "Skivor") showPlates = !showPlates;
+      else if (k === "Skivor") { const fld = kp; commit(); kp = fld;
+        if (v.sheet) { sheet = true; sw = s.w; sbar = bar; } else if (v.pk) pm = true; else showPlates = !showPlates; }
+      else if (k === "123") pm = false;
       else if (k === "⌫") typed = typed.slice(0, -1);
       else if (k === "−" || k === "+") { const fld = kp; commit(); s[fld] = Math.max(0, s[fld] + (k === "+" ? 1 : -1) * STEP[fld]); kp = fld; }
       else if (k === "Nästa") { const fld = kp; commit(); kp = ORDER[ORDER.indexOf(fld) + 1]; }
