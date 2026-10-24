@@ -191,7 +191,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 @media (prefers-reduced-motion: reduce) { .swipe > .crow, .swipe .del { transition: none; } }
 
 /* Choice 5: the frame around the sets. The list scrolls under a fixed title bar. */
-.stage[data-frame], .stage[data-summary] { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0; padding: 0; height: 780px; }
+.stage[data-frame], .stage[data-summary], .stage[data-tpl] { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0; padding: 0; height: 780px; }
 .fbar { padding: var(--space-8) var(--space-16); }
 .fbar .wtitle { transition: opacity var(--motion-fade); }
 .stage[data-frame="f2"]:not(.scrolled) .fbar .wtitle { opacity: 0; pointer-events: none; }
@@ -248,6 +248,29 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .pr svg.icon { width: var(--space-16); height: var(--space-16); fill: currentColor; }
 .sumlist .row { text-align: left; }
 .sumlist .crow { padding-left: var(--space-32); }
+
+/* Choice 8: the template preview, and the editor it opens. */
+.tnote { margin: 0; font: var(--type-body-medium); }
+.sgroup.edge .list { margin: 0; }
+.tstart { position: absolute; left: var(--space-16); right: var(--space-16); bottom: var(--space-16); }
+.tsheet { background: var(--material-thick); top: calc(2 * var(--size-touch)); align-content: start; grid-template-rows: auto auto 1fr; padding-bottom: 0; }
+.tsheet .wscroll { padding-inline: 0; }
+.tsheet .sheet-head > :last-child { justify-self: end; }
+.tset { display: grid; grid-template-columns: var(--space-32) 1fr 1fr; align-items: center; gap: var(--space-12); padding: var(--space-8) var(--space-16); }
+.tset .num { min-height: var(--size-touch); }
+.tset .num input { font: var(--type-title-medium); }
+.tset.thead { padding-block: var(--space-8) 0; font: var(--type-label-medium); color: var(--color-on-surface-variant); text-align: center; }
+.ex > .btn.small { justify-self: start; }
+.switch { position: relative; flex: none; width: calc(var(--size-touch) + var(--space-8)); height: var(--space-32); border-radius: var(--shape-full);
+  background: var(--color-surface-container-highest); transition: background-color var(--motion-release); }
+.switch::after { content: ""; position: absolute; top: var(--border-focus); left: var(--border-focus); width: calc(var(--space-32) - 2 * var(--border-focus)); aspect-ratio: 1;
+  border-radius: var(--shape-full); background: var(--color-surface-container-lowest); box-shadow: var(--material-shadow); transition: transform var(--motion-release); }
+.switch[aria-checked="true"] { background: var(--color-primary); }
+.switch[aria-checked="true"]::after { transform: translateX(calc(var(--size-touch) + var(--space-8) - var(--space-32))); }
+@media (prefers-reduced-motion: reduce) { .switch, .switch::after { transition: none; } }
+/* The knob stays white, as iOS draws it: the lightest token in each scheme. */
+@media (prefers-color-scheme: dark) { .stage:not(.scheme-light) .switch::after { background: var(--color-on-surface); } }
+.scheme-dark .switch::after { background: var(--color-on-surface); }
 .menu .mrow { grid-template-columns: var(--size-icon) 1fr auto; gap: var(--space-8); padding: var(--space-12) var(--space-16) var(--space-12) var(--space-12); }
 .menu .mrow + .mrow { border-top: var(--border-hairline) solid var(--color-outline-variant); }
 .menu .mrow.danger { color: var(--color-error); }
@@ -580,7 +603,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
     </div>
     <p><strong>Recommendation: U2.</strong> The screen asks two things of you, how hard it was and what to remember, and U2 asks them first, while you still know. The numbers follow on the same scroll, and every set stays visible, which session detail needs when you look back. U3 is the most rewarding to open, but folds away the sets you came to check.</p>
     <p><strong>Chosen: U1's top with U3's exercises</strong> (Carl, 2026-10-24). Tiles and records first, then one row per exercise with its best set, folded; RPE, the note and the times follow. The date heading is larger and split into time and week in all four sketches. RPE and the note move up under the records (Carl, 2026-10-24), so the questions come before the exercises.</p>
-    <p><strong>The volume tile becomes Snitt-RIR</strong> (Carl, 2026-10-24): how close to failure the working sets went, against the plan's target. Kilos lifted say little about a session meant to build muscle. Hard sets were rejected because with RIR targets of 2–3 they repeat the Set tile.</p>
+    <p><strong>The volume tile becomes Snitt-RIR</strong> (Carl, 2026-10-24): how close to failure the working sets went, against the plan's target. Kilos lifted say little about a session meant to build muscle. Hard sets were rejected because with RIR targets of 2–3 they repeat the Set tile. When only some sets have an RIR, the tile averages those and says how many under the value, "8 av 11 set" (Carl, 2026-10-24); with none it shows –.</p>
     <div class="options">
       <div class="option">
         <h3>Chosen · U1 and U3</h3>
@@ -589,6 +612,40 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
         <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
       </div>
     </div>
+  </section>
+
+  <section aria-labelledby="q-tpl">
+    <h2 id="q-tpl">Choice 8: the template preview</h2>
+    <p>Tapping a template in Plan opens a preview with "Starta passet" filled and Redigera (Q27). It shows the name, the template note, the estimated time (sets × (rest + 40 s), "cirka 30 min"), when it was last done, and each exercise with its target; the superset keeps choice 6's edge line and letters. Plan behind it is a placeholder; it is drawn in queue item 8. <strong>Tap Push A, then Starta passet or Redigera.</strong> The open question is what the preview is, and so where the editor lives.</p>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th></th><th>T1</th><th>T2</th><th>T3</th></tr></thead>
+      <tbody>
+        <tr><td>Start Push A from Plan</td><td>2</td><td>2</td><td>2</td></tr>
+        <tr><td>Plan stays in view</td><td class="best">yes, behind the sheet</td><td>no</td><td>no</td></tr>
+        <tr><td>Screens for one template</td><td>2: preview, editor</td><td>2: preview, editor</td><td class="best">1: the preview edits in place</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>T1 · A sheet over Plan</h3>
+        <p>The preview slides up over Plan with Stäng and Redigera in its head, and Starta passet at the bottom. Redigera opens the editor as a screen of its own.</p>
+        <div class="stage bleed" data-tpl="t1"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>T2 · A screen of its own</h3>
+        <p>The preview is pushed from Plan with a back button. Starta passet floats at the bottom. Redigera opens the editor as another screen.</p>
+        <div class="stage bleed" data-tpl="t2"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>T3 · A screen that edits in place</h3>
+        <p>As T2, but Redigera turns the same screen into the editor, the way Contacts does: Avbryt and Klar in the bar, the sets' fields, progression per exercise, and Ta bort mallen at the bottom.</p>
+        <div class="stage bleed" data-tpl="t3"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: T3.</strong> Session detail already turns into its editor with Redigera (Q30), so the template does the same and the app has one way to edit. You change the screen you are looking at, not a copy of it, and there is one screen fewer to keep in step. T1 keeps Plan in sight, which matters little once you have picked a template.</p>
   </section>
 
   <section aria-labelledby="dec">
@@ -1242,6 +1299,68 @@ document.querySelectorAll(".stage[data-summary]").forEach(stage => {
   SUMS.push(() => { rpe = sumHist ? 7 : null; alert = false; open = -1; draw(); });
   draw();
 });
+// Choice 8: the template preview of Push A, opened from Plan.
+const TPL_EX = [
+  { n: "Bänkpress", sets: [["W", "10", "–"], ["1", "6–8", "2–3"], ["2", "6–8", "2–3"], ["3", "6–8", "2–3"]], r: 120, t: "1 uppv. + 3 × 6–8 @ 2–3" },
+  { n: "Lutande hantelpress", g: 1, sets: [["1", "8–10", "2"], ["2", "8–10", "2"], ["3", "8–10", "2"]], r: 90, t: "3 × 8–10 @ 2" },
+  { n: "Sidolyft", g: 1, sets: [["1", "12–15", "1–2"], ["2", "12–15", "1–2"], ["3", "12–15", "1–2"]], r: 90, t: "3 × 12–15 @ 1–2" },
+  { n: "Dips", sets: [["1", "8–12", "2"], ["2", "8–12", "2"]], r: 90, t: "2 × 8–12 @ 2" },
+];
+document.querySelectorAll(".stage[data-tpl]").forEach(stage => {
+  const opt = stage.dataset.tpl, counter = stage.nextElementSibling;
+  let view = "plan", editing = false, dirty = false, alert = false, prog = TPL_EX.map(() => true), extra = TPL_EX.map(() => 0), taps = 0;
+  const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; };
+  const plan = () => `<div class="titlebar fbar"><span></span><span></span><span></span></div><div class="wscroll"><div class="largetitle"><h5>Plan</h5></div>
+    <div class="group"><h4>Mallar</h4><div class="list tiles"><button type="button" class="press row" data-open><span>Push A<small>4 övningar · cirka 30 min · senast lördag</small></span><span class="chev">${ico("chevR")}</span></button>
+    ${[["Pull A", "5 övningar · cirka 35 min · senast torsdag"], ["Ben A", "5 övningar · cirka 40 min · senast tisdag"]].map(([n, m]) => `<div class="row"><span>${n}<small>${m}</small></span><span class="chev">${ico("chevR")}</span></div>`).join("")}</div></div></div>`;
+  const head = `<div class="sdate"><h3>Push A</h3><div class="smeta"><span>${ico("clock")}Cirka 30 min</span><span>${ico("plan")}Senast lördag 24 okt</span></div></div><p class="tnote">Kontrollerad nedfirning, två sekunder.</p>`;
+  const exRow = (e, tag) => `<div class="row"><span>${tag ? `<span class="tag">${tag}</span>` : ""}${e.n}<small>${e.t} · vila ${mmss(e.r)}</small></span></div>`;
+  const preview = () => { const out = []; for (let j = 0; j < TPL_EX.length; j++) { const e = TPL_EX[j];
+      if (!e.g) { out.push(`<div class="list">${exRow(e)}</div>`); continue; }
+      const grp = []; while (TPL_EX[j]?.g === e.g) grp.push(TPL_EX[j++]); j--;
+      out.push(`<div class="sgroup edge"><div class="sglabel">Superset · vila ${mmss(e.r)} efter varvet</div><div class="list">${grp.map((x, n) => exRow(x, "AB"[n])).join("")}</div></div>`); }
+    return head + `<div class="group"><h4>Övningar</h4>${out.join("")}</div>`; };
+  const editor = () => `<div class="field"><input value="Push A" aria-label="Mallens namn"></div><div class="field"><input value="Kontrollerad nedfirning, två sekunder." placeholder="Mallanteckning" aria-label="Mallanteckning"></div>
+    ${TPL_EX.map((e, j) => { const sets = e.sets.concat(Array(extra[j]).fill(e.sets.at(-1)));
+      return `<div class="ex"><div class="exh"><div><h4>${e.g ? `<span class="tag">${"AB"[j - 1]}</span>` : ""}${e.n}</h4><small>${e.g ? "Superset" : `Vila ${mmss(e.r)}`}</small></div><button type="button" class="press icon-btn" aria-label="Fler val för ${e.n}">${ico("more")}</button></div>
+      <div class="list"><div class="tset thead"><span>Set</span><span>Reps</span><span>RIR</span></div>${sets.map(([b, reps, rir], i) => `<div class="tset"><span class="badge${b === "W" ? " w" : ""}">${i < e.sets.length ? b : i + (e.sets[0][0] === "W" ? 0 : 1)}</span>
+        <span class="num"><input placeholder="${reps}" readonly aria-label="Reps"></span><span class="num"><input placeholder="${rir}" readonly aria-label="RIR"></span></div>`).join("")}
+        <div class="row"><span>Progression</span><button type="button" class="press switch" role="switch" data-prog="${j}" aria-checked="${prog[j]}" aria-label="Progression för ${e.n}"></button></div></div>
+      <button type="button" class="press btn small tinted" data-addset="${j}">Lägg till set</button></div>`; }).join("")}
+    <div class="fend"><button type="button" class="press btn tinted">Lägg till övningar</button><button type="button" class="press btn tinted" data-dup>Duplicera mallen</button><button type="button" class="press btn danger" data-delete>Ta bort mallen</button></div>`;
+  const bar = () => editing
+    ? `<div class="titlebar fbar"><button type="button" class="press btn text" data-cancel>Avbryt</button><b>Redigera mall</b><button type="button" class="press btn small filled" data-save>Klar</button></div>`
+    : `<div class="titlebar fbar"><button type="button" class="press icon-btn glass" data-back aria-label="Tillbaka till Plan">${ico("chevL")}</button><span></span><button type="button" class="press btn small tinted" data-edit>Redigera</button></div>`;
+  const start = `<div class="tstart"><button type="button" class="press btn filled" data-start>Starta passet</button></div>`;
+  const alertHtml = () => `<div class="scrim"></div><div class="center"><div class="alert"><h5>Släng ändringar?</h5><p>Ändringarna i Push A sparas inte.</p>
+    <div class="inline"><button type="button" class="press btn tinted" data-a="keep">Fortsätt redigera</button><button type="button" class="press btn danger" data-a="drop">Släng</button></div></div></div>`;
+  function draw() {
+    const top = stage.querySelector(".wscroll:last-of-type")?.scrollTop ?? 0;
+    if (view === "plan") stage.innerHTML = plan();
+    else if (opt === "t1") stage.innerHTML = plan() + `<div class="scrim" data-close></div><div class="sheet glass tsheet"><div class="grabber"></div>
+      <div class="sheet-head"><button type="button" class="press btn text" data-close>Stäng</button><span></span><button type="button" class="press btn small tinted" data-edit>Redigera</button></div>
+      <div class="wscroll">${preview()}</div>${start}</div>`;
+    else stage.innerHTML = bar() + `<div class="wscroll">${editing ? editor() : preview()}</div>${editing ? "" : start}${alert ? alertHtml() : ""}`;
+    const sc = stage.querySelectorAll(".wscroll"); if (view !== "plan") sc[sc.length - 1].scrollTop = top;
+  }
+  stage.addEventListener("click", e => {
+    const q = sel => e.target.closest(sel); taps++;
+    if (alert) { const a = q("[data-a]"); if (!a) return taps--; alert = false; if (a.dataset.a === "drop") { editing = dirty = false; extra = extra.map(() => 0); prog = prog.map(() => true); done("Avbryt › Släng"); } return draw(); }
+    if (q("[data-open]")) { view = "preview"; return draw(); }
+    if (q("[data-close]") || q("[data-back]")) { view = "plan"; taps = 0; return draw(); }
+    if (q("[data-start]")) { done("Starta passet"); view = "plan"; return draw(); }
+    if (q("[data-edit]")) { if (opt !== "t3") return done("Redigera, som öppnar redigeraren som egen skärm"); editing = true; return draw(); }
+    if (q("[data-save]")) { editing = dirty = false; done("Klar, sparar mallen"); return draw(); }
+    if (q("[data-cancel]")) { if (dirty) { alert = true; return draw(); } editing = false; taps = 0; return draw(); }
+    if (q("[data-prog]")) { const j = +q("[data-prog]").dataset.prog; prog[j] = !prog[j]; dirty = true; return draw(); }
+    if (q("[data-addset]")) { extra[+q("[data-addset]").dataset.addset]++; dirty = true; return draw(); }
+    if (q("[data-dup]")) return done("Duplicera, som skapar Push A (kopia)");
+    if (q("[data-delete]")) return done("Ta bort mallen, som en alert bekräftar först");
+    if (!q("input")) taps--;  // a tap on nothing
+  });
+  draw();
+});
+
 document.querySelectorAll("[data-hist]").forEach(b => b.addEventListener("click", () => {
   sumHist = b.dataset.hist === "1";
   document.querySelectorAll("[data-hist]").forEach(x => x.setAttribute("aria-pressed", x === b));
