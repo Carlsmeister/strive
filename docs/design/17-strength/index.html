@@ -188,7 +188,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .msec + .msec, .palette + .msec { border-top: var(--border-focus) solid var(--color-outline-variant); }
 .mtitle { font: var(--type-label-medium); color: var(--color-on-surface-variant); padding: var(--space-8) var(--space-16) 0; }
 .mtail { font: var(--type-title-small); color: var(--color-on-surface-variant); }
-.palette { display: grid; grid-template-columns: repeat(3, 1fr); }
+.palette { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; }
 .palette button { display: grid; justify-items: center; gap: var(--space-4); padding: var(--space-12) var(--space-4); font: var(--type-label-small); }
 .palette button + button { border-left: var(--border-hairline) solid var(--color-outline-variant); }
 </style>
@@ -383,6 +383,15 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
       </div>
     </div>
     <p><strong>Recommendation: M2.</strong> Mid-workout you write a note, swap a busy machine or add warm-ups, and M2 puts those three on the largest targets in the menu. The list below them is shorter than M1's, and nothing hides in a submenu as in M3.</p>
+    <p><strong>Chosen: M2, without Uppvärmning</strong> (Carl, 2026-10-24). A warm-up set is added the way any set is: Lägg till set, then Uppvärmning in its badge menu. That costs 3 taps instead of 2, and the menu loses an action. An unlogged set made a warm-up moves up to be the next set to do: above the working sets before you start, next in line mid-exercise. The palette keeps Anteckning and Byt. M1, M3 and the three-tile M2 stay above as the record of why.</p>
+    <div class="options">
+      <div class="option">
+        <h3>Chosen · M2 with two tiles</h3>
+        <p>Open ⋯ by Bänkpress, or tap Lägg till set and make the new set a warm-up in its badge.</p>
+        <div class="stage tall bleed" data-menus="m2c"></div>
+        <div class="counter">Last pick took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
   </section>
 
   <section aria-labelledby="dec">
@@ -735,6 +744,7 @@ document.querySelectorAll(".stage[data-menus]").forEach(stage => {
       sections: [S(it("Fast anteckning", "pin"), it("Vila för alla set", "timer", { kids: restMenu() })),
         S(it("Skapa superset", "link"), it("Ändra ordning", "reorder"), it("Hoppa över", "skip")),
         S(it("Inställningar", "sliders")), S(it("Ta bort övningen", "trash", { danger: true }))] }),
+    m2c: () => ({ ...EXMENU.m2(), palette: [it("Anteckning", "note"), it("Byt", "swap")] }),
     m3: () => ({ sections: [S(it("Anteckningar", "note", { kids: [S(it("Anteckning", "note"), it("Fast anteckning", "pin"))] }), it("Byt övning", "swap"),
         it("Set", "flame", { kids: [S(it("Lägg till uppvärmning", "flame")), ...restMenu()] }),
         it("Ordning", "reorder", { kids: [S(it("Skapa superset", "link"), it("Ändra ordning", "reorder"), it("Hoppa över", "skip"))] })),
@@ -743,7 +753,11 @@ document.querySelectorAll(".stage[data-menus]").forEach(stage => {
   const BUILD = {
     ex: EXMENU[opt],
     workout: () => ({ sections: [S(it("Byt namn", "pencil"), it("Passanteckning", "note"), it("Ändra starttid", "clock"))] }),
-    badge: i => ({ sections: [S(...TYPES.map(([t, k]) => ({ t, tail: k || "1", check: sets[i].type === k, act: () => sets[i].type = k })))] }),
+    badge: i => ({ sections: [S(...TYPES.map(([t, k]) => ({ t, tail: k || "1", check: sets[i].type === k, act: () => {
+      sets[i].type = k;
+      // Chosen form: a warm-up you add later becomes the next set to do.
+      if (opt === "m2c" && k === "W" && !sets[i].done) { const [x] = sets.splice(i, 1); sets.splice(sets.findIndex(y => !y.done), 0, x); }
+    } })))] }),
   };
   // A working set is numbered among the working sets; the others show their letter (Q21).
   const badge = i => sets[i].type || sets.slice(0, i + 1).filter(x => !x.type).length;
@@ -763,7 +777,8 @@ document.querySelectorAll(".stage[data-menus]").forEach(stage => {
       <button type="button" class="press btn small tinted">Avsluta</button></div>
       <div class="ex"><div class="exh"><div><h4>Bänkpress</h4><small>Mål 4 × 6–8 @ 2–3 · vila ${mmss(rest)}</small></div>
       <button type="button" class="press icon-btn" data-menu="ex" aria-label="Fler val för Bänkpress">${ico("more")}</button></div>
-      <div class="list">${sets.map((x, i) => crow(x, i) + (i < sets.length - 1 ? `<div class="crest">Vila ${mmss(rest)}</div>` : "")).join("")}</div></div>${menu ? menuHtml() : ""}`;
+      <div class="list">${sets.map((x, i) => crow(x, i) + (i < sets.length - 1 ? `<div class="crest">Vila ${mmss(rest)}</div>` : "")).join("")}</div>${
+      opt === "m2c" ? `<div class="crow"><span></span><button type="button" class="press btn small tinted" data-addset>Lägg till set</button></div>` : ""}</div>${menu ? menuHtml() : ""}`;
     if (menu) place();
   }
   // Open toward the middle of the screen, and upward when there is no room below.
@@ -784,6 +799,7 @@ document.querySelectorAll(".stage[data-menus]").forEach(stage => {
       else { x.act?.(); counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${menu.stack.map(l => l.title).filter(Boolean).concat(x.t).join(" › ")}`; menu = null; }
       return draw(); }
     if (el.closest("[data-back]")) { taps++; menu.stack.pop(); return draw(); }
+    if (el.closest("[data-addset]")) { sets.push({ type: "", w: "82,5 × 8" }); return draw(); }
     if (menu) { menu = null; return draw(); }  // a tap outside closes the menu without choosing
     if (open) { taps = 1; const k = open.dataset.menu, at = open.dataset.at;
       menu = { anchor: at ? `[data-menu="badge"][data-at="${at}"]` : `[data-menu="${k}"]`, stack: [BUILD[k](+at)] }; return draw(); }
