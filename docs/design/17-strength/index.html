@@ -483,7 +483,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 
   <section aria-labelledby="q-group">
     <h2 id="q-group">Choice 6: the exercise header and supersets</h2>
-    <p>The second half of the active workout's frame (Q8, Q11, Q15, Q18), in F1's frame. <strong>The header is the same in all three:</strong> the name opens the exercise sheet (instructions and history, drawn in queue item 6), ⋯ is choice 4's menu, and under the target sit the sticky note with a pin, the plan's cue and last time's note, in grey. Today's note is the field under them, opened from ⋯ › Anteckning; Bänkpress shows it open. The open question is how a superset is drawn: Lutande hantelpress and Sidolyft, three rounds, with the rest after each round. <strong>Log the superset's sets with ✓</strong>: the rest starts only after the last exercise of the round.</p>
+    <p>The second half of the active workout's frame (Q8, Q11, Q15, Q18), in F1's frame. <strong>The header is the same in all three:</strong> the name opens the exercise sheet (instructions and history, drawn in queue item 6), ⋯ is choice 4's menu, and under the target sit the sticky note with a pin, the plan's cue and last time's note, in grey. Today's note is the field under them, opened from ⋯ › Anteckning; Bänkpress shows it open. The open question is how a superset is drawn: Lutande hantelpress and Sidolyft, three rounds, with the rest after each round. <strong>Log the superset's sets with ✓</strong>: a round's rest starts once both its sets are logged, in either order.</p>
     <div class="tablewrap"><table class="costs">
       <thead><tr><th></th><th>G1</th><th>G2</th><th>G3</th></tr></thead>
       <tbody>
@@ -518,7 +518,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
     <div class="options">
       <div class="option">
         <h3>Chosen · G2 with the edge line</h3>
-        <p>Log A, then B: the rest starts after B.</p>
+        <p>Log A 1 and B 1, in either order: the rest starts when both are logged.</p>
         <div class="stage bleed" data-frame="g2b"></div>
         <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
       </div>
@@ -1098,7 +1098,8 @@ document.querySelectorAll(".stage[data-frame]").forEach(stage => {
     if (q("[data-fm]")) { const b = q("[data-fm]"); menu = { key: b.dataset.fm, idx: [...stage.querySelectorAll(`[data-fm="${b.dataset.fm}"]`)].indexOf(b) }; return draw(); }
     if (q("[data-end]")) { if (!left()) return done("Avsluta › sammanfattningen, som ritas i punkt 4"); sheet = true; return draw(); }
     if (q("[data-log]")) { const [j, i] = q("[data-log]").dataset.log.split(".").map(Number); exs[j].sets[i].done = true;
-      if (!exs[j].g || exs[j + 1]?.g !== exs[j].g) startRest(exs[j].r, "Vila");  // a superset rests after its last exercise
+      // A superset rests once every exercise's set in that round is logged, in any order.
+      if (exs.every(x => !exs[j].g || x.g !== exs[j].g || !x.sets[i] || x.sets[i].done)) startRest(exs[j].r, "Vila");
       done(`Logga ${exs[j].n} set ${exs[j].sets[i].b}`); return draw(); }
     if (q("[data-jump]")) { cur = +q("[data-jump]").dataset.jump; const sc = stage.querySelector(".wscroll");
       sc.scrollTo({ top: sc.querySelectorAll(".ex")[cur].offsetTop - 8, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
