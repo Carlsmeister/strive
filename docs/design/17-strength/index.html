@@ -226,7 +226,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 
   <section aria-labelledby="q-kp">
     <h2 id="q-kp">Choice 2: the keypad</h2>
-    <p>Strive's own keypad (Q16), in the D3 dock. All three have the same keys: digits, the decimal comma, ⌫, Dölj, Skivor on the weight, − and + with the field's step, and Nästa, which goes weight → reps → rest. <strong>On the rest field Nästa becomes "Logga ›"</strong>: it logs the set and opens the next set's weight, so a whole session can be typed without leaving the keypad. Tap a set, then its weight. Skivor shows the plates per side for now; the plate calculator is choice 3.</p>
+    <p>Strive's own keypad (Q16), in the D3 dock. All three have the same keys: digits, the decimal comma, ⌫, Dölj, Skivor on the weight, − and + with the field's step, and Nästa, which goes weight → reps → rest. <strong>On the rest field Nästa becomes "Logga ›"</strong>: it logs the set like Logga does, closes the dock and starts the rest. Tap a set, then its weight. Skivor shows the plates per side for now; the plate calculator is choice 3.</p>
     <div class="options">
       <div class="option">
         <h3>K1 · A numeric pad with an action column</h3>
@@ -479,8 +479,8 @@ document.querySelectorAll(".stage[data-dock]").forEach(stage => {
       else if (k === "⌫") typed = typed.slice(0, -1);
       else if (k === "−" || k === "+") { const fld = kp; commit(); s[fld] = Math.max(0, s[fld] + (k === "+" ? 1 : -1) * STEP[fld]); kp = fld; }
       else if (k === "Nästa") { const fld = kp; commit(); kp = ORDER[ORDER.indexOf(fld) + 1]; }
-      // Nästa on the rest field logs the set and moves on to the next set's weight.
-      else if (k === "Logga ›") { commit(); logged(s); const nx = sets.findIndex(x => !x.done); if (nx !== -1) { sel = nx; kp = "w"; } }
+      // Nästa on the rest field logs the set like Logga: the dock closes and the rest starts.
+      else if (k === "Logga ›") { commit(); logged(s); }
       else typed += k; }
     else if (rir) s.rir = +rir.dataset.rir;
     else if (el.closest("[data-log]")) { commit(); logged(s); }
