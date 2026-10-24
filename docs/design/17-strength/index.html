@@ -171,6 +171,26 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .psheet .total { display: flex; justify-content: space-between; align-items: center; gap: var(--space-8); }
 .psheet .total b { font: var(--type-display-small); font-variant-numeric: tabular-nums; }
 .psheet .sheet-head > :last-child { justify-self: end; font: var(--type-label-large); }
+
+/* Choice 4: iOS pull-down menus, glass, anchored to the button that opened them. */
+.wtitle { display: grid; justify-items: center; }
+.wtitle small { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+.wname { display: inline-flex; align-items: center; gap: var(--space-4); font: var(--type-title-medium); min-height: var(--size-touch); }
+.catch { position: absolute; inset: 0; }
+.menu { position: absolute; width: calc(6 * var(--size-touch)); max-width: calc(100% - 2 * var(--space-16)); border-radius: var(--shape-large);
+  background: var(--material-thick); overflow: hidden; display: grid; transform-origin: var(--origin, top right); animation: menu-in var(--motion-release); }
+@keyframes menu-in { from { transform: scale(var(--state-pressed-scale)); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .menu { animation: none; } }
+.menu .mrow { grid-template-columns: var(--size-icon) 1fr auto; gap: var(--space-8); padding: var(--space-12) var(--space-16) var(--space-12) var(--space-12); }
+.menu .mrow + .mrow { border-top: var(--border-hairline) solid var(--color-outline-variant); }
+.menu .mrow.danger { color: var(--color-error); }
+.menu .back b { font: var(--type-label-large); }
+.msec + .msec, .palette + .msec { border-top: var(--border-focus) solid var(--color-outline-variant); }
+.mtitle { font: var(--type-label-medium); color: var(--color-on-surface-variant); padding: var(--space-8) var(--space-16) 0; }
+.mtail { font: var(--type-title-small); color: var(--color-on-surface-variant); }
+.palette { display: grid; grid-template-columns: repeat(3, 1fr); }
+.palette button { display: grid; justify-items: center; gap: var(--space-4); padding: var(--space-12) var(--space-4); font: var(--type-label-small); }
+.palette button + button { border-left: var(--border-hairline) solid var(--color-outline-variant); }
 </style>
 
 <div class="wrap">
@@ -327,6 +347,42 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
         <div class="counter">Last set took <strong>–</strong> taps</div>
       </div>
     </div>
+  </section>
+
+  <section aria-labelledby="q-menu">
+    <h2 id="q-menu">Choice 4: the menus</h2>
+    <p>Three iOS pull-down menus: the exercise's ⋯ (Q15), the workout's ⋯ by its name (Q19) and the set badge (Q21). Their content is decided; the open question is the form of the exercise menu, which holds nine actions. The workout menu (three actions) and the badge menu (four types) are the same in all three. <strong>Tap ⋯ by Bänkpress, the ⋯ by Push A, or a set's badge.</strong> Changing a set's type and the rest for all sets take effect; the rest only name the choice under the sketch. The title bar is a placeholder; it is drawn in a later choice.</p>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th>Taps</th><th>M1</th><th>M2</th><th>M3</th></tr></thead>
+      <tbody>
+        <tr><td>Today's note</td><td>2</td><td>2</td><td class="bad">3</td></tr>
+        <tr><td>Swap the exercise</td><td>2</td><td>2</td><td>2</td></tr>
+        <tr><td>Add warm-up sets</td><td>2</td><td>2</td><td class="bad">3</td></tr>
+        <tr><td>Rest 3:00 for all sets</td><td>3</td><td>3</td><td>3</td></tr>
+        <tr><td>Rows in the menu</td><td>10</td><td>3 tiles + 7</td><td class="best">6</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>M1 · One list in sections</h3>
+        <p>Every action is a row, grouped: notes, sets, the exercise in the workout, settings, and Ta bort in red last. Everything is one tap away, and the menu runs ten rows long.</p>
+        <div class="stage tall bleed" data-menus="m1"></div>
+        <div class="counter">Last pick took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>M2 · The three commonest on top</h3>
+        <p>Anteckning, Byt and Uppvärmning sit as three tiles at the top, the way Notes and Mail put their commonest actions; the rest follow as rows. iOS draws this as a palette of medium elements.</p>
+        <div class="stage tall bleed" data-menus="m2"></div>
+        <div class="counter">Last pick took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>M3 · Short, with submenus</h3>
+        <p>Six rows. Notes, sets and order each open a submenu, so the menu is calm and some actions cost a tap more.</p>
+        <div class="stage tall bleed" data-menus="m3"></div>
+        <div class="counter">Last pick took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: M2.</strong> Mid-workout you write a note, swap a busy machine or add warm-ups, and M2 puts those three on the largest targets in the menu. The list below them is shorter than M1's, and nothing hides in a submenu as in M3.</p>
   </section>
 
   <section aria-labelledby="dec">
@@ -645,6 +701,92 @@ document.querySelectorAll(".stage[data-dock]").forEach(stage => {
     else if (el.closest("[data-rirv]")) { s.rir = +el.closest("[data-rirv]").dataset.rirv; more = false; }
     else if (el.closest("[data-log]")) { commit(); logged(s); }
     draw();
+  });
+  draw();
+});
+
+// Choice 4: the menus. Icons are 24-unit SVG paths, like the ⋯ icon.
+const ICONS = {
+  note: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>', pin: '<path d="M12 16v5M8 3h8l-1 6 3 3H6l3-3z"/>',
+  flame: '<path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-3 2-4 2-6 1 1 2 2 3 2 0-2-1-4 0-6z"/>', timer: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>',
+  swap: '<path d="M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/>', link: '<path d="M10 14a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6l-1 1M14 10a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6l1-1"/>',
+  reorder: '<path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4"/>', skip: '<path d="m5 5 9 7-9 7zM18 5v14"/>',
+  sliders: '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>', pencil: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', chevR: '<path d="m9 6 6 6-6 6"/>', chevL: '<path d="m15 6-6 6 6 6"/>',
+  check: '<path d="m5 12 5 5 9-10"/>', more: '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+};
+const ico = k => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${ICONS[k]}</svg>`;
+const TYPES = [["Arbetsset", ""], ["Uppvärmning", "W"], ["Dropset", "D"], ["Till failure", "F"]];
+document.querySelectorAll(".stage[data-menus]").forEach(stage => {
+  const opt = stage.dataset.menus, counter = stage.nextElementSibling;
+  let sets = [{ type: "W", w: "40 × 10", done: true }, { type: "", w: "80 × 8 @2", done: true }, { type: "", w: "82,5 × 8" }, { type: "", w: "82,5 × 8" }];
+  let rest = 120, menu = null, taps = 0;
+  const S = (...items) => ({ items });
+  const restMenu = () => [{ title: "Vila för alla set", items: [60, 90, 120, 150, 180].map(r => ({ t: mmss(r), check: rest === r, act: () => rest = r })) }];
+  const it = (t, i, more) => ({ t, i, ...more });
+  // Q15's actions in each form. A row with kids opens a submenu.
+  const EXMENU = {
+    m1: () => ({ sections: [S(it("Anteckning", "note"), it("Fast anteckning", "pin")),
+      S(it("Lägg till uppvärmning", "flame"), it("Vila för alla set", "timer", { kids: restMenu() })),
+      S(it("Byt övning", "swap"), it("Skapa superset", "link"), it("Ändra ordning", "reorder"), it("Hoppa över", "skip")),
+      S(it("Inställningar", "sliders")), S(it("Ta bort övningen", "trash", { danger: true }))] }),
+    m2: () => ({ palette: [it("Anteckning", "note"), it("Byt", "swap"), it("Uppvärmning", "flame")],
+      sections: [S(it("Fast anteckning", "pin"), it("Vila för alla set", "timer", { kids: restMenu() })),
+        S(it("Skapa superset", "link"), it("Ändra ordning", "reorder"), it("Hoppa över", "skip")),
+        S(it("Inställningar", "sliders")), S(it("Ta bort övningen", "trash", { danger: true }))] }),
+    m3: () => ({ sections: [S(it("Anteckningar", "note", { kids: [S(it("Anteckning", "note"), it("Fast anteckning", "pin"))] }), it("Byt övning", "swap"),
+        it("Set", "flame", { kids: [S(it("Lägg till uppvärmning", "flame")), ...restMenu()] }),
+        it("Ordning", "reorder", { kids: [S(it("Skapa superset", "link"), it("Ändra ordning", "reorder"), it("Hoppa över", "skip"))] })),
+      S(it("Inställningar", "sliders")), S(it("Ta bort övningen", "trash", { danger: true }))] }),
+  };
+  const BUILD = {
+    ex: EXMENU[opt],
+    workout: () => ({ sections: [S(it("Byt namn", "pencil"), it("Passanteckning", "note"), it("Ändra starttid", "clock"))] }),
+    badge: i => ({ sections: [S(...TYPES.map(([t, k]) => ({ t, tail: k || "1", check: sets[i].type === k, act: () => sets[i].type = k })))] }),
+  };
+  // A working set is numbered among the working sets; the others show their letter (Q21).
+  const badge = i => sets[i].type || sets.slice(0, i + 1).filter(x => !x.type).length;
+  const row = (x, key) => `<button type="button" class="press row mrow${x.danger ? " danger" : ""}" data-pick="${key}"><span>${x.check ? ico("check") : ""}</span><span>${x.t}</span>${
+    x.kids ? ico("chevR") : x.tail ? `<span class="mtail">${x.tail}</span>` : x.i ? ico(x.i) : "<span></span>"}</button>`;
+  function menuHtml() {
+    const lv = menu.stack.at(-1);
+    const back = menu.stack.length > 1 ? `<div class="msec"><button type="button" class="press row mrow back" data-back><span>${ico("chevL")}</span><b>${lv.title}</b><span></span></button></div>` : "";
+    const pal = lv.palette ? `<div class="palette">${lv.palette.map((x, j) => `<button type="button" class="press" data-pick="p${j}">${ico(x.i)}<span>${x.t}</span></button>`).join("")}</div>` : "";
+    return `<div class="catch"></div><div class="menu glass" role="menu">${back}${pal}${lv.sections.map((sec, si) =>
+      `<div class="msec">${sec.title ? `<div class="mtitle">${sec.title}</div>` : ""}${sec.items.map((x, j) => row(x, `${si}.${j}`)).join("")}</div>`).join("")}</div>`;
+  }
+  function draw() {
+    const crow = (x, i) => `<div class="crow"><button type="button" class="press badge${x.type === "W" ? " w" : ""}" data-menu="badge" data-at="${i}" aria-label="Settyp för set ${badge(i)}">${badge(i)}</button>
+      <span class="v${x.done ? "" : " hint"}">${x.w}</span><span class="tick">${x.done ? "✓" : ""}</span></div>`;
+    stage.innerHTML = `<div class="titlebar"><span></span><div class="wtitle"><button type="button" class="press wname" data-menu="workout" aria-label="Fler val för passet">Push A ${ico("more")}</button><small>24:12</small></div>
+      <button type="button" class="press btn small tinted">Avsluta</button></div>
+      <div class="ex"><div class="exh"><div><h4>Bänkpress</h4><small>Mål 4 × 6–8 @ 2–3 · vila ${mmss(rest)}</small></div>
+      <button type="button" class="press icon-btn" data-menu="ex" aria-label="Fler val för Bänkpress">${ico("more")}</button></div>
+      <div class="list">${sets.map((x, i) => crow(x, i) + (i < sets.length - 1 ? `<div class="crest">Vila ${mmss(rest)}</div>` : "")).join("")}</div></div>${menu ? menuHtml() : ""}`;
+    if (menu) place();
+  }
+  // Open toward the middle of the screen, and upward when there is no room below.
+  function place() {
+    const m = stage.querySelector(".menu"), t = stage.querySelector(menu.anchor), s = stage.getBoundingClientRect(), r = t.getBoundingClientRect();
+    const gap = parseFloat(getComputedStyle(stage).getPropertyValue("--space-8")), right = r.left + r.width / 2 - s.left > s.width / 2;
+    let left = right ? r.right - s.left - m.offsetWidth : r.left - s.left, top = r.bottom - s.top + gap;
+    const up = top + m.offsetHeight > s.height - gap;
+    if (up) top = Math.max(gap, r.top - s.top - m.offsetHeight - gap);
+    m.style.left = `${Math.min(Math.max(2 * gap, left), s.width - m.offsetWidth - 2 * gap)}px`; m.style.top = `${top}px`;
+    m.style.setProperty("--origin", `${right ? "right" : "left"} ${up ? "bottom" : "top"}`);
+  }
+  stage.addEventListener("click", e => {
+    const el = e.target, open = el.closest("[data-menu]"), pick = el.closest("[data-pick]");
+    if (pick) { taps++; const k = pick.dataset.pick, lv = menu.stack.at(-1);
+      const x = k[0] === "p" ? lv.palette[+k.slice(1)] : lv.sections[+k.split(".")[0]].items[+k.split(".")[1]];
+      if (x.kids) menu.stack.push({ title: x.t, sections: x.kids });
+      else { x.act?.(); counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${menu.stack.map(l => l.title).filter(Boolean).concat(x.t).join(" › ")}`; menu = null; }
+      return draw(); }
+    if (el.closest("[data-back]")) { taps++; menu.stack.pop(); return draw(); }
+    if (menu) { menu = null; return draw(); }  // a tap outside closes the menu without choosing
+    if (open) { taps = 1; const k = open.dataset.menu, at = open.dataset.at;
+      menu = { anchor: at ? `[data-menu="badge"][data-at="${at}"]` : `[data-menu="${k}"]`, stack: [BUILD[k](+at)] }; return draw(); }
   });
   draw();
 });
