@@ -139,6 +139,9 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .kp.k2, .kp.k3 { grid-template-columns: repeat(3, 1fr); }
 .kp.k3 button { background: var(--material-thick); border-radius: var(--shape-full); }
 .nowrap { flex-wrap: nowrap; }
+.rirmore { display: grid; gap: var(--space-4); }
+.rirmore > span { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.rirmore .segc button { min-height: var(--size-touch); }
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); align-items: start; }
 .split .rirrow { grid-template-columns: 1fr; gap: var(--space-4); }
 .split .segc { padding: var(--space-4) var(--space-4); gap: var(--space-4); }
@@ -265,6 +268,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
     <h2 id="devs">Deviations from Apple's guidelines</h2>
     <p>Accepted for now, because Carl is the only user. Listed so they are cheap to fix if Strive is ever submitted to the App Store.</p>
     <ul>
+      <li><strong>RIR 4 or more</strong> is chosen from a row of 4–10 that the 4+ segment opens in the dock; the segment then shows the value (Carl, 2026-10-24). An RIR of 4 or more therefore costs one tap more, and joins Q13's listed exceptions. Not a deviation; listed here so the cost is visible.</li>
       <li><strong>RIR segments are about 29 pt wide</strong> in the dock, because RIR shares its row with the rest time (Carl, 2026-10-24). Apple, Accessibility: a hit target of 44 × 44 pt by default, 28 × 28 pt at minimum. They stay 44 pt tall and above the minimum. The fix is RIR on a row of its own, full width, which squeezes the rest time again.</li>
     </ul>
   </section>
@@ -279,12 +283,14 @@ const START = () => [
   { badge: "2", w: "82,5", r: "8", rir: null, prev: "80 × 8 @3", up: true, done: false },
   { badge: "3", w: "82,5", r: "8", rir: null, prev: "80 × 7 @2", up: true, done: false },
 ];
-const RIRS = ["0", "1", "2", "3", "4+"];
-const fmt = s => `${s.w} × ${s.r}${s.rir !== null ? " @" + RIRS[s.rir].replace("+", "") : ""}`;
+const fmt = s => `${s.w} × ${s.r}${s.rir !== null ? " @" + s.rir : ""}`;
 const head = `<div class="exh"><div><h4>Bänkpress</h4><small>Mål 4 × 6–8 @ 2–3 · vila 2:00</small></div>
   <button type="button" class="press icon-btn" aria-label="Fler val för Bänkpress"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button></div>`;
-const rirRow = s => `<div class="rirrow"><span>RIR</span><div class="segc" role="group" aria-label="RIR">${RIRS.map((x, i) =>
-  `<button type="button" class="press" data-rir="${i}" aria-pressed="${s.rir === i}">${x}</button>`).join("")}</div></div>`;
+// The fifth segment shows 4+ until a value of 4 or more is chosen from the row it opens, then that value.
+const rirRow = s => `<div class="rirrow"><span>RIR</span><div class="segc" role="group" aria-label="RIR">${[0, 1, 2, 3].map(i =>
+  `<button type="button" class="press" data-rir="${i}" aria-pressed="${s.rir === i}">${i}</button>`).join("")}<button type="button" class="press" data-rirmore aria-expanded="false" aria-pressed="${s.rir >= 4}">${s.rir >= 4 ? s.rir : "4+"}</button></div></div>`;
+const rirMore = s => `<div class="rirmore"><span>RIR 4 eller fler</span><div class="segc" role="group" aria-label="RIR 4 eller fler">${[4, 5, 6, 7, 8, 9, 10].map(n =>
+  `<button type="button" class="press" data-rirv="${n}" aria-pressed="${s.rir === n}">${n}</button>`).join("")}</div></div>`;
 const numRow = s => `<div class="numrow"><label>Vikt (kg)<span class="num"><input inputmode="decimal" placeholder="${s.w}" readonly aria-label="Vikt i kg"></span></label>
   <label>Reps<span class="num"><input inputmode="numeric" placeholder="${s.r}" readonly aria-label="Reps"></span></label></div>`;
 const timer = `<div class="float glass timer" hidden><div class="mini"><div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="50"/><circle class="prog" cx="60" cy="60" r="50" pathLength="100" stroke-dasharray="100"/></svg></div>
@@ -400,8 +406,8 @@ document.querySelectorAll(".stage[data-dock]").forEach(stage => {
     { badge: "3", w: 82.5, r: 8, rest: 120, rir: null, prev: "80 × 7 @2", up: true },
     { badge: "4", w: 82.5, r: 8, rest: 120, rir: null, prev: "80 × 7 @2", up: true },
   ];
-  let sets = fresh(), sel = -1, kp = null, typed = "", taps = 0, left = 0, total = 120, clock = null, showPlates = false;
-  const show = s => `${nf(s.w)} × ${s.r}${s.rir !== null ? " @" + RIRS[s.rir].replace("+", "") : ""}`;
+  let sets = fresh(), sel = -1, kp = null, typed = "", taps = 0, left = 0, total = 120, clock = null, showPlates = false, more = false;
+  const show = s => `${nf(s.w)} × ${s.r}${s.rir !== null ? " @" + s.rir : ""}`;
   function draw() {
     const rows = sets.map((s, i) => {
       const row = `<button type="button" class="press row crow${i === sel ? " cur" : ""}" data-i="${i}"><span class="badge${s.warm ? " w" : ""}">${s.badge}</span><span class="v${s.done ? "" : " hint"}">${show(s)}</span><span class="tick">${s.done ? "✓" : ""}</span></button>`;
@@ -424,7 +430,7 @@ document.querySelectorAll(".stage[data-dock]").forEach(stage => {
     const dock = s ? `<div class="dock glass"><button type="button" class="press grabber-btn" data-close aria-label="Stäng loggningen"><span class="grabber"></span></button>
       <div class="focus"><div class="top"><b>Bänkpress · set ${s.badge}</b></div><span class="prev">Förra ${s.prev}${s.up && !s.done ? '<span class="arrow">↑ 2,5 kg</span>' : ""}</span>
       <div class="numrow${v.steps && !kp ? " always" : ""}${v.kp && kp ? " three" : ""}">${fields}</div>${platesLine}
-      ${kp ? keys : v.kp ? split : rirRow(s)}${logBtn}</div></div>` : "";
+      ${kp ? keys : (more ? rirMore(s) : "") + (v.kp ? split : rirRow(s))}${logBtn}</div></div>` : "";
     stage.innerHTML = `<div class="ex">${head}<div class="list">${rows}</div></div>${dock}${timer}`;
     const d = stage.querySelector(".dock"), t = stage.querySelector(".timer");
     if (d) t.style.bottom = `calc(${d.offsetHeight}px + var(--space-12))`;
@@ -479,8 +485,8 @@ document.querySelectorAll(".stage[data-dock]").forEach(stage => {
     taps++;
     const q = el.closest("[data-quick]"), row = el.closest("[data-i]"), s = sets[sel];
     if (q) { commit(); logged(sets[+q.dataset.quick]); return draw(); }
-    if (row) { commit(); sel = +row.dataset.i; return draw(); }
-    if (!el.closest(".dock") || el.closest("[data-close]")) { commit(); sel = -1; return draw(); }
+    if (row) { commit(); more = false; sel = +row.dataset.i; return draw(); }
+    if (!el.closest(".dock") || el.closest("[data-close]")) { commit(); more = false; sel = -1; return draw(); }
     const step = el.closest("[data-step]"), f = el.closest("[data-field]"), key = el.closest("[data-key]"), rir = el.closest("[data-rir]");
     if (step) { const fld = kp; commit(); const k = step.dataset.step; s[k] = Math.max(0, s[k] + +step.dataset.dir * STEP[k]); kp = fld; }
     else if (f) { commit(); kp = f.dataset.field; typed = ""; }
@@ -493,7 +499,9 @@ document.querySelectorAll(".stage[data-dock]").forEach(stage => {
       // Nästa on the rest field logs the set like Logga: the dock closes and the rest starts.
       else if (k === "Logga ›") { commit(); logged(s); }
       else typed += k; }
-    else if (rir) s.rir = +rir.dataset.rir;
+    else if (rir) { s.rir = +rir.dataset.rir; more = false; }
+    else if (el.closest("[data-rirmore]")) more = !more;
+    else if (el.closest("[data-rirv]")) { s.rir = +el.closest("[data-rirv]").dataset.rirv; more = false; }
     else if (el.closest("[data-log]")) { commit(); logged(s); }
     draw();
   });
