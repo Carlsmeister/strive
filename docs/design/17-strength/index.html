@@ -215,6 +215,21 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .minibar small { display: block; font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
 .minibar .mrest { font: var(--type-title-small); font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .wprog i, .fbar .wtitle { transition: none; } }
+
+/* Choice 6: the exercise header (name opens the exercise sheet, notes in grey) and supersets. */
+.exname { position: relative; display: inline-flex; align-items: center; gap: var(--space-4); padding: 0; font: var(--type-title-medium); text-align: left; }
+.exname::after { content: ""; position: absolute; inset: calc(-1 * var(--space-12)) 0; } /* 44 pt tap area */
+.exname svg.icon { width: var(--space-16); height: var(--space-16); color: var(--color-on-surface-variant); }
+.exnotes { display: grid; gap: var(--space-4); font: var(--type-body-small); color: var(--color-on-surface-variant); }
+.exnotes p { margin: 0; display: flex; gap: var(--space-8); align-items: baseline; }
+.exnotes b { font: var(--type-label-medium); }
+.exnotes svg.icon { width: var(--space-12); height: var(--space-12); }
+.tag { display: inline-grid; place-items: center; min-width: var(--space-20); height: var(--space-20); margin-right: var(--space-8); border-radius: var(--shape-extra-small);
+  background: var(--color-surface-container-highest); font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.sgroup { display: grid; gap: var(--space-12); }
+.sgroup.bracket { gap: var(--space-24); border-left: var(--border-focus) solid var(--color-outline-variant); padding-left: var(--space-12); }
+.sglabel, .vround { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.vround { padding-inline: var(--space-16); }
 .menu .mrow { grid-template-columns: var(--size-icon) 1fr auto; gap: var(--space-8); padding: var(--space-12) var(--space-16) var(--space-12) var(--space-12); }
 .menu .mrow + .mrow { border-top: var(--border-hairline) solid var(--color-outline-variant); }
 .menu .mrow.danger { color: var(--color-error); }
@@ -463,6 +478,41 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
     </div>
     <p><strong>Recommendation: F1.</strong> It gives the most room to the sets, which is what the screen is for, and shows time and progress without a scroll. Apple keeps large titles for the screens you navigate between, not for a task you are in, so F2 spends its height on orientation you do not need mid-set. F3's jump earns its row only in a long workout; with four to six exercises, a scroll is as quick.</p>
     <p><strong>Chosen: F1, one bar</strong> (Carl, 2026-10-24). ⌄ and ⏱ on the left, the name with ⋯ and time and sets done in the middle, Avsluta on the right. F2 and F3 stay above as the record of why.</p>
+  </section>
+
+  <section aria-labelledby="q-group">
+    <h2 id="q-group">Choice 6: the exercise header and supersets</h2>
+    <p>The second half of the active workout's frame (Q8, Q11, Q15, Q18), in F1's frame. <strong>The header is the same in all three:</strong> the name opens the exercise sheet (instructions and history, drawn in queue item 6), ⋯ is choice 4's menu, and under the target sit the sticky note with a pin, the plan's cue and last time's note, in grey. Today's note is the field under them, opened from ⋯ › Anteckning; Bänkpress shows it open. The open question is how a superset is drawn: Lutande hantelpress and Sidolyft, three rounds, with the rest after each round. <strong>Log the superset's sets with ✓</strong>: the rest starts only after the last exercise of the round.</p>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th></th><th>G1</th><th>G2</th><th>G3</th></tr></thead>
+      <tbody>
+        <tr><td>Taps for one round</td><td>2</td><td>2</td><td>2</td></tr>
+        <tr><td>The next set is the line below</td><td class="bad">no, it zigzags</td><td class="best">yes</td><td class="best">yes</td></tr>
+        <tr><td>One exercise's sets read together</td><td class="best">yes</td><td>no</td><td>no</td></tr>
+        <tr><td>Height of the superset</td><td>548 pt</td><td class="best">520 pt</td><td class="bad">652 pt</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>G1 · Bracketed</h3>
+        <p>The two exercises keep their own lists, joined by a line at the left and a label. The rest lines sit in the last exercise's list, between its sets.</p>
+        <div class="stage bleed" data-frame="g1"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>G2 · One list, in the order you lift</h3>
+        <p>Both headers, then one list: A 1, B 1, rest, A 2, B 2, rest. A letter on each line says whose set it is.</p>
+        <div class="stage bleed" data-frame="g2"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>G3 · Rounds</h3>
+        <p>Like G2, with each round as its own small list under "Varv 1", "Varv 2" and the rest between them.</p>
+        <div class="stage bleed" data-frame="g3"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: G2.</strong> The list is the order you lift, so after each ✓ the next set is the line below, as everywhere else in the workout, and the rest sits exactly where you take it. G1 keeps each exercise readable but sends your eye between two lists every set. G3 says the same as G2 with a heading per round, at the cost of height.</p>
   </section>
 
   <section aria-labelledby="dec">
@@ -919,9 +969,17 @@ const FRAME_EX = () => [
   { n: "Dips", t: "Mål 3 × 8–12", r: 90, sets: [["1", "+10 × 8"], ["2", "+10 × 8"], ["3", "+10 × 8"]] },
   { n: "Sidolyft", t: "Mål 3 × 12–15", r: 60, sets: [["1", "10 × 12"], ["2", "10 × 12"], ["3", "10 × 12"]] },
 ].map(e => ({ ...e, sets: e.sets.map(([b, v, done]) => ({ b, v, done: !!done })) }));
+// Choice 6: notes in the header, and a superset (g) of two exercises sharing one rest after each round.
+const GROUP_EX = () => [
+  { n: "Bänkpress", t: "Mål 3 × 6–8 @ 2–3", r: 120, pin: "Tummen runt stången", cue: "Pausa en sekund på bröstet", last: "Vänster axel kändes på sista setet", today: "",
+    sets: [["W", "40 × 10", 1], ["1", "80 × 8 @2", 1], ["2", "82,5 × 8"], ["3", "82,5 × 8"]] },
+  { n: "Lutande hantelpress", t: "Mål 3 × 8–10", r: 90, g: 1, cue: "Bänken på 30°", sets: [["1", "26 × 10"], ["2", "26 × 10"], ["3", "26 × 10"]] },
+  { n: "Sidolyft", t: "Mål 3 × 12–15", r: 90, g: 1, last: "Prova 12 kg nästa gång", sets: [["1", "10 × 12"], ["2", "10 × 12"], ["3", "10 × 12"]] },
+  { n: "Dips", t: "Mål 2 × 8–12", r: 90, sets: [["1", "+10 × 8"], ["2", "+10 × 8"]] },
+].map(e => ({ ...e, sets: e.sets.map(([b, v, done]) => ({ b, v, done: !!done })) }));
 const FRAMES = [];
 document.querySelectorAll(".stage[data-frame]").forEach(stage => {
-  const opt = stage.dataset.frame, counter = stage.nextElementSibling, exs = FRAME_EX();
+  const opt = stage.dataset.frame, counter = stage.nextElementSibling, exs = opt[0] === "g" ? GROUP_EX() : FRAME_EX();
   let el = 24 * 60 + 12, rest = null, menu = null, sheet = false, mini = false, taps = 0, cur = 0;
   const all = () => exs.flatMap(e => e.sets), left = () => all().filter(x => !x.done).length;
   const sum = () => `${mmss(el)} · ${all().length - left()} av ${all().length} set`;
@@ -944,6 +1002,31 @@ document.querySelectorAll(".stage[data-frame]").forEach(stage => {
     <div class="list">${e.sets.map((x, i) => `<div class="fline${x.done ? " done" : ""}"><div class="crow"><span class="badge${x.b === "W" ? " w" : ""}">${x.b}</span><span class="v${x.done ? "" : " hint"}">${x.v}</span></div>${
       x.done ? `<span class="ok">✓</span>` : `<button type="button" class="press ok" data-log="${j}.${i}" aria-label="Logga set ${x.b}">✓</button>`}</div>${
       i < e.sets.length - 1 ? `<div class="crest">Vila ${mmss(e.r)}</div>` : ""}`).join("")}</div></div>`;
+  const crest = r => `<div class="crest">Vila ${mmss(r)}</div>`;
+  const notes = e => { const p = [e.pin && `<p>${ico("pin")}<span>${e.pin}</span></p>`, e.cue && `<p><b>Plan</b><span>${e.cue}</span></p>`, e.last && `<p><b>Förra</b><span>${e.last}</span></p>`].filter(Boolean);
+    return (p.length ? `<div class="exnotes">${p.join("")}</div>` : "") + (e.today !== undefined ? `<div class="field"><input value="${e.today}" placeholder="Dagens anteckning" aria-label="Dagens anteckning för ${e.n}"></div>` : ""); };
+  const head = (e, j, tag) => `<div class="exh"><div><button type="button" class="press exname" data-name="${j}">${tag ? `<span class="tag">${tag}</span>` : ""}${e.n}${ico("chevR")}</button>
+    <small>${e.t}${e.g ? "" : ` · vila ${mmss(e.r)}`}</small></div><button type="button" class="press icon-btn" aria-label="Fler val för ${e.n}">${ico("more")}</button></div>${notes(e)}`;
+  const line = (x, j, i, tag) => `<div class="fline${x.done ? " done" : ""}"><div class="crow"><span class="badge${x.b === "W" ? " w" : ""}">${x.b}</span><span class="v${x.done ? "" : " hint"}">${
+    tag ? `<span class="tag">${tag}</span>` : ""}${x.v}</span></div>${x.done ? `<span class="ok">✓</span>` : `<button type="button" class="press ok" data-log="${j}.${i}" aria-label="Logga ${exs[j].n} set ${x.b}">✓</button>`}</div>`;
+  function blocks() {
+    const out = [];
+    for (let j = 0; j < exs.length; j++) {
+      const e = exs[j];
+      if (!e.g) { out.push(`<div class="ex">${head(e, j)}<div class="list">${e.sets.map((x, i) => line(x, j, i) + (i < e.sets.length - 1 ? crest(e.r) : "")).join("")}</div></div>`); continue; }
+      const grp = []; while (exs[j]?.g === e.g) grp.push(j++); j--;
+      const label = `<div class="sglabel">Superset · vila ${mmss(e.r)} efter varvet</div>`, last = grp.at(-1);
+      const rounds = [...Array(Math.max(...grp.map(k => exs[k].sets.length))).keys()];
+      const round = r => grp.map((k, n) => exs[k].sets[r] ? line(exs[k].sets[r], k, r, "ABCD"[n]) : "").join("");
+      const heads = grp.map((k, n) => `<div class="ex">${head(exs[k], k, "ABCD"[n])}</div>`).join("");
+      out.push(opt === "g1"
+        ? `<div class="sgroup bracket">${label}${grp.map(k => `<div class="ex">${head(exs[k], k)}<div class="list">${exs[k].sets.map((x, i) => line(x, k, i) + (k === last && i < exs[k].sets.length - 1 ? crest(e.r) : "")).join("")}</div></div>`).join("")}</div>`
+        : opt === "g2"
+        ? `<div class="sgroup">${label}${heads}<div class="list">${rounds.map(r => round(r) + (r < rounds.length - 1 ? crest(e.r) : "")).join("")}</div></div>`
+        : `<div class="sgroup">${label}${heads}${rounds.map(r => `<div class="vround">Varv ${r + 1}</div><div class="list">${round(r)}</div>`).join(crest(e.r))}</div>`);
+    }
+    return out.join("");
+  }
   const timerHtml = () => !rest ? "" : `<div class="float glass timer"><div class="mini"><div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="50"/>
     <circle class="prog" cx="60" cy="60" r="50" pathLength="100" stroke-dasharray="100" style="stroke-dashoffset:${off()}"/></svg></div>
     <div class="stack"><span class="k">${rest.k}</span><span class="time" role="timer">${mmss(rest.left)}</span></div></div>
@@ -980,7 +1063,7 @@ document.querySelectorAll(".stage[data-frame]").forEach(stage => {
   }
   function draw() {
     const top = stage.querySelector(".wscroll")?.scrollTop ?? 0;
-    stage.innerHTML = mini ? miniHtml() : bar() + (opt === "f3" ? strip() : "") + `<div class="wscroll">${opt === "f2" ? ltitle() : ""}${exs.map(exHtml).join("")}
+    stage.innerHTML = mini ? miniHtml() : bar() + (opt === "f3" ? strip() : "") + `<div class="wscroll">${opt === "f2" ? ltitle() : ""}${opt[0] === "g" ? blocks() : exs.map(exHtml).join("")}
       <div class="fend"><button type="button" class="press btn tinted" data-addex>Lägg till övningar</button><button type="button" class="press btn danger" data-discard>Släng passet</button></div></div>`
       + timerHtml() + (menu ? menuHtml() : "") + (sheet ? sheetHtml() : "");
     const sc = stage.querySelector(".wscroll");
@@ -1004,13 +1087,15 @@ document.querySelectorAll(".stage[data-frame]").forEach(stage => {
     if (q("[data-min]")) { mini = true; done("Minimera passet"); return draw(); }
     if (q("[data-fm]")) { const b = q("[data-fm]"); menu = { key: b.dataset.fm, idx: [...stage.querySelectorAll(`[data-fm="${b.dataset.fm}"]`)].indexOf(b) }; return draw(); }
     if (q("[data-end]")) { if (!left()) return done("Avsluta › sammanfattningen, som ritas i punkt 4"); sheet = true; return draw(); }
-    if (q("[data-log]")) { const [j, i] = q("[data-log]").dataset.log.split(".").map(Number); exs[j].sets[i].done = true; startRest(exs[j].r, "Vila");
+    if (q("[data-log]")) { const [j, i] = q("[data-log]").dataset.log.split(".").map(Number); exs[j].sets[i].done = true;
+      if (!exs[j].g || exs[j + 1]?.g !== exs[j].g) startRest(exs[j].r, "Vila");  // a superset rests after its last exercise
       done(`Logga ${exs[j].n} set ${exs[j].sets[i].b}`); return draw(); }
     if (q("[data-jump]")) { cur = +q("[data-jump]").dataset.jump; const sc = stage.querySelector(".wscroll");
       sc.scrollTo({ top: sc.querySelectorAll(".ex")[cur].offsetTop - 8, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
       stage.querySelectorAll("[data-jump]").forEach((b, j) => b.setAttribute("aria-pressed", j === cur)); return done(`Hoppa till ${exs[cur].n}`); }
     if (q("[data-radd]")) { rest.left = Math.max(0, rest.left + +q("[data-radd]").dataset.radd); rest.total = Math.max(rest.total, rest.left); taps = 0; return draw(); }
     if (q("[data-rskip]")) { rest = null; done("Hoppa över vilan"); return draw(); }
+    if (q("[data-name]")) return done(`${exs[+q("[data-name]").dataset.name].n} › övningsbladet, som ritas i punkt 6`);
     if (q("[data-addex]")) return done("Lägg till övningar, vars väljare ritas i punkt 7");
     if (q("[data-discard]")) return done("Släng passet, som en alert bekräftar först");
     taps--;  // a tap on nothing
