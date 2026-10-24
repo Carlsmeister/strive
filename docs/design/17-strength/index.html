@@ -158,13 +158,14 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .sleeve .shaft { fill: var(--color-outline-variant); }
 .sleeve .collar { fill: var(--color-outline); }
 .sleeve .plate { fill: var(--color-on-surface); }
-.pl { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: var(--space-12); }
+/* Drawing and text share the row equally and the text wraps, so no weight widens the dock. */
+.pl { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: center; gap: var(--space-12); }
 .pl-txt { display: grid; text-align: right; }
-.pl-txt b { font: var(--type-title-small); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pl-txt b { font: var(--type-title-small); font-variant-numeric: tabular-nums; }
 .pl-txt > span { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
 .warn { color: var(--color-error); }
 .pline { display: flex; align-items: center; gap: var(--space-8); font-variant-numeric: tabular-nums; }
-.pline .sleeve { width: auto; height: var(--space-40); }
+.pline .sleeve { width: auto; max-width: 50%; height: var(--space-40); flex: none; }
 .kp.k4 { grid-template-columns: repeat(4, 1fr); }
 .dk .psheet { background: var(--material-thick); }
 .psheet .total { display: flex; justify-content: space-between; align-items: center; gap: var(--space-8); }
@@ -315,7 +316,17 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
         <div class="counter">Last set took <strong>–</strong> taps</div>
       </div>
     </div>
-    <p><strong>Recommendation: P4.</strong> At the bar the question is "what do I load?", and P4 answers it before you touch anything, beside the ✓ you log with. Only the next set gets the line, so the list grows by one line, not one per set. Building in reverse stays one key away, in the keypad.</p>
+    <p>Recommended was P4: at the bar the question is "what do I load?", and P4 answers it before you touch anything, beside the ✓ you log with.</p>
+    <p><strong>Chosen: P3 and P4 together</strong> (Carl, 2026-10-24). The next set's line in the list shows its plates, as in P4, and the dock shows the bar under the weight, as in P3. Skivor swaps the digits for plate keys. The plates appear only on exercises with a barbell or a plate-loaded machine (Q22). P1, P2 and the two halves stay above as the record of why.</p>
+    <p>Fixed with the choice: a heavy bar no longer pushes the dock out of view. Repeated plates are counted ("4 × 25 + 1,25"), the drawing shrinks to fit, and the line wraps.</p>
+    <div class="options">
+      <div class="option">
+        <h3>Chosen · P3 + P4</h3>
+        <p>Read the plates on set 2's line, tap the set to see the bar in the dock, or press 25 a dozen times to check that nothing leaves the screen.</p>
+        <div class="stage tall bleed" data-dock="p34"></div>
+        <div class="counter">Last set took <strong>–</strong> taps</div>
+      </div>
+    </div>
   </section>
 
   <section aria-labelledby="dec">
@@ -435,7 +446,8 @@ document.querySelectorAll(".stage[data-opt]").forEach(stage => {
 const DOCKS = { d1: { steps: true }, d2: {}, d3: { steps: true, quick: true }, d4: { steps: true, stay: true },
   k1: { steps: true, quick: true, kp: "k1" }, k2: { steps: true, quick: true, kp: "k2" }, k3: { steps: true, quick: true, kp: "k3" },
   p1: { steps: true, quick: true, kp: "k3", pk: true }, p2: { steps: true, quick: true, kp: "k3", sheet: true },
-  p3: { steps: true, quick: true, kp: "k3", pk: true, inDock: true }, p4: { steps: true, quick: true, kp: "k3", pk: true, onLine: true } };
+  p3: { steps: true, quick: true, kp: "k3", pk: true, inDock: true }, p4: { steps: true, quick: true, kp: "k3", pk: true, onLine: true },
+  p34: { steps: true, quick: true, kp: "k3", pk: true, inDock: true, onLine: true } };
 const nf = v => v.toLocaleString("sv-SE");
 const mmss = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 const STEP = { w: 2.5, r: 1, rest: 15 };
@@ -449,13 +461,18 @@ const load = (w, bar) => { let side = (w - bar) / 2; const out = [];
   return { out, left: side > 1e-9 ? side : 0, under: w < bar }; };
 const plates = w => { const { out, left } = load(w, 20);
   return w <= 20 ? "bara stången" : out.map(nf).join(" + ") + (left ? " (+" + nf(left) + " går inte)" : ""); };
-const perSide = ({ out, left, under }) => under ? `<span class="warn">Lättare än stången</span>`
-    : (out.length ? out.map(nf).join(" + ") : "Tom stång") + (left ? ` <span class="warn">+${nf(left)} går inte</span>` : "");
+// Repeated plates are counted ("3 × 25 + 5"), so a heavy bar keeps a short line.
+const perSide = ({ out, left, under }) => { if (under) return `<span class="warn">Lättare än stången</span>`;
+  const runs = out.reduce((r, p) => (r.at(-1)?.p === p ? r.at(-1).n++ : r.push({ p, n: 1 }), r), []);
+  return (runs.length ? runs.map(({ p, n }) => (n > 1 ? `${n} × ` : "") + nf(p)).join(" + ") : "Tom stång")
+    + (left ? ` <span class="warn">+${nf(left)} går inte</span>` : ""); };
 // One sleeve, collar on the left and plates outward, bigger plates taller.
 const PH = { 25: 64, 20: 58, 15: 52, 10: 44, 5: 34, 2.5: 28, 1.25: 22 }, PW = { 25: 16, 20: 14, 15: 13, 10: 11, 5: 9, 2.5: 8, 1.25: 7 };
+// A bar loaded past the drawing widens the viewBox, so the drawing shrinks to fit instead of pushing the dock out of view.
 const sleeve = (out, vw = 200) => { let x = 22;
-  return `<svg class="sleeve" viewBox="0 0 ${vw} 72" aria-hidden="true"><rect class="shaft" x="0" y="32" width="${vw}" height="8" rx="2"/><rect class="collar" x="12" y="22" width="6" height="28" rx="2"/>${out.map(p => {
-    const r = `<rect class="plate" x="${x}" y="${36 - PH[p] / 2}" width="${PW[p]}" height="${PH[p]}" rx="2"/>`; x += PW[p] + 2; return r; }).join("")}</svg>`; };
+  const rects = out.map(p => { const r = `<rect class="plate" x="${x}" y="${36 - PH[p] / 2}" width="${PW[p]}" height="${PH[p]}" rx="2"/>`; x += PW[p] + 2; return r; }).join("");
+  vw = Math.max(vw, x + 8);
+  return `<svg class="sleeve" viewBox="0 0 ${vw} 72" aria-hidden="true"><rect class="shaft" x="0" y="32" width="${vw}" height="8" rx="2"/><rect class="collar" x="12" y="22" width="6" height="28" rx="2"/>${rects}</svg>`; };
 const barName = b => BARS[b][1] ? `Stång ${nf(BARS[b][1])}` : "Ingen stång";
 const panel = (l, b) => `<div class="pl">${sleeve(l.out)}<div class="pl-txt"><b>${perSide(l)}</b><span>per sida</span></div>
   <button type="button" class="press btn small tinted" data-bar aria-label="Byt stång, nu ${BARS[b][0]} ${nf(BARS[b][1])} kg">${barName(b)}</button></div>`;
