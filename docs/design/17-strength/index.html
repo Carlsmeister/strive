@@ -139,6 +139,12 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .kp.k2, .kp.k3 { grid-template-columns: repeat(3, 1fr); }
 .kp.k3 button { background: var(--material-thick); border-radius: var(--shape-full); }
 .nowrap { flex-wrap: nowrap; }
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); align-items: start; }
+.split .rirrow { grid-template-columns: 1fr; gap: var(--space-4); }
+.split .segc { padding: var(--space-4) var(--space-4); gap: var(--space-4); }
+.split .segc button { padding: var(--space-8) 0; min-height: var(--size-touch); }
+.split > label { display: grid; gap: var(--space-4); min-width: 0; font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.split .num input { font: var(--type-title-large); font-variant-numeric: tabular-nums; }
 .kp3 [data-key="−"], .kp3 [data-key="+"] { min-width: calc(var(--size-touch) + var(--space-16)); min-height: var(--size-touch); font: var(--type-title-large); }
 .grow { flex: 1; }
 .float.timer[hidden] { display: none; }
@@ -257,7 +263,10 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 
   <section aria-labelledby="devs">
     <h2 id="devs">Deviations from Apple's guidelines</h2>
-    <p>None on this page yet. Each one found while sketching is listed here, with its cost, before Carl decides.</p>
+    <p>Accepted for now, because Carl is the only user. Listed so they are cheap to fix if Strive is ever submitted to the App Store.</p>
+    <ul>
+      <li><strong>RIR segments are about 29 pt wide</strong> in the dock, because RIR shares its row with the rest time (Carl, 2026-10-24). Apple, Accessibility: a hit target of 44 × 44 pt by default, 28 × 28 pt at minimum. They stay 44 pt tall and above the minimum. The fix is RIR on a row of its own, full width, which squeezes the rest time again.</li>
+    </ul>
   </section>
 </div>
 
@@ -407,13 +416,15 @@ document.querySelectorAll(".stage[data-dock]").forEach(stage => {
     const keys = !kp ? "" : v.kp ? KEYPADS[v.kp](next, kp)
       : `<div class="kp">${["1", "2", "3", "−", "4", "5", "6", "+", "7", "8", "9", "⌫", ",", "0", "", "Klar"].map(k =>
         k === "" ? "<span></span>" : `<button type="button" class="press${k === "Klar" ? " done-key" : ""}" data-key="${k}">${k}</button>`).join("")}</div>`;
-    const fields = !s ? "" : field("w", "Vikt (kg)", "Vikt i kg") + field("r", "Reps", "Reps") + (v.kp ? field("rest", "Vila", "Vila") : "");
+    const fields = !s ? "" : field("w", "Vikt (kg)", "Vikt i kg") + field("r", "Reps", "Reps") + (v.kp && kp ? field("rest", "Vila", "Vila") : "");
+    // With the keypad closed, RIR and rest share a row, so the rest time is never squeezed by its − and +.
+    const split = !s ? "" : `<div class="split always">${rirRow(s)}${field("rest", "Vila", "Vila")}</div>`;
     const platesLine = s && v.kp && showPlates ? `<span class="prev">Skivor per sida på 20 kg-stång: ${plates(s.w)}</span>` : "";
     const logBtn = !s || (v.kp && kp) ? "" : `<button type="button" class="press btn filled" data-log>${s.done ? "Spara ändring" : "Logga set " + s.badge}</button>`;
     const dock = s ? `<div class="dock glass"><button type="button" class="press grabber-btn" data-close aria-label="Stäng loggningen"><span class="grabber"></span></button>
       <div class="focus"><div class="top"><b>Bänkpress · set ${s.badge}</b></div><span class="prev">Förra ${s.prev}${s.up && !s.done ? '<span class="arrow">↑ 2,5 kg</span>' : ""}</span>
-      <div class="numrow${v.steps && !kp ? " always" : ""}${v.kp ? " three" : ""}">${fields}</div>${platesLine}
-      ${kp ? keys : rirRow(s)}${logBtn}</div></div>` : "";
+      <div class="numrow${v.steps && !kp ? " always" : ""}${v.kp && kp ? " three" : ""}">${fields}</div>${platesLine}
+      ${kp ? keys : v.kp ? split : rirRow(s)}${logBtn}</div></div>` : "";
     stage.innerHTML = `<div class="ex">${head}<div class="list">${rows}</div></div>${dock}${timer}`;
     const d = stage.querySelector(".dock"), t = stage.querySelector(".timer");
     if (d) t.style.bottom = `calc(${d.offsetHeight}px + var(--space-12))`;
