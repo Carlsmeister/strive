@@ -579,21 +579,12 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
       </div>
     </div>
     <p><strong>Recommendation: U2.</strong> The screen asks two things of you, how hard it was and what to remember, and U2 asks them first, while you still know. The numbers follow on the same scroll, and every set stays visible, which session detail needs when you look back. U3 is the most rewarding to open, but folds away the sets you came to check.</p>
-    <p><strong>Chosen: U1's top with U3's exercises</strong> (Carl, 2026-10-24). Tiles and records first, then one row per exercise with its best set, folded; RPE, the note and the times follow. The date heading is larger and split into time and week in all four sketches. <strong>Open: the volume tile.</strong> Carl finds kilos lifted strange for a gym session. Pick what takes its place below:</p>
-    <ul>
-      <li><strong>Snitt-RIR</strong> (recommended): how close to failure the working sets went, against the plan's target. It answers "did I train hard enough", which RIR is logged for. Empty when no RIR was logged.</li>
-      <li><strong>Hårda set</strong>: working sets at RIR 3 or less, the count hypertrophy research measures. With RIR targets of 2–3 it nearly always equals the working sets, so it repeats the Set tile.</li>
-      <li><strong>None</strong>: three tiles in a row, time, sets and records.</li>
-    </ul>
-    <div class="seg" role="group" aria-label="The fourth tile">
-      <button type="button" data-slot="rir" aria-pressed="true">Snitt-RIR</button>
-      <button type="button" data-slot="hard" aria-pressed="false">Hårda set</button>
-      <button type="button" data-slot="none" aria-pressed="false">None</button>
-    </div>
+    <p><strong>Chosen: U1's top with U3's exercises</strong> (Carl, 2026-10-24). Tiles and records first, then one row per exercise with its best set, folded; RPE, the note and the times follow. The date heading is larger and split into time and week in all four sketches. RPE and the note move up under the records (Carl, 2026-10-24), so the questions come before the exercises.</p>
+    <p><strong>The volume tile becomes Snitt-RIR</strong> (Carl, 2026-10-24): how close to failure the working sets went, against the plan's target. Kilos lifted say little about a session meant to build muscle. Hard sets were rejected because with RIR targets of 2–3 they repeat the Set tile.</p>
     <div class="options">
       <div class="option">
         <h3>Chosen · U1 and U3</h3>
-        <p>Tap an exercise to see its sets; try the three tiles with the switch above.</p>
+        <p>Tap an RPE, then an exercise to see its sets, then Klar.</p>
         <div class="stage bleed" data-summary="u13" data-slot="rir"></div>
         <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
       </div>
@@ -1228,7 +1219,7 @@ document.querySelectorAll(".stage[data-summary]").forEach(stage => {
     u1: () => tiles() + records() + exercises() + feel() + times(),
     u2: () => feel() + tiles() + records() + exercises() + times(),
     u3: () => records(true) + tiles(true) + feel() + folded() + times(),
-    u13: () => tiles() + records() + folded() + feel() + times(),
+    u13: () => tiles() + records() + feel() + folded() + times(),
   };
   const alertHtml = () => `<div class="scrim"></div><div class="center"><div class="alert"><h5>Uppdatera mallen Push A?</h5><p>Passet skiljer sig från mallen:<br>Dips, 2 set, lades till<br>Vilan i Bänkpress, 2:00 → 2:30</p>
     <div class="inline"><button type="button" class="press btn tinted" data-a="Inte nu">Inte nu</button><button type="button" class="press btn filled" data-a="Uppdatera">Uppdatera</button></div></div></div>`;
@@ -1249,14 +1240,8 @@ document.querySelectorAll(".stage[data-summary]").forEach(stage => {
     if (!q("input")) taps--;  // a tap on nothing
   });
   SUMS.push(() => { rpe = sumHist ? 7 : null; alert = false; open = -1; draw(); });
-  stage.redraw = draw;
   draw();
 });
-document.querySelectorAll("[data-slot]").forEach(b => b.addEventListener("click", () => {
-  const st = document.querySelector('[data-summary="u13"]');
-  st.dataset.slot = b.dataset.slot; st.redraw();
-  document.querySelectorAll("[data-slot]").forEach(x => x.setAttribute("aria-pressed", x === b));
-}));
 document.querySelectorAll("[data-hist]").forEach(b => b.addEventListener("click", () => {
   sumHist = b.dataset.hist === "1";
   document.querySelectorAll("[data-hist]").forEach(x => x.setAttribute("aria-pressed", x === b));
