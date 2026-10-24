@@ -181,6 +181,14 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
   background: var(--material-thick); overflow: hidden; display: grid; transform-origin: var(--origin, top right); animation: menu-in var(--motion-release); }
 @keyframes menu-in { from { transform: scale(var(--state-pressed-scale)); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .menu { animation: none; } }
+/* Swipe a set left to show Ta bort; swipe on past half the row to delete it, as iOS lists do. */
+.swipe { position: relative; overflow: hidden; touch-action: pan-y; }
+.swipe > .crow { position: relative; background: var(--color-surface); transition: transform var(--motion-release); }
+.swipe.open > .crow { transform: translateX(calc(-2 * var(--size-touch))); }
+.swipe .del { position: absolute; inset: 0 0 0 auto; width: calc(2 * var(--size-touch)); display: flex; align-items: center; justify-content: center;
+  background: var(--color-error); color: var(--color-on-error); font: var(--type-label-large); transition: width var(--motion-release); }
+.swipe.full .del { justify-content: flex-start; padding-inline: var(--space-16); }
+@media (prefers-reduced-motion: reduce) { .swipe > .crow, .swipe .del { transition: none; } }
 .menu .mrow { grid-template-columns: var(--size-icon) 1fr auto; gap: var(--space-8); padding: var(--space-12) var(--space-16) var(--space-12) var(--space-12); }
 .menu .mrow + .mrow { border-top: var(--border-hairline) solid var(--color-outline-variant); }
 .menu .mrow.danger { color: var(--color-error); }
@@ -384,10 +392,11 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
     </div>
     <p><strong>Recommendation: M2.</strong> Mid-workout you write a note, swap a busy machine or add warm-ups, and M2 puts those three on the largest targets in the menu. The list below them is shorter than M1's, and nothing hides in a submenu as in M3.</p>
     <p><strong>Chosen: M2, without Uppvärmning</strong> (Carl, 2026-10-24). A warm-up set is added the way any set is: Lägg till set, then Uppvärmning in its badge menu. That costs 3 taps instead of 2, and the menu loses an action. An unlogged set made a warm-up moves up to be the next set to do: above the working sets before you start, next in line mid-exercise. The palette keeps Anteckning and Byt. M1, M3 and the three-tile M2 stay above as the record of why.</p>
+    <p><strong>Also chosen: swipe a set left to delete it</strong> (Carl, 2026-10-24). A short swipe shows Ta bort, and a tap on it deletes the set; swiping on past half the row deletes it in one motion. This is the iOS list's trailing swipe action with full swipe, as in Mail, so it is not a deviation. VoiceOver reads swipe actions as actions on the row.</p>
     <div class="options">
       <div class="option">
         <h3>Chosen · M2 with two tiles</h3>
-        <p>Open ⋯ by Bänkpress, or tap Lägg till set and make the new set a warm-up in its badge.</p>
+        <p>Open ⋯ by Bänkpress, tap Lägg till set and make the new set a warm-up in its badge, or swipe a set left to delete it.</p>
         <div class="stage tall bleed" data-menus="m2c"></div>
         <div class="counter">Last pick took <strong>–</strong> taps<span class="picked"></span></div>
       </div>
@@ -730,7 +739,7 @@ const TYPES = [["Arbetsset", ""], ["Uppvärmning", "W"], ["Dropset", "D"], ["Til
 document.querySelectorAll(".stage[data-menus]").forEach(stage => {
   const opt = stage.dataset.menus, counter = stage.nextElementSibling;
   let sets = [{ type: "W", w: "40 × 10", done: true }, { type: "", w: "80 × 8 @2", done: true }, { type: "", w: "82,5 × 8" }, { type: "", w: "82,5 × 8" }];
-  let rest = 120, menu = null, taps = 0;
+  let rest = 120, menu = null, taps = 0, swipe = null, swiped = false, openAt = -1;
   const S = (...items) => ({ items });
   const restMenu = () => [{ title: "Vila för alla set", items: [60, 90, 120, 150, 180].map(r => ({ t: mmss(r), check: rest === r, act: () => rest = r })) }];
   const it = (t, i, more) => ({ t, i, ...more });
@@ -773,11 +782,13 @@ document.querySelectorAll(".stage[data-menus]").forEach(stage => {
   function draw() {
     const crow = (x, i) => `<div class="crow"><button type="button" class="press badge${x.type === "W" ? " w" : ""}" data-menu="badge" data-at="${i}" aria-label="Settyp för set ${badge(i)}">${badge(i)}</button>
       <span class="v${x.done ? "" : " hint"}">${x.w}</span><span class="tick">${x.done ? "✓" : ""}</span></div>`;
+    const wrap = (x, i) => opt !== "m2c" ? crow(x, i)
+      : `<div class="swipe${i === openAt ? " open" : ""}"><button type="button" class="press del" data-del="${i}">Ta bort</button>${crow(x, i)}</div>`;
     stage.innerHTML = `<div class="titlebar"><span></span><div class="wtitle"><button type="button" class="press wname" data-menu="workout" aria-label="Fler val för passet">Push A ${ico("more")}</button><small>24:12</small></div>
       <button type="button" class="press btn small tinted">Avsluta</button></div>
       <div class="ex"><div class="exh"><div><h4>Bänkpress</h4><small>Mål 4 × 6–8 @ 2–3 · vila ${mmss(rest)}</small></div>
       <button type="button" class="press icon-btn" data-menu="ex" aria-label="Fler val för Bänkpress">${ico("more")}</button></div>
-      <div class="list">${sets.map((x, i) => crow(x, i) + (i < sets.length - 1 ? `<div class="crest">Vila ${mmss(rest)}</div>` : "")).join("")}</div>${
+      <div class="list">${sets.map((x, i) => wrap(x, i) + (i < sets.length - 1 ? `<div class="crest">Vila ${mmss(rest)}</div>` : "")).join("")}</div>${
       opt === "m2c" ? `<div class="crow"><span></span><button type="button" class="press btn small tinted" data-addset>Lägg till set</button></div>` : ""}</div>${menu ? menuHtml() : ""}`;
     if (menu) place();
   }
@@ -793,6 +804,9 @@ document.querySelectorAll(".stage[data-menus]").forEach(stage => {
   }
   stage.addEventListener("click", e => {
     const el = e.target, open = el.closest("[data-menu]"), pick = el.closest("[data-pick]");
+    if (swiped) { swiped = false; return; }
+    if (el.closest("[data-del]")) { sets.splice(+el.closest("[data-del]").dataset.del, 1); openAt = -1; return draw(); }
+    if (openAt >= 0) { openAt = -1; return draw(); }  // a tap anywhere else closes the open row
     if (pick) { taps++; const k = pick.dataset.pick, lv = menu.stack.at(-1);
       const x = k[0] === "p" ? lv.palette[+k.slice(1)] : lv.sections[+k.split(".")[0]].items[+k.split(".")[1]];
       if (x.kids) menu.stack.push({ title: x.t, sections: x.kids });
@@ -804,6 +818,32 @@ document.querySelectorAll(".stage[data-menus]").forEach(stage => {
     if (open) { taps = 1; const k = open.dataset.menu, at = open.dataset.at;
       menu = { anchor: at ? `[data-menu="badge"][data-at="${at}"]` : `[data-menu="${k}"]`, stack: [BUILD[k](+at)] }; return draw(); }
   });
+  stage.addEventListener("pointerdown", e => {
+    const sw = opt === "m2c" && !menu && e.target.closest(".swipe");
+    if (sw) swipe = { sw, i: [...stage.querySelectorAll(".swipe")].indexOf(sw), x: e.clientX, y: e.clientY,
+      base: sw.classList.contains("open") ? -sw.querySelector(".del").offsetWidth : 0, reveal: sw.querySelector(".del").offsetWidth, dx: 0 };
+  });
+  stage.addEventListener("pointermove", e => {
+    if (!swipe) return;
+    const { sw, x, y, base, reveal } = swipe, row = sw.querySelector(".crow"), del = sw.querySelector(".del");
+    if (!swiped && Math.abs(e.clientY - y) > Math.abs(e.clientX - x)) { if (Math.abs(e.clientY - y) > 8) swipe = null; return; }
+    if (Math.abs(e.clientX - x) < 8 && !swiped) return;
+    swiped = true; swipe.dx = Math.min(0, base + e.clientX - x);
+    row.style.transition = del.style.transition = "none";
+    row.style.transform = `translateX(${swipe.dx}px)`; del.style.width = `${Math.max(reveal, -swipe.dx)}px`;
+    sw.classList.toggle("full", -swipe.dx > sw.offsetWidth / 2);
+  });
+  const endSwipe = () => {
+    if (!swipe) return;
+    const { sw, i, dx, reveal } = swipe, row = sw.querySelector(".crow"), del = sw.querySelector(".del"); swipe = null;
+    if (!swiped) return;
+    if (sw.classList.contains("full")) { sets.splice(i, 1); openAt = -1; return draw(); }
+    row.style.transition = del.style.transition = row.style.transform = del.style.width = "";
+    openAt = -dx > reveal / 2 ? i : -1;
+    stage.querySelectorAll(".swipe").forEach((x, j) => x.classList.toggle("open", j === openAt));
+  };
+  stage.addEventListener("pointerup", endSwipe);
+  stage.addEventListener("pointercancel", endSwipe);
   draw();
 });
 
