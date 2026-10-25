@@ -191,7 +191,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 @media (prefers-reduced-motion: reduce) { .swipe > .crow, .swipe .del { transition: none; } }
 
 /* Choice 5: the frame around the sets. The list scrolls under a fixed title bar. */
-.stage[data-frame], .stage[data-summary], .stage[data-tpl], .stage[data-tpl4], .stage[data-exd], .stage[data-lib] { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0; padding: 0; height: 780px; }
+.stage[data-frame], .stage[data-summary], .stage[data-tpl], .stage[data-tpl4], .stage[data-exd], .stage[data-lib], .stage[data-exe] { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0; padding: 0; height: 780px; }
 .fbar { padding: var(--space-8) var(--space-16); }
 .fbar .wtitle { transition: opacity var(--motion-fade); }
 .stage[data-frame="f2"]:not(.scrolled) .fbar .wtitle { opacity: 0; pointer-events: none; }
@@ -419,6 +419,34 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .palette { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; }
 .palette button { display: grid; justify-items: center; gap: var(--space-4); padding: var(--space-12) var(--space-4); font: var(--type-label-small); }
 .palette button + button { border-left: var(--border-hairline) solid var(--color-outline-variant); }
+
+/* Choice 12: the sheet that creates or edits an exercise (Q35). */
+/* A form at full height is opaque, as iOS draws a large sheet; glass stays on its menus. */
+.exsheet { background: var(--color-background); }
+.exsheet .list { background: var(--color-surface); }
+.exsheet .wscroll { gap: var(--space-20); padding-bottom: calc(4 * var(--size-touch)); }
+.field.area { align-items: start; }
+.field textarea { flex: 1; min-width: 0; border: 0; background: none; color: var(--color-on-surface); font: var(--type-body-large); padding: var(--space-8) 0;
+  outline: none; resize: none; min-height: calc(3 * var(--size-touch)); }
+.row .val svg.icon, .btn.text.back svg.icon { width: var(--space-16); height: var(--space-16); vertical-align: middle; }
+.btn.text.back { display: inline-flex; align-items: center; gap: var(--space-4); justify-self: start; }
+.row.locked { color: var(--color-on-surface-variant); }
+.row .act { color: var(--color-primary); }
+.group.flat > h4, .group.flat > .caption { padding-inline: 0; }
+.cblock { display: grid; gap: var(--space-8); }
+.clabel { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.cwrap { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+.cwrap .btn[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); }
+.menu.scroll { max-height: calc(100% - 2 * var(--space-16)); overflow-y: auto; }
+/* Choice 12b: the library's equipment and mark filters (Q34). */
+.srch { display: grid; grid-template-columns: 1fr auto; gap: var(--space-8); align-items: center; }
+.icon-btn.on { background: var(--color-primary); color: var(--color-on-primary); }
+.fchip { display: inline-flex; align-items: center; gap: var(--space-4); }
+.fchip svg.icon { width: var(--space-16); height: var(--space-16); }
+.fsheet { background: var(--material-thick); }
+.fsheet .sheet-head > :last-child { justify-self: end; }
+/* Above the sticky muscle headings. */
+.stage[data-lib] :is(.scrim, .sheet, .catch, .menu) { z-index: 2; }
 </style>
 
 <div class="wrap">
@@ -943,6 +971,78 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
     </div>
     <p><strong>Recommendation: L1.</strong> With about 80 exercises, a scroll with a heading per muscle is the quickest way to look around, and search covers the case where you know the name. In the picker, L1 lets you tick exercises from several muscles without going back and forth, which a workout always needs. L2 and L3 make the first screen tidier at the cost of a tap for every group.</p>
     <p><strong>Chosen: L1, one list with muscle headings</strong> (Carl, 2026-10-25). The headings stick while you scroll their group; the same list is the picker for "Lägg till övningar". L2 and L3 stay above as the record of why. Still to draw: the sheet to create or edit an exercise (Q35), and the equipment and mark filters.</p>
+  </section>
+
+  <section aria-labelledby="q-exe">
+    <h2 id="q-exe">Choice 12: create and edit an exercise</h2>
+    <p>Queue item 7b (Q35). Decided, and the same in all three: a full-height sheet with Avbryt, the title and Spara. The fields are the name, primary and secondary muscles, pattern, equipment, type, per side, step, bar, unit, the instructions, "I mina program" with its alternative, and the sticky note. Equipment fills in the step (Q7) and, for a barbell, the bar, so a new exercise needs only a name and three choices. Spara waits for a name and a primary muscle. Editing a used exercise locks its type and says why, and offers Flytta data (behind an alert) and Arkivera; Ta bort exists only for an exercise never used. The switch picks where the sheet was opened from: + or Ny in the library, or ⋯ › Redigera on exercise detail. The open question is how a choice is made. <strong>Create Utfallssteg (Framsida lår, Knädominant, Hantlar), then switch to Redigera and try the type, Byt and Flytta data.</strong></p>
+    <div class="seg" role="group" aria-label="Opened for">
+      <button type="button" data-exemode="0" aria-pressed="true">Ny övning</button>
+      <button type="button" data-exemode="1" aria-pressed="false">Redigera Bänkpress</button>
+    </div>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th></th><th>E1</th><th>E2</th><th>E3</th></tr></thead>
+      <tbody>
+        <tr><td>Create Utfallssteg: three choices and Spara</td><td>7 taps</td><td class="best">4 taps</td><td>7 taps</td></tr>
+        <tr><td>Change Bänkpress's equipment</td><td>2 taps</td><td class="best">1 tap, after a scroll</td><td>2 taps</td></tr>
+        <tr><td>Ny without scrolling</td><td class="bad">no</td><td class="bad">no</td><td class="best">yes</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>E1 · Menus in a form</h3>
+        <p>Every choice is a row showing its value. A tap opens a pull-down menu on the row, as a picker in an iOS form does. Secondary muscles, where you pick several, open a list with checkmarks.</p>
+        <div class="stage bleed" data-exe="e1"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>E2 · Chips in place</h3>
+        <p>Every choice shows all its values as chips you tap directly, and the chosen chip fills. Nothing hides behind a tap, so the sheet is long.</p>
+        <div class="stage bleed" data-exe="e2"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>E3 · Four choices, the rest folded</h3>
+        <p>Ny shows the name, primary muscle, pattern, equipment and type, picked from E1's menus; everything else keeps its default under Fler inställningar. Redigera shows the whole form.</p>
+        <div class="stage bleed" data-exe="e3"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: E1.</strong> You create an exercise a few times a year and edit one more often. E1's form reads as a summary of the exercise, one value per row, and its pickers are the ones iOS puts in a form. E2 saves three taps on a create and costs a sheet over three screens long, two dozen of its chips muscles. E3 fits Ny on one screen but folds away the step and per side at the moment they get set.</p>
+  </section>
+
+  <section aria-labelledby="q-filter">
+    <h2 id="q-filter">Choice 12b: the equipment and mark filters</h2>
+    <p>Queue item 7b (Q34), on L1's list. Decided: filter by equipment, several at once, and by "I mina program": Ja, Byt, Testa, Inte satt and Nej. Nej starts unticked, which is how Nej stays hidden; tick it to see those exercises. Filters combine with the search and the pattern chip. Muscle gets no filter, because L1's headings are the muscles. The sketch's list gains two Nej exercises, Pec deck and Koncentrationscurl. The open question is where the filters live. <strong>Show only Hantlar, then show the Nej exercises too.</strong></p>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th></th><th>R1</th><th>R2</th><th>R3</th></tr></thead>
+      <tbody>
+        <tr><td>Show only Hantlar</td><td>3 taps</td><td class="best">2 taps</td><td>3 taps</td></tr>
+        <tr><td>Show the Nej exercises</td><td>3 taps</td><td class="best">2 taps</td><td>3 taps</td></tr>
+        <tr><td>See what is filtered</td><td class="bad">a filled icon</td><td class="best">the chip's label</td><td class="best">chips with ✕</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>R1 · A filter sheet</h3>
+        <p>A filter button beside the search opens a sheet with equipment and marks as chips. The list behind updates as you tap; Klar closes. The button fills while a filter is on.</p>
+        <div class="stage bleed" data-lib="r1"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>R2 · Menu chips before the patterns</h3>
+        <p>Utrustning and I mina program start the chip row. Each opens a pull-down menu with checkmarks; the chip names what it filters and fills while it does.</p>
+        <div class="stage bleed" data-lib="r2"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>R3 · In the ⋯ menu</h3>
+        <p>⋯ holds sorting and both filters, each a submenu. What is on shows as chips under the search, each with ✕ to remove it. The picker's bar has no ⋯, so the picker gets no filters.</p>
+        <div class="stage bleed" data-lib="r3"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: R2.</strong> The filters sit where the patterns already are, cost two taps, and say on the chip what they do. R1 keeps the row tidy but hides what is on behind an icon. R3 needs a row of chips anyway, and puts the filters a level deeper.</p>
   </section>
 
   <section aria-labelledby="dec">
@@ -1879,6 +1979,7 @@ const fig = (x, parts) => `<g transform="translate(${x} 0)"><circle class="body"
 const muscleMap = () => `<svg viewBox="0 0 130 120" role="img" aria-label="Muskler: bröst primärt; främre axlar och triceps sekundärt">${
   fig(0, `<ellipse class="m1" cx="23.5" cy="35" rx="7" ry="6"/><ellipse class="m1" cx="36.5" cy="35" rx="7" ry="6"/><circle class="m2" cx="12" cy="30" r="5"/><circle class="m2" cx="48" cy="30" r="5"/>`)}${
   fig(68, `<ellipse class="m2" cx="10.5" cy="46" rx="4" ry="9"/><ellipse class="m2" cx="49.5" cy="46" rx="4" ry="9"/>`)}</svg>`;
+const MARKS = { Ja: "Ja: föreslås i program.", Byt: "Byt: alternativet, Hantelpress, föreslås först.", Nej: "Nej: föreslås aldrig.", Testa: "Testa: prova lätt en gång innan den föreslås." };
 document.querySelectorAll(".stage[data-exd]").forEach(stage => {
   const v = stage.dataset.exd, counter = stage.nextElementSibling;
   let tab = "Om", period = "3 mån", pt = -1, page = null, mark = "Ja", taps = 0;
@@ -1905,7 +2006,6 @@ document.querySelectorAll(".stage[data-exd]").forEach(stage => {
     + sec("I mina program", `<div class="segc" role="group" aria-label="I mina program">${["Ja", "Byt", "Nej", "Testa"].map(k => `<button type="button" class="press" data-mark="${k}" aria-pressed="${k === mark}">${k}</button>`).join("")}</div>
       <p class="caption">${MARKS[mark]}</p>`)
     + sec("Inställningar", `<div class="list">${[["Typ", "Vikt × reps"], ["Steg", "2,5 kg"], ["Stång", "Olympisk, 20 kg"], ["Enhet", "kg"]].map(([k, val]) => `<button type="button" class="press row" data-setting="${k}"><span>${k}</span><span class="val">${val} ›</span></button>`).join("")}</div>`);
-  const MARKS = { Ja: "Ja: föreslås i program.", Byt: "Byt: alternativet, Hantelpress, föreslås först.", Nej: "Nej: föreslås aldrig.", Testa: "Testa: prova lätt en gång innan den föreslås." };
   const sec = (h, body) => `<div class="group"><h4>${h}</h4>${body}</div>`;
   // Chosen: one illustration of the movement with the muscles in red replaces the video and the drawn map.
   const illo = () => `<img class="illo" src="bench-press.jpg" width="1200" height="800" alt="Bänkpress, start och slutläge. Bröstet rött, främre axlar och triceps ljust röda.">`;
@@ -1948,12 +2048,12 @@ document.querySelectorAll(".stage[data-exd]").forEach(stage => {
 // Choice 11: the library. [name, muscle, pattern, equipment, last, mark]
 const LIB = [
   ["Bänkpress", "Bröst", "Horisontell press", "Skivstång", "82,5 × 8", "Ja"], ["Lutande hantelpress", "Bröst", "Horisontell press", "Hantlar", "26 × 10", "Ja"],
-  ["Hantelflyes", "Bröst", "Horisontell press", "Hantlar", "", ""], ["Maskinpress", "Bröst", "Horisontell press", "Maskin", "", ""],
+  ["Hantelflyes", "Bröst", "Horisontell press", "Hantlar", "", ""], ["Maskinpress", "Bröst", "Horisontell press", "Maskin", "", ""], ["Pec deck", "Bröst", "Horisontell press", "Maskin", "", "Nej"],
   ["Marklyft", "Rygg", "Höftdominant", "Skivstång", "120 × 5", "Ja"], ["Chins", "Rygg", "Vertikalt drag", "Kroppsvikt", "+5 × 6", "Ja"],
   ["Sittande kabelrodd", "Rygg", "Horisontellt drag", "Kabel", "", "Byt"], ["Latsdrag", "Rygg", "Vertikalt drag", "Kabel", "", ""],
   ["Sidolyft, kabel", "Axlar", "Vertikal press", "Kabel", "7,5 × 15", "Ja"], ["Omvända flyes", "Axlar", "Vertikal press", "Hantlar", "8 × 15", "Ja"],
   ["Militärpress", "Axlar", "Vertikal press", "Skivstång", "", ""], ["Sittande maskinpress", "Axlar", "Vertikal press", "Maskin", "", "Byt"],
-  ["Hammercurl", "Biceps", "Armar", "Hantlar", "16 × 10", "Ja"], ["Preachercurl", "Biceps", "Armar", "Maskin", "30 × 12", "Ja"],
+  ["Hammercurl", "Biceps", "Armar", "Hantlar", "16 × 10", "Ja"], ["Preachercurl", "Biceps", "Armar", "Maskin", "30 × 12", "Ja"], ["Koncentrationscurl", "Biceps", "Armar", "Hantlar", "", "Nej"],
   ["Triceps pushdown", "Triceps", "Armar", "Kabel", "25 × 12", "Ja"], ["Skull crushers", "Triceps", "Armar", "EZ-stång", "30 × 10", "Ja"],
   ["Farmers walk", "Underarmar", "Explosivt och bär", "Hantlar", "", ""],
   ["Knäböj", "Framsida lår", "Knädominant", "Skivstång", "100 × 6", "Ja"], ["Bulgarisk utfallsböj", "Framsida lår", "Knädominant", "Hantlar", "20 × 8", "Ja"],
@@ -1966,13 +2066,50 @@ const LIB = [
 ];
 const MUSCLES = ["Bröst", "Rygg", "Axlar", "Biceps", "Triceps", "Underarmar", "Framsida lår", "Baksida lår", "Säte", "Vader", "Bål", "Helkropp"];
 const PATTERNS = ["Knädominant", "Höftdominant", "Horisontell press", "Vertikal press", "Horisontellt drag", "Vertikalt drag", "Armar", "Bål", "Vader", "Kettlebell", "Explosivt och bär"];
+Object.assign(ICONS, { updown: '<path d="m8 9 4-4 4 4M8 15l4 4 4-4"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>' });
+const EQUIP = ["Skivstång", "EZ-stång", "Hantlar", "Kettlebell", "Kabel", "Maskin", "Kroppsvikt"];
+// Choice 12b: the marks a filter shows. Nej starts unticked, which is how it stays hidden (Q34).
+const MARKF = [["Ja", "Ja"], ["Byt", "Byt"], ["Testa", "Testa"], ["", "Inte satt"], ["Nej", "Nej"]];
+const MARKS0 = ["Ja", "Byt", "Testa", ""];
+const toggle = (set, k) => set.has(k) ? set.delete(k) : set.add(k);
+// A pull-down menu as in choice 4: sections of [key, label, ticked, has a submenu], and a back row on a submenu.
+const pdMenu = (secs, back) => `<div class="catch"></div><div class="menu glass scroll" role="menu">${back ? `<div class="msec"><button type="button" class="press row mrow back" data-mback><span>${ico("chevL")}</span><b>${back}</b><span></span></button></div>` : ""}${
+  secs.map(s => `<div class="msec">${s.map(([k, t, on, kids]) => `<button type="button" class="press row mrow" data-mi="${k}" role="menuitem"><span>${on ? ico("check") : ""}</span><span>${t}</span>${kids ? ico("chevR") : "<span></span>"}</button>`).join("")}</div>`).join("")}</div>`;
+// Open toward the middle of the stage, and upward when there is no room below.
+function placeMenu(stage, anchor) {
+  const m = stage.querySelector(".menu"), s = stage.getBoundingClientRect(), r = anchor.getBoundingClientRect();
+  const gap = parseFloat(getComputedStyle(stage).getPropertyValue("--space-8")), right = r.left + r.width / 2 - s.left > s.width / 2;
+  const left = right ? r.right - s.left - m.offsetWidth : r.left - s.left;
+  let top = r.bottom - s.top + gap; const up = top + m.offsetHeight > s.height - gap;
+  if (up) top = Math.max(gap, r.top - s.top - m.offsetHeight - gap);
+  m.style.left = `${Math.min(Math.max(2 * gap, left), s.width - m.offsetWidth - 2 * gap)}px`; m.style.top = `${top}px`;
+  m.style.setProperty("--origin", `${right ? "right" : "left"} ${up ? "bottom" : "top"}`);
+}
 let libPicker = false;
 const LIBS = [];
 document.querySelectorAll(".stage[data-lib]").forEach(stage => {
-  const v = stage.dataset.lib, counter = stage.nextElementSibling;
-  let q = "", chip = "", group = null, open = new Set(), picked = [], sort = "A–Ö", taps = 0;
+  // r1–r3 are L1 with choice 12b's filters.
+  const v = stage.dataset.lib, lay = v[0] === "r" ? "l1" : v, counter = stage.nextElementSibling;
+  let q = "", chip = "", group = null, open = new Set(), picked = [], sort = "A–Ö", taps = 0, eqs = new Set(), marks = new Set(MARKS0), menu = null, fsheet = false;
   const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; };
-  const match = x => (!q || x[0].toLowerCase().includes(q.toLowerCase())) && (!chip || x[2] === chip);
+  const shown = x => marks.has(x[5]);
+  const match = x => shown(x) && (!eqs.size || eqs.has(x[3])) && (!q || x[0].toLowerCase().includes(q.toLowerCase())) && (!chip || x[2] === chip);
+  const marksOn = () => marks.size !== MARKS0.length || MARKS0.some(m => !marks.has(m));
+  const filtered = () => eqs.size > 0 || marksOn();
+  const eqLabel = () => !eqs.size ? "Utrustning" : eqs.size === 1 ? [...eqs][0] : `Utrustning (${eqs.size})`;
+  const markNames = () => MARKF.filter(([k]) => marks.has(k)).map(x => x[1]).join(", ") || "inga";
+  const markLabel = () => marks.size === MARKF.length ? "Alla, även Nej" : marks.size && marks.size <= 2 ? markNames() : `I mina program (${marks.size})`;
+  const said = () => `Utrustning: ${[...eqs].join(", ") || "all"} · I mina program: ${markNames()}`;
+  const MENUS = {
+    eq: () => [[["eqall|", "Alla", !eqs.size]], EQUIP.map(k => [`eq|${k}`, k, eqs.has(k)])],
+    mark: () => [MARKF.map(([k, t]) => [`mark|${k}`, t, marks.has(k)])],
+    more: () => [["A–Ö", "Mest använda", "Senast använda"].map(s => [`sort|${s}`, s, sort === s]), [["go|eq", "Utrustning", false, true], ["go|mark", "I mina program", false, true]]],
+  };
+  const fsheetHtml = () => `<div class="scrim" data-fclose></div><div class="sheet glass fsheet" role="dialog" aria-label="Filter"><span class="grabber" aria-hidden="true"></span>
+    <div class="sheet-head"><button type="button" class="press btn text" data-freset ${filtered() ? "" : "disabled"}>Rensa</button><h5>Filter</h5><button type="button" class="press btn text" data-fclose>Klar</button></div>
+    <div class="group flat"><h4>Utrustning</h4><div class="cwrap">${EQUIP.map(k => `<button type="button" class="press btn small tinted" data-feq="${k}" aria-pressed="${eqs.has(k)}">${k}</button>`).join("")}</div></div>
+    <div class="group flat"><h4>I mina program</h4><div class="cwrap">${MARKF.map(([k, t]) => `<button type="button" class="press btn small tinted" data-fmark="${k}" aria-pressed="${marks.has(k)}">${t}</button>`).join("")}</div>
+    <p class="caption">Nej är dolda tills du väljer Nej.</p></div></div>`;
   const sorted = list => sort === "A–Ö" ? [...list].sort((a, b) => a[0].localeCompare(b[0], "sv")) : list;
   const row = x => { const on = picked.includes(x[0]);
     return `<button type="button" class="press row lrow${libPicker ? " pick" : ""}" data-ex="${x[0]}">${x[0] === "Bänkpress" ? `<img class="thumb" src="bench-press.jpg" alt="">` : `<span class="thumb"></span>`}
@@ -1982,11 +2119,11 @@ document.querySelectorAll(".stage[data-lib]").forEach(stage => {
   const grouped = () => MUSCLES.map(m => { const xs = LIB.filter(x => x[1] === m && match(x)); return xs.length ? `<div><div class="lhead">${m}</div>${list(xs)}</div>` : ""; }).join("");
   const filtering = () => q || chip;
   const body = () => {
-    if (v === "l1") return grouped();
-    if (v === "l2") { if (filtering()) return list(LIB.filter(match)); if (group) return list(LIB.filter(x => x[1] === group));
-      return `<div class="mtiles">${MUSCLES.map(m => `<button type="button" class="press mtile" data-group="${m}"><b>${m}</b><small>${(n => `${n} ${n === 1 ? "övning" : "övningar"}`)(LIB.filter(x => x[1] === m).length)}</small></button>`).join("")}</div>`; }
+    if (lay === "l1") return grouped();
+    if (v === "l2") { if (filtering()) return list(LIB.filter(match)); if (group) return list(LIB.filter(x => x[1] === group && shown(x)));
+      return `<div class="mtiles">${MUSCLES.map(m => `<button type="button" class="press mtile" data-group="${m}"><b>${m}</b><small>${(n => `${n} ${n === 1 ? "övning" : "övningar"}`)(LIB.filter(x => x[1] === m && shown(x)).length)}</small></button>`).join("")}</div>`; }
     if (filtering()) return grouped();
-    return `<div class="list">${MUSCLES.map(m => { const xs = LIB.filter(x => x[1] === m);
+    return `<div class="list">${MUSCLES.map(m => { const xs = LIB.filter(x => x[1] === m && shown(x));
       return `<button type="button" class="press row" data-fold="${m}" aria-expanded="${open.has(m)}"><span>${m}<small>${xs.length} ${xs.length === 1 ? "övning" : "övningar"}</small></span><span class="chev">${ico(open.has(m) ? "chevD" : "chevR")}</span></button>${
         open.has(m) ? sorted(xs).map(row).join("") : ""}`; }).join("")}</div>`;
   };
@@ -1995,10 +2132,17 @@ document.querySelectorAll(".stage[data-lib]").forEach(stage => {
       <b>${v === "l2" && group && !filtering() ? group : "Övningar"}</b><span class="inline nowrap"><button type="button" class="press icon-btn glass" data-sort aria-label="Sortera, nu ${sort}">${ico("more")}</button><button type="button" class="press icon-btn glass" data-new aria-label="Ny övning">${ico("plus")}</button></span></div>`;
   function draw() {
     const box = stage.querySelector(".wscroll"), top = box ? box.scrollTop : 0, had = document.activeElement?.closest?.(".stage") === stage && document.activeElement.matches("input");
-    stage.innerHTML = title() + `<div class="libtop"><div class="field"><input type="search" value="${q}" placeholder="Sök övning" aria-label="Sök övning"></div>
-      <div class="chips">${PATTERNS.map(p => `<button type="button" class="press btn small tinted" data-chip="${p}" aria-pressed="${p === chip}">${p}</button>`).join("")}</div></div>
-      <div class="wscroll">${body() || `<div class="empty"><h5>Inga övningar</h5><p>Inget matchar "${q}"${chip ? ` i ${chip}` : ""}.</p></div>`}</div>${
-      libPicker && picked.length ? `<div class="pickbar glass"><button type="button" class="press btn tinted" data-super ${picked.length < 2 ? "disabled" : ""}>Superset (${picked.length})</button><button type="button" class="press btn filled" data-add>Lägg till (${picked.length})</button></div>` : ""}`;
+    const search = `<div class="field"><input type="search" value="${q}" placeholder="Sök övning" aria-label="Sök övning"></div>`;
+    const fchip = (k, label, on) => `<button type="button" class="press btn small tinted fchip" data-fmenu="${k}" aria-pressed="${on}" aria-haspopup="menu">${label}${ico("chevD")}</button>`;
+    const xchip = (attr, label) => `<button type="button" class="press btn small filled fchip" ${attr} aria-label="Ta bort filtret ${label}">${label}${ico("x")}</button>`;
+    stage.innerHTML = title() + `<div class="libtop">${v === "r1" ? `<div class="srch">${search}<button type="button" class="press icon-btn${filtered() ? " on" : ""}" data-fsheet aria-label="Filter${filtered() ? ", på" : ""}">${ico("sliders")}</button></div>` : search}
+      <div class="chips">${v === "r2" ? fchip("eq", eqLabel(), eqs.size > 0) + fchip("mark", marksOn() ? markLabel() : "I mina program", marksOn()) : ""}${
+        PATTERNS.map(p => `<button type="button" class="press btn small tinted" data-chip="${p}" aria-pressed="${p === chip}">${p}</button>`).join("")}</div>${
+      v === "r3" && filtered() ? `<div class="chips">${[...eqs].map(k => xchip(`data-xeq="${k}"`, k)).join("")}${marksOn() ? xchip("data-xmark", markLabel()) : ""}</div>` : ""}</div>
+      <div class="wscroll">${body() || `<div class="empty"><h5>Inga övningar</h5><p>${q ? `Inget matchar "${q}"${chip ? ` i ${chip}` : ""}.` : "Inget matchar filtren."}</p></div>`}</div>${
+      libPicker && picked.length ? `<div class="pickbar glass"><button type="button" class="press btn tinted" data-super ${picked.length < 2 ? "disabled" : ""}>Superset (${picked.length})</button><button type="button" class="press btn filled" data-add>Lägg till (${picked.length})</button></div>` : ""}${
+      fsheet ? fsheetHtml() : ""}${menu ? pdMenu(MENUS[menu.level](), menu.sub ? { eq: "Utrustning", mark: "I mina program" }[menu.level] : "") : ""}`;
+    if (menu) placeMenu(stage, stage.querySelector(menu.anchor));
     const nb = stage.querySelector(".wscroll"); nb.scrollTop = top;
     const inp = stage.querySelector("input"); inp.addEventListener("input", () => { q = inp.value; draw(); });
     if (had) { const i = stage.querySelector("input"); i.focus(); i.setSelectionRange(q.length, q.length); }
@@ -2006,6 +2150,26 @@ document.querySelectorAll(".stage[data-lib]").forEach(stage => {
   stage.addEventListener("click", e => {
     const t = sel => e.target.closest(sel); taps++;
     if (t("input")) return taps--;
+    // An open menu takes the tap: a row picks and closes, as iOS menus do; a tap outside closes without picking.
+    if (menu) { const mi = t("[data-mi]");
+      if (t("[data-mback]")) { menu = { ...menu, level: "more", sub: false }; return draw(); }
+      if (!mi) { menu = null; return draw(); }
+      const [k, val] = mi.dataset.mi.split("|");
+      if (k === "go") { menu = { ...menu, level: val, sub: true }; return draw(); }
+      if (k === "eq") toggle(eqs, val); if (k === "eqall") eqs.clear(); if (k === "mark") toggle(marks, val); if (k === "sort") sort = val;
+      menu = null; done(k === "sort" ? `Sortera: ${sort}` : said()); return draw(); }
+    if (fsheet) {
+      if (t("[data-feq]")) { toggle(eqs, t("[data-feq]").dataset.feq); return draw(); }
+      if (t("[data-fmark]")) { toggle(marks, t("[data-fmark]").dataset.fmark); return draw(); }
+      if (t("[data-freset]")) { eqs.clear(); marks = new Set(MARKS0); return draw(); }
+      if (t("[data-fclose]")) { fsheet = false; done(said()); return draw(); }
+      return taps--;
+    }
+    if (t("[data-fsheet]")) { fsheet = true; return draw(); }
+    if (t("[data-fmenu]")) { const k = t("[data-fmenu]").dataset.fmenu; menu = { anchor: `[data-fmenu="${k}"]`, level: k }; return draw(); }
+    if (v === "r3" && t("[data-sort]")) { menu = { anchor: "[data-sort]", level: "more" }; return draw(); }
+    if (t("[data-xeq]")) { eqs.delete(t("[data-xeq]").dataset.xeq); done(said()); return draw(); }
+    if (t("[data-xmark]")) { marks = new Set(MARKS0); done(said()); return draw(); }
     if (t("[data-chip]")) { const c = t("[data-chip]").dataset.chip; chip = chip === c ? "" : c; stage.querySelector(".wscroll").scrollTop = 0; done(chip ? `Filter: ${chip}` : "Filter av"); return draw(); }
     if (t("[data-group]")) { group = t("[data-group]").dataset.group; stage.querySelector(".wscroll").scrollTop = 0; return draw(); }
     if (t("[data-up]")) { group = null; taps = 0; return draw(); }
@@ -2014,19 +2178,135 @@ document.querySelectorAll(".stage[data-lib]").forEach(stage => {
       if (libPicker) { picked = picked.includes(n) ? picked.filter(x => x !== n) : [...picked, n]; return draw(); }
       return done(`${n} › övningsdetaljen, val 10`); }
     if (t("[data-sort]")) { sort = sort === "A–Ö" ? "Mest använda" : sort === "Mest använda" ? "Senast använda" : "A–Ö"; done(`Sortera: ${sort}`); return draw(); }
-    if (t("[data-new]")) return done("Ny övning, ett ark med namn, muskler, mönster och utrustning");
+    if (t("[data-new]")) return done("Ny övning, arket i val 12");
     if (t("[data-super]")) { done(`Superset (${picked.length}): ${picked.join(" + ")}`); picked = []; return draw(); }
     if (t("[data-add]")) { done(`Lägg till (${picked.length}): ${picked.join(", ")}`); picked = []; return draw(); }
     if (t("[data-cancel]")) { picked = []; taps = 0; return draw(); }
     taps--;
   });
-  LIBS.push(() => { picked = []; draw(); });
+  LIBS.push(() => { picked = []; menu = null; fsheet = false; draw(); });
   draw();
 });
 document.querySelectorAll("[data-libmode]").forEach(b => b.addEventListener("click", () => {
   libPicker = b.dataset.libmode === "1";
   document.querySelectorAll("[data-libmode]").forEach(x => x.setAttribute("aria-pressed", x === b));
   LIBS.forEach(f => f());
+}));
+
+// Choice 12: the sheet that creates or edits an exercise (Q35). Equipment fills in the step (Q7) and the bar (Q22).
+const ESTEP = { Skivstång: "2,5 kg", "EZ-stång": "2,5 kg", Hantlar: "2 kg", Kettlebell: "4 kg", Kabel: "2,5 kg", Maskin: "2,5 kg", Kroppsvikt: "2,5 kg" };
+const EBAR = { Skivstång: "Olympisk, 20 kg", "EZ-stång": "EZ, 7,5 kg" };
+// [label, the values to pick from]
+const EF = {
+  prim: ["Primär muskel", () => MUSCLES], sec: ["Sekundära muskler", x => MUSCLES.filter(m => m !== x.prim)],
+  pat: ["Mönster", () => PATTERNS], eq: ["Utrustning", () => EQUIP], type: ["Typ", () => ["Vikt × reps", "Kroppsvikt × reps", "Bara reps", "Distans", "Tid"]],
+  step: ["Steg", () => ["1 kg", "1,25 kg", "2 kg", "2,5 kg", "4 kg", "5 kg"]], bar: ["Stång", () => BARS.map(([n, w]) => w ? `${n}, ${nf(w)} kg` : n)],
+  alt: ["Alternativ", x => LIB.filter(e => (!x.prim || e[1] === x.prim) && e[0] !== x.name).map(e => e[0])],
+};
+const BLANK = () => ({ name: "", prim: "", sec: [], pat: "", eq: "", type: "Vikt × reps", side: false, step: "2,5 kg", bar: "", unit: "kg", how: "", mark: "", alt: "", note: "" });
+const BENCH = () => ({ name: "Bänkpress", prim: "Bröst", sec: ["Axlar", "Triceps"], pat: "Horisontell press", eq: "Skivstång", type: "Vikt × reps", side: false, step: "2,5 kg",
+  bar: "Olympisk, 20 kg", unit: "kg", mark: "Ja", alt: "", note: "Tummen runt stången",
+  how: "Ligg med ögonen under stången, skulderbladen ihop och ned.\nGreppa lite bredare än axlarna, tummen runt stången.\nSänk stången kontrollerat till nedre delen av bröstet.\nPressa upp och lite bakåt tills armarna är raka." });
+let exeEdit = false;
+const EXES = [];
+document.querySelectorAll(".stage[data-exe]").forEach(stage => {
+  const v = stage.dataset.exe, counter = stage.nextElementSibling, menus = v !== "e2";
+  let x, menu, view, more, alert, dirty, taps = 0;
+  const reset = () => { x = exeEdit ? BENCH() : BLANK(); menu = view = alert = null; more = dirty = false; };
+  const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; };
+  const ok = () => x.name.trim() && x.prim;
+  const set = (k, val) => { x[k] = val; dirty = true;
+    if (k === "prim") x.sec = x.sec.filter(m => m !== val);
+    if (k === "eq") { x.step = ESTEP[val]; x.bar = EBAR[val] || ""; if (val === "Kroppsvikt" && x.type === "Vikt × reps") x.type = "Kroppsvikt × reps"; }
+  };
+  const locked = () => exeEdit;  // Bänkpress has logged sets
+  const shown = k => k === "bar" ? !!EBAR[x.eq] : k === "step" ? x.type !== "Bara reps" : true;
+  // A choice is a row with a menu (E1, E3) or a block of chips (E2). Secondary muscles take several, so the row opens a list.
+  const pickRow = k => k === "sec" ? `<button type="button" class="press row" data-push="sec"><span>${EF.sec[0]}</span><span class="val">${x.sec.join(", ") || "Inga"} ${ico("chevR")}</span></button>`
+    : k === "type" && locked() ? `<div class="row locked" data-locked><span>${EF.type[0]}</span><span class="val">${x.type}</span></div>`
+    : `<button type="button" class="press row" data-pick="${k}" aria-haspopup="menu"><span>${EF[k][0]}</span><span class="val">${x[k] || "Välj"} ${ico("updown")}</span></button>`;
+  const chipBlock = k => `<div class="cblock"><span class="clabel">${EF[k][0]}</span><div class="cwrap">${EF[k][1](x).map(o =>
+    `<button type="button" class="press btn small tinted" data-chipset="${k}" data-v="${o}" aria-pressed="${k === "sec" ? x.sec.includes(o) : x[k] === o}" ${k === "type" && locked() ? "disabled" : ""}>${o}</button>`).join("")}</div></div>`;
+  const grp = (h, keys, rows = [], cap = "") => { keys = keys.filter(shown);
+    return `<div class="group${menus ? "" : " flat"}">${h ? `<h4>${h}</h4>` : ""}${menus ? `<div class="list">${keys.map(pickRow).join("")}${rows.join("")}</div>`
+      : keys.map(chipBlock).join("") + (rows.length ? `<div class="list">${rows.join("")}</div>` : "")}${cap ? `<p class="caption">${cap}</p>` : ""}</div>`; };
+  const markLine = () => x.mark === "Byt" ? `Byt: ${x.alt || "alternativet"} föreslås först.` : x.mark ? MARKS[x.mark] : "Inte satt än.";
+  function form() {
+    const nameField = `<div class="field"><input data-f="name" value="${x.name}" placeholder="Namn" aria-label="Namn" autocomplete="off"></div>`;
+    if (v === "e3" && !exeEdit && !more) return nameField + grp("", ["prim", "pat", "eq", "type"], [], "Steg och stång följer utrustningen.")
+      + `<div class="list"><button type="button" class="press row" data-more aria-expanded="false"><span>Fler inställningar<small>Sekundära muskler, per sida, steg, stång, enhet, Så gör du, I mina program, fast anteckning</small></span><span class="chev">${ico("chevD")}</span></button></div>`;
+    const side = `<button type="button" class="press row" data-side><span>Per sida<small>Reps och distans räknas per sida</small></span><span class="switch" role="switch" aria-checked="${x.side}"></span></button>`;
+    const unit = `<div class="row"><span>Enhet</span><div class="segc" role="group" aria-label="Enhet">${["kg", "lb"].map(u => `<button type="button" class="press" data-unit="${u}" aria-pressed="${x.unit === u}">${u}</button>`).join("")}</div></div>`;
+    const mark = `<div class="segc" role="group" aria-label="I mina program">${["Ja", "Byt", "Nej", "Testa"].map(k => `<button type="button" class="press" data-emark="${k}" aria-pressed="${x.mark === k}">${k}</button>`).join("")}</div>`;
+    const alt = x.mark !== "Byt" ? "" : menus ? `<div class="list">${pickRow("alt")}</div>` : chipBlock("alt");
+    const tail = !exeEdit ? "" : `<div class="group"><div class="list"><button type="button" class="press row" data-move><span class="act">Flytta data…</span><span class="chev">${ico("chevR")}</span></button>
+      <button type="button" class="press row" data-archive><span class="act">Arkivera</span><span></span></button></div>
+      <p class="caption">Ta bort går bara för en övning som aldrig använts. Bänkpress finns i 24 pass, så den kan arkiveras: den döljs i biblioteket och historiken finns kvar.</p></div>`;
+    return nameField + grp("Muskler", ["prim", "sec"]) + grp("Rörelse", ["pat", "eq"])
+      + grp("Loggning", ["type", "step", "bar"], [side, unit], locked() ? "Typen är låst eftersom Bänkpress har loggade set. Flytta data till en ny övning för att byta typ." : "")
+      + `<div class="group"><h4>Så gör du</h4><div class="field area"><textarea data-f="how" rows="4" placeholder="Ett steg per rad" aria-label="Så gör du">${x.how}</textarea></div></div>`
+      + `<div class="group"><h4>I mina program</h4>${mark}<p class="caption">${markLine()}</p>${alt}</div>`
+      + `<div class="group"><h4>Fast anteckning</h4><div class="field"><input data-f="note" value="${x.note}" placeholder="Visas varje gång du gör övningen" aria-label="Fast anteckning"></div></div>` + tail;
+  }
+  // A list pushed inside the sheet: the secondary muscles, or the exercise Flytta data moves into.
+  function pushed() {
+    const sec = view === "sec", items = sec ? EF.sec[1](x) : EF.alt[1](x);
+    return [`<button type="button" class="press btn text back" data-pop>${ico("chevL")}${exeEdit ? "Redigera" : "Ny övning"}</button><h5>${sec ? "Sekundära" : "Flytta data till"}</h5><span></span>`,
+      (sec ? "" : `<p class="caption">Allt som loggats med ${x.name} flyttas till övningen du väljer.</p>`)
+      + `<div class="list">${items.map(o => `<button type="button" class="press row" data-pv="${o}"><span>${o}</span><span class="check">${sec && x.sec.includes(o) ? ico("check") : ""}</span></button>`).join("")}</div>`];
+  }
+  const alertHtml = () => { const move = alert.startsWith("move:"), to = alert.slice(5);
+    return `<div class="scrim"></div><div class="center"><div class="alert">${move
+      ? `<h5>Flytta data till ${to}?</h5><p>Alla 24 pass och rekorden med Bänkpress flyttas till ${to}, och Bänkpress tas bort. Det går inte att ångra.</p>
+        <div class="inline"><button type="button" class="press btn tinted" data-a="keep">Avbryt</button><button type="button" class="press btn danger" data-a="move">Flytta</button></div>`
+      : `<h5>Släng ändringar?</h5><p>${exeEdit ? "Ändringarna i Bänkpress" : "Den nya övningen"} sparas inte.</p>
+        <div class="inline"><button type="button" class="press btn tinted" data-a="keep">Fortsätt</button><button type="button" class="press btn danger" data-a="drop">Släng</button></div>`}</div></div>`; };
+  function draw() {
+    const box = stage.querySelector(".exsheet .wscroll"), top = box && !view ? box.scrollTop : 0;
+    const [head, body] = view ? pushed() : [`<button type="button" class="press btn text" data-cancel>Avbryt</button><h5>${exeEdit ? "Redigera" : "Ny övning"}</h5><button type="button" class="press btn text" data-save ${ok() ? "" : "disabled"}>Spara</button>`, form()];
+    stage.innerHTML = `<div class="titlebar fbar"><span></span><b>Övningar</b><span></span></div><div class="wscroll"><div class="list">${LIB.slice(0, 8).map(e => `<div class="row"><span>${e[0]}</span></div>`).join("")}</div></div>
+      <div class="scrim"></div><div class="sheet glass tsheet4 exsheet" role="dialog" aria-label="${exeEdit ? "Redigera Bänkpress" : "Ny övning"}"><div class="grabber"></div><div class="sheet-head">${head}</div><div class="wscroll">${body}</div></div>${
+      menu ? pdMenu([EF[menu][1](x).map(o => [`${menu}|${o}`, o, x[menu] === o])]) : ""}${alert ? alertHtml() : ""}`;
+    if (menu) placeMenu(stage, stage.querySelector(`[data-pick="${menu}"] .val`));
+    stage.querySelector(".exsheet .wscroll").scrollTop = top;
+  }
+  stage.addEventListener("input", e => { const f = e.target.dataset.f; if (!f) return;
+    x[f] = e.target.value; dirty = true; const s = stage.querySelector("[data-save]"); if (s) s.disabled = !ok(); });
+  stage.addEventListener("click", e => {
+    const t = sel => e.target.closest(sel); if (t("input, textarea")) return;
+    taps++;
+    if (alert) { const a = t("[data-a]")?.dataset.a; if (!a) return taps--;
+      if (a === "move") { done(`Flytta data › ${alert.slice(5)}; Bänkpress tas bort`); reset(); }
+      if (a === "drop") { done("Avbryt; ändringarna slängs"); reset(); }
+      alert = null; return draw(); }
+    if (menu) { const mi = t("[data-mi]"); if (mi) set(menu, mi.dataset.mi.split("|")[1]); menu = null; return draw(); }
+    if (t("[data-pick]")) { menu = t("[data-pick]").dataset.pick; return draw(); }
+    if (t("[data-push]")) { view = "sec"; return draw(); }
+    if (t("[data-move]")) { view = "move"; return draw(); }
+    if (t("[data-pop]")) { view = null; return draw(); }
+    if (t("[data-pv]")) { const o = t("[data-pv]").dataset.pv;
+      if (view === "sec") { x.sec = x.sec.includes(o) ? x.sec.filter(m => m !== o) : [...x.sec, o]; dirty = true; } else alert = `move:${o}`;
+      return draw(); }
+    if (t("[data-chipset]")) { const c = t("[data-chipset]"), k = c.dataset.chipset, o = c.dataset.v;
+      if (k === "sec") { x.sec = x.sec.includes(o) ? x.sec.filter(m => m !== o) : [...x.sec, o]; dirty = true; } else set(k, o);
+      return draw(); }
+    if (t("[data-side]")) { x.side = !x.side; dirty = true; return draw(); }
+    if (t("[data-unit]")) { x.unit = t("[data-unit]").dataset.unit; dirty = true; return draw(); }
+    if (t("[data-emark]")) { x.mark = t("[data-emark]").dataset.emark; if (x.mark !== "Byt") x.alt = ""; dirty = true; return draw(); }
+    if (t("[data-more]")) { more = true; return draw(); }
+    if (t("[data-locked]")) return done("Typen är låst; texten under listan säger varför");
+    if (t("[data-archive]")) { done("Arkivera: Bänkpress döljs i biblioteket, historiken finns kvar"); reset(); return draw(); }
+    if (t("[data-save]")) { done(`Spara: ${x.name} · ${x.prim} · ${x.pat || "inget mönster"} · ${x.eq || "ingen utrustning"} · steg ${x.step}`); reset(); return draw(); }
+    if (t("[data-cancel]")) { if (dirty) { alert = "drop"; return draw(); } done("Avbryt"); reset(); return draw(); }
+    taps--;
+  });
+  EXES.push(() => { reset(); taps = 0; draw(); });
+  reset(); draw();
+});
+document.querySelectorAll("[data-exemode]").forEach(b => b.addEventListener("click", () => {
+  exeEdit = b.dataset.exemode === "1";
+  document.querySelectorAll("[data-exemode]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  EXES.forEach(f => f());
 }));
 
 document.querySelectorAll("[data-hist]").forEach(b => b.addEventListener("click", () => {
