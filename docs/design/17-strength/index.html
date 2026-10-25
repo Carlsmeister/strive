@@ -364,6 +364,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .mlegend i { width: var(--space-12); height: var(--space-12); border-radius: var(--shape-full); }
 .mlegend .k1 { background: var(--color-tertiary); }
 .mlegend .k2 { background: var(--color-tertiary-container); }
+.group > .caption { margin: 0; padding-inline: var(--space-16); }
 .steps { margin: 0; padding-left: var(--space-20); display: grid; gap: var(--space-8); font: var(--type-body-medium); }
 .rm { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
 .rm span { display: grid; justify-items: center; padding: var(--space-8) 0; border-radius: var(--shape-medium); background: var(--color-surface); font: var(--type-title-small); font-variant-numeric: tabular-nums; }
@@ -881,7 +882,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
       </div>
     </div>
     <p><strong>Recommendation: X2.</strong> Opened mid-workout, you want the form and last time, and X2 shows both without a tap; at home, the chart and records are a scroll away, not behind a tab you have to guess. It changes Q32's four tabs into four sections. X3 is the quickest overview but puts every detail one tap deeper; X1 hides three quarters of the page.</p>
-    <p><strong>Chosen: X1, four tabs</strong> (Carl, 2026-10-25), as Q32 has it: Om · Historik · Diagram · Rekord, Om first. <strong>Open:</strong> the muscle map. Carl wants a realistic illustration of a body with the worked muscles in red, not the drawn figure above; sources and licences are being researched for strive#4. Also open: "Din markering" (the YES / SUB / NO / TEST mark from the coach's exercise library) is unclear on the page and needs a better name or to go.</p>
+    <p><strong>Chosen: X1, four tabs</strong> (Carl, 2026-10-25), as Q32 has it: Om · Historik · Diagram · Rekord, Om first. <strong>Open:</strong> the muscle map. Carl wants a realistic illustration of a body with the worked muscles in red, not the drawn figure above; sources and licences are being researched for strive#4. "Din markering" is renamed <strong>"I mina program"</strong> (Carl, 2026-10-25): the coach's YES / SUB / NO / TEST mark, with a line under it saying what the choice does.</p>
   </section>
 
   <section aria-labelledby="dec">
@@ -1841,8 +1842,10 @@ document.querySelectorAll(".stage[data-exd]").forEach(stage => {
   const about = () => sec("Så gör du", `<ol class="steps"><li>Ligg med ögonen under stången, skulderbladen ihop och ned.</li><li>Greppa lite bredare än axlarna, tummen runt stången.</li>
     <li>Sänk stången kontrollerat till nedre delen av bröstet.</li><li>Pressa upp och lite bakåt tills armarna är raka.</li></ol>
     <div class="list"><div class="row"><span>Utrustning</span><span class="val">Skivstång, bänk</span></div><div class="row"><span>Fast anteckning</span><span class="val">Tummen runt stången</span></div></div>`)
-    + sec("Din markering", `<div class="segc" role="group" aria-label="Markering">${["Ja", "Byt", "Nej", "Testa"].map(k => `<button type="button" class="press" data-mark="${k}" aria-pressed="${k === mark}">${k}</button>`).join("")}</div>`)
+    + sec("I mina program", `<div class="segc" role="group" aria-label="I mina program">${["Ja", "Byt", "Nej", "Testa"].map(k => `<button type="button" class="press" data-mark="${k}" aria-pressed="${k === mark}">${k}</button>`).join("")}</div>
+      <p class="caption">${MARKS[mark]}</p>`)
     + sec("Inställningar", `<div class="list">${[["Typ", "Vikt × reps"], ["Steg", "2,5 kg"], ["Stång", "Olympisk, 20 kg"], ["Enhet", "kg"]].map(([k, val]) => `<button type="button" class="press row" data-setting="${k}"><span>${k}</span><span class="val">${val} ›</span></button>`).join("")}</div>`);
+  const MARKS = { Ja: "Ja: föreslås i program.", Byt: "Byt: alternativet, Hantelpress, föreslås först.", Nej: "Nej: föreslås aldrig.", Testa: "Testa: prova lätt en gång innan den föreslås." };
   const sec = (h, body) => `<div class="group"><h4>${h}</h4>${body}</div>`;
   const TABS = { Om: () => video() + map() + about(), Historik: () => history(3), Diagram: () => chart(), Rekord: () => records() };
   const PAGES = { Video: () => video(), Muskler: () => map(), "1RM": () => chart(), Senast: () => history(3), Rekord: () => records(), "Så gör du": () => about() };
@@ -1852,7 +1855,7 @@ document.querySelectorAll(".stage[data-exd]").forEach(stage => {
     <button type="button" class="press xtile" data-page="1RM"><span class="k">1RM${ico("chevR")}</span><span class="v">103,5</span>${spark()}<small>↑ 8,5 kg på 3 mån</small></button>
     <button type="button" class="press xtile" data-page="Senast"><span class="k">Senast${ico("chevR")}</span><span class="v">82,5×8</span><small>Lördag 24 okt · 4 set</small></button>
     <button type="button" class="press xtile" data-page="Rekord"><span class="k">Rekord${ico("chevR")}</span><span class="v">85 kg</span><small>Tyngsta · senast nytt 24 okt</small></button>
-    <button type="button" class="press xtile" data-page="Så gör du"><span class="k">Så gör du${ico("chevR")}</span><small>4 steg · skivstång, bänk · markerad Ja</small></button></div>`;
+    <button type="button" class="press xtile" data-page="Så gör du"><span class="k">Så gör du${ico("chevR")}</span><small>4 steg · skivstång, bänk · i program: Ja</small></button></div>`;
   const bar = back => `<div class="titlebar fbar"><button type="button" class="press icon-btn glass" data-back aria-label="Tillbaka">${ico("chevL")}</button><b>${back ? page : "Bänkpress"}</b>
     <button type="button" class="press icon-btn glass" data-more aria-label="Fler val för Bänkpress">${ico("more")}</button></div>`;
   function draw() {
@@ -1872,7 +1875,7 @@ document.querySelectorAll(".stage[data-exd]").forEach(stage => {
     if (q("[data-page]")) { page = q("[data-page]").dataset.page; done(`Rutan ${page}`); stage.querySelector(".wscroll").scrollTop = 0; return draw(); }
     if (q("[data-back]")) { if (page) { page = null; taps = 0; return draw(); } return done("Tillbaka till passet eller biblioteket"); }
     if (q("[data-video]")) return done("Videon i helskärm");
-    if (q("[data-mark]")) { mark = q("[data-mark]").dataset.mark; done(`Markering ${mark}${mark === "Byt" ? ", som frågar efter alternativet" : ""}`); return draw(); }
+    if (q("[data-mark]")) { mark = q("[data-mark]").dataset.mark; done(`I mina program: ${mark}`); return draw(); }
     if (q("[data-setting]")) return done(`${q("[data-setting]").dataset.setting}, en lista att välja ur`);
     if (q("[data-more]")) return done("⋯: Redigera övningen, Arkivera");
     taps--;
