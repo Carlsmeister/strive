@@ -191,7 +191,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 @media (prefers-reduced-motion: reduce) { .swipe > .crow, .swipe .del { transition: none; } }
 
 /* Choice 5: the frame around the sets. The list scrolls under a fixed title bar. */
-.stage[data-frame], .stage[data-summary], .stage[data-tpl], .stage[data-tpl4], .stage[data-exd], .stage[data-lib], .stage[data-exe] { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0; padding: 0; height: 780px; }
+.stage[data-frame], .stage[data-summary], .stage[data-tpl], .stage[data-tpl4], .stage[data-exd], .stage[data-lib], .stage[data-exe], .stage[data-plan] { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0; padding: 0; height: 780px; }
 .fbar { padding: var(--space-8) var(--space-16); }
 .fbar .wtitle { transition: opacity var(--motion-fade); }
 .stage[data-frame="f2"]:not(.scrolled) .fbar .wtitle { opacity: 0; pointer-events: none; }
@@ -447,6 +447,29 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .fsheet .sheet-head > :last-child { justify-self: end; }
 /* Above the sticky muscle headings. */
 .stage[data-lib] :is(.scrim, .sheet, .catch, .menu) { z-index: 2; }
+
+/* Choice 13: the week and the programme on Plan (Q38–Q41). */
+.stage[data-plan] .wkdays { touch-action: pan-y; }
+.wkday.miss span { text-decoration: line-through; }
+.wkday.drop { opacity: var(--state-disabled-opacity); }
+.wkhead [disabled] { opacity: var(--state-disabled-opacity); }
+.wbar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--space-4); }
+.wbar i { display: grid; place-items: center; height: var(--space-20); border-radius: var(--shape-extra-small); background: var(--color-surface-container-highest);
+  font: var(--type-label-small); font-style: normal; color: var(--color-on-surface-variant); }
+.wbar i.past { background: var(--color-outline-variant); color: var(--color-on-surface); }
+.wbar i.now { background: var(--color-on-surface); color: var(--color-surface); }
+.wbar i.shown { box-shadow: inset 0 0 0 var(--border-focus) var(--color-on-surface); }
+.pname { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-8); padding: 0; text-align: left; color: var(--color-on-surface); }
+.pname > span { display: grid; }
+.pname svg.icon { width: var(--space-16); height: var(--space-16); color: var(--color-on-surface-variant); }
+.card.prog13, .card.wkcard { gap: var(--space-12); }
+.wkcard .pname { font: var(--type-title-small); color: var(--color-on-surface-variant); }
+.dlrec { display: flex; justify-content: space-between; align-items: center; gap: var(--space-8); }
+.dlrec span { display: grid; }
+.dlrec b { font: var(--type-title-small); color: var(--color-tertiary); }
+.dlrec small { font: var(--type-body-small); color: var(--color-on-surface-variant); }
+.dlrec .btn { margin-top: 0; }
+.wchip.now:not([aria-pressed="true"]) { box-shadow: inset 0 0 0 var(--border-focus) var(--color-primary); }
 </style>
 
 <div class="wrap">
@@ -1045,6 +1068,44 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
     </div>
     <p><strong>Recommendation: R2.</strong> The filters sit where the patterns already are, cost two taps, and say on the chip what they do. R1 keeps the row tidy but hides what is on behind an icon. R3 needs a row of chips anyway, and puts the filters a level deeper.</p>
     <p><strong>Chosen: R1, a filter sheet</strong> (Carl, 2026-10-25), over the recommended R2. The filter button beside the search opens a sheet with equipment and "I mina program" as chips, Nej unticked; the list updates behind it, and the button fills while a filter is on. R2 and R3 stay above as the record of why.</p>
+  </section>
+
+  <section aria-labelledby="q-week">
+    <h2 id="q-week">Choice 13: the week and the programme on Plan</h2>
+    <p>Queue item 8 (Q38–Q41), on P3's Plan. Decided, and the same in all three: the week runs Monday to Sunday with ‹ › beside its title, a swipe on the days as a shortcut, and Idag once you have left this week. The title is the programme week, "Vecka 3 av 8"; under it are the calendar week, the dates, and the type when it is calibration or deload. A day shows ✓ when done, its session struck through when missed, Extra for a workout outside the plan, and a ring for today. A tapped day shows in the card under the week, and the card's ⋯ has Flytta till, within this week only. Plan's ⋯ holds Kort vecka (Push and then the easy run grey out, nothing moves), Deload nu and the week type. The programme shows its weeks, K for calibration and D for deload, and the weeks without a deload; from week 8 it says "Deload rekommenderas" with Deload nu. The switch moves today into week 9 of a 12-week programme to show that. The open question is where the programme sits. <strong>Go to week 8 and back with Idag, swipe the days, try Kort vecka, and move Saturday's Push A.</strong></p>
+    <div class="seg" role="group" aria-label="Today in the programme">
+      <button type="button" data-planmode="0" aria-pressed="true">Vecka 3 av 8</button>
+      <button type="button" data-planmode="1" aria-pressed="false">Vecka 9 av 12</button>
+    </div>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th></th><th>W1</th><th>W2</th><th>W3</th></tr></thead>
+      <tbody>
+        <tr><td>Week 8 from this week</td><td>5 taps or swipes</td><td>5 taps or swipes</td><td class="best">1 tap</td></tr>
+        <tr><td>"Deload rekommenderas", from the top</td><td class="bad">646 pt, under the day</td><td class="best">378 pt</td><td class="best">382 pt</td></tr>
+        <tr><td>Today's Starta passet, from the top</td><td class="best">435 pt</td><td>585 pt</td><td>589 pt</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>W1 · A programme card under the day</h3>
+        <p>P3 as chosen, made to work: the week, the day's card, then the programme as a card with its weeks, the deload count and the recommendation.</p>
+        <div class="stage bleed" data-plan="w1"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>W2 · The programme frames the week</h3>
+        <p>One card holds the programme's name, the week's title with ‹ ›, the programme's weeks, the days and the deload line. The day's card follows.</p>
+        <div class="stage bleed" data-plan="w2"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>W3 · A row of weeks</h3>
+        <p>The programme's weeks as chips above the days, so any week is one tap away. The recommendation gets its own card when it appears, and the programme shrinks to a row under the day.</p>
+        <div class="stage bleed" data-plan="w3"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: W2.</strong> Where you are in the programme and which week you are looking at is one thing, so it gets one card, and "Deload rekommenderas" sits at the top where it cannot be missed. W1 keeps P3 as it stands and puts Starta passet highest, but the recommendation sits at the bottom of the screen, under the day. W3's chips make any week one tap away, which is not something you need often, and they add a second way to change week beside ‹ ›.</p>
   </section>
 
   <section aria-labelledby="dec">
@@ -1799,7 +1860,7 @@ document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
   const week = () => `<div class="wk"><div class="wkhead"><button type="button" class="press icon-btn" aria-label="Förra veckan">${ico("chevL")}</button><span><b>Vecka 43</b><small>Vecka 3 av 8 · block 1</small></span>
     <button type="button" class="press icon-btn" aria-label="Nästa vecka">${ico("chevR")}</button></div><div class="wkdays">${WEEK.map(([d, n, what, ok], i) =>
     `<button type="button" class="press wkday" data-day="${i}"${i === 5 ? " data-today" : ""}${pickWeek ? ` aria-pressed="${i === day}"` : ""} aria-label="${d} ${n}, ${what || "vila"}${ok ? ", klart" : ""}">${d.slice(0, 3)}<b>${n}</b><span>${ok ? "✓" : what ? what.split(" ")[0].replace("Löpning", "Löp") : "–"}</span></button>`).join("")}</div></div>`;
-  const progCard = `<button type="button" class="press card prog4" data-prog4><span class="eyebrow">Program</span><span class="title">Hypertrofi, block 1</span><span class="meta">Vecka 3 av 8 · deload vecka 6</span></button>`;
+  const progCard = `<button type="button" class="press card prog4" data-prog4><span class="eyebrow">Program</span><span class="title">Hypertrofi, block 1</span><span class="meta">Vecka 3 av 8 · 3 veckor utan deload</span></button>`;
   const library = `<div class="list"><button type="button" class="press row" data-lib><span>Övningsbibliotek<small>142 övningar</small></span><span class="chev">${ico("chevR")}</span></button></div>`;
   const tHead = `<div class="thead2"><h4>Mallar</h4><span class="inline nowrap"><button type="button" class="press btn small tinted">Ny mall</button><button type="button" class="press icon-btn" data-secmenu aria-label="Fler val för mallar">${ico("more")}</button></span></div>`;
   const tagOf = (x, j) => { const e = x.ex[j]; if (!e.g) return ""; let n = 0; while (x.ex[j - n - 1]?.g === e.g) n++; return `<span class="tag">${"AB"[n]}</span>`; };
@@ -1941,7 +2002,7 @@ document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
     if (q("[data-pick]")) { day = -1; shown = cur = +q("[data-pick]").dataset.pick; return draw(); }
     if (q("[data-toggle]")) { const i = +q("[data-toggle]").dataset.toggle; open = open === i ? -1 : i; cur = i; return draw(); }
     if (q("[data-seen]")) return done("Visa passet, sammanfattningen från val 7");
-    if (q("[data-prog4]")) return done("Programmet, ritas i punkt 8");
+    if (q("[data-prog4]")) return done("Programmet, val 13");
     if (q("[data-lib]")) return done("Övningsbiblioteket, punkt 7");
     if (q("[data-card]")) { cur = +q("[data-card]").dataset.card; view = "preview"; return draw(); }
     if (q("[data-close]")) { view = "plan"; taps = 0; return draw(); }
@@ -2309,6 +2370,141 @@ document.querySelectorAll("[data-exemode]").forEach(b => b.addEventListener("cli
   exeEdit = b.dataset.exemode === "1";
   document.querySelectorAll("[data-exemode]").forEach(x => x.setAttribute("aria-pressed", x === b));
   EXES.forEach(f => f());
+}));
+
+// Choice 13: the week and the programme on Plan (Q38–Q41). Today is Saturday 24 October, calendar week 43.
+const PROGS = [{ name: "Hypertrofi, block 1", start: 41, len: 8 }, { name: "Hypertrofi, 12 veckor", start: 35, len: 12 }];
+const STDWEEK = ["Push B", "Ben A", null, "Pull A", "Löpning", "Push A", null];
+// Off the plan: a missed session, or an extra workout by name.
+const OFFPLAN = { "42.3": "miss", "43.4": "miss", "42.6": "Armar" };
+const WD = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"];
+const WTYPE = { N: "Normal", K: "Kalibrering", D: "Deload" };
+const MON = ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
+const NOW = 43;
+let planMode = 0;
+const PLANS = [];
+document.querySelectorAll(".stage[data-plan]").forEach(stage => {
+  const v = stage.dataset.plan, counter = stage.nextElementSibling;
+  let wk, sel, menu, short, types, moved, taps = 0, swipe = null, swiped = false;
+  const reset = () => { wk = NOW; sel = 5; menu = null; short = {}; types = {}; moved = {}; };
+  const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; };
+  const P = () => PROGS[planMode], num = w => w - P().start + 1, last = () => P().start + P().len - 1;
+  const type = w => types[w] || (num(w) <= 2 ? "K" : "N");
+  // Weeks without a deload up to this one; the window opens at 4 of them, never before week 8 (Q39).
+  const since = () => { let n = 0; for (let w = NOW; w >= P().start && type(w) !== "D"; w--) n++; return n; };
+  const recommend = () => type(NOW) !== "D" && num(NOW) >= 8 && since() >= 4;
+  const plan = w => moved[w] || STDWEEK;
+  const date = (w, i) => new Date(2026, 9, 19 + 7 * (w - NOW) + i);
+  const dstr = d => `${d.getDate()} ${MON[d.getMonth()]}`;
+  const state = (w, i) => { const what = plan(w)[i], past = w < NOW || (w === NOW && i < 5), off = OFFPLAN[`${w}.${i}`];
+    if (off && off !== "miss") return { what: off, s: "extra" };
+    if (!what) return { s: "rest" };
+    if (past) return { what, s: off === "miss" ? "miss" : "done" };
+    if (short[w] && (what.startsWith("Push") || what === "Löpning")) return { what, s: "drop" };
+    return { what, s: w === NOW && i === 5 ? "today" : "plan" }; };
+  const SAY = { done: "klart", miss: "missat", extra: "extrapass", rest: "vila", drop: "släpps", today: "idag", plan: "planerat" };
+  const lab = st => ({ done: "✓", extra: "Extra", rest: "–", drop: "Släpps" })[st.s] || st.what.split(" ")[0].replace("Löpning", "Löp");
+  const go = w => { wk = Math.max(P().start, Math.min(last(), w)); sel = wk === NOW ? 5 : 0; };
+  const range = () => { const a = date(wk, 0), b = date(wk, 6); return `${a.getDate()}${a.getMonth() !== b.getMonth() ? " " + MON[a.getMonth()] : ""}–${dstr(b)}`; };
+  const head = () => `<div class="wkhead"><button type="button" class="press icon-btn" data-wk="-1" aria-label="Förra veckan" ${wk <= P().start ? "disabled" : ""}>${ico("chevL")}</button>
+    <span><b>Vecka ${num(wk)} av ${P().len}</b><small>v${wk} · ${range()}${type(wk) === "N" ? "" : ` · ${WTYPE[type(wk)]}`}</small></span>
+    <button type="button" class="press icon-btn" data-wk="1" aria-label="Nästa vecka" ${wk >= last() ? "disabled" : ""}>${ico("chevR")}</button></div>`;
+  const strip = () => `<div class="wkdays" data-swipe>${WD.map((d, i) => { const st = state(wk, i), dt = date(wk, i);
+    return `<button type="button" class="press wkday${st.s === "miss" || st.s === "drop" ? " " + st.s : ""}" data-day="${i}"${wk === NOW && i === 5 ? " data-today" : ""} aria-pressed="${i === sel}"
+      aria-label="${d} ${dstr(dt)}, ${st.what || "vila"}, ${SAY[st.s]}">${d.slice(0, 3)}<b>${dt.getDate()}</b><span>${lab(st)}</span></button>`; }).join("")}</div>`;
+  const shortCap = () => short[wk] ? `<p class="caption">Kort vecka: Push och den lätta löpningen släpps först.</p>` : "";
+  const wbar = () => `<div class="wbar" aria-hidden="true">${[...Array(P().len).keys()].map(k => { const w = P().start + k, ty = type(w);
+    return `<i class="${w < NOW ? "past" : w === NOW ? "now" : ""}${w === wk && w !== NOW ? " shown" : ""}">${ty === "N" ? k + 1 : ty}</i>`; }).join("")}</div>`;
+  const dline = () => type(NOW) === "D" ? "Deload den här veckan: halva arbetsseten, ingen progression." : `${since()} veckor utan deload · rekommenderas från vecka 8`;
+  const rec = () => recommend() ? `<div class="dlrec"><span><b>Deload rekommenderas</b><small>${since()} veckor utan deload</small></span><button type="button" class="press btn small filled" data-deload>Deload nu</button></div>`
+    : `<span class="meta">${dline()}</span>`;
+  const dayCard = () => { const st = state(wk, sel), x = TPL4.find(t => t.n === st.what), mine = wk === NOW && ["today", "plan", "drop"].includes(st.s);
+    const tline = { K: "<br>Kalibrering: toppset @ 3–4 RIR.", D: "<br>Deload: halva arbetsseten, ingen progression.", N: "" }[type(wk)];
+    const show = `<button type="button" class="press btn small tinted" data-show>Visa passet</button>`;
+    const body = { rest: () => `<span class="title">Vila</span><span class="meta">Ingen träning planerad.</span>`,
+      extra: () => `<span class="title">${st.what}</span><span class="meta">Extrapass utanför planen · klart</span>${show}`,
+      done: () => `<span class="title">${st.what}</span><span class="meta">Klart${x ? ` · ${x.ex.length} övningar` : ""}</span>${show}`,
+      miss: () => `<span class="title">${st.what}</span><span class="meta">Missat. Det flyttas inte av sig självt.</span>`,
+      drop: () => `<span class="title">${st.what}</span><span class="meta">Släpps den här korta veckan.</span>`,
+    }[st.s]?.() ?? (!x ? `<span class="title">${st.what}</span><span class="meta">Lätt löpning, 30 min. Löpningen ritas i #18.</span>`
+      : `<span class="title">${x.n}</span><span class="meta">${x.ex.length} övningar · ${x.min} min${tline}</span><button type="button" class="press btn filled" data-start>Starta passet</button>`);
+    return `<div class="card tday"><div class="th"><span class="eyebrow">${WD[sel]} ${dstr(date(wk, sel))}${wk === NOW && sel === 5 ? " · idag" : ""}</span>${
+      mine ? `<button type="button" class="press icon-btn" data-daymenu aria-label="Fler val för ${st.what}" aria-haspopup="menu">${ico("more")}</button>` : ""}</div>${body}</div>`; };
+  const pname = inner => `<button type="button" class="press pname" data-progscreen>${inner}${ico("chevR")}</button>`;
+  const largetitle = () => `<div class="largetitle"><h5>Plan</h5><span class="inline nowrap">${wk !== NOW ? `<button type="button" class="press btn small tinted" data-idag>Idag</button>` : ""}
+    <button type="button" class="press icon-btn" data-weekmenu aria-label="Fler val för veckan" aria-haspopup="menu">${ico("more")}</button></span></div>`;
+  const tpls = `<div class="thead2"><h4>Mallar</h4><button type="button" class="press btn small tinted">Ny mall</button></div><div class="tcar">${TPL4.map((x, i) =>
+    `<div class="tcard2" role="button" tabindex="0" data-card="${i}"><div class="th"><span>${x.n}</span></div><span class="mus">${[...new Set(x.ex.map(e => e.m))].join(" · ")}</span><span class="tstat">${x.ex.length} övningar · ${x.min} min</span></div>`).join("")}</div>
+    <div class="list"><button type="button" class="press row" data-lib><span>Övningsbibliotek<small>142 övningar</small></span><span class="chev">${ico("chevR")}</span></button></div>`;
+  const BODY = {
+    w1: () => largetitle() + `<div class="wk">${head()}${strip()}${shortCap()}</div>` + dayCard()
+      + `<div class="card prog13">${pname(`<span><span class="eyebrow">Program</span><span class="title">${P().name}</span></span>`)}<span class="meta">Vecka ${num(NOW)} av ${P().len}</span>${wbar()}${rec()}</div>` + tpls,
+    w2: () => largetitle() + `<div class="card wkcard">${pname(`<span>${P().name}</span>`)}${head()}${wbar()}${strip()}${shortCap()}${rec()}</div>` + dayCard() + tpls,
+    w3: () => largetitle() + `<div class="chips">${[...Array(P().len).keys()].map(k => { const w = P().start + k, ty = type(w);
+        return `<button type="button" class="press btn small tinted wchip${w === NOW ? " now" : ""}" data-wkchip="${w}" aria-pressed="${w === wk}" aria-label="Vecka ${k + 1}, ${WTYPE[ty]}">${k + 1}${ty === "N" ? "" : " " + ty}</button>`; }).join("")}</div>`
+      + `<div class="wk">${head()}${strip()}${shortCap()}</div>` + (recommend() ? `<div class="card">${rec()}</div>` : "") + dayCard()
+      + `<div class="list"><button type="button" class="press row" data-progscreen><span>${P().name}<small>Vecka ${num(NOW)} av ${P().len} · ${type(NOW) === "D" ? "deload den här veckan" : `${since()} veckor utan deload`}</small></span><span class="chev">${ico("chevR")}</span></button></div>` + tpls,
+  };
+  // Flytta till offers this week's free days from today on (Q40: within this week only).
+  const free = () => WD.map((_, i) => i).filter(i => i !== sel && !plan(wk)[i] && !OFFPLAN[`${wk}.${i}`] && (wk > NOW || i >= 5));
+  const MENU = {
+    week: () => [[["short|", "Kort vecka", !!short[wk]]], [...(wk === NOW && type(NOW) !== "D" ? [["deload|", "Deload nu", false]] : []), ["go|type", "Veckotyp", false, true]]],
+    type: () => [Object.entries(WTYPE).map(([k, t]) => [`type|${k}`, t, type(wk) === k])],
+    day: () => [[["go|move", "Flytta till", false, true]]],
+    move: () => [free().length ? free().map(i => [`move|${i}`, `${WD[i]} ${dstr(date(wk, i))}`, false]) : [["none|", "Ingen ledig dag kvar i veckan", false]]],
+  };
+  function draw() {
+    const box = stage.querySelector(".wscroll"), top = box ? box.scrollTop : 0;
+    stage.innerHTML = `<div class="titlebar fbar"><span></span><span></span><span></span></div><div class="wscroll">${BODY[v]()}</div>${
+      menu ? pdMenu(MENU[menu.level](), menu.sub ? { type: "Veckotyp", move: "Flytta till" }[menu.level] : "") : ""}`;
+    stage.querySelector(".wscroll").scrollTop = top;
+    // W3: the week being shown stays in view on the row of chips.
+    const on = stage.querySelector(".wchip[aria-pressed=true]"); if (on) { const row = on.parentElement; row.scrollLeft = on.offsetLeft - (row.clientWidth - on.offsetWidth) / 2; }
+    if (menu) placeMenu(stage, stage.querySelector(menu.anchor));
+  }
+  stage.addEventListener("click", e => {
+    if (swiped) return;
+    const t = s => e.target.closest(s); taps++;
+    if (menu) { const mi = t("[data-mi]");
+      if (t("[data-mback]")) { menu = { ...menu, level: menu.root, sub: false }; return draw(); }
+      if (!mi) { menu = null; return draw(); }
+      const [k, val] = mi.dataset.mi.split("|");
+      if (k === "go") { menu = { ...menu, level: val, sub: true }; return draw(); }
+      if (k === "short") { short[wk] = !short[wk]; done(`Kort vecka ${short[wk] ? "på" : "av"}`); }
+      if (k === "deload") { types[NOW] = "D"; done("Deload nu: den här veckan blir deload"); }
+      if (k === "type") { types[wk] = val; done(`Veckotyp: ${WTYPE[val]}`); }
+      if (k === "move") { const p = [...plan(wk)]; p[+val] = p[sel]; p[sel] = null; moved[wk] = p; done(`${p[+val]} flyttat till ${WD[+val].toLowerCase()}`); sel = +val; }
+      menu = null; return draw(); }
+    if (t("[data-wk]")) { go(wk + +t("[data-wk]").dataset.wk); done(`Vecka ${num(wk)}`); return draw(); }
+    if (t("[data-wkchip]")) { go(+t("[data-wkchip]").dataset.wkchip); done(`Vecka ${num(wk)}`); return draw(); }
+    if (t("[data-idag]")) { go(NOW); done("Idag"); return draw(); }
+    if (t("[data-day]")) { sel = +t("[data-day]").dataset.day; return draw(); }
+    if (t("[data-weekmenu]")) { menu = { anchor: "[data-weekmenu]", level: "week", root: "week" }; return draw(); }
+    if (t("[data-daymenu]")) { menu = { anchor: "[data-daymenu]", level: "day", root: "day" }; return draw(); }
+    if (t("[data-deload]")) { types[NOW] = "D"; done("Deload nu: den här veckan blir deload"); return draw(); }
+    if (t("[data-start]")) return done("Starta passet");
+    if (t("[data-show]")) return done("Passet öppnas, som sammanfattningen i val 7");
+    if (t("[data-progscreen]")) return done("Programskärmen, val 13b");
+    if (t("[data-card]")) return done("Mallens förhandsvisning, val 8");
+    if (t("[data-lib]")) return done("Övningsbiblioteket, val 11");
+    taps--;
+  });
+  // A sideways swipe on the days changes week; the click that follows it is swallowed.
+  stage.addEventListener("pointerdown", e => { swipe = e.target.closest("[data-swipe]") ? { x: e.clientX, y: e.clientY } : null; });
+  stage.addEventListener("pointerup", e => {
+    if (!swipe) return; const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y; swipe = null;
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+    swiped = true; setTimeout(() => swiped = false); taps++;
+    const was = wk; go(wk + (dx < 0 ? 1 : -1)); if (wk === was) { taps--; return; }
+    done(`Svep: vecka ${num(wk)}`); draw();
+  });
+  PLANS.push(() => { reset(); taps = 0; draw(); });
+  reset(); draw();
+});
+document.querySelectorAll("[data-planmode]").forEach(b => b.addEventListener("click", () => {
+  planMode = +b.dataset.planmode;
+  document.querySelectorAll("[data-planmode]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  PLANS.forEach(f => f());
 }));
 
 document.querySelectorAll("[data-hist]").forEach(b => b.addEventListener("click", () => {
