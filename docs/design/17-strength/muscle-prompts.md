@@ -74,6 +74,11 @@ cannot show rather than let the model guess. The second squat passed (Carl, 2026
 the glutes through cleanly and nothing else is red. The model kept a front three-quarter
 view instead of the side view asked for; it still shows both thighs and glutes.
 
+**Pilot result (2026-10-25): passed.** Bench press (second try), back squat (second
+try) and lateral raise (first try) all met the acceptance list, in one chat, with the
+same figure and rendering. The method holds; the batch can follow once the questions
+below are settled.
+
 ## Acceptance
 
 Reject and regenerate an image when any of these fails:
