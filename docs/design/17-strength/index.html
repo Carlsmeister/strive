@@ -485,6 +485,21 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .pgrid .std { background: var(--color-surface-container-highest); }
 .row .val small { display: block; text-align: right; }
 .notes .row span:first-child { white-space: normal; }
+/* Choice 13b, round two: a smaller grid, and weeks that open. */
+.pgrid.compact .pcell, .pgrid.compact .pwk { min-height: var(--space-32); white-space: nowrap; font: var(--type-label-small); }
+.pgrid.compact .pwk { font: var(--type-label-medium); }
+.wkrow { grid-template-columns: var(--size-touch) 1fr auto; }
+.wkrow .wl { display: grid; font: var(--type-title-small); }
+.wkrow .wl small { font: var(--type-label-small); }
+.mini { display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--space-4); }
+.mini i { display: grid; place-items: center; height: var(--space-24); border-radius: var(--shape-extra-small); background: var(--color-surface-container-highest);
+  font: var(--type-label-small); font-style: normal; color: var(--color-on-surface); overflow: hidden; }
+.mini i.rest { background: none; color: var(--color-on-surface-variant); }
+.mini i.off { box-shadow: inset 0 0 0 var(--border-focus) var(--color-tertiary); }
+.wkrow.now .wl { color: var(--color-on-surface); }
+.wkopen { display: grid; gap: var(--space-8); padding: 0 var(--space-16) var(--space-16); }
+.wkopen .list { background: var(--color-surface-container-highest); }
+.ptabs { margin-inline: calc(-1 * var(--space-16)); }
 </style>
 
 <div class="wrap">
@@ -1156,6 +1171,39 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
       </div>
     </div>
     <p><strong>Recommendation: B3.</strong> The grid is the programme: where calibration and deload sit and which days were changed show in one look, and changing a single day costs two taps instead of four. B1 says the same things as text you read row by row. B2 makes the weights one tap away but splits a screen you open a few times a block.</p>
+
+    <h3>Round two: B2's tabs with a smaller grid</h3>
+    <p>Carl (2026-10-25): none of B1–B3 as a whole. He liked B2's tabs and B3's grid of weeks, but the grid was a little large. Each sketch below keeps both and makes the grid smaller in its own way. The same tasks: <strong>make week 8 a deload, make Thursday of week 6 a rest day, then find the working weights.</strong></p>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th></th><th>B4</th><th>B5</th><th>B6</th></tr></thead>
+      <tbody>
+        <tr><td>Week 8 to deload</td><td class="best">2 taps</td><td class="best">2 taps</td><td class="best">2 taps</td></tr>
+        <tr><td>One day in week 6 to rest</td><td class="best">2 taps</td><td>3 taps</td><td class="best">2 taps</td></tr>
+        <tr><td>The working weights</td><td class="best">1 tap</td><td class="best">1 tap</td><td>a scroll</td></tr>
+        <tr><td>Tap targets in the grid</td><td class="bad">32 pt</td><td class="best">44 pt rows</td><td class="bad">32 pt</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>B4 · Tabs, the grid first and compact</h3>
+        <p>Veckor, Vikter, Logg (the notes), Inställningar. Veckor opens first: B3's grid with the standard week on top, its cells 32 pt tall with the session on one line.</p>
+        <div class="stage bleed" data-prog13="b4"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>B5 · Tabs, a week per row that opens</h3>
+        <p>Veckor is one thin row per week: its number and type, and a miniature of its seven days. A tap opens the week: its type, and its days at full size, each with a menu. One week is open at a time, this one to start with.</p>
+        <div class="stage bleed" data-prog13="b5"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>B6 · The grid always on top, tabs under it</h3>
+        <p>B4's compact grid stays on screen as the programme's overview; Vikter, Logg and Inställningar are tabs below it.</p>
+        <div class="stage bleed" data-prog13="b6"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: B4.</strong> It is the grid you liked at about two thirds of the height, so the whole block fits above the fold and a day still changes in two taps; the tabs keep the weights one tap away. Its cells are 32 pt tall, under Apple's 44 pt default though above the 28 pt minimum. B5 keeps every target at 44 pt and costs a tap per day change. B6 never hides the grid, but its tabs sit three quarters of the way down, so their content starts below the fold.</p>
   </section>
 
   <section aria-labelledby="dec">
@@ -2563,7 +2611,7 @@ const PWEIGHTS = [["Knäböj", "100 → 107,5 kg"], ["Bänkpress", "80 → 82,5 
 const PNOTES = [["24 okt", "Axeln kändes bra på militärpressen."], ["12 okt", "Kalibreringen klar. RIR stämde på bänken."], ["5 okt", "Start efter tre veckors uppehåll."]];
 document.querySelectorAll(".stage[data-prog13]").forEach(stage => {
   const v = stage.dataset.prog13, counter = stage.nextElementSibling, NOWK = 2;
-  let std, types, over, len, tab = "Vecka", menu = null, taps = 0;
+  let std, types, over, len, tab = { b2: "Vecka", b6: "Vikter" }[v] || "Veckor", open = NOWK, menu = null, taps = 0;
   // over: a day of one week that differs from the standard week, keyed "week.day"; null is rest.
   const reset = () => { std = [...STDWEEK]; len = 8; types = ["K", "K", "N", "N", "N", "N", "N", "N"]; over = { "4.4": null }; menu = null; };
   const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; };
@@ -2592,12 +2640,13 @@ document.querySelectorAll(".stage[data-prog13]").forEach(stage => {
   const weekRows = () => `<div class="group"><h4>Veckor</h4><div class="list">${[...Array(weeks()).keys()].map(k => { const d = diffs(k);
     return `<button type="button" class="press row" data-m="week.${k}" aria-haspopup="menu"><span>Vecka ${k + 1}${k === NOWK ? " · nu" : ""}<small>v${41 + k} · ${dates(k)}${d.length ? " · " + d.join(", ") : ""}</small></span><span class="val">${WTYPE[typeOf(k)]} ${ico("updown")}</span></button>`; }).join("")}</div>${noLen()}</div>`;
   const cellTxt = w => w ? `<b>${w.split(" ")[0].replace("Löpning", "Löp")}</b>${w.split(" ")[1] ? `<small>${w.split(" ")[1]}</small>` : ""}` : "–";
-  const grid = () => `<div class="group"><h4>Veckor</h4><div class="pgrid"><span></span>${WD.map(d => `<span>${d.slice(0, 3)}</span>`).join("")}
-    <span>Std</span>${std.map((w, i) => `<button type="button" class="press pcell std${w ? "" : " rest"}" data-m="std.${i}" aria-label="Standardvecka, ${WD[i]}: ${name(w)}">${cellTxt(w)}</button>`).join("")}
+  const grid = compact => { const ct = w => compact ? (w ? w.replace("Löpning", "Löp") : "–") : cellTxt(w);
+    return `<div class="group"><h4>Veckor</h4><div class="pgrid${compact ? " compact" : ""}"><span></span>${WD.map(d => `<span>${d.slice(0, 3)}</span>`).join("")}
+    <span>Std</span>${std.map((w, i) => `<button type="button" class="press pcell std${w ? "" : " rest"}" data-m="std.${i}" aria-label="Standardvecka, ${WD[i]}: ${name(w)}">${ct(w)}</button>`).join("")}
     ${[...Array(weeks()).keys()].map(k => `<button type="button" class="press pwk${k === NOWK ? " now" : ""}" data-m="type.${k}" aria-label="Vecka ${k + 1}, ${WTYPE[typeOf(k)]}">${k + 1}${typeOf(k) === "N" ? "" : " " + typeOf(k)}</button>${
       WD.map((d, i) => { const w = dayOf(k, i), off = has(k, i);
-        return `<button type="button" class="press pcell${off ? " off" : ""}${w ? "" : " rest"}" data-m="cell.${k}.${i}" aria-label="Vecka ${k + 1}, ${d}: ${name(w)}${off ? ", avviker" : ""}">${cellTxt(w)}</button>`; }).join("")}`).join("")}</div>
-    <p class="caption">Std är standardveckan. En ram runt en dag betyder att den avviker från standardveckan.</p>${noLen()}</div>`;
+        return `<button type="button" class="press pcell${off ? " off" : ""}${w ? "" : " rest"}" data-m="cell.${k}.${i}" aria-label="Vecka ${k + 1}, ${d}: ${name(w)}${off ? ", avviker" : ""}">${ct(w)}</button>`; }).join("")}`).join("")}</div>
+    <p class="caption">Std är standardveckan. En ram runt en dag betyder att den avviker från standardveckan.</p>${noLen()}</div>`; };
   const weights = () => `<div class="group"><h4>Arbetsvikter, block 1</h4><div class="list">${PWEIGHTS.map(([n, w]) => `<div class="row"><span>${n}</span><span class="val">${w}</span></div>`).join("")}</div>
     <p class="caption">Toppsetet vid blockets start och nu, räknat ur loggen.</p></div>`;
   const notes = () => `<div class="group notes"><h4>Anteckningar</h4><div class="list"><button type="button" class="press row" data-note><span class="act">Ny anteckning</span><span></span></button>${
@@ -2606,10 +2655,25 @@ document.querySelectorAll(".stage[data-prog13]").forEach(stage => {
     ${vrow("len", "Längd", len ? `${len} veckor` : "Ingen fast längd")}<button type="button" class="press row" data-dl><span>Deload<small>Rekommenderas efter 4–6 veckor, tidigast vecka 8</small></span><span class="val">${ico("chevR")}</span></button>${withPrio ? prio : ""}</div></div>
     <div class="list"><button type="button" class="press row" data-archive><span class="act">Arkivera programmet</span><span></span></button></div>`;
   const TABS = { Vecka: () => top() + stdWeek() + settings(), Veckor: weekRows, Vikter: weights, Anteckningar: notes };
+  // Round two. B5: a thin row per week with a miniature of its days; the open week shows its type and full-size days. -1 is the standard week.
+  const mini = k => `<span class="mini" aria-hidden="true">${WD.map((d, i) => { const w = k < 0 ? std[i] : dayOf(k, i);
+    return `<i class="${w ? "" : "rest"}${k >= 0 && has(k, i) ? " off" : ""}">${w ? w.split(" ")[0].replace("Löpning", "Löp") : "–"}</i>`; }).join("")}</span>`;
+  const weeks5 = () => `<div class="group"><h4>Veckor</h4><div class="list">${[-1, ...Array(weeks()).keys()].map(k => { const on = open === k;
+    return `<button type="button" class="press row wkrow${k === NOWK ? " now" : ""}" data-open="${k}" aria-expanded="${on}" aria-label="${k < 0 ? "Standardveckan" : `Vecka ${k + 1}, ${WTYPE[typeOf(k)]}`}">
+      <span class="wl">${k < 0 ? "Std" : `${k + 1}${typeOf(k) === "N" ? "" : " " + typeOf(k)}${k === NOWK ? "<small>nu</small>" : ""}`}</span>${mini(k)}<span class="chev">${ico(on ? "chevD" : "chevR")}</span></button>${
+      !on ? "" : `<div class="wkopen">${k < 0 ? "" : `<div class="segc" role="group" aria-label="Veckotyp">${Object.entries(WTYPE).map(([c, t]) => `<button type="button" class="press" data-settype="${k}.${c}" aria-pressed="${typeOf(k) === c}">${t}</button>`).join("")}</div>`}
+        <div class="list">${WD.map((d, i) => vrow(k < 0 ? `std.${i}` : `cell.${k}.${i}`, d, name(k < 0 ? std[i] : dayOf(k, i)) + (k >= 0 && has(k, i) ? " · avviker" : ""))).join("")}</div></div>`}`; }).join("")}</div>${noLen()}</div>`;
+  const TABS4 = { Veckor: () => grid(true), Vikter: weights, Logg: notes, Inställningar: () => settings(true) };
+  const TABS5 = { ...TABS4, Veckor: weeks5 };
+  const TABS6 = { Vikter: weights, Logg: notes, Inställningar: () => settings(true) };
+  const seg = T => `<div class="segc" role="group" aria-label="Del">${Object.keys(T).map(k => `<button type="button" class="press" data-tab="${k}" aria-pressed="${k === tab}">${k}</button>`).join("")}</div>`;
   const BODY = {
     b1: () => `<div class="wscroll">${top()}${stdWeek()}${weekRows()}${weights()}${notes()}${settings()}</div>`,
     b2: () => `<div class="exseg"><div class="segc" role="group" aria-label="Del">${Object.keys(TABS).map(k => `<button type="button" class="press" data-tab="${k}" aria-pressed="${k === tab}">${k}</button>`).join("")}</div></div><div class="wscroll">${TABS[tab]()}</div>`,
     b3: () => `<div class="wscroll">${top()}${grid()}${weights()}${notes()}${settings(true)}</div>`,
+    b4: () => `<div class="wscroll">${top()}${seg(TABS4)}${TABS4[tab]()}</div>`,
+    b5: () => `<div class="wscroll">${top()}${seg(TABS5)}${TABS5[tab]()}</div>`,
+    b6: () => `<div class="wscroll">${top()}${grid(true)}${seg(TABS6)}${TABS6[tab]()}</div>`,
   };
   function draw() {
     const box = stage.querySelector(".wscroll"), y = box ? box.scrollTop : 0;
@@ -2631,7 +2695,9 @@ document.querySelectorAll(".stage[data-prog13]").forEach(stage => {
     const m = t("[data-m]");
     if (m) { const [k, a, b] = m.dataset.m.split("."); menu = { anchor: `[data-m="${m.dataset.m}"]`, stack: [L[k](+a, +b)] }; return draw(); }
     // A tab counts toward the action it leads to.
-    if (t("[data-tab]")) { tab = t("[data-tab]").dataset.tab; stage.querySelector(".wscroll").scrollTop = 0; return draw(); }
+    if (t("[data-tab]")) { tab = t("[data-tab]").dataset.tab; if (v === "b2") stage.querySelector(".wscroll").scrollTop = 0; return draw(); }
+    if (t("[data-open]")) { const k = +t("[data-open]").dataset.open; open = open === k ? null : k; return draw(); }
+    if (t("[data-settype]")) { const [k, c] = t("[data-settype]").dataset.settype.split("."); types[+k] = c; done(`Vecka ${+k + 1}: ${WTYPE[c]}`); return draw(); }
     const say = { "[data-back]": "Tillbaka till Plan", "[data-more]": "⋯: Byt namn, Duplicera, Arkivera", "[data-prio]": "Ordningen för kort vecka, en lista att dra om",
       "[data-note]": "Ny anteckning med dagens datum", "[data-pstart]": "Startdatum, en datumväljare", "[data-dl]": "Deloadfönstret: veckor och tidigaste vecka",
       "[data-archive]": "Arkivera: programmet sparas med sina datum" };
