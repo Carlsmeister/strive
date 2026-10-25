@@ -96,6 +96,8 @@ Reject and regenerate an image when any of these fails:
 - **The model's terms.** OpenAI's terms page could not be read here (it refuses automated
   requests). As remembered, they assign the output to the user and allow commercial use;
   **check it on openai.com/policies/terms-of-use before the batch.**
-- **One image or two.** Q36 puts a video on top and a muscle map under it; an image like
-  this shows both the movement and the muscles, and could replace the map, or the video
-  for exercises without one.
+- **Where the images live** in the app, and at what size.
+
+**Decided:** the illustration replaces both the video and the drawn muscle map on
+exercise detail's Om tab (Carl, 2026-10-25, changing #17 Q36 and Q37). Video or GIFs may
+be looked at again later.
