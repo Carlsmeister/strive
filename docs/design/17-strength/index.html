@@ -342,6 +342,13 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .card.tday .inline .btn { margin-top: 0; }
 .tpills { display: flex; flex-wrap: wrap; gap: var(--space-8); }
 .tpills .btn[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); }
+
+/* Choice 9: the editor's keypad, with the range key, and "Samma för resten". */
+.stage.kpopen .wscroll { padding-bottom: calc(9 * var(--size-touch)); }
+.tkp { z-index: 1; }
+.samma { display: flex; justify-content: flex-end; }
+.samma .btn { display: inline-flex; align-items: center; gap: var(--space-4); }
+.samma svg.icon { width: var(--space-16); height: var(--space-16); }
 /* The knob stays white, as iOS draws it: the lightest token in each scheme. */
 @media (prefers-color-scheme: dark) { .stage:not(.scheme-light) .switch::after { background: var(--color-on-surface); } }
 .scheme-dark .switch::after { background: var(--color-on-surface); }
@@ -770,6 +777,40 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
         <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
       </div>
     </div>
+  </section>
+
+  <section aria-labelledby="q-kp">
+    <h2 id="q-kp">Choice 9: the template editor's keypad</h2>
+    <p>The editor's fields open K3's keypad (Q26), with one change the same in all three: <strong>the decimal comma becomes the range key "–"</strong>, since reps and RIR are whole numbers. Type 8, –, 1, 0 for "8–10"; − and + move both ends; a range typed backwards is turned round. Nästa goes reps → RIR → the next set. "Samma för resten" copies a set's reps and RIR to the sets below it; the open question is where it lives. <strong>Tap set 1's Reps in Bänkpress, type 8–10, then copy it down.</strong></p>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th></th><th>S1</th><th>S2</th><th>S3</th></tr></thead>
+      <tbody>
+        <tr><td>Set 1 to 8–10, then the same for the rest</td><td class="best">6</td><td class="best">6</td><td>7</td></tr>
+        <tr><td>Says which sets it changes</td><td>no</td><td class="best">yes, "set 2–3"</td><td>no</td></tr>
+        <tr><td>Shows when</td><td>whenever the keypad is open</td><td>after you change a set</td><td>in the set's badge menu</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>S1 · A key on the keypad</h3>
+        <p>"Samma för resten" sits on the keypad beside Nästa, and copies the set you are in.</p>
+        <div class="stage bleed" data-tpl4="s1"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>S2 · Offered under the set you changed</h3>
+        <p>Change a set and a button appears under it, "Samma för set 2–3", naming the sets it will change. It stays until you use it or change another set.</p>
+        <div class="stage bleed" data-tpl4="s2"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>S3 · In the set's badge menu</h3>
+        <p>Tap a set's badge for its menu: Samma för resten, the four set types (Q21), and Ta bort set.</p>
+        <div class="stage bleed" data-tpl4="s3"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: S2.</strong> It appears at the moment it is useful, under the set you just changed, and says which sets it will change, so it never copies the wrong way. S1 is always there but does not say what it touches; S3 costs a tap and is found only by someone who knows to look.</p>
   </section>
 
   <section aria-labelledby="dec">
@@ -1504,6 +1545,8 @@ const TPL4 = [
 document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
   const counter = stage.nextElementSibling, v = stage.dataset.tpl4 || "t4";
   let view = "plan", cur = 0, from = "plan", menu = null, alert = false, dirty = false, extra = {}, prog = {}, taps = 0, day = 5, shown = 0, open = -1;
+  let ov = {}, focus = null, buf = "", suggest = null, badgeAt = null;
+  if (v[0] === "s") view = from = "edit";  // choice 9 opens straight in the editor
   const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; };
   const t = () => TPL4[cur];
   const sets = (e, j) => e.sets.concat(Array(extra[`${cur}.${j}`] || 0).fill(null).map((_, k) => [String(e.sets.filter(x => x[0] !== "W").length + k + 1), ...e.sets.at(-1).slice(1, 3), "–"]));
@@ -1560,15 +1603,41 @@ document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
     <div class="sheet-head"><button type="button" class="press icon-btn glass" data-close aria-label="Stäng">${ico("chevD")}</button><h5>${t().n}</h5><button type="button" class="press btn text" data-edit>Redigera</button></div>
     <div class="wscroll"><div class="smeta"><span>${ico("clock")}Senast ${t().last}</span><span>Cirka ${t().min} min</span></div>${t().note ? `<p class="tnote">${t().note}</p>` : ""}
     ${groups(t().ex, pvRow, pvRow)}</div><button type="button" class="press btn filled" data-start>Starta passet</button></div>`;
+  const key = (j, i, f) => `${cur}.${j}.${i}.${f}`;
+  const val = (j, i, f) => { const k = key(j, i, f); if (focus && key(focus.j, focus.i, focus.f) === k && buf) return buf;
+    return ov[k] ?? sets(t().ex[j], j)[i][f === "r" ? 1 : 2]; };
+  const below = (j, i) => { const ss = sets(t().ex[j], j); return ss.slice(i + 1).map(x => x[0]); };
   const exEdit = (e, j, tag) => { const ss = sets(e, j), last = !e.g || t().ex[j + 1]?.g !== e.g, on = prog[`${cur}.${j}`] ?? true;
+    const field = (i, f, b) => { const fo = focus && focus.j === j && focus.i === i && focus.f === f;
+      return `<span class="num${fo ? " focus" : ""}" data-field="${f === "r" ? "Reps" : "RIR"}" data-fx="${j}.${i}.${f}"><input value="${val(j, i, f)}" readonly aria-label="${f === "r" ? "Reps" : "RIR"} för set ${b}"></span>`; };
     return `<div class="ex4"><div class="exh"><button type="button" class="press ename" data-info="${j}">${tag ? `<span class="tag">${tag}</span>` : ""}${e.n}</button>
       <button type="button" class="press icon-btn" data-exmenu="${j}" aria-label="Fler val för ${e.n}">${ico("more")}</button></div>
       <div class="egrid h"><span>Set</span><span>Förra</span><span>Reps</span><span>RIR</span></div>
-      ${ss.map(([b, reps, rir, prev], i) => `<div class="egrid"><span class="badge${b === "W" ? " w" : ""}">${b}</span><span class="prev">${prev}</span>
-        <span class="num" data-field="Reps"><input placeholder="${reps}" readonly aria-label="Reps för set ${b}"></span><span class="num" data-field="RIR"><input placeholder="${rir}" readonly aria-label="RIR för set ${b}"></span></div>${
+      ${ss.map(([b, , , prev], i) => `<div class="egrid">${v === "s3" ? `<button type="button" class="press badge${b === "W" ? " w" : ""}" data-badge="${j}.${i}" aria-label="Settyp och mer för set ${b}">${b}</button>`
+        : `<span class="badge${b === "W" ? " w" : ""}">${b}</span>`}<span class="prev">${prev}</span>${field(i, "r", b)}${field(i, "i", b)}</div>${
+        v === "s2" && suggest && suggest.j === j && suggest.i === i && i < ss.length - 1 ? `<div class="samma"><button type="button" class="press btn small tinted" data-same="${j}.${i}">${ico("dup")}Samma för set ${below(j, i)[0]}${ss.length - i > 2 ? `–${below(j, i).at(-1)}` : ""}</button></div>` : ""}${
         last && i < ss.length - 1 ? `<button type="button" class="press restbar" data-rest aria-label="Vila ${mmss(e.r)}">${mmss(e.r)}</button>` : ""}`).join("")}
       <button type="button" class="press btn small tinted" data-addset="${j}">Lägg till set${last ? ` (${mmss(e.r)})` : ""}</button>
       <div class="row"><span>Progression</span><button type="button" class="press switch" role="switch" data-prog="${j}" aria-checked="${on}" aria-label="Progression för ${e.n}"></button></div></div>`; };
+  // The range key takes the decimal comma's place: reps and RIR are whole numbers.
+  const keypad = () => { const ss = sets(t().ex[focus.j], focus.j), lastField = focus.f === "i" && focus.i === ss.length - 1;
+    return `<div class="dock glass tkp"><div class="kp3"><div class="inline nowrap"><button type="button" class="press btn small tinted" data-key="Dölj">Dölj</button><span class="grow"></span>
+      <button type="button" class="press btn small tinted" data-key="−">−</button><button type="button" class="press btn small tinted" data-key="+">+</button></div>
+      <div class="kp k3">${["1", "2", "3", "4", "5", "6", "7", "8", "9", "–", "0", "⌫"].map(k => `<button type="button" class="press glass" data-key="${k}"${k === "–" ? ' aria-label="Intervall"' : ""}>${k}</button>`).join("")}</div>
+      <div class="inline nowrap">${v === "s1" ? `<button type="button" class="press btn small tinted" data-key="Samma">Samma för resten</button>` : ""}
+      <button type="button" class="press btn filled grow" data-key="${lastField ? "Klar" : "Nästa"}">${lastField ? "Klar" : "Nästa"}</button></div></div></div>`; };
+  function commit() {
+    if (!focus || !buf) return; const m = buf.match(/^(\d+)(?:–(\d+))?$/); buf = "";
+    if (!m) return;
+    const [lo, hi] = m[2] ? [+m[1], +m[2]].sort((x, y) => x - y) : [+m[1], +m[1]];
+    const k = key(focus.j, focus.i, focus.f), next = lo === hi ? String(lo) : `${lo}–${hi}`;
+    if (next !== val(focus.j, focus.i, focus.f)) { ov[k] = next; dirty = true; }
+    suggest = { j: focus.j, i: focus.i };
+  }
+  const sameDown = (j, i) => { const n = sets(t().ex[j], j).length; for (let k = i + 1; k < n; k++) for (const f of ["r", "i"]) ov[key(j, k, f)] = val(j, i, f); dirty = true; suggest = null;
+    const bl = below(j, i); return `Samma för set ${bl[0]}${bl.length > 1 ? `–${bl.at(-1)}` : ""}: ${val(j, i, "r")} @ ${val(j, i, "i")}`; };
+  const step = (str, d, f) => { const min = f === "i" ? 0 : 1, m = str.match(/^(\d+)(?:–(\d+))?$/); if (!m) return String(min);
+    const lo = Math.max(min, +m[1] + d), hi = m[2] ? Math.max(lo, +m[2] + d) : null; return hi !== null && hi !== lo ? `${lo}–${hi}` : String(lo); };
   const editor = () => `<div class="titlebar fbar"><button type="button" class="press btn text" data-cancel>Avbryt</button><b>Redigera mall</b><button type="button" class="press btn small filled" data-save>Klar</button></div>
     <div class="wscroll"><div class="tname"><h3>${t().n}</h3><button type="button" class="press icon-btn glass" data-namemenu aria-label="Namn och anteckning">${ico("more")}</button></div>
     ${t().note ? `<p class="tnote">${t().note}</p>` : ""}${groups(t().ex, exEdit, exEdit)}
@@ -1576,10 +1645,11 @@ document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
   const MENUS = {
     card: () => [["Redigera", "pencil", "edit"], ["Duplicera", "dup", "dup"], ["Dela", "share", "share"], ["Arkivera", "archive", "arch"], ["Ta bort", "trash", "del", true]],
     section: () => [["Visa arkiverade", "archive", "showarch"]],
+    badge: () => [["Samma för resten", "dup", "same"], ["Arbetsset", "", "type"], ["Uppvärmning", "", "type"], ["Dropset", "", "type"], ["Till failure", "", "type"], ["Ta bort set", "trash", "delset", true]],
     name: () => [["Byt namn", "pencil", "rename"], [t().note ? "Ändra anteckning" : "Lägg till anteckning", "note", "note"]],
   };
   const menuHtml = () => `<div class="catch"></div><div class="menu glass" role="menu"><div class="msec">${MENUS[menu.key]().map(([label, i, act, danger]) =>
-    `<button type="button" class="press row mrow${danger ? " danger" : ""}" data-mi="${act}"><span></span><span>${label}</span>${ico(i)}</button>`).join("")}</div></div>`;
+    `<button type="button" class="press row mrow${danger ? " danger" : ""}" data-mi="${act}"><span></span><span>${label}</span>${i ? ico(i) : "<span></span>"}</button>`).join("")}</div></div>`;
   const alertHtml = () => `<div class="scrim"></div><div class="center"><div class="alert"><h5>Släng ändringar?</h5><p>Ändringarna i ${t().n} sparas inte.</p>
     <div class="inline"><button type="button" class="press btn tinted" data-a="keep">Fortsätt</button><button type="button" class="press btn danger" data-a="drop">Släng</button></div></div></div>`;
   function place() {
@@ -1592,14 +1662,35 @@ document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
   }
   function draw() {
     const sc = [...stage.querySelectorAll(".wscroll")].map(x => x.scrollTop);
-    const planHtml = v === "t4" ? plan() : `<div class="titlebar fbar"><span></span><span></span><span></span></div><div class="wscroll"><div class="largetitle"><h5>Plan</h5></div>${PLAN[v]()}</div>`;
-    stage.innerHTML = (view === "edit" ? editor() : planHtml + (view === "preview" ? (v === "p1" || v === "p13" ? previewFull() : preview()) : "")) + (menu ? menuHtml() : "") + (alert ? alertHtml() : "");
+    const planHtml = () => v === "t4" ? plan() : `<div class="titlebar fbar"><span></span><span></span><span></span></div><div class="wscroll"><div class="largetitle"><h5>Plan</h5></div>${PLAN[v]()}</div>`;
+    stage.classList.toggle("kpopen", !!focus);
+    stage.innerHTML = (view === "edit" ? editor() + (focus ? keypad() : "") : planHtml() + (view === "preview" ? (v === "p1" || v === "p13" ? previewFull() : preview()) : "")) + (menu ? menuHtml() : "") + (alert ? alertHtml() : "");
     stage.querySelectorAll(".wscroll").forEach((x, i) => x.scrollTop = sc[i] ?? 0);
     if (menu) place();
+    const fo = stage.querySelector(".num.focus"), box = stage.querySelector(".wscroll");
+    if (fo && moved) { box.scrollTop = fo.closest(".egrid").offsetTop - box.clientHeight / 4; moved = false; }
   }
+  let moved = false;
   stage.addEventListener("click", e => {
     const q = sel => e.target.closest(sel); taps++;
-    if (alert) { const a = q("[data-a]"); if (!a) return taps--; alert = false; if (a.dataset.a === "drop") { dirty = false; extra = {}; prog = {}; view = from; done("Avbryt › Släng"); } return draw(); }
+    if (alert) { const a = q("[data-a]"); if (!a) return taps--; alert = false; if (a.dataset.a === "drop") { dirty = false; extra = {}; prog = {}; ov = {}; suggest = null; view = from; done("Avbryt › Släng"); } return draw(); }
+    if (q("[data-key]")) { const k = q("[data-key]").dataset.key, ss = sets(t().ex[focus.j], focus.j);
+      if (/^\d$/.test(k)) { if (buf.length < 5) buf += k; suggest = { j: focus.j, i: focus.i }; }
+      else if (k === "–") { if (buf && /^\d+$/.test(buf)) buf += "–"; }
+      else if (k === "⌫") buf = buf.slice(0, -1);
+      else if (k === "−" || k === "+") { buf = step(buf || val(focus.j, focus.i, focus.f), k === "+" ? 1 : -1, focus.f); suggest = { j: focus.j, i: focus.i }; }
+      else if (k === "Samma") { commit(); const f = focus; focus = null; done(sameDown(f.j, f.i)); }
+      else if (k === "Nästa") { commit(); focus = focus.f === "r" ? { ...focus, f: "i" } : { j: focus.j, i: focus.i + 1, f: "r" }; moved = true; }
+      else { commit(); focus = null; }  // Dölj and Klar
+      return draw(); }
+    if (q("[data-fx]") && v[0] === "s") { commit(); const [j, i, f] = q("[data-fx]").dataset.fx.split("."); if (!focus) taps = 1;
+      focus = { j: +j, i: +i, f }; moved = true; return draw(); }
+    if (q("[data-same]")) { commit(); const [j, i] = q("[data-same]").dataset.same.split(".").map(Number); focus = null; done(sameDown(j, i)); return draw(); }
+    if (q("[data-badge]")) { commit(); focus = null; const [j, i] = q("[data-badge]").dataset.badge.split(".").map(Number); badgeAt = { j, i };
+      menu = { key: "badge", anchor: `[data-badge="${j}.${i}"]` }; return draw(); }
+    if (menu && menu.key === "badge") { const mi = q("[data-mi]"); menu = null; if (!mi) { taps = 0; return draw(); }
+      const act = mi.dataset.mi; done(act === "same" ? sameDown(badgeAt.j, badgeAt.i) : act === "delset" ? "Ta bort set, som också kan svepas bort" : `${mi.textContent.trim()}, settypen från val 4`); return draw(); }
+    if (focus && !q(".tkp")) { commit(); focus = null; if (!q("[data-save], [data-cancel]")) { taps = 0; return draw(); } }  // a tap outside the fields hides the keypad
     if (menu) { const mi = q("[data-mi]"), key = menu.key; menu = null;
       if (!mi) { taps = 0; return draw(); }
       const act = mi.dataset.mi;
@@ -1622,8 +1713,8 @@ document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
     if (q("[data-close]")) { view = "plan"; taps = 0; return draw(); }
     if (q("[data-start]")) { view = "plan"; done(`Starta ${t().n}`); return draw(); }
     if (q("[data-edit]")) { from = view === "preview" ? "preview" : "plan"; view = "edit"; return draw(); }
-    if (q("[data-save]")) { view = from; dirty = false; done("Klar, sparar mallen"); return draw(); }
-    if (q("[data-cancel]")) { if (dirty) { alert = true; return draw(); } view = from; taps = 0; return draw(); }
+    if (q("[data-save]")) { view = from; dirty = false; suggest = null; done("Klar, sparar mallen"); return draw(); }
+    if (q("[data-cancel]")) { if (dirty) { alert = true; return draw(); } view = from; taps = 0; return draw(); }  // in choice 9, from is the editor itself
     if (q("[data-prog]")) { const k = `${cur}.${q("[data-prog]").dataset.prog}`; prog[k] = !(prog[k] ?? true); dirty = true; return draw(); }
     if (q("[data-addset]")) { const k = `${cur}.${q("[data-addset]").dataset.addset}`; extra[k] = (extra[k] || 0) + 1; dirty = true; return draw(); }
     if (q("[data-info]")) return done(`Om ${t().ex[+q("[data-info]").dataset.info].n}, övningsbladet i punkt 6`);
