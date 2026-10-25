@@ -532,6 +532,62 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .ktile svg.icon { width: var(--size-icon); height: var(--size-icon); }
 .ktile[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); }
 .row.dis { color: var(--color-on-surface-variant); }
+
+/* Choice 14b, round two: richer bars, a growing total, and a comparison. One series per chart, in neutral ink; teal marks the tapped bar. */
+.chart .bar2 { fill: var(--color-outline); }
+.chart .bar2.dl { fill: var(--color-outline-variant); }
+.chart .bar2.now { fill: var(--color-surface-container-highest); stroke: var(--color-outline); stroke-width: 1; stroke-dasharray: 3 3; }
+.chart .bar2.prev { fill: var(--color-surface-container-highest); }
+.chart .bar2.on { fill: var(--color-primary); stroke: none; }
+.chart .avg { stroke: var(--color-on-surface); stroke-width: 1; stroke-dasharray: 4 4; }
+.chart .area { fill: var(--color-surface-container-highest); }
+.chart .tick.mid { text-anchor: middle; }
+.chart .legend { display: flex; gap: var(--space-16); font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.chart .legend i { display: inline-block; width: var(--space-12); height: var(--space-12); border-radius: var(--shape-extra-small); margin-right: var(--space-4); vertical-align: middle; }
+.chart .legend .k1 { background: var(--color-outline); }
+.chart .legend .k2 { background: var(--color-surface-container-highest); }
+.stat .delta { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+.hero { display: grid; gap: var(--space-4); }
+.hero .v { font: var(--type-display-small); font-variant-numeric: tabular-nums; }
+.hero small { font: var(--type-body-medium); color: var(--color-on-surface-variant); }
+.mbar .track { position: relative; }
+.mbar .band { position: absolute; top: 0; bottom: 0; background: var(--color-outline-variant); }
+.mbar .track i { position: relative; }
+.xtile svg.spark { height: var(--space-24); }
+
+/* Choice 14c, round two: + lifts four round buttons on a spring, one after another. */
+.stage[data-start14] .tabbar { z-index: 2; }
+.stage[data-start14] .tab .dot svg { transition: transform var(--motion-release); }
+.stage[data-start14].bubbling .tab .dot svg { transform: rotate(45deg); }
+/* A tap outside closes; the screen stays in view. Everything + lifts sits in one nearly clear panel with a soft shadow, sized to what it holds (Carl, 2026-10-25). */
+.bscrim { position: absolute; inset: 0; z-index: 1; }
+.bpanel { position: absolute; z-index: 1; border-radius: var(--shape-extra-large); box-shadow: var(--material-shadow); transform-origin: 50% 100%;
+  animation: bpanel-in var(--motion-release); transition: left var(--motion-release), top var(--motion-release), width var(--motion-release), height var(--motion-release); }
+/* The ink colour, not black, so the panel shows in dark mode too; a hairline edge outlines it. */
+.bpanel::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--color-on-surface); opacity: var(--state-veil-opacity); }
+.bpanel { border: var(--border-hairline) solid var(--material-edge); }
+@keyframes bpanel-in { from { transform: scale(0.6); opacity: 0; } }
+@keyframes bscrim-in { from { opacity: 0; } }
+.bub { position: absolute; z-index: 2; width: calc(var(--size-touch) + var(--space-12)); height: calc(var(--size-touch) + var(--space-12));
+  margin: calc(-0.5 * (var(--size-touch) + var(--space-12))) 0 0 calc(-0.5 * (var(--size-touch) + var(--space-12)));
+  border-radius: var(--shape-full); display: grid; place-items: center; color: var(--color-on-surface);
+  animation: bub-in var(--motion-release) both; animation-delay: calc(var(--i) * var(--motion-stagger)); }
+.bub svg.icon { width: var(--size-icon); height: var(--size-icon); }
+.bub.main { background: var(--color-primary); color: var(--color-on-primary); border-color: transparent; }
+.bub > span { position: absolute; top: calc(100% + var(--space-4)); left: 50%; transform: translateX(-50%); white-space: nowrap; text-align: center;
+  font: var(--type-label-medium); color: var(--color-on-surface); }
+.bub > span small { display: block; font: var(--type-label-small); color: var(--color-on-surface-variant); }
+.stage[data-start14="n5"] .bub > span { top: 50%; left: auto; right: calc(100% + var(--space-12)); transform: translateY(-50%); text-align: right; }
+@keyframes bub-in { from { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .bub, .bscrim, .bpanel { animation: none; transition: none; } .stage[data-start14] .tab .dot svg { transition: none; } }
+/* Chosen 14b: a line to compare the total with, tapped for another; the average joins G6's legend. */
+.funline { display: flex; align-items: center; gap: var(--space-8); padding: 0; text-align: left; font: var(--type-body-medium); color: var(--color-on-surface); }
+.funline svg.icon { flex: none; width: var(--space-16); height: var(--space-16); color: var(--color-on-surface-variant); }
+.chart .legend .k3 { height: 0; border-top: var(--border-focus) dashed var(--color-on-surface); border-radius: 0; }
+/* Chosen 14c: Från mall opens the templates as a grid of bubbles that scrolls. */
+.bgrid { position: absolute; z-index: 2; left: var(--space-16); right: var(--space-16); bottom: calc(var(--space-24) + 2 * var(--size-touch)); max-height: 62%; overflow-y: auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); row-gap: calc(var(--space-40) + var(--space-8)); justify-items: center; padding: var(--space-8) 0 var(--space-40); scrollbar-width: none; }
+.bgrid .bub { position: relative; margin: 0; }
 </style>
 
 <div class="wrap">
@@ -1274,6 +1330,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
       </div>
     </div>
     <p><strong>Recommendation: H3.</strong> History is for "what did I do on Tuesday", and a date column answers that at a glance, with as many sessions per screen as H1. H1 says the same with the date in small print. H2 shows what you lifted without a tap but fits four sessions on a screen; Session detail is one tap away anyway.</p>
+    <p><strong>Chosen: H3, days down the side</strong> (Carl, 2026-10-25). A workout shows minutes, sets <em>and</em> volume: Carl wants to watch volume grow over time, which settles the proposal above. <strong>Runs set records too</strong>, with a star like a workout's: the longest distance, the fastest pace over 1 km, 5 km and 10 km, the longest time and the most climb; #18 decides which. H1 and H2 stay above as the record of why.</p>
   </section>
 
   <section aria-labelledby="q-progress">
@@ -1311,6 +1368,36 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
       </div>
     </div>
     <p><strong>Recommendation: G2.</strong> Your goal is strength while you recompose, and the four lifts answer "am I getting stronger" before anything else. Volume and sets per muscle explain the answer and can sit a scroll below. G3 suits checking the week's balance mid-week, which Plan's week card already half does; G1 puts the chart nobody acts on first.</p>
+
+    <h3>Round two: G2 with more in it</h3>
+    <p>Carl (2026-10-25) likes G2 but feels something is missing, and wants volume drawn better: bars, but with more to read. Volume stays a measure, since he likes to see it grow. All three keep G2's lifts first and add the same things: <strong>the period against the one before</strong> (sessions, sets, volume, records), <strong>a trend line in each lift tile</strong>, and <strong>a grey band at 10–20 sets</strong> behind each muscle's bar. They differ in how volume is drawn. <strong>Tap a bar, switch the period, and compare.</strong></p>
+    <div class="options">
+      <div class="option">
+        <h3>G4 · Bars with an average</h3>
+        <p>The bars get a scale, a dashed average across the period, D under deload weeks, and the current week outlined while it runs. Volym or Set swaps what they count.</p>
+        <div class="stage bleed" data-prog14="g4"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>G5 · The total that grows</h3>
+        <p>A card on top with everything lifted since you started, as a number and a rising curve, to watch grow; G4's bars sit under the lifts.</p>
+        <div class="stage bleed" data-prog14="g5"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>G6 · Against the period before</h3>
+        <p>Each week's bar stands in front of the same week of the period before, in a lighter shade, and the head says how much more you lift now.</p>
+        <div class="stage bleed" data-prog14="g6"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: G4, with G5's total as its first card.</strong> G4's average and outlined week answer "is this week normal" at a glance, and the total gives the number that only ever grows. G6's comparison is honest but doubles the marks in a small chart; its percentage already sits in the summary.</p>
+    <p><strong>Chosen: G6 with G5's total on top</strong> (Carl, 2026-10-25), over the recommended G4. The total card opens the page with <strong>a line that compares it with something</strong>: 25 of them, from älgar and flygelpianon to blåvalar, rymdfärjor and Eiffeltornet; a tap gives the next. G6's comparison chart keeps its look and gains the dashed average, named in the legend. G4 and G5 stay above as the record of why.</p>
+    <div class="options"><div class="option">
+      <h3>Chosen · G6 with G5's total</h3>
+      <div class="stage bleed" data-prog14="g7"></div>
+      <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+    </div></div>
   </section>
 
   <section aria-labelledby="q-start">
@@ -1350,6 +1437,39 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
       </div>
     </div>
     <p><strong>Recommendation: N1.</strong> Every start is two taps, today's workout is the one thing filled, and the other templates show their last date, which tells you which is due. N2 is the most iOS-like and costs a tap for any other template. N3 makes a run three taps, and runs are half of Strive.</p>
+
+    <h3>Round two: bubbles from +</h3>
+    <p>Carl (2026-10-25) likes N1, but the sheet is too big. Instead, + turns to × and four round buttons float up on a spring, one after another, over the screen you are on, which stays in view; they sit in one nearly clear panel with a soft shadow that fits what it holds: <strong>today's workout</strong> (filled), <strong>Tomt pass</strong>, <strong>Från mall</strong> and <strong>Löpning</strong>. Från mall swaps the bubbles for the templates, last done first; × or a tap outside closes. The switch above still shows a workout in progress (one bubble, Fortsätt) and the first use (Skapa mall instead of today's). With Reduce Motion the bubbles appear without moving. <strong>Tap + a few times, then start Ben A.</strong></p>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th></th><th>N4</th><th>N5</th><th>N6</th></tr></thead>
+      <tbody>
+        <tr><td>Start today's workout, a run or an empty one</td><td>2 taps</td><td>2 taps</td><td>2 taps</td></tr>
+        <tr><td>Start another template</td><td>3 taps</td><td>3 taps</td><td>3 taps</td></tr>
+        <tr><td>Highest bubble above the tab bar</td><td class="best">154 pt</td><td class="bad">294 pt</td><td>206 pt</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>N4 · An arc</h3>
+        <p>The four bubbles fan out in an arc over +, labels under them, all within the thumb's reach.</p>
+        <div class="stage bleed" data-start14="n4"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>N5 · A column</h3>
+        <p>The bubbles rise straight up from +, each with its label to the left, the way a speed dial opens.</p>
+        <div class="stage bleed" data-start14="n5"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>N6 · Two by two</h3>
+        <p>The bubbles land in a square above +, today's bottom left nearest the thumb, so each gets room for a two-line label.</p>
+        <div class="stage bleed" data-start14="n6"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: N4.</strong> An arc keeps every bubble close to the thumb that just pressed +, and the four read left to right in the order you choose them most. N5's top bubble sits far up the screen. N6 has the most room for labels but puts two bubbles over the screen's middle.</p>
+    <p><strong>Chosen: N4, an arc</strong> (Carl, 2026-10-25); of the sheets, N1 came closest. <strong>Från mall</strong> now opens the templates as a grid of round bubbles, three across, last done first and Tillbaka first; with many templates the grid scrolls. Starting another template stays at three taps. N1–N3, N5 and N6 stay above as the record of why.</p>
   </section>
 
   <section aria-labelledby="q-first">
@@ -2868,10 +2988,10 @@ ICONS.lift = '<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>';
 const BEST = { "Push A": ["Bänkpress 82,5 × 8", "Lutande hantelpress 26 × 10", "Sidolyft 10 × 13"], "Pull A": ["Marklyft 125 × 5", "Latsdrag 65 × 10", "Sittande rodd 60 × 10"],
   "Ben A": ["Knäböj 107,5 × 6", "Rumänsk marklyft 90 × 8", "Benpress 160 × 10"], "Push B": ["Militärpress 52,5 × 6", "Lutande bänkpress 70 × 8", "Kabelflyes 15 × 12"],
   "Armar": ["Hammercurl 16 × 10", "Triceps pushdown 25 × 12", "Preachercurl 30 × 12"] };
-const W = (n, d, t, min, sets, pr) => ({ n, d, t, min, sets, pr }), R = (d, t, km, pace, min) => ({ n: "Lätt löpning", d, t, km, pace, min, run: true });
+const W = (n, d, t, min, sets, pr) => ({ n, d, t, min, sets, pr }), R = (d, t, km, pace, min, pr = 0) => ({ n: "Lätt löpning", d, t, km, pace, min, pr, run: true });
 const HIST = [
-  [43, [W("Push A", "Lör 24 okt", "17:02", 62, 16, 2), W("Pull A", "Tor 22 okt", "18:10", 58, 15, 0), R("Ons 21 okt", "07:15", 6.2, "5:48", 36), W("Ben A", "Tis 20 okt", "17:30", 65, 17, 1), W("Push B", "Mån 19 okt", "17:45", 55, 15, 0)]],
-  [42, [W("Armar", "Sön 18 okt", "11:00", 30, 9, 0), W("Push A", "Lör 17 okt", "16:40", 60, 16, 1), R("Fre 16 okt", "07:05", 8.0, "5:40", 45), W("Ben A", "Tis 13 okt", "17:20", 63, 17, 0), W("Push B", "Mån 12 okt", "17:50", 56, 15, 0)]],
+  [43, [W("Push A", "Lör 24 okt", "17:02", 62, 16, 2), W("Pull A", "Tor 22 okt", "18:10", 58, 15, 0), R("Ons 21 okt", "07:15", 6.2, "5:48", 36, 1), W("Ben A", "Tis 20 okt", "17:30", 65, 17, 1), W("Push B", "Mån 19 okt", "17:45", 55, 15, 0)]],
+  [42, [W("Armar", "Sön 18 okt", "11:00", 30, 9, 0), W("Push A", "Lör 17 okt", "16:40", 60, 16, 1), R("Fre 16 okt", "07:05", 8.0, "5:40", 45, 1), W("Ben A", "Tis 13 okt", "17:20", 63, 17, 0), W("Push B", "Mån 12 okt", "17:50", 56, 15, 0)]],
   [41, [W("Push A", "Lör 10 okt", "16:30", 61, 16, 0), R("Fre 9 okt", "07:10", 7.1, "5:52", 42), W("Pull A", "Tor 8 okt", "18:00", 57, 15, 1), W("Ben A", "Tis 6 okt", "17:40", 64, 17, 0), W("Push B", "Mån 5 okt", "17:30", 54, 15, 0)]],
 ];
 const prs = n => n ? `<span class="prs" aria-label="${n} rekord">${ico("star")}${n}</span>` : "";
@@ -2886,12 +3006,14 @@ document.querySelectorAll(".stage[data-hist14]").forEach(stage => {
   const keep = s => seg === "Alla" || (seg === "Löpning") === !!s.run;
   const sum = ss => { const p = ss.filter(s => !s.run).length, km = ss.filter(s => s.run).reduce((a, s) => a + s.km, 0);
     return [p ? `${p} pass` : "", km ? `${nkm(km)} km` : ""].filter(Boolean).join(" · "); };
-  const end = s => s.run ? `<span class="end">${nkm(s.km)} km<span>${s.pace} /km</span></span>` : `<span class="end">${s.min} min · ${s.sets} set${prs(s.pr)}</span>`;
+  // A workout's volume, in tonnes; a run's records are its distance and pace bests (#18 decides which).
+  const vol = s => nkm(Math.round(s.sets * 0.62 * 10) / 10);
+  const end = s => s.run ? `<span class="end">${nkm(s.km)} km<span>${s.pace} /km ${prs(s.pr)}</span></span>` : `<span class="end">${s.min} min · ${s.sets} set<span>${vol(s)} t ${prs(s.pr)}</span></span>`;
   const ROW = {
     h1: (s, k) => `<button type="button" class="press row hrow" data-s="${k}"><span>${s.n}<small>${s.d} · ${s.t}</small></span>${end(s)}</button>`,
     h2: (s, k) => `<button type="button" class="press hcard hc" data-s="${k}"><div class="th"><span>${s.n}</span><small>${s.d}</small></div>${s.run
-      ? `<div class="bl"><span>${nkm(s.km)} km · ${s.pace} /km</span><span>${s.min} min</span></div>`
-      : `<span class="meta">${s.min} min · ${s.sets} set ${prs(s.pr)}</span>${BEST[s.n].map(b => { const i = b.search(/\d/); return `<div class="bl"><span>${b.slice(0, i).trim()}</span><span>${b.slice(i)}</span></div>`; }).join("")}`}</button>`,
+      ? `<div class="bl"><span>${nkm(s.km)} km · ${s.pace} /km ${prs(s.pr)}</span><span>${s.min} min</span></div>`
+      : `<span class="meta">${s.min} min · ${s.sets} set · ${vol(s)} t ${prs(s.pr)}</span>${BEST[s.n].map(b => { const i = b.search(/\d/); return `<div class="bl"><span>${b.slice(0, i).trim()}</span><span>${b.slice(i)}</span></div>`; }).join("")}`}</button>`,
     h3: (s, k) => `<button type="button" class="press row hrow drow" data-s="${k}"><span class="dnum">${s.d.split(" ")[0]}<b>${s.d.split(" ")[1]}</b></span><span><span class="kind">${ico(s.run ? "run" : "lift")}${s.n}</span><small>${s.t}${s.run ? ` · ${s.min} min` : ""}</small></span>${end(s)}</button>`,
   };
   function draw() {
@@ -2915,8 +3037,17 @@ document.querySelectorAll(".stage[data-hist14]").forEach(stage => {
   draw();
 });
 
+// Chosen 14b: something to compare the total with, by approximate weight in tonnes. [tonnes, plural, "the one" for a share]
+const FUN = [[6, "afrikanska elefanter", "en afrikansk elefant"], [150, "blåvalar", "en blåval"], [2, "Volvo XC60:or", "en Volvo XC60"], [0.45, "älgar", "en älg"],
+  [1.5, "flodhästar", "en flodhäst"], [1.2, "giraffer", "en giraff"], [0.5, "isbjörnar", "en isbjörn"], [0.5, "flygelpianon", "en flygel"], [8, "Tyrannosaurus rex", "en T. rex"],
+  [12, "Londonbussar", "en Londonbuss"], [41, "tomma Boeing 737:or", "en tom Boeing 737"], [62, "stridsvagnar", "en stridsvagn"], [78, "rymdfärjor", "en rymdfärja"],
+  [225, "Frihetsgudinnor", "Frihetsgudinnan"], [420, "rymdstationer (ISS)", "rymdstationen ISS"], [7300, "Eiffeltorn", "Eiffeltornet"], [1200, "regalskeppet Vasa", "regalskeppet Vasa"],
+  [40, "kaskeloter", "en kaskelot"], [2.3, "noshörningar", "en noshörning"], [1, "vithajar", "en vithaj"], [0.5, "hästar", "en häst"], [0.7, "mjölkkor", "en mjölkko"],
+  [2900, "Saturn V-raketer", "en Saturn V-raket"], [40, "fullastade långtradare", "en fullastad långtradare"], [13.7, "Big Ben-klockor", "klockan i Big Ben"]];
+const funText = (t, k) => { const [w, many, one] = FUN[k % FUN.length], n = t / w;
+  return n >= 1.5 ? `Lika tungt som ungefär ${Math.round(n).toLocaleString("sv-SE")} ${many}.` : n >= 0.95 ? `Lika tungt som ${one}.` : `Ungefär ${Math.round(n * 100)} % av ${one}.`; };
 // Progress: volume per week (tonnes), the deload weeks in their own shade; a tap on a bar shows its value.
-const VOL = { "8 v": [...Array(8).keys()].map(i => [`v${36 + i}`, i === 4 ? 12.1 : 18 + i * 0.6 + (i % 2) * 0.8, i === 4]),
+const VOL = { "8 v": [...Array(8).keys()].map(i => [`v${36 + i}`, i === 4 ? 12.1 : i === 7 ? 15.8 : 18 + i * 0.6 + (i % 2) * 0.8, i === 4]),
   "6 mån": [...Array(26).keys()].map(i => [`v${18 + i}`, i % 6 === 5 ? 11.5 + i * 0.1 : 15 + i * 0.25 + (i % 3) * 0.7, i % 6 === 5]),
   "1 år": [...Array(12).keys()].map(i => [["nov", "dec", "jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt"][i], 60 + i * 2.5 + (i % 3) * 3, false]) };
 const MSETS = [["Bröst", 10], ["Rygg", 12], ["Axlar", 9], ["Biceps", 6], ["Triceps", 7], ["Framsida lår", 8], ["Baksida lår", 6], ["Säte", 6], ["Vader", 4], ["Bål", 5]];
@@ -2924,7 +3055,7 @@ const LIFTS = [["Knäböj", "128", "+4 kg"], ["Bänkpress", "103,5", "+2,5 kg"],
 const RECS = [["Bänkpress", "1RM 103,5 kg", "24 okt"], ["Sidolyft", "10 × 13", "24 okt"], ["Knäböj", "107,5 × 6", "20 okt"]];
 document.querySelectorAll(".stage[data-prog14]").forEach(stage => {
   const v = stage.dataset.prog14, counter = stage.nextElementSibling;
-  let seg = "Styrka", period = "8 v", pt = -1, taps = 0;
+  let seg = "Styrka", period = "8 v", pt = -1, cpt = -1, vm = "Volym", fi = 0, taps = 0;
   const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; };
   const unit = () => period === "1 år" ? "t per månad" : "t per vecka";
   const vol = () => { const d = VOL[period], hi = Math.max(...d.map(x => x[1])), w = 320 / d.length;
@@ -2938,7 +3069,53 @@ document.querySelectorAll(".stage[data-prog14]").forEach(stage => {
     `<button type="button" class="press xtile" data-lift="${n}"><span class="k">${n}${ico("chevR")}</span><span class="v">${rm}</span><small><span class="up">${d}</span> på ${period}</small></button>`).join("")}</div></div>`;
   const recs = () => `<div class="group"><h4>Rekord, 30 dagar</h4><div class="list">${RECS.map(([n, r, d]) => `<button type="button" class="press row" data-lift="${n}"><span>${n}<small>${r}</small></span><span class="val">${d}</span></button>`).join("")}</div></div>`;
   const week = () => `<div class="card"><span class="eyebrow">Den här veckan · vecka 43</span><span class="title">4 av 5 pass · 63 arbetsset</span>${MSETS.map(([m, n]) => `<div class="mbar"><span>${m}</span><span class="track"><i style="width:${n / 20 * 100}%"></i></span><small>${n} set</small></div>`).join("")}</div>`;
-  const ORDER = { g1: () => vol() + muscles() + lifts() + recs(), g2: () => lifts() + vol() + muscles() + recs(), g3: () => week() + `<div class="hweek"><span>Trender</span></div>` + vol() + lifts() + recs() };
+  // Round two (G4–G6): the period against the one before, trend lines in the lift tiles, a 10–20 set band per muscle.
+  const SUM = { "8 v": [["Pass", "34", "+3"], ["Set", "453", "+8 %"], ["Volym", "158 t", "+12 %"], ["Rekord", "6", "+2"]],
+    "6 mån": [["Pass", "101", "+9"], ["Set", "1 360", "+6 %"], ["Volym", "462 t", "+9 %"], ["Rekord", "17", "+4"]],
+    "1 år": [["Pass", "196", "+40"], ["Set", "2 650", "+21 %"], ["Volym", "868 t", "+25 %"], ["Rekord", "41", "+12"]] };
+  const LSER = { Knäböj: [120, 121, 123, 122, 124, 126, 127, 128], Bänkpress: [100, 101, 101, 102, 101.5, 103, 103, 103.5], Marklyft: [148, 150, 149, 150, 150, 149, 150, 150], Militärpress: [63, 64, 64.5, 64, 65, 65.5, 66, 66] };
+  const pseg = () => `<div class="segc" role="group" aria-label="Period">${Object.keys(VOL).map(k => `<button type="button" class="press" data-period="${k}" aria-pressed="${k === period}">${k}</button>`).join("")}</div>`;
+  const summary = () => `<div class="stats four">${SUM[period].map(([k, n, d]) => `<div class="stat"><span class="k">${k}</span><span class="v">${n}</span><small class="delta">${d}</small></div>`).join("")}</div>
+    <p class="caption">${{ "8 v": "Senaste 8 veckorna", "6 mån": "Senaste 6 månaderna", "1 år": "Senaste året" }[period]} mot perioden före.</p>`;
+  const spark = ys => { const lo = Math.min(...ys), hi = Math.max(...ys);
+    return `<svg class="spark" viewBox="0 0 100 24" aria-hidden="true"><polyline points="${ys.map((y, i) => `${i * 100 / (ys.length - 1)},${22 - (y - lo) / ((hi - lo) || 1) * 20}`).join(" ")}"/></svg>`; };
+  const lifts2 = () => `<div class="group"><div class="thead2"><h4>Huvudlyft · 1RM</h4><button type="button" class="press btn small tinted" data-go="Välj lyft">Välj</button></div><div class="xtiles">${LIFTS.map(([n, rm, d]) =>
+    `<button type="button" class="press xtile" data-lift="${n}"><span class="k">${n}${ico("chevR")}</span><span class="v">${rm}</span>${spark(LSER[n])}<small><span class="up">${d}</span> på ${period}</small></button>`).join("")}</div></div>`;
+  const muscles2 = () => `<div class="group"><h4>Arbetsset per muskel, den här veckan</h4><div class="card mbars">${MSETS.map(([m, n]) =>
+    `<div class="mbar"><span>${m}</span><span class="track"><span class="band" style="left:${10 / 24 * 100}%;width:${10 / 24 * 100}%"></span><i style="width:${n / 24 * 100}%"></i></span><small>${n} set</small></div>`).join("")}
+    <p class="caption">Det grå bandet är 10–20 set i veckan. Veckan pågår till söndag.</p></div></div>`;
+  // Bars on a scale, the period's average dashed, D under deload weeks, the running week outlined; cmp puts the period before behind each bar.
+  const bars2 = (cmp, showAvg = !cmp) => { const d = vm === "Set" ? VOL[period].map(([l, y, dl]) => [l, y * 3, dl]) : VOL[period], n = d.length, last = n - 1;
+    const prev = d.map(([, y], i) => y * (0.86 + (i % 3) * 0.03)), top = Math.max(...d.map(x => x[1]), ...(cmp ? prev : [])) * 1.1;
+    const w = 288 / n, Y = v => 110 - v / top * 100, avg = d.reduce((a, x) => a + x[1], 0) / n, u = vm === "Volym" ? " t" : " set";
+    const f = v => vm === "Volym" ? nkm(Math.round(v * 10) / 10) : String(Math.round(v));
+    const gain = Math.round((d.reduce((a, x) => a + x[1], 0) / prev.reduce((a, x) => a + x, 0) - 1) * 100);
+    const head = pt >= 0 ? `${d[pt][0]}${d[pt][2] ? " · deload" : pt === last ? " · pågår" : ""}` : cmp ? `${vm} mot perioden före` : `${vm} per ${period === "1 år" ? "månad" : "vecka"}`;
+    const val = pt >= 0 ? `${f(d[pt][1])}${u}${cmp ? ` · före ${f(prev[pt])}` : ""}` : cmp ? (vm === "Volym" ? SUM[period][2][2] : `+${gain} %`) : `snitt ${f(avg)}${u}`;
+    return `<div class="chart"><div class="head"><span>${head}</span><b>${val}</b></div>${cmp ? "" : `<div class="segc" role="group" aria-label="Mått">${["Volym", "Set"].map(k =>
+      `<button type="button" class="press" data-vm="${k}" aria-pressed="${k === vm}">${k}</button>`).join("")}</div>`}
+      <svg viewBox="0 0 320 138" role="img" aria-label="${vm}, ${period}">${[top / 2.2, top / 1.1].map(v => `<line class="grid" x1="32" x2="320" y1="${Y(v)}" y2="${Y(v)}"/><text class="tick" x="0" y="${Y(v) + 4}">${f(v)}</text>`).join("")}
+      ${d.map(([, y, dl], i) => { const x = 32 + i * w;
+        return (cmp ? `<rect class="bar2 prev" x="${x + w * 0.1}" y="${Y(prev[i])}" width="${w * 0.8}" height="${110 - Y(prev[i])}" rx="2"/>` : "")
+          + `<rect class="bar2${dl ? " dl" : ""}${i === last && !cmp && period !== "1 år" ? " now" : ""}${i === pt ? " on" : ""}" data-bar="${i}" x="${x + w * (cmp ? 0.25 : 0.15)}" y="${Y(y)}" width="${w * (cmp ? 0.5 : 0.7)}" height="${110 - Y(y)}" rx="2"/>`
+          + (dl ? `<text class="tick mid" x="${x + w / 2}" y="123">D</text>` : ""); }).join("")}
+      ${showAvg ? `<line class="avg" x1="32" x2="320" y1="${Y(avg)}" y2="${Y(avg)}"/>` : ""}
+      <text class="tick" x="32" y="137">${d[0][0]}</text><text class="tick" x="320" y="137" text-anchor="end">${d.at(-1)[0]}</text></svg>${
+      cmp ? `<div class="legend"><span><i class="k1"></i>Nu</span><span><i class="k2"></i>Perioden före</span>${showAvg ? `<span><i class="k3"></i>Snitt ${f(avg)}${u}</span>` : ""}</div>` : ""}</div>`; };
+  // G5: everything lifted since the start, month by month, as a number and a rising curve.
+  const CUM = (() => { let sum = 0; return ["aug", "sep", "okt", "nov", "dec", "jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt"].map((m, i) => {
+    sum += 58 + i * 1.6 - (i % 4 === 3 ? 14 : 0); return [`${m} ${i < 5 ? 25 : 26}`, sum]; }); })();
+  const total = () => { const d = CUM, hi = d.at(-1)[1], X = i => i * 320 / (d.length - 1), Y = v => 100 - v / hi * 92, j = cpt >= 0 ? cpt : d.length - 1;
+    return `<div class="chart hero"><span class="clabel">Totalt lyft sedan augusti 2025</span><span class="v">${Math.round(d[j][1]).toLocaleString("sv-SE")} t</span>
+      <button type="button" class="press funline" data-fun aria-label="${funText(d[j][1], fi)} Tryck för en annan jämförelse.">${funText(d[j][1], fi)}${ico("swap")}</button>
+      <small>${cpt >= 0 ? `till och med ${d[j][0]}` : `+${Math.round(hi - d.at(-2)[1])} t i oktober`}</small>
+      <svg viewBox="0 0 320 112" role="img" aria-label="Totalt lyft per månad"><path class="area" d="M0,100 ${d.map((x, i) => `L${X(i)},${Y(x[1])}`).join(" ")} L320,100 Z"/>
+      <polyline class="line" points="${d.map((x, i) => `${X(i)},${Y(x[1])}`).join(" ")}"/>${d.map((x, i) => `<g data-cpt="${i}"><circle cx="${X(i)}" cy="${Y(x[1])}" r="12" fill="transparent"/>${
+        i === j ? `<circle class="pt on" cx="${X(i)}" cy="${Y(x[1])}" r="4"/>` : ""}</g>`).join("")}
+      <text class="tick" x="0" y="111">${d[0][0]}</text><text class="tick" x="320" y="111" text-anchor="end">${d.at(-1)[0]}</text></svg></div>`; };
+  const ORDER = { g7: () => total() + pseg() + summary() + lifts2() + bars2(true, true) + muscles2() + recs(), g4: () => pseg() + summary() + lifts2() + bars2(false) + muscles2() + recs(), g5: () => total() + pseg() + summary() + lifts2() + bars2(false) + muscles2() + recs(),
+    g6: () => pseg() + summary() + lifts2() + bars2(true) + muscles2() + recs(),
+    g1: () => vol() + muscles() + lifts() + recs(), g2: () => lifts() + vol() + muscles() + recs(), g3: () => week() + `<div class="hweek"><span>Trender</span></div>` + vol() + lifts() + recs() };
   function draw() {
     const box = stage.querySelector(".wscroll"), y = box ? box.scrollTop : 0;
     const body = progFirst ? firstUse("Volym, set per muskel och dina lyft visas när du har loggat ett pass.")
@@ -2952,21 +3129,59 @@ document.querySelectorAll(".stage[data-prog14]").forEach(stage => {
     const t = s => e.target.closest(s); taps++;
     if (t("[data-seg]")) { seg = t("[data-seg]").dataset.seg; done(`Visa: ${seg}`); return draw(); }
     if (t("[data-period]")) { period = t("[data-period]").dataset.period; pt = -1; return draw(); }
-    if (t("[data-bar]")) { const i = +t("[data-bar]").dataset.bar, d = VOL[period][i]; pt = pt === i ? -1 : i; done(`${d[0]}: ${nkm(Math.round(d[1] * 10) / 10)} t${d[2] ? ", deload" : ""}`); return draw(); }
+    if (t("[data-bar]")) { const i = +t("[data-bar]").dataset.bar, d = VOL[period][i]; pt = pt === i ? -1 : i; done(`${d[0]}${d[2] ? ", deload" : ""}: värdet står i diagrammets rubrik`); return draw(); }
+    if (t("[data-vm]")) { vm = t("[data-vm]").dataset.vm; pt = -1; done(`Mått: ${vm}`); return draw(); }
+    if (t("[data-fun]")) { fi++; done("En annan jämförelse"); return draw(); }
+    if (t("[data-cpt]")) { const i = +t("[data-cpt]").dataset.cpt; cpt = cpt === i ? -1 : i; done(`Totalt till och med ${CUM[i][0]}`); return draw(); }
     if (t("[data-lift]")) return done(`${t("[data-lift]").dataset.lift} › övningsdetaljen, val 10`);
     if (t("[data-go]")) { const g = t("[data-go]").dataset.go; return done(g === "Du" ? "Tillbaka till Du" : g === "Start" ? "Start-arket, val 14c" : "Välj 3–5 huvudlyft i en lista"); }
     taps--;
   });
-  PROGS14.push(() => { seg = "Styrka"; pt = -1; taps = 0; draw(); });
+  PROGS14.push(() => { seg = "Styrka"; pt = cpt = -1; taps = 0; draw(); });
   draw();
 });
 
 // The Start sheet, opened by + over Hem. Templates other than today's come last done first.
 const OTHERS = [["Pull A", "tor 22 okt"], ["Ben A", "tis 20 okt"], ["Push B", "mån 19 okt"]];
+const MANY = [...OTHERS, ["Armar", "sön 18 okt"], ["Pull B", "ons 14 okt"], ["Ben B", "tor 8 okt"], ["Helkropp", "28 sep"], ["Kettlebell", "21 sep"], ["Rörlighet", "14 sep"], ["Överkropp", "2 sep"], ["Hotellpass", "aug"],
+  ["Push C", "aug"], ["Ben C", "jul"], ["Löpstyrka", "jul"], ["Bål", "jun"], ["Axlar", "jun"], ["Rygg", "maj"]];
 document.querySelectorAll(".stage[data-start14]").forEach(stage => {
   const v = stage.dataset.start14, counter = stage.nextElementSibling;
-  let open = false, more = false, kind = "Styrka", taps = 0;
-  const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; open = more = false; kind = "Styrka"; };
+  let open = false, more = false, kind = "Styrka", lvl = "top", taps = 0;
+  const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; open = more = false; kind = "Styrka"; lvl = "top"; };
+  // Round two: + turns to × and round buttons float up; Från mall swaps them for the templates. [key, label, icon, filled, second line]
+  const bubble = ["n4", "n5", "n6"].includes(v);
+  const BUBS = () => lvl === "mall" ? [...OTHERS.map(([n, d]) => [n, n, "lift", false, d]), ["back", "Tillbaka", "chevL"]]
+    : startMode === 1 ? [["Fortsätt Push A", "Fortsätt", "lift", true, "Push A · 0:42"]]
+    : startMode === 2 ? [["Tomt pass", "Tomt pass", "plus"], ["Skapa mall", "Skapa mall", "dup"], ["Löpning", "Löpning", "run"]]
+    : [["Push A", "Push A", "lift", true, "idag"], ["Tomt pass", "Tomt pass", "plus"], ["mall", "Från mall", "dup"], ["Löpning", "Löpning", "run"]];
+  const grid = () => v === "n4" && lvl === "mall";
+  const bubbles = () => grid() ? `<div class="bscrim" data-close></div><div class="bpanel"></div><div class="bgrid">${[["back", "Tillbaka", "chevL"], ...MANY.map(([n, d]) => [n, n, "lift", false, d])].map(([k, t, i, main, sub], j) =>
+    `<button type="button" class="press bub glass" data-bub="${k}" style="--i:${Math.min(j, 8)}" aria-label="${t}${sub ? ", senast " + sub : ""}">${ico(i)}<span>${t}${sub ? `<small>${sub}</small>` : ""}</span></button>`).join("")}</div>`
+    : `<div class="bscrim" data-close></div><div class="bpanel"></div>${BUBS().map(([k, t, i, main, sub], j) => `<button type="button" class="press bub glass${main ? " main" : ""}" data-bub="${k}" style="--i:${j}"
+    aria-label="${t}${sub ? ", " + sub : ""}">${ico(i)}<span>${t}${sub ? `<small>${sub}</small>` : ""}</span></button>`).join("")}`;
+  // Each bubble starts on + (--dx, --dy) and springs to its place: an arc (N4), a column (N5) or two by two (N6).
+  function placeBubbles() {
+    const s = stage.getBoundingClientRect(), p = stage.querySelector("[data-plus]").getBoundingClientRect(), cx = p.left + p.width / 2 - s.left, cy = p.top + p.height / 2 - s.top;
+    const bs = [...stage.querySelectorAll(".bub")], n = bs.length;
+    const panel = stage.querySelector(".bpanel"), pad = parseFloat(getComputedStyle(stage).getPropertyValue("--space-12"));
+    const fit = ([l, t, r, b]) => Object.assign(panel.style, { left: `${l - pad}px`, top: `${t - pad}px`, width: `${r - l + 2 * pad}px`, height: `${b - t + 2 * pad}px` });
+    const g = stage.querySelector(".bgrid");
+    if (g) { const r = g.getBoundingClientRect(); fit([r.left - s.left, r.top - s.top, r.right - s.left, r.bottom - s.top]);
+      bs.forEach(b => { const q = b.getBoundingClientRect(); b.style.setProperty("--dx", `${cx - (q.left + q.width / 2 - s.left)}px`); b.style.setProperty("--dy", `${cy - (q.top + q.height / 2 - s.top)}px`); }); return; }
+    // Layout sizes ignore the spring's transform, so the panel fits where the bubbles land, labels included.
+    const box = [Infinity, Infinity, -Infinity, -Infinity], add = (l, t, r, b) => { box[0] = Math.min(box[0], l); box[1] = Math.min(box[1], t); box[2] = Math.max(box[2], r); box[3] = Math.max(box[3], b); };
+    bs.forEach((b, j) => { let x, y;
+      if (v === "n4") { const a = Math.PI * (n === 1 ? 0.5 : 0.88 - 0.76 * j / (n - 1)); x = cx + 120 * Math.cos(a); y = cy - 72 - 92 * Math.sin(a); }
+      if (v === "n5") { x = cx; y = cy - 80 - j * 72; }
+      if (v === "n6") { x = n % 2 && j === n - 1 ? cx : cx + (j % 2 ? 64 : -64); y = cy - 100 - Math.floor(j / 2) * 108; }
+      b.style.left = `${x}px`; b.style.top = `${y}px`; b.style.setProperty("--dx", `${cx - x}px`); b.style.setProperty("--dy", `${cy - y}px`);
+      const h = b.offsetWidth / 2, lab = b.querySelector("span"), gap = parseFloat(getComputedStyle(stage).getPropertyValue("--space-4"));
+      add(x - h, y - h, x + h, y + h);
+      if (v === "n5") add(x - h - 3 * gap - lab.offsetWidth, y - lab.offsetHeight / 2, x, y + lab.offsetHeight / 2);
+      else add(x - lab.offsetWidth / 2, y + h, x + lab.offsetWidth / 2, y + h + gap + lab.offsetHeight); });
+    fit(box);
+  }
   const tabs = [["home", "Hem"], ["food", "Mat"], ["plus", ""], ["plan", "Plan"], ["you", "Du"]];
   const bg = `<div class="titlebar fbar"><span></span><span></span><span></span></div><div class="startbg"><div class="largetitle"><h5>Hem</h5></div>
     <div class="card"><span class="eyebrow">Idag · lördag 24 okt</span><span class="title">${startMode === 2 ? "Inget planerat" : "Push A"}</span><span class="meta">${startMode === 2 ? "Lägg upp ett program i Plan." : "4 övningar · 30 min"}</span></div></div>
@@ -2991,9 +3206,17 @@ document.querySelectorAll(".stage[data-start14]").forEach(stage => {
       <div class="list"><button type="button" class="press row cancel" data-close>Avbryt</button></div></div>`
     : `<div class="scrim" data-close></div><div class="sheet glass ssheet" role="dialog" aria-label="Starta"><span class="grabber" aria-hidden="true"></span>
       <div class="sheet-head"><span></span><h5>Starta</h5><button type="button" class="press btn text" data-close>Stäng</button></div>${SHEET[v]()}</div>`;
-  function draw() { stage.innerHTML = bg + (open ? sheet() : ""); }
+  function draw() { stage.classList.toggle("bubbling", bubble && open); stage.innerHTML = bg + (open ? (bubble ? bubbles() : sheet()) : ""); if (bubble && open) placeBubbles(); }
   stage.addEventListener("click", e => {
     const t = s => e.target.closest(s); taps++;
+    if (bubble) {
+      if (t("[data-plus]")) { if (open) { open = false; lvl = "top"; taps = 0; } else open = true; return draw(); }
+      if (t("[data-bub]")) { const k = t("[data-bub]").dataset.bub;
+        if (k === "mall" || k === "back") { lvl = k === "mall" ? "mall" : "top"; return draw(); }
+        done(k === "Skapa mall" ? "Skapa mall › mallredigeraren, val 8" : k.startsWith("Fortsätt") ? "Fortsätt Push A" : `Startar ${k}`); return draw(); }
+      if (t("[data-close]")) { open = false; lvl = "top"; taps = 0; return draw(); }
+      return taps--;
+    }
     if (t("[data-plus]")) { open = true; return draw(); }
     if (!open) return taps--;
     if (t("[data-st]")) { const s = t("[data-st]").dataset.st; done(s === "Skapa mall" ? "Skapa mall › mallredigeraren, val 8" : s.startsWith("Fortsätt") ? "Fortsätt Push A" : `Startar ${s}`); return draw(); }
@@ -3002,7 +3225,7 @@ document.querySelectorAll(".stage[data-start14]").forEach(stage => {
     if (t("[data-close]")) { open = more = false; taps = 0; return draw(); }
     taps--;
   });
-  STARTS.push(() => { open = more = false; kind = "Styrka"; taps = 0; draw(); });
+  STARTS.push(() => { open = more = false; kind = "Styrka"; lvl = "top"; taps = 0; draw(); });
   draw();
 });
 [["histmode", v => histFirst = v === "1", HISTS], ["progmode", v => progFirst = v === "1", PROGS14], ["startmode", v => startMode = +v, STARTS]].forEach(([k, set, list]) =>
