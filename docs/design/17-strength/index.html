@@ -56,23 +56,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* ===== Considered: sketches for #17. Exempt from the token check (strive#20), but drawn from tokens all the same. ===== */
 .stage.tall { position: relative; min-height: 660px; align-content: start; overflow: hidden; }
-.exh { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-8); }
-.exh h4 { margin: 0; font: var(--type-title-medium); }
-.exh small { display: block; font: var(--type-body-small); color: var(--color-on-surface-variant); }
-.ex { display: grid; gap: var(--space-8); }
-.badge { position: relative; width: var(--space-32); height: var(--space-32); border-radius: var(--shape-full); display: grid; place-items: center;
-  background: var(--color-surface-container-highest); color: var(--color-on-surface); font: var(--type-title-small); font-variant-numeric: tabular-nums; flex: none; }
-.badge::after { content: ""; position: absolute; inset: calc((var(--space-32) - var(--size-touch)) / 2); } /* 44 pt tap area */
-.badge.w { color: var(--color-tertiary); }
-.ok { width: var(--size-touch); height: var(--size-touch); border-radius: var(--shape-medium); display: grid; place-items: center;
-  background: var(--color-surface-container-highest); color: var(--color-on-surface-variant); font: var(--type-title-medium); flex: none; }
-.done .ok, .ok.on { background: var(--color-primary); color: var(--color-on-primary); }
-.rest { text-align: center; font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.arrow { color: var(--color-primary); font: var(--type-label-medium); margin-left: var(--space-4); }
-.prev { font: var(--type-body-small); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.rirrow { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: var(--space-8); }
-.rirrow > span { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-
 /* S1: every set is one row of joined tiles. */
 .s1 .srow { display: grid; grid-template-columns: var(--space-32) 1fr var(--space-48) var(--space-40) var(--size-touch); align-items: center; gap: var(--space-8);
   background: var(--color-surface); padding: var(--space-8) var(--space-12); border-radius: var(--shape-extra-small); }
@@ -85,25 +68,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .s1 .done .f { background: none; }
 .s1 .cur-extra { background: var(--color-surface); padding: var(--space-4) var(--space-12) var(--space-12); border-radius: var(--shape-extra-small); }
 .s1 .rest { background: var(--color-surface); border-radius: var(--shape-extra-small); padding: var(--space-4); }
-
-/* S2 and S3: logged and coming sets are compact lines; the set you are on gets the big fields. */
-.crow { display: grid; grid-template-columns: var(--space-32) 1fr auto; align-items: center; gap: var(--space-12); padding: var(--space-8) var(--space-16);
-  min-height: var(--size-touch); font: var(--type-body-large); font-variant-numeric: tabular-nums; }
-.crow .v.hint { color: var(--color-on-surface-variant); }
-.crow .tick { color: var(--color-primary); font: var(--type-title-medium); }
-.crow.cur { box-shadow: inset 0 0 0 var(--border-focus) var(--color-primary); border-radius: var(--shape-large); }
-.crest { padding: 0 var(--space-16) var(--space-4) calc(var(--space-16) + var(--space-32) + var(--space-12)); font: var(--type-label-medium); color: var(--color-on-surface-variant); }
 .focus { display: grid; gap: var(--space-12); }
 .focus .top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-8); }
 .focus .top b { font: var(--type-title-medium); }
 .s2 .card.focus { margin-block: var(--space-4); }
-.dock { position: absolute; left: 0; right: 0; bottom: 0; border-radius: var(--shape-extra-large) var(--shape-extra-large) 0 0;
-  padding: var(--space-16); padding-bottom: calc(var(--space-16) + env(safe-area-inset-bottom, 0px)); display: grid; gap: var(--space-12); }
-.s3 .list { margin-bottom: var(--space-4); }
-.s3 .crow { width: 100%; text-align: left; }
-.grabber-btn { justify-self: center; display: grid; place-items: center; width: var(--size-touch); height: var(--space-16); margin-top: calc(-1 * var(--space-8)); }
 .reopen { text-align: center; }
-
 /* Choice 1b: the dock variants. */
 .tablewrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; }
 table { border-collapse: collapse; width: 100%; min-width: 420px; font-size: 14px; }
@@ -112,147 +81,27 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .costs td:not(:first-child), .costs th:not(:first-child) { text-align: center; font-variant-numeric: tabular-nums; }
 .costs .best { font-weight: 700; }
 .costs .bad { color: var(--accent); font-weight: 700; }
-.dk .crow { width: 100%; text-align: left; grid-template-columns: var(--space-32) 1fr auto; }
-.dk .crow.cur { box-shadow: inset 0 0 0 var(--border-focus) var(--color-primary); border-radius: var(--shape-large); }
-.dk .rowwrap { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-8); padding-right: var(--space-12); }
-.dk .dock { touch-action: none; background: var(--material-thick); }
 .stage.tall[data-dock^="k"] { min-height: 780px; }
-.dk .num .step { display: none; }
-.dk .always .num .step { display: grid; }
-.dk .num.editing { border-color: var(--color-primary); }
-.kp { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-8); }
-.kp button { min-height: var(--size-touch); border-radius: var(--shape-medium); background: var(--color-surface-container-highest); color: var(--color-on-surface);
-  font: var(--type-title-large); font-variant-numeric: tabular-nums; }
-.kp .done-key { background: var(--color-primary); color: var(--color-on-primary); font: var(--type-label-large); }
-
-/* Choice 2: keypads. */
-.dk .numrow.three { grid-template-columns: 1.3fr 1fr 1fr; gap: var(--space-8); }
-.dk .numrow.three .num input { font: var(--type-title-large); font-variant-numeric: tabular-nums; }
-.dk .numrow.three .num .step { width: var(--space-32); height: var(--space-32); font: var(--type-title-medium); }
-.kp .small-key { font: var(--type-label-medium); }
-.kp .pm { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
-.kp .pm button { min-height: var(--size-touch); border-radius: var(--shape-medium); background: var(--color-surface-container-highest); color: var(--color-primary); font: var(--type-title-large); }
-.kp2, .kp3 { display: grid; gap: var(--space-8); }
 .bigstep { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--space-12); }
 .bigstep span { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
 .bigstep .btn { font: var(--type-title-large); }
-.kp.k2, .kp.k3 { grid-template-columns: repeat(3, 1fr); }
-.kp.k3 button { background: var(--material-thick); border-radius: var(--shape-full); }
-.nowrap { flex-wrap: nowrap; }
-.rirmore { display: grid; gap: var(--space-4); }
-.rirmore > span { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.rirmore .segc button { min-height: var(--size-touch); }
-.split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); align-items: start; }
-.split .rirrow { grid-template-columns: 1fr; gap: var(--space-4); }
-.split .segc { padding: var(--space-4) var(--space-4); gap: var(--space-4); }
-.split .segc button { padding: var(--space-8) 0; min-height: var(--size-touch); }
-.split > label { display: grid; gap: var(--space-4); min-width: 0; font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.split .num input { font: var(--type-title-large); font-variant-numeric: tabular-nums; }
-.kp3 [data-key="−"], .kp3 [data-key="+"] { min-width: calc(var(--size-touch) + var(--space-16)); min-height: var(--size-touch); font: var(--type-title-large); }
-.grow { flex: 1; }
-.float.timer[hidden] { display: none; }
-
 /* Choice 3: the plate calculator. The bar's drawing is SVG units, like a chart's. */
 .stage.tall[data-dock^="p"] { min-height: 780px; }
-.sleeve { display: block; width: 100%; height: auto; }
-.sleeve .shaft { fill: var(--color-outline-variant); }
-.sleeve .collar { fill: var(--color-outline); }
-.sleeve .plate { fill: var(--color-on-surface); }
-/* Drawing and text share the row equally and the text wraps, so no weight widens the dock. */
-.pl { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: center; gap: var(--space-12); }
-.pl-txt { display: grid; text-align: right; }
-.pl-txt b { font: var(--type-title-small); font-variant-numeric: tabular-nums; }
-.pl-txt > span { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.warn { color: var(--color-error); }
-.pline { display: flex; align-items: center; gap: var(--space-8); font-variant-numeric: tabular-nums; }
-.pline .sleeve { width: auto; max-width: 50%; height: var(--space-40); flex: none; }
-.kp.k4 { grid-template-columns: repeat(4, 1fr); }
 .dk .psheet { background: var(--material-thick); }
 .psheet .total { display: flex; justify-content: space-between; align-items: center; gap: var(--space-8); }
 .psheet .total b { font: var(--type-display-small); font-variant-numeric: tabular-nums; }
 .psheet .sheet-head > :last-child { justify-self: end; font: var(--type-label-large); }
-
-/* Choice 4: iOS pull-down menus, glass, anchored to the button that opened them. */
-.wtitle { display: grid; justify-items: center; }
-.wtitle small { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.wname { display: inline-flex; align-items: center; gap: var(--space-4); font: var(--type-title-medium); min-height: var(--size-touch); }
-.catch { position: absolute; inset: 0; }
-.menu { position: absolute; width: calc(6 * var(--size-touch)); max-width: calc(100% - 2 * var(--space-16)); border-radius: var(--shape-large);
-  background: var(--material-thick); overflow: hidden; display: grid; transform-origin: var(--origin, top right); animation: menu-in var(--motion-release); }
-@keyframes menu-in { from { transform: scale(var(--state-pressed-scale)); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .menu { animation: none; } }
-/* Swipe a set left to show Ta bort; swipe on past half the row to delete it, as iOS lists do. */
-.swipe { position: relative; overflow: hidden; touch-action: pan-y; }
-.swipe > .crow { position: relative; background: var(--color-surface); transition: transform var(--motion-release); }
-.swipe.open > .crow { transform: translateX(calc(-2 * var(--size-touch))); }
-.swipe .del { position: absolute; inset: 0 0 0 auto; width: calc(2 * var(--size-touch)); display: flex; align-items: center; justify-content: center;
-  background: var(--color-error); color: var(--color-on-error); font: var(--type-label-large); transition: width var(--motion-release); }
-.swipe.full .del { justify-content: flex-start; padding-inline: var(--space-16); }
-@media (prefers-reduced-motion: reduce) { .swipe > .crow, .swipe .del { transition: none; } }
-
 /* Choice 5: the frame around the sets. The list scrolls under a fixed title bar. */
 .stage[data-frame], .stage[data-summary], .stage[data-tpl], .stage[data-tpl4], .stage[data-exd], .stage[data-lib], .stage[data-exe], .stage[data-plan], .stage[data-prog13], .stage[data-hist14], .stage[data-prog14], .stage[data-start14], .stage[data-plan0] { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0; padding: 0; height: 780px; }
-.fbar { padding: var(--space-8) var(--space-16); }
-.fbar .wtitle { transition: opacity var(--motion-fade); }
 .stage[data-frame="f2"]:not(.scrolled) .fbar .wtitle { opacity: 0; pointer-events: none; }
-.wscroll { position: relative; flex: 1; overflow-y: auto; display: grid; align-content: start; grid-auto-rows: max-content; gap: var(--space-24);
-  padding: var(--space-8) var(--space-16) calc(4 * var(--size-touch)); }
 .ltitle { display: grid; gap: var(--space-4); }
 .ltitle .wname { font: var(--type-headline-large); justify-self: start; padding: 0; }
 .ltitle small { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.wprog { height: var(--space-4); margin-top: var(--space-4); border-radius: var(--shape-full); background: var(--color-surface-container-highest); overflow: hidden; }
-.wprog i { display: block; height: 100%; background: var(--color-on-surface); transition: width var(--motion-release); }
 .exstrip { display: flex; gap: var(--space-8); overflow-x: auto; padding: 0 var(--space-16) var(--space-8); scrollbar-width: none; }
 .exstrip .btn { flex: none; }
 .exstrip .btn[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); }
 .fline { display: grid; grid-template-columns: 1fr auto; align-items: center; padding-right: var(--space-12); }
 .fend { display: grid; gap: var(--space-8); }
-.minihome { padding: var(--space-16); display: grid; gap: var(--space-8); }
-.bottomstack { position: absolute; left: var(--space-20); right: var(--space-20); bottom: var(--space-16); display: grid; gap: var(--space-8); }
-.bottomstack .tabbar { position: static; }
-.minibar { display: flex; justify-content: space-between; align-items: center; gap: var(--space-8); min-height: var(--size-touch);
-  padding: var(--space-8) var(--space-20); border-radius: var(--shape-full); text-align: left; }
-.minibar small { display: block; font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.minibar .mrest { font: var(--type-title-small); font-variant-numeric: tabular-nums; }
-@media (prefers-reduced-motion: reduce) { .wprog i, .fbar .wtitle { transition: none; } }
-
-/* Choice 6: the exercise header (name opens the exercise sheet, notes in grey) and supersets. */
-.exname { position: relative; display: inline-flex; align-items: center; gap: var(--space-4); padding: 0; font: var(--type-title-medium); text-align: left; }
-.exname::after { content: ""; position: absolute; inset: calc(-1 * var(--space-12)) 0; } /* 44 pt tap area */
-.exname svg.icon { width: var(--space-16); height: var(--space-16); color: var(--color-on-surface-variant); }
-.exnotes { display: grid; gap: var(--space-4); font: var(--type-body-small); color: var(--color-on-surface-variant); }
-.exnotes p { margin: 0; display: flex; gap: var(--space-8); align-items: baseline; }
-.exnotes b { font: var(--type-label-medium); }
-.exnotes svg.icon { width: var(--space-12); height: var(--space-12); }
-.tag { display: inline-grid; place-items: center; min-width: var(--space-20); height: var(--space-20); margin-right: var(--space-8); border-radius: var(--shape-extra-small);
-  background: var(--color-surface-container-highest); font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.sgroup { display: grid; gap: var(--space-12); }
-.sgroup.bracket, .sgroup.edge { border-left: var(--border-focus) solid var(--color-outline-variant); padding-left: var(--space-12); }
-.sgroup.bracket { gap: var(--space-24); }
-.sglabel, .vround { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.vround { padding-inline: var(--space-16); }
-
-/* Choice 7: the workout summary, which is also the session detail (Q28–Q30). */
-.sdate { display: grid; gap: var(--space-4); }
-.sdate h3 { margin: 0; font: var(--type-headline-small); }
-.smeta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4) var(--space-16); font: var(--type-body-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.smeta span { display: inline-flex; align-items: center; gap: var(--space-4); }
-.smeta svg.icon { width: var(--space-16); height: var(--space-16); }
-.stats.three { grid-template-columns: repeat(3, 1fr); gap: var(--space-8); }
-.stats.three .stat { padding: var(--space-12); }
-.stats.three .stat .v { font: var(--type-headline-small); }
-.stats.four { grid-template-columns: repeat(4, 1fr); gap: var(--space-8); }
-.stats.four .stat { padding: var(--space-8); }
-.stats.four .stat .v { font: var(--type-title-large); }
-.pr { color: var(--color-tertiary); }
-.pr svg.icon { width: var(--space-16); height: var(--space-16); fill: currentColor; }
-.sumlist .row { text-align: left; }
-.sumlist .crow { padding-left: var(--space-32); }
-
-/* Choice 8: the template preview, and the editor it opens. */
-.tnote { margin: 0; font: var(--type-body-medium); }
-.sgroup.edge .list { margin: 0; }
-.tstart { position: absolute; left: var(--space-16); right: var(--space-16); bottom: var(--space-16); }
 .tsheet { background: var(--material-thick); top: calc(2 * var(--size-touch)); align-content: start; grid-template-rows: auto auto 1fr; padding-bottom: 0; }
 .tsheet .wscroll { padding-inline: 0; }
 .tsheet .sheet-head > :last-child { justify-self: end; }
@@ -260,121 +109,26 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .tset .num { min-height: var(--size-touch); }
 .tset .num input { font: var(--type-title-medium); }
 .tset.thead { padding-block: var(--space-8) 0; font: var(--type-label-medium); color: var(--color-on-surface-variant); text-align: center; }
-.ex > .btn.small { justify-self: start; }
-.switch { position: relative; flex: none; width: calc(var(--size-touch) + var(--space-8)); height: var(--space-32); border-radius: var(--shape-full);
-  background: var(--color-surface-container-highest); transition: background-color var(--motion-release); }
-.switch::after { content: ""; position: absolute; top: var(--border-focus); left: var(--border-focus); width: calc(var(--space-32) - 2 * var(--border-focus)); aspect-ratio: 1;
-  border-radius: var(--shape-full); background: var(--color-surface-container-lowest); box-shadow: var(--material-shadow); transition: transform var(--motion-release); }
-.switch[aria-checked="true"] { background: var(--color-primary); }
-.switch[aria-checked="true"]::after { transform: translateX(calc(var(--size-touch) + var(--space-8) - var(--space-32))); }
-@media (prefers-reduced-motion: reduce) { .switch, .switch::after { transition: none; } }
-
-/* Choice 8, round two: Strong's template screens rebuilt from Strive's parts. */
-.thead2 { display: flex; justify-content: space-between; align-items: center; gap: var(--space-8); }
-.thead2 h4 { margin: 0; font: var(--type-title-large); }
 .tgrid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
-.tcard { display: grid; gap: var(--space-8); align-content: start; text-align: left; padding: var(--space-12) var(--space-8) var(--space-12) var(--space-16);
-  border-radius: var(--shape-large); background: var(--color-surface); min-height: calc(4 * var(--size-touch)); }
 .tcard .th { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); font: var(--type-title-medium); }
 .tcard .icon-btn { margin-block: calc(-1 * var(--space-8)); }
 .tcard p { margin: 0; font: var(--type-body-small); color: var(--color-on-surface-variant); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .tcard small { display: flex; align-items: center; gap: var(--space-4); font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
 .tcard small svg.icon, .tsheet4 .smeta svg.icon { width: var(--space-12); height: var(--space-12); }
-.tsheet4 { left: var(--space-8); right: var(--space-8); bottom: var(--space-8); top: calc(2 * var(--size-touch)); border-radius: var(--shape-extra-large);
-  background: var(--material-thick); grid-template-rows: auto auto 1fr auto; align-content: stretch; }
-.tsheet4 .sheet-head h5 { text-align: center; }
-.tsheet4 .sheet-head > :last-child { justify-self: end; }
-.tsheet4 .wscroll { padding: 0 0 var(--space-8); gap: var(--space-12); }
-.pvrow { display: grid; grid-template-columns: 1fr var(--size-touch); align-items: center; gap: var(--space-12); }
-.pvrow b { display: block; font: var(--type-title-small); }
-.pvrow small { display: block; font: var(--type-body-small); color: var(--color-on-surface-variant); }
-.pvrow .icon-btn { color: var(--color-primary); }
-.tname { display: flex; align-items: center; gap: var(--space-8); }
-.tname h3 { margin: 0; font: var(--type-headline-small); }
-.ex4 { display: grid; gap: var(--space-4); }
-.ex4 .exh { margin-bottom: var(--space-4); }
-.ename { padding: 0; text-align: left; font: var(--type-title-medium); color: var(--color-primary); }
-.egrid { display: grid; grid-template-columns: var(--space-32) 1fr calc(1.5 * var(--size-touch)) calc(1.5 * var(--size-touch)); align-items: center; gap: var(--space-8); }
-.egrid.h { font: var(--type-label-medium); color: var(--color-on-surface-variant); text-align: center; }
-.egrid .prev { text-align: center; }
-.egrid .num input { font: var(--type-title-medium); }
-.restbar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--space-8); width: 100%; min-height: var(--size-touch);
-  font: var(--type-label-large); color: var(--color-primary); font-variant-numeric: tabular-nums; }
-.restbar::before, .restbar::after { content: ""; height: var(--border-focus); border-radius: var(--shape-full); background: var(--color-outline-variant); }
-
-/* Choice 8, round three: the templates inside Plan (Q41): the week, the programme, the templates, the library. */
-.wk { display: grid; gap: var(--space-8); }
-.wkhead { display: grid; grid-template-columns: auto 1fr auto; align-items: center; text-align: center; }
-.wkhead b { display: block; font: var(--type-title-medium); }
-.wkhead small { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.wkdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--space-4); }
-.wkday { display: grid; justify-items: center; gap: var(--space-4); padding: var(--space-8) 0; border-radius: var(--shape-medium); min-height: var(--size-touch);
-  font: var(--type-label-small); color: var(--color-on-surface-variant); }
-.wkday b { font: var(--type-title-medium); color: var(--color-on-surface); font-variant-numeric: tabular-nums; }
-.wkday[data-today] { box-shadow: inset 0 0 0 var(--border-focus) var(--color-outline-variant); }
-.wkday[aria-pressed="true"], .wkday[aria-pressed="true"] b { background: var(--color-primary); color: var(--color-on-primary); }
-.card.prog4, .card.tday { text-align: left; }
-.tcar { display: flex; gap: var(--space-12); overflow-x: auto; scroll-snap-type: x mandatory; margin-inline: calc(-1 * var(--space-16)); padding-inline: var(--space-16); scrollbar-width: none; }
-.tcard2 { flex: none; width: 72%; scroll-snap-align: center; display: grid; gap: var(--space-4); padding: var(--space-16) var(--space-8) var(--space-16) var(--space-16);
-  border-radius: var(--shape-extra-large); background: var(--color-surface); text-align: left; }
-.tcard2 .th { display: flex; justify-content: space-between; align-items: center; font: var(--type-headline-small); }
-.tcard2 .icon-btn, .card.tday .icon-btn { margin-block: calc(-1 * var(--space-8)); }
-.tcard2 .mus { font: var(--type-body-medium); color: var(--color-on-surface-variant); }
-.tcard2 .tstat { margin-top: var(--space-8); font: var(--type-title-small); }
-.tcard2 small { display: flex; align-items: center; gap: var(--space-4); font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.tcard2 small svg.icon { width: var(--space-12); height: var(--space-12); }
-.pv1 { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--color-background); transform-origin: 50% 40%; animation: zoom-in var(--motion-release); }
-@keyframes zoom-in { from { transform: scale(0.92); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .pv1 { animation: none; } }
-.pvrow.n { grid-template-columns: var(--space-32) 1fr var(--size-touch); padding: var(--space-8) var(--space-8) var(--space-8) var(--space-16); background: var(--color-surface); border-radius: var(--shape-large); }
-.pvrow .ord { font: var(--type-title-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.pv1 .sgroup.edge .pvrow.n + .pvrow.n { margin-top: calc(-1 * var(--space-8)); }
 .trow + .trow { border-top: var(--border-hairline) solid var(--color-outline-variant); }
 .trow > .row { width: 100%; text-align: left; }
 .tdetail { display: grid; gap: var(--space-8); padding: 0 var(--space-16) var(--space-16); }
 .tdetail small { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.tdetail .btn.filled, .card.tday .btn.filled { flex: 1; }
-.tex { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-4); font: var(--type-body-medium); }
-.tex li { display: flex; justify-content: space-between; gap: var(--space-8); }
-.tex li span:last-child { color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.card.tday .th { display: flex; justify-content: space-between; align-items: center; gap: var(--space-8); }
-.card.tday .inline { margin-top: var(--space-8); }
-.card.tday .inline .btn { margin-top: 0; }
 .tpills { display: flex; flex-wrap: wrap; gap: var(--space-8); }
 .tpills .btn[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); }
-
-/* Choice 9: the editor's keypad, with the range key, and "Samma för resten". */
-.stage.kpopen .wscroll { padding-bottom: calc(9 * var(--size-touch)); }
-.tkp { z-index: 1; }
-.samma { display: flex; justify-content: flex-end; }
-.samma .btn { display: inline-flex; align-items: center; gap: var(--space-4); }
-.samma svg.icon { width: var(--space-16); height: var(--space-16); }
-
 /* Choice 10: exercise detail (Q31–Q37). */
 .vid { display: grid; place-items: center; align-content: center; gap: var(--space-8); width: 100%; aspect-ratio: 16 / 9; border-radius: var(--shape-large);
   background: var(--color-scrim); color: var(--color-primary-fixed); font: var(--type-label-medium); }
 .vid svg.icon { width: var(--size-touch); height: var(--size-touch); fill: currentColor; }
-/* Choice 11: the exercise library (Q34–Q35). */
-.libtop { display: grid; gap: var(--space-8); padding: 0 var(--space-16) var(--space-8); }
-.chips { display: flex; gap: var(--space-8); overflow-x: auto; margin-inline: calc(-1 * var(--space-16)); padding-inline: var(--space-16); scrollbar-width: none; }
-.chips .btn { flex: none; }
-.chips .btn[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); }
-.lrow { display: grid; grid-template-columns: var(--size-touch) 1fr auto; align-items: center; gap: var(--space-12); text-align: left; width: 100%; }
-.lrow.pick { grid-template-columns: var(--size-touch) 1fr auto var(--space-24); }
-.thumb { width: var(--size-touch); height: var(--size-touch); border-radius: var(--shape-medium); background: var(--color-surface-container-highest); object-fit: cover; object-position: 30% 45%; }
-.lrow .end { display: grid; justify-items: end; gap: var(--space-4); font: var(--type-body-small); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.lrow .tag { margin: 0; }
-.lrow .chk { width: var(--space-24); height: var(--space-24); border-radius: var(--shape-full); box-shadow: inset 0 0 0 var(--border-focus) var(--color-outline-variant); display: grid; place-items: center; }
-.lrow .chk.on { background: var(--color-primary); box-shadow: none; color: var(--color-on-primary); }
-.lrow .chk svg.icon { width: var(--space-16); height: var(--space-16); }
-.lhead { position: sticky; top: calc(-1 * var(--space-8)); z-index: 1; padding: var(--space-8) var(--space-16) var(--space-4); background: var(--color-background); font: var(--type-title-small); color: var(--color-on-surface-variant); }
 .mtiles { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); }
 .mtile { display: grid; gap: var(--space-4); padding: var(--space-12) var(--space-16); border-radius: var(--shape-large); background: var(--color-surface); text-align: left; }
 .mtile b { font: var(--type-title-medium); }
 .mtile small { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.pickbar { position: absolute; left: var(--space-16); right: var(--space-16); bottom: var(--space-16); display: flex; gap: var(--space-8); padding: var(--space-8); border-radius: var(--shape-full); }
-.pickbar .btn { flex: 1; }
-.illo { display: block; width: 100%; height: auto; border-radius: var(--shape-large); }
 .mmap { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: var(--space-16); }
 .mmap svg { width: calc(4 * var(--size-touch)); height: auto; }
 .mmap .body { fill: var(--color-surface-container-highest); }
@@ -385,92 +139,13 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .mlegend i { width: var(--space-12); height: var(--space-12); border-radius: var(--shape-full); }
 .mlegend .k1 { background: var(--color-tertiary); }
 .mlegend .k2 { background: var(--color-tertiary-container); }
-.group > .caption { margin: 0; padding-inline: var(--space-16); }
-.steps { margin: 0; padding-left: var(--space-20); display: grid; gap: var(--space-8); font: var(--type-body-medium); }
-.rm { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
-.rm span { display: grid; justify-items: center; padding: var(--space-8) 0; border-radius: var(--shape-medium); background: var(--color-surface); font: var(--type-title-small); font-variant-numeric: tabular-nums; }
-.rm small { font: var(--type-label-small); color: var(--color-on-surface-variant); }
-.hcard { display: grid; gap: var(--space-4); padding: var(--space-12) var(--space-16); border-radius: var(--shape-large); background: var(--color-surface); }
-.hcard .th { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-8); font: var(--type-title-small); }
-.hcard .th small { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.hcard .crow { padding: var(--space-4) 0; min-height: 0; }
-.exseg { padding: 0 var(--space-16) var(--space-8); }
-.xtiles { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
-.xtile { display: grid; gap: var(--space-4); align-content: start; padding: var(--space-12) var(--space-16); border-radius: var(--shape-large); background: var(--color-surface); text-align: left; min-height: calc(3 * var(--size-touch)); }
 .xtile.wide { grid-column: 1 / -1; padding: 0; overflow: hidden; }
-.xtile .k { display: flex; justify-content: space-between; align-items: center; font: var(--type-title-small); color: var(--color-on-surface-variant); }
-.xtile .k svg.icon { width: var(--space-16); height: var(--space-16); }
-.xtile .v { font: var(--type-headline-small); font-variant-numeric: tabular-nums; }
-.xtile small { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.xtile svg.spark { width: 100%; height: var(--space-32); }
 .mmap.one { grid-template-columns: 1fr; }
 .xtile .mmap svg { width: 100%; }
-.spark polyline { fill: none; stroke: var(--color-on-surface-variant); stroke-width: 2; }
-/* The knob stays white, as iOS draws it: the lightest token in each scheme. */
-@media (prefers-color-scheme: dark) { .stage:not(.scheme-light) .switch::after { background: var(--color-on-surface); } }
-.scheme-dark .switch::after { background: var(--color-on-surface); }
-.menu .mrow { grid-template-columns: var(--size-icon) 1fr auto; gap: var(--space-8); padding: var(--space-12) var(--space-16) var(--space-12) var(--space-12); }
-.menu .mrow + .mrow { border-top: var(--border-hairline) solid var(--color-outline-variant); }
-.menu .mrow.danger { color: var(--color-error); }
-.menu .back b { font: var(--type-label-large); }
-.msec + .msec, .palette + .msec { border-top: var(--border-focus) solid var(--color-outline-variant); }
-.mtitle { font: var(--type-label-medium); color: var(--color-on-surface-variant); padding: var(--space-8) var(--space-16) 0; }
-.mtail { font: var(--type-title-small); color: var(--color-on-surface-variant); }
-.palette { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; }
-.palette button { display: grid; justify-items: center; gap: var(--space-4); padding: var(--space-12) var(--space-4); font: var(--type-label-small); }
-.palette button + button { border-left: var(--border-hairline) solid var(--color-outline-variant); }
-
-/* Choice 12: the sheet that creates or edits an exercise (Q35). */
-/* A form at full height is opaque, as iOS draws a large sheet; glass stays on its menus. */
-.exsheet { background: var(--color-background); }
-.exsheet .list { background: var(--color-surface); }
-.exsheet .wscroll { gap: var(--space-20); padding-bottom: calc(4 * var(--size-touch)); }
-.field.area { align-items: start; }
-.field textarea { flex: 1; min-width: 0; border: 0; background: none; color: var(--color-on-surface); font: var(--type-body-large); padding: var(--space-8) 0;
-  outline: none; resize: none; min-height: calc(3 * var(--size-touch)); }
-.row .val svg.icon, .btn.text.back svg.icon { width: var(--space-16); height: var(--space-16); vertical-align: middle; }
-.btn.text.back { display: inline-flex; align-items: center; gap: var(--space-4); justify-self: start; }
-.row.locked { color: var(--color-on-surface-variant); }
-.row .act { color: var(--color-primary); }
-.group.flat > h4, .group.flat > .caption { padding-inline: 0; }
 .cblock { display: grid; gap: var(--space-8); }
-.clabel { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.cwrap { display: flex; flex-wrap: wrap; gap: var(--space-8); }
-.cwrap .btn[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); }
-.menu.scroll { max-height: calc(100% - 2 * var(--space-16)); overflow-y: auto; }
-/* Choice 12b: the library's equipment and mark filters (Q34). */
-.srch { display: grid; grid-template-columns: 1fr auto; gap: var(--space-8); align-items: center; }
-.icon-btn.on { background: var(--color-primary); color: var(--color-on-primary); }
 .fchip { display: inline-flex; align-items: center; gap: var(--space-4); }
 .fchip svg.icon { width: var(--space-16); height: var(--space-16); }
-.fsheet { background: var(--material-thick); }
-.fsheet .sheet-head > :last-child { justify-self: end; }
-/* Above the sticky muscle headings. */
-.stage[data-lib] :is(.scrim, .sheet, .catch, .menu) { z-index: 2; }
-
-/* Choice 13: the week and the programme on Plan (Q38–Q41). */
-.stage[data-plan] .wkdays { touch-action: pan-y; }
-.wkday.miss span { text-decoration: line-through; }
-.wkday.drop { opacity: var(--state-disabled-opacity); }
-.wkhead [disabled] { opacity: var(--state-disabled-opacity); }
-.wbar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--space-4); }
-.wbar i { display: grid; place-items: center; height: var(--space-20); border-radius: var(--shape-extra-small); background: var(--color-surface-container-highest);
-  font: var(--type-label-small); font-style: normal; color: var(--color-on-surface-variant); }
-.wbar i.past { background: var(--color-outline-variant); color: var(--color-on-surface); }
-.wbar i.now { background: var(--color-on-surface); color: var(--color-surface); }
-.wbar i.shown { box-shadow: inset 0 0 0 var(--border-focus) var(--color-on-surface); }
-.pname { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-8); padding: 0; text-align: left; color: var(--color-on-surface); }
-.pname > span { display: grid; }
-.pname svg.icon { width: var(--space-16); height: var(--space-16); color: var(--color-on-surface-variant); }
-.card.prog13, .card.wkcard { gap: var(--space-12); }
-.wkcard .pname { font: var(--type-title-small); color: var(--color-on-surface-variant); }
-.dlrec { display: flex; justify-content: space-between; align-items: center; gap: var(--space-8); }
-.dlrec span { display: grid; }
-.dlrec b { font: var(--type-title-small); color: var(--color-tertiary); }
-.dlrec small { font: var(--type-body-small); color: var(--color-on-surface-variant); }
-.dlrec .btn { margin-top: 0; }
 .wchip.now:not([aria-pressed="true"]) { box-shadow: inset 0 0 0 var(--border-focus) var(--color-primary); }
-
 /* Choice 13b: the programme screen (Q42). */
 .pgrid { display: grid; grid-template-columns: var(--size-touch) repeat(7, 1fr); gap: var(--space-4); }
 .pgrid > span { display: grid; place-items: center; font: var(--type-label-small); color: var(--color-on-surface-variant); }
@@ -483,45 +158,13 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .pwk { font: var(--type-label-medium); }
 .pwk.now { background: var(--color-on-surface); color: var(--color-surface); }
 .pgrid .std { background: var(--color-surface-container-highest); }
-.row .val small { display: block; text-align: right; }
-.notes .row span:first-child { white-space: normal; }
 /* Choice 13b, round two: a smaller grid, and weeks that open. */
 .pgrid.compact .pcell, .pgrid.compact .pwk { min-height: var(--space-32); white-space: nowrap; font: var(--type-label-small); }
 .pgrid.compact .pwk { font: var(--type-label-medium); }
-.wkrow { grid-template-columns: var(--size-touch) 1fr auto; }
-.wkrow .wl { display: grid; font: var(--type-title-small); }
-.wkrow .wl small { font: var(--type-label-small); }
-.mini { display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--space-4); }
-.mini i { display: grid; place-items: center; height: var(--space-24); border-radius: var(--shape-extra-small); background: var(--color-surface-container-highest);
-  font: var(--type-label-small); font-style: normal; color: var(--color-on-surface); overflow: hidden; }
-.mini i.rest { background: none; color: var(--color-on-surface-variant); }
-.mini i.off { box-shadow: inset 0 0 0 var(--border-focus) var(--color-tertiary); }
-.wkrow.now .wl { color: var(--color-on-surface); }
-.wkopen { display: grid; gap: var(--space-8); padding: 0 var(--space-16) var(--space-16); }
-.wkopen .list { background: var(--color-surface-container-highest); }
-
-/* Choice 14: History, Progress and the Start sheet (Q44–Q47). */
-.hweek { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-8); padding: 0 var(--space-16); font: var(--type-title-small); }
-.hweek small { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.hrow .end { display: grid; justify-items: end; gap: var(--space-4); font: var(--type-body-small); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.prs { display: inline-flex; align-items: center; gap: var(--space-4); color: var(--color-tertiary); font: var(--type-label-medium); }
-.prs svg.icon { width: var(--space-12); height: var(--space-12); fill: currentColor; }
 .hc { width: 100%; text-align: left; }
 .hc .bl { display: flex; justify-content: space-between; gap: var(--space-8); font: var(--type-body-medium); font-variant-numeric: tabular-nums; }
 .hc .bl span:last-child { color: var(--color-on-surface-variant); }
 .hc .meta { font: var(--type-body-small); color: var(--color-on-surface-variant); display: flex; gap: var(--space-8); align-items: center; }
-.drow { grid-template-columns: var(--size-touch) 1fr auto; }
-.dnum { display: grid; justify-items: center; font: var(--type-label-small); color: var(--color-on-surface-variant); }
-.dnum b { font: var(--type-title-medium); color: var(--color-on-surface); }
-.kind { display: inline-flex; align-items: center; gap: var(--space-4); }
-.kind svg.icon { width: var(--space-16); height: var(--space-16); color: var(--color-on-surface-variant); }
-.chart .bar.dl { fill: var(--color-outline-variant); }
-.mbars { display: grid; gap: var(--space-8); }
-.mbar { display: grid; grid-template-columns: calc(2.5 * var(--size-touch)) 1fr calc(1.5 * var(--size-touch)); align-items: center; gap: var(--space-8); font: var(--type-body-medium); }
-.mbar .track { height: var(--space-8); border-radius: var(--shape-full); background: var(--color-surface-container-highest); overflow: hidden; }
-.mbar .track i { display: block; height: 100%; border-radius: var(--shape-full); background: var(--color-on-surface-variant); }
-.mbar small { text-align: right; font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.xtile .up { color: var(--color-on-surface); font: var(--type-label-medium); }
 .startbg { padding: var(--space-8) var(--space-16); display: grid; gap: var(--space-16); }
 .ssheet { background: var(--material-thick); }
 .ssheet .sheet-head > :last-child { justify-self: end; }
@@ -531,63 +174,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .ktile { display: grid; justify-items: start; gap: var(--space-4); padding: var(--space-12) var(--space-16); border-radius: var(--shape-large); background: var(--color-surface); font: var(--type-title-medium); text-align: left; }
 .ktile svg.icon { width: var(--size-icon); height: var(--size-icon); }
 .ktile[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); }
-.row.dis { color: var(--color-on-surface-variant); }
-
-/* Choice 14b, round two: richer bars, a growing total, and a comparison. One series per chart, in neutral ink; teal marks the tapped bar. */
-.chart .bar2 { fill: var(--color-outline); }
-.chart .bar2.dl { fill: var(--color-outline-variant); }
-.chart .bar2.now { fill: var(--color-surface-container-highest); stroke: var(--color-outline); stroke-width: 1; stroke-dasharray: 3 3; }
-.chart .bar2.prev { fill: var(--color-surface-container-highest); }
-.chart .bar2.on { fill: var(--color-primary); stroke: none; }
-.chart .avg { stroke: var(--color-on-surface); stroke-width: 1; stroke-dasharray: 4 4; }
-.chart .area { fill: var(--color-surface-container-highest); }
-.chart .tick.mid { text-anchor: middle; }
-.chart .legend { display: flex; gap: var(--space-16); font: var(--type-label-medium); color: var(--color-on-surface-variant); }
-.chart .legend i { display: inline-block; width: var(--space-12); height: var(--space-12); border-radius: var(--shape-extra-small); margin-right: var(--space-4); vertical-align: middle; }
-.chart .legend .k1 { background: var(--color-outline); }
-.chart .legend .k2 { background: var(--color-surface-container-highest); }
-.stat .delta { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-.hero { display: grid; gap: var(--space-4); }
-.hero .v { font: var(--type-display-small); font-variant-numeric: tabular-nums; }
-.hero small { font: var(--type-body-medium); color: var(--color-on-surface-variant); }
-.mbar .track { position: relative; }
-.mbar .band { position: absolute; top: 0; bottom: 0; background: var(--color-outline-variant); }
-.mbar .track i { position: relative; }
-.xtile svg.spark { height: var(--space-24); }
-
-/* Choice 14c, round two: + lifts four round buttons on a spring, one after another. */
-.stage[data-start14] .tabbar { z-index: 2; }
-.stage[data-start14] .tab .dot svg { transition: transform var(--motion-release); }
-.stage[data-start14].bubbling .tab .dot svg { transform: rotate(45deg); }
-/* A tap outside closes; the screen stays in view. Everything + lifts sits in one nearly clear panel with a soft shadow, sized to what it holds (Carl, 2026-10-25). */
-.bscrim { position: absolute; inset: 0; z-index: 1; }
-.bpanel { position: absolute; z-index: 1; border-radius: var(--shape-extra-large); box-shadow: var(--material-shadow); transform-origin: 50% 100%;
-  animation: bpanel-in var(--motion-release); transition: left var(--motion-release), top var(--motion-release), width var(--motion-release), height var(--motion-release); }
-/* The ink colour, not black, so the panel shows in dark mode too; a hairline edge outlines it. */
-.bpanel::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--color-on-surface); opacity: var(--state-veil-opacity); }
-.bpanel { border: var(--border-hairline) solid var(--material-edge); }
-@keyframes bpanel-in { from { transform: scale(0.6); opacity: 0; } }
-@keyframes bscrim-in { from { opacity: 0; } }
-.bub { position: absolute; z-index: 2; width: calc(var(--size-touch) + var(--space-12)); height: calc(var(--size-touch) + var(--space-12));
-  margin: calc(-0.5 * (var(--size-touch) + var(--space-12))) 0 0 calc(-0.5 * (var(--size-touch) + var(--space-12)));
-  border-radius: var(--shape-full); display: grid; place-items: center; color: var(--color-on-surface);
-  animation: bub-in var(--motion-release) both; animation-delay: calc(var(--i) * var(--motion-stagger)); }
-.bub svg.icon { width: var(--size-icon); height: var(--size-icon); }
-.bub.main { background: var(--color-primary); color: var(--color-on-primary); border-color: transparent; }
-.bub > span { position: absolute; top: calc(100% + var(--space-4)); left: 50%; transform: translateX(-50%); white-space: nowrap; text-align: center;
-  font: var(--type-label-medium); color: var(--color-on-surface); }
-.bub > span small { display: block; font: var(--type-label-small); color: var(--color-on-surface-variant); }
 .stage[data-start14="n5"] .bub > span { top: 50%; left: auto; right: calc(100% + var(--space-12)); transform: translateY(-50%); text-align: right; }
-@keyframes bub-in { from { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .bub, .bscrim, .bpanel { animation: none; transition: none; } .stage[data-start14] .tab .dot svg { transition: none; } }
-/* Chosen 14b: a line to compare the total with, tapped for another; the average joins G6's legend. */
-.funline { display: flex; align-items: center; gap: var(--space-8); padding: 0; text-align: left; font: var(--type-body-medium); color: var(--color-on-surface); }
-.funline svg.icon { flex: none; width: var(--space-16); height: var(--space-16); color: var(--color-on-surface-variant); }
-.chart .legend .k3 { height: 0; border-top: var(--border-focus) dashed var(--color-on-surface); border-radius: 0; }
-/* Chosen 14c: Från mall opens the templates as a grid of bubbles that scrolls. */
-.bgrid { position: absolute; z-index: 2; left: var(--space-16); right: var(--space-16); bottom: calc(var(--space-24) + 2 * var(--size-touch)); max-height: 62%; overflow-y: auto;
-  display: grid; grid-template-columns: repeat(3, 1fr); row-gap: calc(var(--space-40) + var(--space-8)); justify-items: center; padding: var(--space-8) 0 var(--space-40); scrollbar-width: none; }
-.bgrid .bub { position: relative; margin: 0; }
 </style>
 
 <div class="wrap">
@@ -605,7 +192,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 
   <section aria-labelledby="q-set">
     <h2 id="q-set">Choice 1: the set row in Active workout</h2>
-    <p>Logging a set is what the app is for, so this is drawn first. Each sketch is Bänkpress with a warm-up set and one working set logged, set 2 up next, and set 3 to come. The app suggests 82,5 kg (↑) because last time reached the top of the range with RIR to spare. <strong>Tap ✓ to log set 2</strong> and the rest timer starts; tap an RIR to add it. The counter shows the taps the set took. The fields open the keypad, which is the next choice, so here they only show their hints.</p>
+    <p>Logging a set is what the app is for, so this is drawn first. Each sketch is Bench Press BB with a warm-up set and one working set logged, set 2 up next, and set 3 to come. The app suggests 82,5 kg (↑) because last time reached the top of the range with RIR to spare. <strong>Tap ✓ to log set 2</strong> and the rest timer starts; tap an RIR to add it. The counter shows the taps the set took. The fields open the keypad, which is the next choice, so here they only show their hints.</p>
     <div class="options">
       <div class="option">
         <h3>S1 · A row per set</h3>
@@ -748,7 +335,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 
   <section aria-labelledby="q-menu">
     <h2 id="q-menu">Choice 4: the menus</h2>
-    <p>Three iOS pull-down menus: the exercise's ⋯ (Q15), the workout's ⋯ by its name (Q19) and the set badge (Q21). Their content is decided; the open question is the form of the exercise menu, which holds nine actions. The workout menu (three actions) and the badge menu (four types) are the same in all three. <strong>Tap ⋯ by Bänkpress, the ⋯ by Push A, or a set's badge.</strong> Changing a set's type and the rest for all sets take effect; the rest only name the choice under the sketch. The title bar is a placeholder; it is drawn in a later choice.</p>
+    <p>Three iOS pull-down menus: the exercise's ⋯ (Q15), the workout's ⋯ by its name (Q19) and the set badge (Q21). Their content is decided; the open question is the form of the exercise menu, which holds nine actions. The workout menu (three actions) and the badge menu (four types) are the same in all three. <strong>Tap ⋯ by Bench Press BB, the ⋯ by Push A, or a set's badge.</strong> Changing a set's type and the rest for all sets take effect; the rest only name the choice under the sketch. The title bar is a placeholder; it is drawn in a later choice.</p>
     <div class="tablewrap"><table class="costs">
       <thead><tr><th>Taps</th><th>M1</th><th>M2</th><th>M3</th></tr></thead>
       <tbody>
@@ -785,7 +372,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
     <div class="options">
       <div class="option">
         <h3>Chosen · M2 with two tiles</h3>
-        <p>Open ⋯ by Bänkpress, tap Lägg till set and make the new set a warm-up in its badge, or swipe a set left to delete it.</p>
+        <p>Open ⋯ by Bench Press BB, tap Lägg till set and make the new set a warm-up in its badge, or swipe a set left to delete it.</p>
         <div class="stage tall bleed" data-menus="m2c"></div>
         <div class="counter">Last pick took <strong>–</strong> taps<span class="picked"></span></div>
       </div>
@@ -830,7 +417,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 
   <section aria-labelledby="q-group">
     <h2 id="q-group">Choice 6: the exercise header and supersets</h2>
-    <p>The second half of the active workout's frame (Q8, Q11, Q15, Q18), in F1's frame. <strong>The header is the same in all three:</strong> the name opens the exercise sheet (instructions and history, drawn in queue item 6), ⋯ is choice 4's menu, and under the target sit the sticky note with a pin, the plan's cue and last time's note, in grey. Today's note is the field under them, opened from ⋯ › Anteckning; Bänkpress shows it open. The open question is how a superset is drawn: Lutande hantelpress and Sidolyft, three rounds, with the rest after each round. <strong>Log the superset's sets with ✓</strong>: a round's rest starts once both its sets are logged, in either order.</p>
+    <p>The second half of the active workout's frame (Q8, Q11, Q15, Q18), in F1's frame. <strong>The header is the same in all three:</strong> the name opens the exercise sheet (instructions and history, drawn in queue item 6), ⋯ is choice 4's menu, and under the target sit the sticky note with a pin, the plan's cue and last time's note, in grey. Today's note is the field under them, opened from ⋯ › Anteckning; Bench Press BB shows it open. The open question is how a superset is drawn: Incline Press DB and Lateral Raise DB, three rounds, with the rest after each round. <strong>Log the superset's sets with ✓</strong>: a round's rest starts once both its sets are logged, in either order.</p>
     <div class="tablewrap"><table class="costs">
       <thead><tr><th></th><th>G1</th><th>G2</th><th>G3</th></tr></thead>
       <tbody>
@@ -874,7 +461,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 
   <section aria-labelledby="q-summary">
     <h2 id="q-summary">Choice 7: the summary after a workout</h2>
-    <p>Summary and session detail are one screen (Q29): after a workout it ends in Klar, opened from history it has Redigera instead. Its content is decided (Q28–Q30): stat tiles for time, volume, sets and records; the records listed; per exercise the best set against last time and every set as logged, records marked with a star; session RPE 1–10 and the session note; editable start and end times; week and block. <strong>The same in all three:</strong> this workout added Dips and changed a rest, so Klar asks "Uppdatera mallen Push A?" in an alert that lists the changes. The open question is the order. <strong>Tap an RPE, then Klar.</strong> Switch to "Från historiken" to see the detail.</p>
+    <p>Summary and session detail are one screen (Q29): after a workout it ends in Klar, opened from history it has Redigera instead. Its content is decided (Q28–Q30): stat tiles for time, volume, sets and records; the records listed; per exercise the best set against last time and every set as logged, records marked with a star; session RPE 1–10 and the session note; editable start and end times; week and block. <strong>The same in all three:</strong> this workout added Tricep Dips and changed a rest, so Klar asks "Uppdatera mallen Push A?" in an alert that lists the changes. The open question is the order. <strong>Tap an RPE, then Klar.</strong> Switch to "Från historiken" to see the detail.</p>
     <div class="seg" role="group" aria-label="Opened from" id="sumview">
       <button type="button" data-hist="0" aria-pressed="true">Efter passet</button>
       <button type="button" data-hist="1" aria-pressed="false">Från historiken</button>
@@ -954,7 +541,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
     </div>
     <p><strong>Recommendation: T3.</strong> Session detail already turns into its editor with Redigera (Q30), so the template does the same and the app has one way to edit. You change the screen you are looking at, not a copy of it, and there is one screen fewer to keep in step. T1 keeps Plan in sight, which matters little once you have picked a template.</p>
     <h3>Round two, after Strong</h3>
-    <p>Carl liked none of T1–T3 and showed Strong's template screens instead: he likes their look and content, not to be copied (2026-10-24). T4 takes from Strong the template <strong>cards</strong> with the exercises and when they were last done, a ⋯ on each card, a <strong>preview</strong> that lists "3 × Bänkpress" with the muscle and an info button, and an <strong>editor</strong> with a Förra column, a rest line between sets and "Lägg till set (2:00)". It keeps Strive's: tokens, teal only on what you can tap, glass on overlays, the superset's edge line and letters, reps ranges with RIR, and the progression switch. <strong>Tap a card, its ⋯, Redigera, or a rest line.</strong></p>
+    <p>Carl liked none of T1–T3 and showed Strong's template screens instead: he likes their look and content, not to be copied (2026-10-24). T4 takes from Strong the template <strong>cards</strong> with the exercises and when they were last done, a ⋯ on each card, a <strong>preview</strong> that lists "3 × Bench Press BB" with the muscle and an info button, and an <strong>editor</strong> with a Förra column, a rest line between sets and "Lägg till set (2:00)". It keeps Strive's: tokens, teal only on what you can tap, glass on overlays, the superset's edge line and letters, reps ranges with RIR, and the progression switch. <strong>Tap a card, its ⋯, Redigera, or a rest line.</strong></p>
     <div class="options">
       <div class="option">
         <h3>T4 · Cards, a floating preview, a full editor</h3>
@@ -1007,7 +594,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 
   <section aria-labelledby="q-kp">
     <h2 id="q-kp">Choice 9: the template editor's keypad</h2>
-    <p>The editor's fields open K3's keypad (Q26), with one change the same in all three: <strong>the decimal comma becomes the range key "–"</strong>, since reps and RIR are whole numbers. Type 8, –, 1, 0 for "8–10"; − and + move both ends; a range typed backwards is turned round. Nästa goes reps → RIR → the next set. "Samma för resten" copies a set's reps and RIR to the sets below it; the open question is where it lives. <strong>Tap set 1's Reps in Bänkpress, type 8–10, then copy it down.</strong></p>
+    <p>The editor's fields open K3's keypad (Q26), with one change the same in all three: <strong>the decimal comma becomes the range key "–"</strong>, since reps and RIR are whole numbers. Type 8, –, 1, 0 for "8–10"; − and + move both ends; a range typed backwards is turned round. Nästa goes reps → RIR → the next set. "Samma för resten" copies a set's reps and RIR to the sets below it; the open question is where it lives. <strong>Tap set 1's Reps in Bench Press BB, type 8–10, then copy it down.</strong></p>
     <div class="tablewrap"><table class="costs">
       <thead><tr><th></th><th>S1</th><th>S2</th><th>S3</th></tr></thead>
       <tbody>
@@ -1042,7 +629,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 
   <section aria-labelledby="q-exd">
     <h2 id="q-exd">Choice 10: exercise detail</h2>
-    <p>Queue item 6 (Q31–Q37), for Bänkpress. The content is decided: a looping video with <strong>a muscle map Strive draws</strong> under it (primary muscle strong, secondary light); numbered instructions, muscles, equipment, Carl's library mark, the sticky note and the exercise's settings; a card per workout with its sets, estimated 1RM and record stars; estimated 1RM per workout in D1 style over 3 mån · 1 år · Allt, where a tap shows the value and date and a second tap opens the workout; and the records, the best weight for 1–12 reps, and the records history. It opens as a sheet from the active workout's exercise name and as a screen from the library. The open question is how the page is built. <strong>Tap the tabs, the chart's points, and the tiles.</strong></p>
+    <p>Queue item 6 (Q31–Q37), for Bench Press BB. The content is decided: a looping video with <strong>a muscle map Strive draws</strong> under it (primary muscle strong, secondary light); numbered instructions, muscles, equipment, Carl's library mark, the sticky note and the exercise's settings; a card per workout with its sets, estimated 1RM and record stars; estimated 1RM per workout in D1 style over 3 mån · 1 år · Allt, where a tap shows the value and date and a second tap opens the workout; and the records, the best weight for 1–12 reps, and the records history. It opens as a sheet from the active workout's exercise name and as a screen from the library. The open question is how the page is built. <strong>Tap the tabs, the chart's points, and the tiles.</strong></p>
     <div class="tablewrap"><table class="costs">
       <thead><tr><th></th><th>X1</th><th>X2</th><th>X3</th></tr></thead>
       <tbody>
@@ -1077,7 +664,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 
   <section aria-labelledby="q-lib">
     <h2 id="q-lib">Choice 11: the exercise library</h2>
-    <p>Queue item 7 (Q34–Q35). Decided and the same in all three: search; Carl's movement patterns as a row of filter chips; a row shows the image (a crop of the illustration), the name, pattern and equipment, the last performance and the "I mina program" mark as a small badge (unmarked exercises have none, Nej is hidden); ⋯ sorts A–Ö, most used or last used. The switch above the sketches turns the library into the picker that "Lägg till övningar" opens: checkmarks, "Superset (n)" and "Lägg till (n)". The open question is how the muscle groups are laid out. Only Bänkpress has its illustration so far; the other images are placeholders. <strong>Search, tap a chip, open a group, or switch to the picker.</strong></p>
+    <p>Queue item 7 (Q34–Q35). Decided and the same in all three: search; Carl's movement patterns as a row of filter chips; a row shows the image (a crop of the illustration), the name, pattern and equipment, the last performance and the "I mina program" mark as a small badge (unmarked exercises have none, Nej is hidden); ⋯ sorts A–Ö, most used or last used. The switch above the sketches turns the library into the picker that "Lägg till övningar" opens: checkmarks, "Superset (n)" and "Lägg till (n)". The open question is how the muscle groups are laid out. Only Bench Press BB has its illustration so far; the other images are placeholders. <strong>Search, tap a chip, open a group, or switch to the picker.</strong></p>
     <div class="seg" role="group" aria-label="Opened from">
       <button type="button" data-libmode="0" aria-pressed="true">Från Plan</button>
       <button type="button" data-libmode="1" aria-pressed="false">Lägg till övningar</button>
@@ -1085,7 +672,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
     <div class="tablewrap"><table class="costs">
       <thead><tr><th></th><th>L1</th><th>L2</th><th>L3</th></tr></thead>
       <tbody>
-        <tr><td>Open Hammercurl, no search</td><td>scroll + 1 tap</td><td>2 taps</td><td>2 taps</td></tr>
+        <tr><td>Open Hammer Curl DB, no search</td><td>scroll + 1 tap</td><td>2 taps</td><td>2 taps</td></tr>
         <tr><td>Browse across muscles</td><td class="best">scroll</td><td class="bad">back and forth</td><td>open several</td></tr>
         <tr><td>Muscle groups in the first screen</td><td>2</td><td class="best">all 12</td><td class="best">all 12</td></tr>
       </tbody>
@@ -1116,16 +703,16 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 
   <section aria-labelledby="q-exe">
     <h2 id="q-exe">Choice 12: create and edit an exercise</h2>
-    <p>Queue item 7b (Q35). Decided, and the same in all three: a full-height sheet with Avbryt, the title and Spara. The fields are the name, primary and secondary muscles, pattern, equipment, type, per side, step, bar, unit, the instructions, "I mina program" with its alternative, and the sticky note. Equipment fills in the step (Q7) and, for a barbell, the bar, so a new exercise needs only a name and three choices. Spara waits for a name and a primary muscle. Editing a used exercise locks its type and says why, and offers Flytta data (behind an alert) and Arkivera; Ta bort exists only for an exercise never used. The switch picks where the sheet was opened from: + or Ny in the library, or ⋯ › Redigera on exercise detail. The open question is how a choice is made. <strong>Create Utfallssteg (Framsida lår, Knädominant, Hantlar), then switch to Redigera and try the type, Byt and Flytta data.</strong></p>
+    <p>Queue item 7b (Q35). Decided, and the same in all three: a full-height sheet with Avbryt, the title and Spara. The fields are the name, primary and secondary muscles, pattern, equipment, type, per side, step, bar, unit, the instructions, "I mina program" with its alternative, and the sticky note. Equipment fills in the step (Q7) and, for a barbell, the bar, so a new exercise needs only a name and three choices. Spara waits for a name and a primary muscle. Editing a used exercise locks its type and says why, and offers Flytta data (behind an alert) and Arkivera; Ta bort exists only for an exercise never used. The switch picks where the sheet was opened from: + or Ny in the library, or ⋯ › Redigera on exercise detail. The open question is how a choice is made. <strong>Create Reverse Lunge DB (Framsida lår, Knädominant, Hantlar), then switch to Redigera and try the type, Byt and Flytta data.</strong></p>
     <div class="seg" role="group" aria-label="Opened for">
       <button type="button" data-exemode="0" aria-pressed="true">Ny övning</button>
-      <button type="button" data-exemode="1" aria-pressed="false">Redigera Bänkpress</button>
+      <button type="button" data-exemode="1" aria-pressed="false">Redigera Bench Press BB</button>
     </div>
     <div class="tablewrap"><table class="costs">
       <thead><tr><th></th><th>E1</th><th>E2</th><th>E3</th></tr></thead>
       <tbody>
-        <tr><td>Create Utfallssteg: three choices and Spara</td><td>7 taps</td><td class="best">4 taps</td><td>7 taps</td></tr>
-        <tr><td>Change Bänkpress's equipment</td><td>2 taps</td><td class="best">1 tap, after a scroll</td><td>2 taps</td></tr>
+        <tr><td>Create Reverse Lunge DB: three choices and Spara</td><td>7 taps</td><td class="best">4 taps</td><td>7 taps</td></tr>
+        <tr><td>Change Bench Press BB's equipment</td><td>2 taps</td><td class="best">1 tap, after a scroll</td><td>2 taps</td></tr>
         <tr><td>Ny without scrolling</td><td class="bad">no</td><td class="bad">no</td><td class="best">yes</td></tr>
       </tbody>
     </table></div>
@@ -1155,7 +742,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 
   <section aria-labelledby="q-filter">
     <h2 id="q-filter">Choice 12b: the equipment and mark filters</h2>
-    <p>Queue item 7b (Q34), on L1's list. Decided: filter by equipment, several at once, and by "I mina program": Ja, Byt, Testa, Inte satt and Nej. Nej starts unticked, which is how Nej stays hidden; tick it to see those exercises. Filters combine with the search and the pattern chip. Muscle gets no filter, because L1's headings are the muscles. The sketch's list gains two Nej exercises, Pec deck and Koncentrationscurl. The open question is where the filters live. <strong>Show only Hantlar, then show the Nej exercises too.</strong></p>
+    <p>Queue item 7b (Q34), on L1's list. Decided: filter by equipment, several at once, and by "I mina program": Ja, Byt, Testa, Inte satt and Nej. Nej starts unticked, which is how Nej stays hidden; tick it to see those exercises. Filters combine with the search and the pattern chip. Muscle gets no filter, because L1's headings are the muscles. The sketch's list gains two Nej exercises, Pec Dec and Concentration Curl. The open question is where the filters live. <strong>Show only Hantlar, then show the Nej exercises too.</strong></p>
     <div class="tablewrap"><table class="costs">
       <thead><tr><th></th><th>R1</th><th>R2</th><th>R3</th></tr></thead>
       <tbody>
@@ -1335,7 +922,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 
   <section aria-labelledby="q-progress">
     <h2 id="q-progress">Choice 14b: Progress</h2>
-    <p>Queue item 9 (Q45, Q47), reached from Du › Framsteg. Decided, and the same in all three: Styrka · Löpning; 8 v · 6 mån · 1 år; volume per week as bars, the deload week in its own shade, a tap on a bar showing its value; working sets per primary muscle this week; the main lifts Carl picks, each a tile with estimated 1RM and its change, opening Exercise detail; and records from the last 30 days. Running gets km per week and the long run, drawn in #18. <em>Open:</em> Q28 dropped volume from the summary because kilos say little about a session meant to build muscle; should these bars count hard sets instead? The open question is the order. <strong>Find Bänkpress's 1RM, then tap the deload week's bar.</strong></p>
+    <p>Queue item 9 (Q45, Q47), reached from Du › Framsteg. Decided, and the same in all three: Styrka · Löpning; 8 v · 6 mån · 1 år; volume per week as bars, the deload week in its own shade, a tap on a bar showing its value; working sets per primary muscle this week; the main lifts Carl picks, each a tile with estimated 1RM and its change, opening Exercise detail; and records from the last 30 days. Running gets km per week and the long run, drawn in #18. <em>Open:</em> Q28 dropped volume from the summary because kilos say little about a session meant to build muscle; should these bars count hard sets instead? The open question is the order. <strong>Find Bench Press BB's 1RM, then tap the deload week's bar.</strong></p>
     <div class="seg" role="group" aria-label="Data">
       <button type="button" data-progmode="0" aria-pressed="true">Med pass</button>
       <button type="button" data-progmode="1" aria-pressed="false">Första gången</button>
@@ -1484,22 +1071,21 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
   <section aria-labelledby="dec">
     <h2 id="dec">Decided</h2>
     <p>Every screen's content is decided in the grilling on <a href="https://github.com/Carlsmeister/strive/issues/17">strive#17</a>, Q1–Q47. The rules every sketch follows: tokens only; components from 16; Strong is inspiration for functions, never for looks; teal only for what can be tapped or is selected; glass only on controls and overlays; one set logged in three taps at most.</p>
+    <p><strong>Q48 done</strong> (2026-10-25): the chosen parts and their CSS now live in <code>16-components</code> and its catalogue; this page keeps the sketches and the rejected options as the record of why. Exercise names in the sketches are English, as decided on strive#4.</p>
   </section>
 
   <section aria-labelledby="devs">
     <h2 id="devs">Deviations from Apple's guidelines</h2>
-    <p>Accepted for now, because Carl is the only user. Listed so they are cheap to fix if Strive is ever submitted to the App Store.</p>
+    <p>Accepted for now, because Carl is the only user. Listed so they are cheap to fix if Strive is ever submitted to the App Store. The logging dock's two deviations moved to <code>16-components</code> with the dock (Q48).</p>
     <ul>
-      <li><strong>RIR 4 or more</strong> is chosen from a row of 4–10 that the 4+ segment opens in the dock; the segment then shows the value (Carl, 2026-10-24). An RIR of 4 or more therefore costs one tap more, and joins Q13's listed exceptions. Not a deviation; listed here so the cost is visible.</li>
       <li><strong>Session RPE is a segmented row of ten</strong> on the summary (Q28). Apple, Segmented controls: on iPhone, keep to about five segments. Each segment is about 34 pt wide and stays 44 pt tall. The fix is a picker or a 1–10 slider, which costs a tap or a drag more.</li>
-      <li><strong>RIR segments are about 29 pt wide</strong> in the dock, because RIR shares its row with the rest time (Carl, 2026-10-24). Apple, Accessibility: a hit target of 44 × 44 pt by default, 28 × 28 pt at minimum. They stay 44 pt tall and above the minimum. The fix is RIR on a row of its own, full width, which squeezes the rest time again.</li>
     </ul>
   </section>
 </div>
 
 <script src="components.js"></script>
 <script>
-// One exercise, Bänkpress: a warm-up and a working set logged, set 2 next. Last time is the Förra value.
+// One exercise, Bench Press BB: a warm-up and a working set logged, set 2 next. Last time is the Förra value.
 const START = () => [
   { badge: "W", w: "40", r: "10", rir: null, prev: "40 × 10", done: true, warm: true },
   { badge: "1", w: "80", r: "8", rir: 2, prev: "80 × 8 @3", done: true },
@@ -1507,8 +1093,8 @@ const START = () => [
   { badge: "3", w: "82,5", r: "8", rir: null, prev: "80 × 7 @2", up: true, done: false },
 ];
 const fmt = s => `${s.w} × ${s.r}${s.rir !== null ? " @" + s.rir : ""}`;
-const head = `<div class="exh"><div><h4>Bänkpress</h4><small>Mål 4 × 6–8 @ 2–3 · vila 2:00</small></div>
-  <button type="button" class="press icon-btn" aria-label="Fler val för Bänkpress"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button></div>`;
+const head = `<div class="exh"><div><h4>Bench Press BB</h4><small>Mål 4 × 6–8 @ 2–3 · vila 2:00</small></div>
+  <button type="button" class="press icon-btn" aria-label="Fler val för Bench Press BB"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button></div>`;
 // The fifth segment shows 4+ until a value of 4 or more is chosen from the row it opens, then that value.
 const rirRow = s => `<div class="rirrow"><span>RIR</span><div class="segc" role="group" aria-label="RIR">${[0, 1, 2, 3].map(i =>
   `<button type="button" class="press" data-rir="${i}" aria-pressed="${s.rir === i}">${i}</button>`).join("")}<button type="button" class="press" data-rirmore aria-expanded="false" aria-pressed="${s.rir >= 4}">${s.rir >= 4 ? s.rir : "4+"}</button></div></div>`;
@@ -1546,9 +1132,9 @@ const DRAW = {
       + (i < sets.length - 1 ? `<div class="crest">Vila 2:00</div>` : "")).join("");
     const s = sets[sel];
     const grab = `<button type="button" class="press grabber-btn" data-close aria-label="Stäng loggningen"><span class="grabber"></span></button>`;
-    const dock = !open ? "" : s ? `<div class="dock glass">${grab}<div class="focus"><div class="top"><b>Bänkpress · set ${s.badge}</b><span class="prev">Förra ${s.prev}${s.up && !s.done ? '<span class="arrow">↑ 2,5 kg</span>' : ""}</span></div>
+    const dock = !open ? "" : s ? `<div class="dock glass">${grab}<div class="focus"><div class="top"><b>Bench Press BB · set ${s.badge}</b><span class="prev">Förra ${s.prev}${s.up && !s.done ? '<span class="arrow">↑ 2,5 kg</span>' : ""}</span></div>
       ${numRow(s)}${rirRow(s)}<button type="button" class="press btn filled" data-log>${s.done ? "Spara ändring" : "Logga set " + s.badge}</button></div></div>`
-      : `<div class="dock glass">${grab}<div class="focus"><div class="top"><b>Bänkpress klar</b></div><button type="button" class="press btn tinted">Nästa övning: Lutande hantelpress</button></div></div>`;
+      : `<div class="dock glass">${grab}<div class="focus"><div class="top"><b>Bench Press BB klar</b></div><button type="button" class="press btn tinted">Nästa övning: Incline Press DB</button></div></div>`;
     const hint = open ? "" : `<p class="caption reopen">Loggningen är stängd. Tryck på ett set för att öppna den.</p>`;
     return `<div class="ex">${head}<div class="list">${lines}</div>${hint}</div>${dock}`;
   },
@@ -1708,7 +1294,7 @@ document.querySelectorAll(".stage[data-dock]").forEach(stage => {
     const platesLine = s && v.kp && showPlates ? `<span class="prev">Skivor per sida på 20 kg-stång: ${plates(s.w)}</span>` : "";
     const logBtn = !s || (v.kp && kp) ? "" : `<button type="button" class="press btn filled" data-log>${s.done ? "Spara ändring" : "Logga set " + s.badge}</button>`;
     const dock = s ? `<div class="dock glass"><button type="button" class="press grabber-btn" data-close aria-label="Stäng loggningen"><span class="grabber"></span></button>
-      <div class="focus"><div class="top"><b>Bänkpress · set ${s.badge}</b></div><span class="prev">Förra ${s.prev}${s.up && !s.done ? '<span class="arrow">↑ 2,5 kg</span>' : ""}</span>
+      <div class="focus"><div class="top"><b>Bench Press BB · set ${s.badge}</b></div><span class="prev">Förra ${s.prev}${s.up && !s.done ? '<span class="arrow">↑ 2,5 kg</span>' : ""}</span>
       <div class="numrow${v.steps && !kp ? " always" : ""}${v.kp && kp ? " three" : ""}">${fields}</div>${platesLine}${pPanel}
       ${kp ? keys : (more ? rirMore(s) : "") + (v.kp ? split : rirRow(s))}${logBtn}</div></div>` : "";
     // The dock steps aside while P2's sheet is open, as the keyboard does for a sheet on iOS.
@@ -1865,8 +1451,8 @@ document.querySelectorAll(".stage[data-menus]").forEach(stage => {
       : `<div class="swipe${i === openAt ? " open" : ""}"><button type="button" class="press del" data-del="${i}">Ta bort</button>${crow(x, i)}</div>`;
     stage.innerHTML = `<div class="titlebar"><span></span><div class="wtitle"><button type="button" class="press wname" data-menu="workout" aria-label="Fler val för passet">Push A ${ico("more")}</button><small>24:12</small></div>
       <button type="button" class="press btn small tinted">Avsluta</button></div>
-      <div class="ex"><div class="exh"><div><h4>Bänkpress</h4><small>Mål 4 × 6–8 @ 2–3 · vila ${mmss(rest)}</small></div>
-      <button type="button" class="press icon-btn" data-menu="ex" aria-label="Fler val för Bänkpress">${ico("more")}</button></div>
+      <div class="ex"><div class="exh"><div><h4>Bench Press BB</h4><small>Mål 4 × 6–8 @ 2–3 · vila ${mmss(rest)}</small></div>
+      <button type="button" class="press icon-btn" data-menu="ex" aria-label="Fler val för Bench Press BB">${ico("more")}</button></div>
       <div class="list">${sets.map((x, i) => wrap(x, i) + (i < sets.length - 1 ? `<div class="crest">Vila ${mmss(rest)}</div>` : "")).join("")}</div>${
       opt === "m2c" ? `<div class="crow"><span></span><button type="button" class="press btn small tinted" data-addset>Lägg till set</button></div>` : ""}</div>${menu ? menuHtml() : ""}`;
     if (menu) place();
@@ -1931,18 +1517,18 @@ Object.assign(ICONS, { chevD: '<path d="m6 9 6 6 6-6"/>', home: '<path d="M3 11l
   food: '<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-2 6 0 8v10"/>', plus: '<path d="M12 5v14M5 12h14"/>',
   plan: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', you: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>' });
 const FRAME_EX = () => [
-  { n: "Bänkpress", t: "Mål 3 × 6–8 @ 2–3", r: 120, sets: [["W", "40 × 10", 1], ["1", "80 × 8 @2", 1], ["2", "82,5 × 8"], ["3", "82,5 × 8"]] },
-  { n: "Lutande hantelpress", t: "Mål 3 × 8–10", r: 90, sets: [["1", "26 × 10"], ["2", "26 × 10"], ["3", "26 × 10"]] },
-  { n: "Dips", t: "Mål 3 × 8–12", r: 90, sets: [["1", "+10 × 8"], ["2", "+10 × 8"], ["3", "+10 × 8"]] },
-  { n: "Sidolyft", t: "Mål 3 × 12–15", r: 60, sets: [["1", "10 × 12"], ["2", "10 × 12"], ["3", "10 × 12"]] },
+  { n: "Bench Press BB", t: "Mål 3 × 6–8 @ 2–3", r: 120, sets: [["W", "40 × 10", 1], ["1", "80 × 8 @2", 1], ["2", "82,5 × 8"], ["3", "82,5 × 8"]] },
+  { n: "Incline Press DB", t: "Mål 3 × 8–10", r: 90, sets: [["1", "26 × 10"], ["2", "26 × 10"], ["3", "26 × 10"]] },
+  { n: "Tricep Dips", t: "Mål 3 × 8–12", r: 90, sets: [["1", "+10 × 8"], ["2", "+10 × 8"], ["3", "+10 × 8"]] },
+  { n: "Lateral Raise DB", t: "Mål 3 × 12–15", r: 60, sets: [["1", "10 × 12"], ["2", "10 × 12"], ["3", "10 × 12"]] },
 ].map(e => ({ ...e, sets: e.sets.map(([b, v, done]) => ({ b, v, done: !!done })) }));
 // Choice 6: notes in the header, and a superset (g) of two exercises sharing one rest after each round.
 const GROUP_EX = () => [
-  { n: "Bänkpress", t: "Mål 3 × 6–8 @ 2–3", r: 120, pin: "Tummen runt stången", cue: "Pausa en sekund på bröstet", last: "Vänster axel kändes på sista setet", today: "",
+  { n: "Bench Press BB", t: "Mål 3 × 6–8 @ 2–3", r: 120, pin: "Tummen runt stången", cue: "Pausa en sekund på bröstet", last: "Vänster axel kändes på sista setet", today: "",
     sets: [["W", "40 × 10", 1], ["1", "80 × 8 @2", 1], ["2", "82,5 × 8"], ["3", "82,5 × 8"]] },
-  { n: "Lutande hantelpress", t: "Mål 3 × 8–10", r: 90, g: 1, cue: "Bänken på 30°", sets: [["1", "26 × 10"], ["2", "26 × 10"], ["3", "26 × 10"]] },
-  { n: "Sidolyft", t: "Mål 3 × 12–15", r: 90, g: 1, last: "Prova 12 kg nästa gång", sets: [["1", "10 × 12"], ["2", "10 × 12"], ["3", "10 × 12"]] },
-  { n: "Dips", t: "Mål 2 × 8–12", r: 90, sets: [["1", "+10 × 8"], ["2", "+10 × 8"]] },
+  { n: "Incline Press DB", t: "Mål 3 × 8–10", r: 90, g: 1, cue: "Bänken på 30°", sets: [["1", "26 × 10"], ["2", "26 × 10"], ["3", "26 × 10"]] },
+  { n: "Lateral Raise DB", t: "Mål 3 × 12–15", r: 90, g: 1, last: "Prova 12 kg nästa gång", sets: [["1", "10 × 12"], ["2", "10 × 12"], ["3", "10 × 12"]] },
+  { n: "Tricep Dips", t: "Mål 2 × 8–12", r: 90, sets: [["1", "+10 × 8"], ["2", "+10 × 8"]] },
 ].map(e => ({ ...e, sets: e.sets.map(([b, v, done]) => ({ b, v, done: !!done })) }));
 const FRAMES = [];
 document.querySelectorAll(".stage[data-frame]").forEach(stage => {
@@ -2072,16 +1658,16 @@ document.querySelectorAll(".stage[data-frame]").forEach(stage => {
 });
 setInterval(() => FRAMES.forEach(f => f()), 1000);
 
-// Choice 7: the summary of Push A, which added Dips and lengthened a rest against its template.
+// Choice 7: the summary of Push A, which added Tricep Dips and lengthened a rest against its template.
 ICONS.star = '<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>';
 const SUM_EX = [
-  { n: "Bänkpress", best: "82,5 × 8 · ↑ +2,5 kg mot förra", note: "Kändes stark idag",
+  { n: "Bench Press BB", best: "82,5 × 8 · ↑ +2,5 kg mot förra", note: "Kändes stark idag",
     sets: [["W", "40 × 10"], ["1", "80 × 8 @2"], ["2", "82,5 × 8 @2", 1], ["3", "82,5 × 7 @1"]] },
-  { n: "Lutande hantelpress", best: "26 × 10 · samma som förra", sets: [["1", "26 × 10 @2"], ["2", "26 × 10 @2"], ["3", "26 × 10 @1"]] },
-  { n: "Sidolyft", best: "10 × 13 · ↑ +1 rep mot förra", sets: [["1", "10 × 12 @3"], ["2", "10 × 13 @2", 1], ["3", "10 × 12 @1"]] },
-  { n: "Dips", best: "+10 × 8 · ↓ −1 rep mot förra", sets: [["1", "+10 × 8 @2"], ["2", "+10 × 7 @1"]] },
+  { n: "Incline Press DB", best: "26 × 10 · samma som förra", sets: [["1", "26 × 10 @2"], ["2", "26 × 10 @2"], ["3", "26 × 10 @1"]] },
+  { n: "Lateral Raise DB", best: "10 × 13 · ↑ +1 rep mot förra", sets: [["1", "10 × 12 @3"], ["2", "10 × 13 @2", 1], ["3", "10 × 12 @1"]] },
+  { n: "Tricep Dips", best: "+10 × 8 · ↓ −1 rep mot förra", sets: [["1", "+10 × 8 @2"], ["2", "+10 × 7 @1"]] },
 ];
-const SUM_PR = [["Bänkpress", "82,5 × 8", "+2,5 kg"], ["Sidolyft", "10 × 13", "+1 rep"]];
+const SUM_PR = [["Bench Press BB", "82,5 × 8", "+2,5 kg"], ["Lateral Raise DB", "10 × 13", "+1 rep"]];
 let sumHist = false;
 const SUMS = [];
 document.querySelectorAll(".stage[data-summary]").forEach(stage => {
@@ -2111,7 +1697,7 @@ document.querySelectorAll(".stage[data-summary]").forEach(stage => {
     u3: () => records(true) + tiles(true) + feel() + folded() + times(),
     u13: () => tiles() + records() + feel() + folded() + times(),
   };
-  const alertHtml = () => `<div class="scrim"></div><div class="center"><div class="alert"><h5>Uppdatera mallen Push A?</h5><p>Passet skiljer sig från mallen:<br>Dips, 2 set, lades till<br>Vilan i Bänkpress, 2:00 → 2:30</p>
+  const alertHtml = () => `<div class="scrim"></div><div class="center"><div class="alert"><h5>Uppdatera mallen Push A?</h5><p>Passet skiljer sig från mallen:<br>Tricep Dips, 2 set, lades till<br>Vilan i Bench Press BB, 2:00 → 2:30</p>
     <div class="inline"><button type="button" class="press btn tinted" data-a="Inte nu">Inte nu</button><button type="button" class="press btn filled" data-a="Uppdatera">Uppdatera</button></div></div></div>`;
   function draw() {
     const top = stage.querySelector(".wscroll")?.scrollTop ?? 0;
@@ -2134,10 +1720,10 @@ document.querySelectorAll(".stage[data-summary]").forEach(stage => {
 });
 // Choice 8: the template preview of Push A, opened from Plan.
 const TPL_EX = [
-  { n: "Bänkpress", sets: [["W", "10", "–"], ["1", "6–8", "2–3"], ["2", "6–8", "2–3"], ["3", "6–8", "2–3"]], r: 120, t: "1 uppv. + 3 × 6–8 @ 2–3" },
-  { n: "Lutande hantelpress", g: 1, sets: [["1", "8–10", "2"], ["2", "8–10", "2"], ["3", "8–10", "2"]], r: 90, t: "3 × 8–10 @ 2" },
-  { n: "Sidolyft", g: 1, sets: [["1", "12–15", "1–2"], ["2", "12–15", "1–2"], ["3", "12–15", "1–2"]], r: 90, t: "3 × 12–15 @ 1–2" },
-  { n: "Dips", sets: [["1", "8–12", "2"], ["2", "8–12", "2"]], r: 90, t: "2 × 8–12 @ 2" },
+  { n: "Bench Press BB", sets: [["W", "10", "–"], ["1", "6–8", "2–3"], ["2", "6–8", "2–3"], ["3", "6–8", "2–3"]], r: 120, t: "1 uppv. + 3 × 6–8 @ 2–3" },
+  { n: "Incline Press DB", g: 1, sets: [["1", "8–10", "2"], ["2", "8–10", "2"], ["3", "8–10", "2"]], r: 90, t: "3 × 8–10 @ 2" },
+  { n: "Lateral Raise DB", g: 1, sets: [["1", "12–15", "1–2"], ["2", "12–15", "1–2"], ["3", "12–15", "1–2"]], r: 90, t: "3 × 12–15 @ 1–2" },
+  { n: "Tricep Dips", sets: [["1", "8–12", "2"], ["2", "8–12", "2"]], r: 90, t: "2 × 8–12 @ 2" },
 ];
 document.querySelectorAll(".stage[data-tpl]").forEach(stage => {
   const opt = stage.dataset.tpl, counter = stage.nextElementSibling;
@@ -2202,13 +1788,13 @@ ICONS.info = '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>';
 const gen = (n, reps, rir, prev) => [...Array(n).keys()].map(i => [String(i + 1), reps, rir, prev]);
 const TPL4 = [
   { n: "Push A", last: "lör 17 okt", min: 30, note: "Kontrollerad nedfirning, två sekunder.", ex: [
-    { n: "Bänkpress", m: "Bröst", r: 120, sets: [["W", "10", "–", "40 × 10"], ["1", "6–8", "2–3", "80 × 8 @2"], ["2", "6–8", "2–3", "82,5 × 8 @2"], ["3", "6–8", "2–3", "82,5 × 7 @1"]] },
-    { n: "Lutande hantelpress", m: "Bröst", r: 90, g: 1, sets: gen(3, "8–10", "2", "26 × 10 @2") },
-    { n: "Sidolyft", m: "Axlar", r: 90, g: 1, sets: gen(3, "12–15", "1–2", "10 × 12 @2") },
-    { n: "Dips", m: "Triceps", r: 90, sets: gen(2, "8–12", "2", "+10 × 8 @2") }] },
-  { n: "Pull A", last: "tor 22 okt", min: 35, ex: [["Marklyft", "Rygg"], ["Latsdrag", "Rygg"], ["Sittande rodd", "Rygg"], ["Bicepscurl", "Biceps"]] },
-  { n: "Ben A", last: "tis 20 okt", min: 40, ex: [["Knäböj", "Framsida lår"], ["Rumänsk marklyft", "Baksida lår"], ["Benpress", "Framsida lår"], ["Vadpress", "Vader"]] },
-  { n: "Push B", last: "mån 19 okt", min: 35, ex: [["Militärpress", "Axlar"], ["Lutande bänkpress", "Bröst"], ["Kabelflyes", "Bröst"], ["Triceps pushdown", "Triceps"]] },
+    { n: "Bench Press BB", m: "Bröst", r: 120, sets: [["W", "10", "–", "40 × 10"], ["1", "6–8", "2–3", "80 × 8 @2"], ["2", "6–8", "2–3", "82,5 × 8 @2"], ["3", "6–8", "2–3", "82,5 × 7 @1"]] },
+    { n: "Incline Press DB", m: "Bröst", r: 90, g: 1, sets: gen(3, "8–10", "2", "26 × 10 @2") },
+    { n: "Lateral Raise DB", m: "Axlar", r: 90, g: 1, sets: gen(3, "12–15", "1–2", "10 × 12 @2") },
+    { n: "Tricep Dips", m: "Triceps", r: 90, sets: gen(2, "8–12", "2", "+10 × 8 @2") }] },
+  { n: "Pull A", last: "tor 22 okt", min: 35, ex: [["Deadlift BB", "Rygg"], ["Lat Pulldown Cable", "Rygg"], ["Seated Row Cable", "Rygg"], ["Curl DB", "Biceps"]] },
+  { n: "Ben A", last: "tis 20 okt", min: 40, ex: [["Squat BB", "Framsida lår"], ["Romanian Deadlift DB", "Baksida lår"], ["Leg Press", "Framsida lår"], ["Standing Calf Raise Machine", "Vader"]] },
+  { n: "Push B", last: "mån 19 okt", min: 35, ex: [["Overhead Press BB", "Axlar"], ["Incline Press BB", "Bröst"], ["Fly Cable", "Bröst"], ["Tricep Pushdown", "Triceps"]] },
 ].map(t => ({ ...t, ex: t.ex.map(e => Array.isArray(e) ? { n: e[0], m: e[1], r: 90, sets: gen(3, "8–10", "2", "–") } : e) }));
 document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
   const counter = stage.nextElementSibling, v = stage.dataset.tpl4 || "t4";
@@ -2395,7 +1981,7 @@ document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
   draw();
 });
 
-// Choice 10: exercise detail for Bänkpress.
+// Choice 10: exercise detail for Bench Press BB.
 ICONS.play = '<path d="M8 5v14l11-7z"/>';
 const EXD = {
   e1rm: { "3 mån": [[95, "3 aug"], [96.5, "10 aug"], [97, "17 aug"], [98, "24 aug"], [98.5, "31 aug"], [100, "7 sep"], [99, "14 sep"], [101, "21 sep"], [102, "28 sep"], [101.5, "5 okt"], [103, "12 okt"], [103.5, "24 okt"]],
@@ -2415,7 +2001,7 @@ const fig = (x, parts) => `<g transform="translate(${x} 0)"><circle class="body"
 const muscleMap = () => `<svg viewBox="0 0 130 120" role="img" aria-label="Muskler: bröst primärt; främre axlar och triceps sekundärt">${
   fig(0, `<ellipse class="m1" cx="23.5" cy="35" rx="7" ry="6"/><ellipse class="m1" cx="36.5" cy="35" rx="7" ry="6"/><circle class="m2" cx="12" cy="30" r="5"/><circle class="m2" cx="48" cy="30" r="5"/>`)}${
   fig(68, `<ellipse class="m2" cx="10.5" cy="46" rx="4" ry="9"/><ellipse class="m2" cx="49.5" cy="46" rx="4" ry="9"/>`)}</svg>`;
-const MARKS = { Ja: "Ja: föreslås i program.", Byt: "Byt: alternativet, Hantelpress, föreslås först.", Nej: "Nej: föreslås aldrig.", Testa: "Testa: prova lätt en gång innan den föreslås." };
+const MARKS = { Ja: "Ja: föreslås i program.", Byt: "Byt: alternativet, Bench Press DB, föreslås först.", Nej: "Nej: föreslås aldrig.", Testa: "Testa: prova lätt en gång innan den föreslås." };
 document.querySelectorAll(".stage[data-exd]").forEach(stage => {
   const v = stage.dataset.exd, counter = stage.nextElementSibling;
   let tab = "Om", period = "3 mån", pt = -1, page = null, mark = "Ja", taps = 0;
@@ -2444,7 +2030,7 @@ document.querySelectorAll(".stage[data-exd]").forEach(stage => {
     + sec("Inställningar", `<div class="list">${[["Typ", "Vikt × reps"], ["Steg", "2,5 kg"], ["Stång", "Olympisk, 20 kg"], ["Enhet", "kg"]].map(([k, val]) => `<button type="button" class="press row" data-setting="${k}"><span>${k}</span><span class="val">${val} ›</span></button>`).join("")}</div>`);
   const sec = (h, body) => `<div class="group"><h4>${h}</h4>${body}</div>`;
   // Chosen: one illustration of the movement with the muscles in red replaces the video and the drawn map.
-  const illo = () => `<img class="illo" src="bench-press.jpg" width="1200" height="800" alt="Bänkpress, start och slutläge. Bröstet rött, främre axlar och triceps ljust röda.">`;
+  const illo = () => `<img class="illo" src="bench-press.jpg" width="1200" height="800" alt="Bench Press BB, start och slutläge. Bröstet rött, främre axlar och triceps ljust röda.">`;
   const TABS = { Om: () => illo() + about(), Historik: () => history(3), Diagram: () => chart(), Rekord: () => records() };
   const PAGES = { Video: () => video(), Muskler: () => map(), "1RM": () => chart(), Senast: () => history(3), Rekord: () => records(), "Så gör du": () => about() };
   const spark = () => { const d = EXD.e1rm["3 mån"], lo = 94, hi = 104; return `<svg class="spark" viewBox="0 0 100 32" aria-hidden="true"><polyline points="${d.map((x, i) => `${i * 100 / (d.length - 1)},${30 - (x[0] - lo) / (hi - lo) * 28}`).join(" ")}"/></svg>`; };
@@ -2454,8 +2040,8 @@ document.querySelectorAll(".stage[data-exd]").forEach(stage => {
     <button type="button" class="press xtile" data-page="Senast"><span class="k">Senast${ico("chevR")}</span><span class="v">82,5×8</span><small>Lördag 24 okt · 4 set</small></button>
     <button type="button" class="press xtile" data-page="Rekord"><span class="k">Rekord${ico("chevR")}</span><span class="v">85 kg</span><small>Tyngsta · senast nytt 24 okt</small></button>
     <button type="button" class="press xtile" data-page="Så gör du"><span class="k">Så gör du${ico("chevR")}</span><small>4 steg · skivstång, bänk · i program: Ja</small></button></div>`;
-  const bar = back => `<div class="titlebar fbar"><button type="button" class="press icon-btn glass" data-back aria-label="Tillbaka">${ico("chevL")}</button><b>${back ? page : "Bänkpress"}</b>
-    <button type="button" class="press icon-btn glass" data-more aria-label="Fler val för Bänkpress">${ico("more")}</button></div>`;
+  const bar = back => `<div class="titlebar fbar"><button type="button" class="press icon-btn glass" data-back aria-label="Tillbaka">${ico("chevL")}</button><b>${back ? page : "Bench Press BB"}</b>
+    <button type="button" class="press icon-btn glass" data-more aria-label="Fler val för Bench Press BB">${ico("more")}</button></div>`;
   function draw() {
     const box = stage.querySelector(".wscroll"), top = box ? box.scrollTop : 0;
     let body;
@@ -2483,22 +2069,22 @@ document.querySelectorAll(".stage[data-exd]").forEach(stage => {
 
 // Choice 11: the library. [name, muscle, pattern, equipment, last, mark]
 const LIB = [
-  ["Bänkpress", "Bröst", "Horisontell press", "Skivstång", "82,5 × 8", "Ja"], ["Lutande hantelpress", "Bröst", "Horisontell press", "Hantlar", "26 × 10", "Ja"],
-  ["Hantelflyes", "Bröst", "Horisontell press", "Hantlar", "", ""], ["Maskinpress", "Bröst", "Horisontell press", "Maskin", "", ""], ["Pec deck", "Bröst", "Horisontell press", "Maskin", "", "Nej"],
-  ["Marklyft", "Rygg", "Höftdominant", "Skivstång", "120 × 5", "Ja"], ["Chins", "Rygg", "Vertikalt drag", "Kroppsvikt", "+5 × 6", "Ja"],
-  ["Sittande kabelrodd", "Rygg", "Horisontellt drag", "Kabel", "", "Byt"], ["Latsdrag", "Rygg", "Vertikalt drag", "Kabel", "", ""],
-  ["Sidolyft, kabel", "Axlar", "Vertikal press", "Kabel", "7,5 × 15", "Ja"], ["Omvända flyes", "Axlar", "Vertikal press", "Hantlar", "8 × 15", "Ja"],
-  ["Militärpress", "Axlar", "Vertikal press", "Skivstång", "", ""], ["Sittande maskinpress", "Axlar", "Vertikal press", "Maskin", "", "Byt"],
-  ["Hammercurl", "Biceps", "Armar", "Hantlar", "16 × 10", "Ja"], ["Preachercurl", "Biceps", "Armar", "Maskin", "30 × 12", "Ja"], ["Koncentrationscurl", "Biceps", "Armar", "Hantlar", "", "Nej"],
-  ["Triceps pushdown", "Triceps", "Armar", "Kabel", "25 × 12", "Ja"], ["Skull crushers", "Triceps", "Armar", "EZ-stång", "30 × 10", "Ja"],
-  ["Farmers walk", "Underarmar", "Explosivt och bär", "Hantlar", "", ""],
-  ["Knäböj", "Framsida lår", "Knädominant", "Skivstång", "100 × 6", "Ja"], ["Bulgarisk utfallsböj", "Framsida lår", "Knädominant", "Hantlar", "20 × 8", "Ja"],
-  ["Benspark", "Framsida lår", "Knädominant", "Maskin", "", "Byt"], ["Benpress", "Framsida lår", "Knädominant", "Maskin", "", ""],
-  ["Rumänsk marklyft", "Baksida lår", "Höftdominant", "Hantlar", "", "Testa"], ["Liggande lårcurl", "Baksida lår", "Höftdominant", "Maskin", "40 × 10", "Ja"],
-  ["Höftlyft", "Säte", "Höftdominant", "Skivstång", "100 × 10", "Ja"], ["Glute bridge", "Säte", "Höftdominant", "Kroppsvikt", "", "Ja"],
-  ["Stående vadpress", "Vader", "Vader", "Maskin", "", ""],
-  ["Kabelcrunch", "Bål", "Bål", "Kabel", "40 × 15", "Ja"], ["Hängande benlyft", "Bål", "Bål", "Kroppsvikt", "12", "Ja"], ["Pallof press", "Bål", "Bål", "Kabel", "", "Ja"],
-  ["Kettlebell swing", "Helkropp", "Kettlebell", "Kettlebell", "", ""],
+  ["Bench Press BB", "Bröst", "Horisontell press", "Skivstång", "82,5 × 8", "Ja"], ["Incline Press DB", "Bröst", "Horisontell press", "Hantlar", "26 × 10", "Ja"],
+  ["Fly DB", "Bröst", "Horisontell press", "Hantlar", "", ""], ["Chest Press Machine", "Bröst", "Horisontell press", "Maskin", "", ""], ["Pec Dec", "Bröst", "Horisontell press", "Maskin", "", "Nej"],
+  ["Deadlift BB", "Rygg", "Höftdominant", "Skivstång", "120 × 5", "Ja"], ["Chin Up", "Rygg", "Vertikalt drag", "Kroppsvikt", "+5 × 6", "Ja"],
+  ["Seated Row Cable", "Rygg", "Horisontellt drag", "Kabel", "", "Byt"], ["Lat Pulldown Cable", "Rygg", "Vertikalt drag", "Kabel", "", ""],
+  ["Lateral Raise Cable", "Axlar", "Vertikal press", "Kabel", "7,5 × 15", "Ja"], ["Rear Delt Fly DB", "Axlar", "Vertikal press", "Hantlar", "8 × 15", "Ja"],
+  ["Overhead Press BB", "Axlar", "Vertikal press", "Skivstång", "", ""], ["Overhead Press Machine", "Axlar", "Vertikal press", "Maskin", "", "Byt"],
+  ["Hammer Curl DB", "Biceps", "Armar", "Hantlar", "16 × 10", "Ja"], ["Preacher Curl Machine", "Biceps", "Armar", "Maskin", "30 × 12", "Ja"], ["Concentration Curl", "Biceps", "Armar", "Hantlar", "", "Nej"],
+  ["Tricep Pushdown", "Triceps", "Armar", "Kabel", "25 × 12", "Ja"], ["Skull Crushers EZ", "Triceps", "Armar", "EZ-stång", "30 × 10", "Ja"],
+  ["Farmer's Carry DB", "Underarmar", "Explosivt och bär", "Hantlar", "", ""],
+  ["Squat BB", "Framsida lår", "Knädominant", "Skivstång", "100 × 6", "Ja"], ["Bulgarian Split Squat DB", "Framsida lår", "Knädominant", "Hantlar", "20 × 8", "Ja"],
+  ["Leg Extension Machine", "Framsida lår", "Knädominant", "Maskin", "", "Byt"], ["Leg Press", "Framsida lår", "Knädominant", "Maskin", "", ""],
+  ["Romanian Deadlift DB", "Baksida lår", "Höftdominant", "Hantlar", "", "Testa"], ["Lying Leg Curl Machine", "Baksida lår", "Höftdominant", "Maskin", "40 × 10", "Ja"],
+  ["Hip Thrust BB", "Säte", "Höftdominant", "Skivstång", "100 × 10", "Ja"], ["Glute Bridge", "Säte", "Höftdominant", "Kroppsvikt", "", "Ja"],
+  ["Standing Calf Raise Machine", "Vader", "Vader", "Maskin", "", ""],
+  ["Crunch Cable", "Bål", "Bål", "Kabel", "40 × 15", "Ja"], ["Hanging Leg Raise", "Bål", "Bål", "Kroppsvikt", "12", "Ja"], ["Pallof Press", "Bål", "Bål", "Kabel", "", "Ja"],
+  ["Swing", "Helkropp", "Kettlebell", "Kettlebell", "", ""],
 ];
 const MUSCLES = ["Bröst", "Rygg", "Axlar", "Biceps", "Triceps", "Underarmar", "Framsida lår", "Baksida lår", "Säte", "Vader", "Bål", "Helkropp"];
 const PATTERNS = ["Knädominant", "Höftdominant", "Horisontell press", "Vertikal press", "Horisontellt drag", "Vertikalt drag", "Armar", "Bål", "Vader", "Kettlebell", "Explosivt och bär"];
@@ -2548,7 +2134,7 @@ document.querySelectorAll(".stage[data-lib]").forEach(stage => {
     <p class="caption">Nej är dolda tills du väljer Nej.</p></div></div>`;
   const sorted = list => sort === "A–Ö" ? [...list].sort((a, b) => a[0].localeCompare(b[0], "sv")) : list;
   const row = x => { const on = picked.includes(x[0]);
-    return `<button type="button" class="press row lrow${libPicker ? " pick" : ""}" data-ex="${x[0]}">${x[0] === "Bänkpress" ? `<img class="thumb" src="bench-press.jpg" alt="">` : `<span class="thumb"></span>`}
+    return `<button type="button" class="press row lrow${libPicker ? " pick" : ""}" data-ex="${x[0]}">${x[0] === "Bench Press BB" ? `<img class="thumb" src="bench-press.jpg" alt="">` : `<span class="thumb"></span>`}
       <span>${x[0]}<small>${x[2]} · ${x[3]}</small></span><span class="end">${x[4] || ""}${x[5] ? `<span class="tag">${x[5]}</span>` : ""}</span>${
       libPicker ? `<span class="chk${on ? " on" : ""}" aria-hidden="true">${on ? ico("check") : ""}</span>` : ""}</button>`; };
   const list = items => `<div class="list">${sorted(items).map(row).join("")}</div>`;
@@ -2640,7 +2226,7 @@ const EF = {
   alt: ["Alternativ", x => LIB.filter(e => (!x.prim || e[1] === x.prim) && e[0] !== x.name).map(e => e[0])],
 };
 const BLANK = () => ({ name: "", prim: "", sec: [], pat: "", eq: "", type: "Vikt × reps", side: false, step: "2,5 kg", bar: "", unit: "kg", how: "", mark: "", alt: "", note: "" });
-const BENCH = () => ({ name: "Bänkpress", prim: "Bröst", sec: ["Axlar", "Triceps"], pat: "Horisontell press", eq: "Skivstång", type: "Vikt × reps", side: false, step: "2,5 kg",
+const BENCH = () => ({ name: "Bench Press BB", prim: "Bröst", sec: ["Axlar", "Triceps"], pat: "Horisontell press", eq: "Skivstång", type: "Vikt × reps", side: false, step: "2,5 kg",
   bar: "Olympisk, 20 kg", unit: "kg", mark: "Ja", alt: "", note: "Tummen runt stången",
   how: "Ligg med ögonen under stången, skulderbladen ihop och ned.\nGreppa lite bredare än axlarna, tummen runt stången.\nSänk stången kontrollerat till nedre delen av bröstet.\nPressa upp och lite bakåt tills armarna är raka." });
 let exeEdit = false;
@@ -2655,7 +2241,7 @@ document.querySelectorAll(".stage[data-exe]").forEach(stage => {
     if (k === "prim") x.sec = x.sec.filter(m => m !== val);
     if (k === "eq") { x.step = ESTEP[val]; x.bar = EBAR[val] || ""; if (val === "Kroppsvikt" && x.type === "Vikt × reps") x.type = "Kroppsvikt × reps"; }
   };
-  const locked = () => exeEdit;  // Bänkpress has logged sets
+  const locked = () => exeEdit;  // Bench Press BB has logged sets
   const shown = k => k === "bar" ? !!EBAR[x.eq] : k === "step" ? x.type !== "Bara reps" : true;
   // A choice is a row with a menu (E1, E3) or a block of chips (E2). Secondary muscles take several, so the row opens a list.
   const pickRow = k => k === "sec" ? `<button type="button" class="press row" data-push="sec"><span>${EF.sec[0]}</span><span class="val">${x.sec.join(", ") || "Inga"} ${ico("chevR")}</span></button>`
@@ -2677,9 +2263,9 @@ document.querySelectorAll(".stage[data-exe]").forEach(stage => {
     const alt = x.mark !== "Byt" ? "" : menus ? `<div class="list">${pickRow("alt")}</div>` : chipBlock("alt");
     const tail = !exeEdit ? "" : `<div class="group"><div class="list"><button type="button" class="press row" data-move><span class="act">Flytta data…</span><span class="chev">${ico("chevR")}</span></button>
       <button type="button" class="press row" data-archive><span class="act">Arkivera</span><span></span></button></div>
-      <p class="caption">Ta bort går bara för en övning som aldrig använts. Bänkpress finns i 24 pass, så den kan arkiveras: den döljs i biblioteket och historiken finns kvar.</p></div>`;
+      <p class="caption">Ta bort går bara för en övning som aldrig använts. Bench Press BB finns i 24 pass, så den kan arkiveras: den döljs i biblioteket och historiken finns kvar.</p></div>`;
     return nameField + grp("Muskler", ["prim", "sec"]) + grp("Rörelse", ["pat", "eq"])
-      + grp("Loggning", ["type", "step", "bar"], [side, unit], locked() ? "Typen är låst eftersom Bänkpress har loggade set. Flytta data till en ny övning för att byta typ." : "")
+      + grp("Loggning", ["type", "step", "bar"], [side, unit], locked() ? "Typen är låst eftersom Bench Press BB har loggade set. Flytta data till en ny övning för att byta typ." : "")
       + `<div class="group"><h4>Så gör du</h4><div class="field area"><textarea data-f="how" rows="4" placeholder="Ett steg per rad" aria-label="Så gör du">${x.how}</textarea></div></div>`
       + `<div class="group"><h4>I mina program</h4>${mark}<p class="caption">${markLine()}</p>${alt}</div>`
       + `<div class="group"><h4>Fast anteckning</h4><div class="field"><input data-f="note" value="${x.note}" placeholder="Visas varje gång du gör övningen" aria-label="Fast anteckning"></div></div>` + tail;
@@ -2693,15 +2279,15 @@ document.querySelectorAll(".stage[data-exe]").forEach(stage => {
   }
   const alertHtml = () => { const move = alert.startsWith("move:"), to = alert.slice(5);
     return `<div class="scrim"></div><div class="center"><div class="alert">${move
-      ? `<h5>Flytta data till ${to}?</h5><p>Alla 24 pass och rekorden med Bänkpress flyttas till ${to}, och Bänkpress tas bort. Det går inte att ångra.</p>
+      ? `<h5>Flytta data till ${to}?</h5><p>Alla 24 pass och rekorden med Bench Press BB flyttas till ${to}, och Bench Press BB tas bort. Det går inte att ångra.</p>
         <div class="inline"><button type="button" class="press btn tinted" data-a="keep">Avbryt</button><button type="button" class="press btn danger" data-a="move">Flytta</button></div>`
-      : `<h5>Släng ändringar?</h5><p>${exeEdit ? "Ändringarna i Bänkpress" : "Den nya övningen"} sparas inte.</p>
+      : `<h5>Släng ändringar?</h5><p>${exeEdit ? "Ändringarna i Bench Press BB" : "Den nya övningen"} sparas inte.</p>
         <div class="inline"><button type="button" class="press btn tinted" data-a="keep">Fortsätt</button><button type="button" class="press btn danger" data-a="drop">Släng</button></div>`}</div></div>`; };
   function draw() {
     const box = stage.querySelector(".exsheet .wscroll"), top = box && !view ? box.scrollTop : 0;
     const [head, body] = view ? pushed() : [`<button type="button" class="press btn text" data-cancel>Avbryt</button><h5>${exeEdit ? "Redigera" : "Ny övning"}</h5><button type="button" class="press btn text" data-save ${ok() ? "" : "disabled"}>Spara</button>`, form()];
     stage.innerHTML = `<div class="titlebar fbar"><span></span><b>Övningar</b><span></span></div><div class="wscroll"><div class="list">${LIB.slice(0, 8).map(e => `<div class="row"><span>${e[0]}</span></div>`).join("")}</div></div>
-      <div class="scrim"></div><div class="sheet glass tsheet4 exsheet" role="dialog" aria-label="${exeEdit ? "Redigera Bänkpress" : "Ny övning"}"><div class="grabber"></div><div class="sheet-head">${head}</div><div class="wscroll">${body}</div></div>${
+      <div class="scrim"></div><div class="sheet glass tsheet4 exsheet" role="dialog" aria-label="${exeEdit ? "Redigera Bench Press BB" : "Ny övning"}"><div class="grabber"></div><div class="sheet-head">${head}</div><div class="wscroll">${body}</div></div>${
       menu ? pdMenu([EF[menu][1](x).map(o => [`${menu}|${o}`, o, x[menu] === o])]) : ""}${alert ? alertHtml() : ""}`;
     if (menu) placeMenu(stage, stage.querySelector(`[data-pick="${menu}"] .val`));
     stage.querySelector(".exsheet .wscroll").scrollTop = top;
@@ -2712,7 +2298,7 @@ document.querySelectorAll(".stage[data-exe]").forEach(stage => {
     const t = sel => e.target.closest(sel); if (t("input, textarea")) return;
     taps++;
     if (alert) { const a = t("[data-a]")?.dataset.a; if (!a) return taps--;
-      if (a === "move") { done(`Flytta data › ${alert.slice(5)}; Bänkpress tas bort`); reset(); }
+      if (a === "move") { done(`Flytta data › ${alert.slice(5)}; Bench Press BB tas bort`); reset(); }
       if (a === "drop") { done("Avbryt; ändringarna slängs"); reset(); }
       alert = null; return draw(); }
     if (menu) { const mi = t("[data-mi]"); if (mi) set(menu, mi.dataset.mi.split("|")[1]); menu = null; return draw(); }
@@ -2731,7 +2317,7 @@ document.querySelectorAll(".stage[data-exe]").forEach(stage => {
     if (t("[data-emark]")) { x.mark = t("[data-emark]").dataset.emark; if (x.mark !== "Byt") x.alt = ""; dirty = true; return draw(); }
     if (t("[data-more]")) { more = true; return draw(); }
     if (t("[data-locked]")) return done("Typen är låst; texten under listan säger varför");
-    if (t("[data-archive]")) { done("Arkivera: Bänkpress döljs i biblioteket, historiken finns kvar"); reset(); return draw(); }
+    if (t("[data-archive]")) { done("Arkivera: Bench Press BB döljs i biblioteket, historiken finns kvar"); reset(); return draw(); }
     if (t("[data-save]")) { done(`Spara: ${x.name} · ${x.prim} · ${x.pat || "inget mönster"} · ${x.eq || "ingen utrustning"} · steg ${x.step}`); reset(); return draw(); }
     if (t("[data-cancel]")) { if (dirty) { alert = "drop"; return draw(); } done("Avbryt"); reset(); return draw(); }
     taps--;
@@ -2882,7 +2468,7 @@ document.querySelectorAll("[data-planmode]").forEach(b => b.addEventListener("cl
 
 // Choice 13b: the programme screen (Q42). Block 1 started Monday 5 October, calendar week 41; this is week 3.
 const PDAY = [...TPL4.map(t => t.n), "Löpning", null];
-const PWEIGHTS = [["Knäböj", "100 → 107,5 kg"], ["Bänkpress", "80 → 82,5 kg"], ["Marklyft", "120 → 125 kg"], ["Militärpress", "50 → 52,5 kg"]];
+const PWEIGHTS = [["Squat BB", "100 → 107,5 kg"], ["Bench Press BB", "80 → 82,5 kg"], ["Deadlift BB", "120 → 125 kg"], ["Overhead Press BB", "50 → 52,5 kg"]];
 const PNOTES = [["24 okt", "Axeln kändes bra på militärpressen."], ["12 okt", "Kalibreringen klar. RIR stämde på bänken."], ["5 okt", "Start efter tre veckors uppehåll."]];
 document.querySelectorAll(".stage[data-prog13]").forEach(stage => {
   const v = stage.dataset.prog13, counter = stage.nextElementSibling, NOWK = 2;
@@ -2985,9 +2571,9 @@ document.querySelectorAll(".stage[data-prog13]").forEach(stage => {
 // Choice 14: History, Progress and the Start sheet (Q44–Q47). Workouts give minutes, sets and records; runs give km and pace.
 ICONS.run = '<circle cx="15" cy="4" r="2"/><path d="m7 21 3-6 3 2v5M5 12l3-4 5 1 3 4h3M10 15l-1.5-4"/>';
 ICONS.lift = '<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>';
-const BEST = { "Push A": ["Bänkpress 82,5 × 8", "Lutande hantelpress 26 × 10", "Sidolyft 10 × 13"], "Pull A": ["Marklyft 125 × 5", "Latsdrag 65 × 10", "Sittande rodd 60 × 10"],
-  "Ben A": ["Knäböj 107,5 × 6", "Rumänsk marklyft 90 × 8", "Benpress 160 × 10"], "Push B": ["Militärpress 52,5 × 6", "Lutande bänkpress 70 × 8", "Kabelflyes 15 × 12"],
-  "Armar": ["Hammercurl 16 × 10", "Triceps pushdown 25 × 12", "Preachercurl 30 × 12"] };
+const BEST = { "Push A": ["Bench Press BB 82,5 × 8", "Incline Press DB 26 × 10", "Lateral Raise DB 10 × 13"], "Pull A": ["Deadlift BB 125 × 5", "Lat Pulldown Cable 65 × 10", "Seated Row Cable 60 × 10"],
+  "Ben A": ["Squat BB 107,5 × 6", "Romanian Deadlift DB 90 × 8", "Leg Press 160 × 10"], "Push B": ["Overhead Press BB 52,5 × 6", "Incline Press BB 70 × 8", "Fly Cable 15 × 12"],
+  "Armar": ["Hammer Curl DB 16 × 10", "Tricep Pushdown 25 × 12", "Preacher Curl Machine 30 × 12"] };
 const W = (n, d, t, min, sets, pr) => ({ n, d, t, min, sets, pr }), R = (d, t, km, pace, min, pr = 0) => ({ n: "Lätt löpning", d, t, km, pace, min, pr, run: true });
 const HIST = [
   [43, [W("Push A", "Lör 24 okt", "17:02", 62, 16, 2), W("Pull A", "Tor 22 okt", "18:10", 58, 15, 0), R("Ons 21 okt", "07:15", 6.2, "5:48", 36, 1), W("Ben A", "Tis 20 okt", "17:30", 65, 17, 1), W("Push B", "Mån 19 okt", "17:45", 55, 15, 0)]],
@@ -3051,8 +2637,8 @@ const VOL = { "8 v": [...Array(8).keys()].map(i => [`v${36 + i}`, i === 4 ? 12.1
   "6 mån": [...Array(26).keys()].map(i => [`v${18 + i}`, i % 6 === 5 ? 11.5 + i * 0.1 : 15 + i * 0.25 + (i % 3) * 0.7, i % 6 === 5]),
   "1 år": [...Array(12).keys()].map(i => [["nov", "dec", "jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt"][i], 60 + i * 2.5 + (i % 3) * 3, false]) };
 const MSETS = [["Bröst", 10], ["Rygg", 12], ["Axlar", 9], ["Biceps", 6], ["Triceps", 7], ["Framsida lår", 8], ["Baksida lår", 6], ["Säte", 6], ["Vader", 4], ["Bål", 5]];
-const LIFTS = [["Knäböj", "128", "+4 kg"], ["Bänkpress", "103,5", "+2,5 kg"], ["Marklyft", "150", "±0"], ["Militärpress", "66", "+1,5 kg"]];
-const RECS = [["Bänkpress", "1RM 103,5 kg", "24 okt"], ["Sidolyft", "10 × 13", "24 okt"], ["Knäböj", "107,5 × 6", "20 okt"]];
+const LIFTS = [["Squat BB", "128", "+4 kg"], ["Bench Press BB", "103,5", "+2,5 kg"], ["Deadlift BB", "150", "±0"], ["Overhead Press BB", "66", "+1,5 kg"]];
+const RECS = [["Bench Press BB", "1RM 103,5 kg", "24 okt"], ["Lateral Raise DB", "10 × 13", "24 okt"], ["Squat BB", "107,5 × 6", "20 okt"]];
 document.querySelectorAll(".stage[data-prog14]").forEach(stage => {
   const v = stage.dataset.prog14, counter = stage.nextElementSibling;
   let seg = "Styrka", period = "8 v", pt = -1, cpt = -1, vm = "Volym", fi = 0, taps = 0;
@@ -3073,7 +2659,7 @@ document.querySelectorAll(".stage[data-prog14]").forEach(stage => {
   const SUM = { "8 v": [["Pass", "34", "+3"], ["Set", "453", "+8 %"], ["Volym", "158 t", "+12 %"], ["Rekord", "6", "+2"]],
     "6 mån": [["Pass", "101", "+9"], ["Set", "1 360", "+6 %"], ["Volym", "462 t", "+9 %"], ["Rekord", "17", "+4"]],
     "1 år": [["Pass", "196", "+40"], ["Set", "2 650", "+21 %"], ["Volym", "868 t", "+25 %"], ["Rekord", "41", "+12"]] };
-  const LSER = { Knäböj: [120, 121, 123, 122, 124, 126, 127, 128], Bänkpress: [100, 101, 101, 102, 101.5, 103, 103, 103.5], Marklyft: [148, 150, 149, 150, 150, 149, 150, 150], Militärpress: [63, 64, 64.5, 64, 65, 65.5, 66, 66] };
+  const LSER = { "Squat BB": [120, 121, 123, 122, 124, 126, 127, 128], "Bench Press BB": [100, 101, 101, 102, 101.5, 103, 103, 103.5], "Deadlift BB": [148, 150, 149, 150, 150, 149, 150, 150], "Overhead Press BB": [63, 64, 64.5, 64, 65, 65.5, 66, 66] };
   const pseg = () => `<div class="segc" role="group" aria-label="Period">${Object.keys(VOL).map(k => `<button type="button" class="press" data-period="${k}" aria-pressed="${k === period}">${k}</button>`).join("")}</div>`;
   const summary = () => `<div class="stats four">${SUM[period].map(([k, n, d]) => `<div class="stat"><span class="k">${k}</span><span class="v">${n}</span><small class="delta">${d}</small></div>`).join("")}</div>
     <p class="caption">${{ "8 v": "Senaste 8 veckorna", "6 mån": "Senaste 6 månaderna", "1 år": "Senaste året" }[period]} mot perioden före.</p>`;
