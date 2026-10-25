@@ -58,7 +58,10 @@ Secondary muscles (light red): <list>.
 
 **Learned from the first bench press (2026-10-25):** a view from the feet foreshortens the
 body, so a flat bench reads as an incline and the pressed bar ends up over the face. Lying
-exercises are drawn from the side, and the prompt says the bench angle in words.
+exercises are drawn from the side, and the prompt says the bench angle in words. The side view
+passed (Carl, 2026-10-25): flat bench, right muscles, the style wanted. Its one flaw is the
+lockout, where the arms lean toward the feet instead of standing vertical over the
+shoulders; regenerate it in the batch.
 
 ## Acceptance
 
