@@ -97,9 +97,9 @@ SIZE = {"touch": "44px", "icon": "24px", "ring-small": "64px"}
 # Lines: a list's hairline and a focused field's ring.
 BORDER = {"hairline": ".5px", "focus": "2px"}
 # States (Q2): a press shrinks and dims; disabled fades; the scrim dims what is behind a sheet or a dialog.
-STATE = {"pressed-scale": ".96", "pressed-opacity": ".8", "disabled-opacity": ".4", "scrim-opacity": ".32"}
+STATE = {"pressed-scale": ".96", "pressed-opacity": ".8", "disabled-opacity": ".4", "scrim-opacity": ".32", "veil-opacity": ".08"}
 # Motion (Q2): press in fast, spring back with a little overshoot, fade colours.
-MOTION = {"press": "100ms ease-out", "release": "350ms cubic-bezier(.3, 1.4, .5, 1)", "fade": "250ms ease-out", "spin": "900ms linear infinite", "tick": "1s linear"}
+MOTION = {"press": "100ms ease-out", "release": "350ms cubic-bezier(.3, 1.4, .5, 1)", "fade": "250ms ease-out", "spin": "900ms linear infinite", "tick": "1s linear", "stagger": "40ms"}
 
 # Text pairs that must stay readable: (text, background). Standard schemes need WCAG AA, 4.5:1;
 # Increase Contrast aims for AAA, 7:1 (Q6).
