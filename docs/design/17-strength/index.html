@@ -191,7 +191,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 @media (prefers-reduced-motion: reduce) { .swipe > .crow, .swipe .del { transition: none; } }
 
 /* Choice 5: the frame around the sets. The list scrolls under a fixed title bar. */
-.stage[data-frame], .stage[data-summary], .stage[data-tpl], .stage[data-tpl4], .stage[data-exd], .stage[data-lib], .stage[data-exe], .stage[data-plan], .stage[data-prog13] { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0; padding: 0; height: 780px; }
+.stage[data-frame], .stage[data-summary], .stage[data-tpl], .stage[data-tpl4], .stage[data-exd], .stage[data-lib], .stage[data-exe], .stage[data-plan], .stage[data-prog13], .stage[data-hist14], .stage[data-prog14], .stage[data-start14], .stage[data-plan0] { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0; padding: 0; height: 780px; }
 .fbar { padding: var(--space-8) var(--space-16); }
 .fbar .wtitle { transition: opacity var(--motion-fade); }
 .stage[data-frame="f2"]:not(.scrolled) .fbar .wtitle { opacity: 0; pointer-events: none; }
@@ -499,7 +499,39 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .wkrow.now .wl { color: var(--color-on-surface); }
 .wkopen { display: grid; gap: var(--space-8); padding: 0 var(--space-16) var(--space-16); }
 .wkopen .list { background: var(--color-surface-container-highest); }
-.ptabs { margin-inline: calc(-1 * var(--space-16)); }
+
+/* Choice 14: History, Progress and the Start sheet (Q44–Q47). */
+.hweek { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-8); padding: 0 var(--space-16); font: var(--type-title-small); }
+.hweek small { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+.hrow .end { display: grid; justify-items: end; gap: var(--space-4); font: var(--type-body-small); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+.prs { display: inline-flex; align-items: center; gap: var(--space-4); color: var(--color-tertiary); font: var(--type-label-medium); }
+.prs svg.icon { width: var(--space-12); height: var(--space-12); fill: currentColor; }
+.hc { width: 100%; text-align: left; }
+.hc .bl { display: flex; justify-content: space-between; gap: var(--space-8); font: var(--type-body-medium); font-variant-numeric: tabular-nums; }
+.hc .bl span:last-child { color: var(--color-on-surface-variant); }
+.hc .meta { font: var(--type-body-small); color: var(--color-on-surface-variant); display: flex; gap: var(--space-8); align-items: center; }
+.drow { grid-template-columns: var(--size-touch) 1fr auto; }
+.dnum { display: grid; justify-items: center; font: var(--type-label-small); color: var(--color-on-surface-variant); }
+.dnum b { font: var(--type-title-medium); color: var(--color-on-surface); }
+.kind { display: inline-flex; align-items: center; gap: var(--space-4); }
+.kind svg.icon { width: var(--space-16); height: var(--space-16); color: var(--color-on-surface-variant); }
+.chart .bar.dl { fill: var(--color-outline-variant); }
+.mbars { display: grid; gap: var(--space-8); }
+.mbar { display: grid; grid-template-columns: calc(2.5 * var(--size-touch)) 1fr calc(1.5 * var(--size-touch)); align-items: center; gap: var(--space-8); font: var(--type-body-medium); }
+.mbar .track { height: var(--space-8); border-radius: var(--shape-full); background: var(--color-surface-container-highest); overflow: hidden; }
+.mbar .track i { display: block; height: 100%; border-radius: var(--shape-full); background: var(--color-on-surface-variant); }
+.mbar small { text-align: right; font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+.xtile .up { color: var(--color-on-surface); font: var(--type-label-medium); }
+.startbg { padding: var(--space-8) var(--space-16); display: grid; gap: var(--space-16); }
+.ssheet { background: var(--material-thick); }
+.ssheet .sheet-head > :last-child { justify-self: end; }
+.ssheet .list .row .kind { color: var(--color-on-surface); }
+.asheet .btn.filled { margin-bottom: 0; }
+.kinds { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); }
+.ktile { display: grid; justify-items: start; gap: var(--space-4); padding: var(--space-12) var(--space-16); border-radius: var(--shape-large); background: var(--color-surface); font: var(--type-title-medium); text-align: left; }
+.ktile svg.icon { width: var(--size-icon); height: var(--size-icon); }
+.ktile[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); }
+.row.dis { color: var(--color-on-surface-variant); }
 </style>
 
 <div class="wrap">
@@ -1205,6 +1237,128 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
     </div>
     <p><strong>Recommendation: B4.</strong> It is the grid you liked at about two thirds of the height, so the whole block fits above the fold and a day still changes in two taps; the tabs keep the weights one tap away. Its cells are 32 pt tall, under Apple's 44 pt default though above the 28 pt minimum. B5 keeps every target at 44 pt and costs a tap per day change. B6 never hides the grid, but its tabs sit three quarters of the way down, so their content starts below the fold.</p>
     <p><strong>Chosen: B5, tabs with a week per row that opens</strong> (Carl, 2026-10-25), over the recommended B4. Veckor, Vikter, Logg, Inställningar. Veckor lists the standard week and each week as a thin row with its number, type and a miniature of its days; a tap opens one week at a time with its type as a segmented control and its days at full size, each with a menu. Every target stays at 44 pt; changing one day costs three taps. B1–B4 and B6 stay above as the record of why.</p>
+  </section>
+
+  <section aria-labelledby="q-hist">
+    <h2 id="q-hist">Choice 14: History</h2>
+    <p>Queue item 9 (Q44, Q47), reached from Du › Alla aktiviteter, as the navigation has it. Decided, and the same in all three: weeks as groups whose header sums the week ("Vecka 43 · 4 pass · 6,2 km"); Alla · Styrka · Löpning; a workout shows its name, day, time and a record count, a run its km and pace; a tap opens Session detail (choice 7). No search and no calendar in v1. <em>Proposed:</em> a workout shows its sets instead of its volume, the way Q28 dropped volume from the summary; say if volume should stay. The switch shows the first use from Q47. The open question is how a session is drawn. <strong>Filter to Löpning, then open last Tuesday's Ben A.</strong></p>
+    <div class="seg" role="group" aria-label="Data">
+      <button type="button" data-histmode="0" aria-pressed="true">Med pass</button>
+      <button type="button" data-histmode="1" aria-pressed="false">Första gången</button>
+    </div>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th></th><th>H1</th><th>H2</th><th>H3</th></tr></thead>
+      <tbody>
+        <tr><td>Sessions on the first screen</td><td class="best">9</td><td class="bad">4</td><td class="best">9</td></tr>
+        <tr><td>Best sets without opening a session</td><td>no</td><td class="best">yes</td><td>no</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>H1 · Rows in week groups</h3>
+        <p>An inset list per week: the name with day and time under it, minutes and sets or km and pace at the end, and a star with the record count.</p>
+        <div class="stage bleed" data-hist14="h1"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>H2 · A card per session</h3>
+        <p>Each workout is a card with its three best sets, the way Strong's history reads; a run shows its distance, pace and time.</p>
+        <div class="stage bleed" data-hist14="h2"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>H3 · Days down the side</h3>
+        <p>H1's rows led by the weekday and date in a column, and an icon for workout or run, so the week reads like a diary.</p>
+        <div class="stage bleed" data-hist14="h3"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: H3.</strong> History is for "what did I do on Tuesday", and a date column answers that at a glance, with as many sessions per screen as H1. H1 says the same with the date in small print. H2 shows what you lifted without a tap but fits four sessions on a screen; Session detail is one tap away anyway.</p>
+  </section>
+
+  <section aria-labelledby="q-progress">
+    <h2 id="q-progress">Choice 14b: Progress</h2>
+    <p>Queue item 9 (Q45, Q47), reached from Du › Framsteg. Decided, and the same in all three: Styrka · Löpning; 8 v · 6 mån · 1 år; volume per week as bars, the deload week in its own shade, a tap on a bar showing its value; working sets per primary muscle this week; the main lifts Carl picks, each a tile with estimated 1RM and its change, opening Exercise detail; and records from the last 30 days. Running gets km per week and the long run, drawn in #18. <em>Open:</em> Q28 dropped volume from the summary because kilos say little about a session meant to build muscle; should these bars count hard sets instead? The open question is the order. <strong>Find Bänkpress's 1RM, then tap the deload week's bar.</strong></p>
+    <div class="seg" role="group" aria-label="Data">
+      <button type="button" data-progmode="0" aria-pressed="true">Med pass</button>
+      <button type="button" data-progmode="1" aria-pressed="false">Första gången</button>
+    </div>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th></th><th>G1</th><th>G2</th><th>G3</th></tr></thead>
+      <tbody>
+        <tr><td>The lifts' 1RM</td><td>after a scroll</td><td class="best">first screen</td><td>after a scroll</td></tr>
+        <tr><td>This week's sets per muscle</td><td>first screen</td><td>after a scroll</td><td class="best">at the top</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>G1 · Q45's order</h3>
+        <p>Volume per week, sets per muscle, the lifts, the records, in the order Q45 lists them.</p>
+        <div class="stage bleed" data-prog14="g1"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>G2 · The lifts first</h3>
+        <p>The lift tiles on top, then volume, sets per muscle and records.</p>
+        <div class="stage bleed" data-prog14="g2"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>G3 · This week, then the trends</h3>
+        <p>A card for this week, sessions against the plan and sets per muscle, then the trends: volume and the lifts over the period.</p>
+        <div class="stage bleed" data-prog14="g3"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: G2.</strong> Your goal is strength while you recompose, and the four lifts answer "am I getting stronger" before anything else. Volume and sets per muscle explain the answer and can sit a scroll below. G3 suits checking the week's balance mid-week, which Plan's week card already half does; G1 puts the chart nobody acts on first.</p>
+  </section>
+
+  <section aria-labelledby="q-start">
+    <h2 id="q-start">Choice 14c: the Start sheet</h2>
+    <p>Queue item 9 (Q46, Q47), opened by + in the tab bar. Decided, and the same in all three: today's planned workout first, as the filled button; then an empty workout; the other templates, last done first; and a run (#18 continues it). With a workout in progress the sheet offers only "Fortsätt Push A · 0:42": two workouts cannot run at once. The first use has no templates and no programme. The open question is the sheet's form. <strong>Tap +, then start Ben A, which is not today's.</strong></p>
+    <div class="seg" role="group" aria-label="State">
+      <button type="button" data-startmode="0" aria-pressed="true">Idag planerat</button>
+      <button type="button" data-startmode="1" aria-pressed="false">Pass pågår</button>
+      <button type="button" data-startmode="2" aria-pressed="false">Första gången</button>
+    </div>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th></th><th>N1</th><th>N2</th><th>N3</th></tr></thead>
+      <tbody>
+        <tr><td>Start today's workout, from +</td><td>2 taps</td><td>2 taps</td><td>2 taps</td></tr>
+        <tr><td>Start another template</td><td class="best">2 taps</td><td>3 taps</td><td class="best">2 taps</td></tr>
+        <tr><td>Start a run</td><td class="best">2 taps</td><td class="best">2 taps</td><td>3 taps</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>N1 · A sheet with today on top</h3>
+        <p>Today's template as a card with Starta, then Tomt pass and Löpning as rows, then the other templates, last done first.</p>
+        <div class="stage bleed" data-start14="n1"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>N2 · An action sheet</h3>
+        <p>Starta Push A as the filled button, then Tomt pass, Löpning and Annan mall, which swaps in the templates. Nothing else on screen moves.</p>
+        <div class="stage bleed" data-start14="n2"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>N3 · Styrka or Löpning first</h3>
+        <p>Two tiles choose the kind. Styrka shows today's Starta, the other templates as chips that start at once, and Tomt pass; Löpning shows the run's start.</p>
+        <div class="stage bleed" data-start14="n3"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: N1.</strong> Every start is two taps, today's workout is the one thing filled, and the other templates show their last date, which tells you which is due. N2 is the most iOS-like and costs a tap for any other template. N3 makes a run three taps, and runs are half of Strive.</p>
+  </section>
+
+  <section aria-labelledby="q-first">
+    <h2 id="q-first">First use on Plan</h2>
+    <p>Q47 on W2's Plan, drawn as decided, not a choice: no programme and no templates. The week still runs on calendar weeks; the card offers Skapa program, the day offers an empty workout, Mallar says "Inga mallar än" with Skapa mall, and import from Strong (#7) is a disabled row until it exists.</p>
+    <div class="options"><div class="option">
+      <div class="stage bleed" data-plan0></div>
+      <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+    </div></div>
   </section>
 
   <section aria-labelledby="dec">
@@ -2706,6 +2860,173 @@ document.querySelectorAll(".stage[data-prog13]").forEach(stage => {
     taps--;
   });
   reset(); draw();
+});
+
+// Choice 14: History, Progress and the Start sheet (Q44–Q47). Workouts give minutes, sets and records; runs give km and pace.
+ICONS.run = '<circle cx="15" cy="4" r="2"/><path d="m7 21 3-6 3 2v5M5 12l3-4 5 1 3 4h3M10 15l-1.5-4"/>';
+ICONS.lift = '<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>';
+const BEST = { "Push A": ["Bänkpress 82,5 × 8", "Lutande hantelpress 26 × 10", "Sidolyft 10 × 13"], "Pull A": ["Marklyft 125 × 5", "Latsdrag 65 × 10", "Sittande rodd 60 × 10"],
+  "Ben A": ["Knäböj 107,5 × 6", "Rumänsk marklyft 90 × 8", "Benpress 160 × 10"], "Push B": ["Militärpress 52,5 × 6", "Lutande bänkpress 70 × 8", "Kabelflyes 15 × 12"],
+  "Armar": ["Hammercurl 16 × 10", "Triceps pushdown 25 × 12", "Preachercurl 30 × 12"] };
+const W = (n, d, t, min, sets, pr) => ({ n, d, t, min, sets, pr }), R = (d, t, km, pace, min) => ({ n: "Lätt löpning", d, t, km, pace, min, run: true });
+const HIST = [
+  [43, [W("Push A", "Lör 24 okt", "17:02", 62, 16, 2), W("Pull A", "Tor 22 okt", "18:10", 58, 15, 0), R("Ons 21 okt", "07:15", 6.2, "5:48", 36), W("Ben A", "Tis 20 okt", "17:30", 65, 17, 1), W("Push B", "Mån 19 okt", "17:45", 55, 15, 0)]],
+  [42, [W("Armar", "Sön 18 okt", "11:00", 30, 9, 0), W("Push A", "Lör 17 okt", "16:40", 60, 16, 1), R("Fre 16 okt", "07:05", 8.0, "5:40", 45), W("Ben A", "Tis 13 okt", "17:20", 63, 17, 0), W("Push B", "Mån 12 okt", "17:50", 56, 15, 0)]],
+  [41, [W("Push A", "Lör 10 okt", "16:30", 61, 16, 0), R("Fre 9 okt", "07:10", 7.1, "5:52", 42), W("Pull A", "Tor 8 okt", "18:00", 57, 15, 1), W("Ben A", "Tis 6 okt", "17:40", 64, 17, 0), W("Push B", "Mån 5 okt", "17:30", 54, 15, 0)]],
+];
+const prs = n => n ? `<span class="prs" aria-label="${n} rekord">${ico("star")}${n}</span>` : "";
+const nkm = n => n.toLocaleString("sv-SE", { minimumFractionDigits: 1 });
+const firstUse = (what) => `<div class="empty">${ico("lift")}<h5>Inga pass än</h5><p>${what}</p><button type="button" class="press btn filled" data-go="Start">Starta ett pass</button></div>`;
+let histFirst = false, progFirst = false, startMode = 0;
+const HISTS = [], PROGS14 = [], STARTS = [];
+document.querySelectorAll(".stage[data-hist14]").forEach(stage => {
+  const v = stage.dataset.hist14, counter = stage.nextElementSibling;
+  let seg = "Alla", taps = 0;
+  const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; };
+  const keep = s => seg === "Alla" || (seg === "Löpning") === !!s.run;
+  const sum = ss => { const p = ss.filter(s => !s.run).length, km = ss.filter(s => s.run).reduce((a, s) => a + s.km, 0);
+    return [p ? `${p} pass` : "", km ? `${nkm(km)} km` : ""].filter(Boolean).join(" · "); };
+  const end = s => s.run ? `<span class="end">${nkm(s.km)} km<span>${s.pace} /km</span></span>` : `<span class="end">${s.min} min · ${s.sets} set${prs(s.pr)}</span>`;
+  const ROW = {
+    h1: (s, k) => `<button type="button" class="press row hrow" data-s="${k}"><span>${s.n}<small>${s.d} · ${s.t}</small></span>${end(s)}</button>`,
+    h2: (s, k) => `<button type="button" class="press hcard hc" data-s="${k}"><div class="th"><span>${s.n}</span><small>${s.d}</small></div>${s.run
+      ? `<div class="bl"><span>${nkm(s.km)} km · ${s.pace} /km</span><span>${s.min} min</span></div>`
+      : `<span class="meta">${s.min} min · ${s.sets} set ${prs(s.pr)}</span>${BEST[s.n].map(b => { const i = b.search(/\d/); return `<div class="bl"><span>${b.slice(0, i).trim()}</span><span>${b.slice(i)}</span></div>`; }).join("")}`}</button>`,
+    h3: (s, k) => `<button type="button" class="press row hrow drow" data-s="${k}"><span class="dnum">${s.d.split(" ")[0]}<b>${s.d.split(" ")[1]}</b></span><span><span class="kind">${ico(s.run ? "run" : "lift")}${s.n}</span><small>${s.t}${s.run ? ` · ${s.min} min` : ""}</small></span>${end(s)}</button>`,
+  };
+  function draw() {
+    const box = stage.querySelector(".wscroll"), y = box ? box.scrollTop : 0;
+    const body = histFirst ? firstUse("Dina pass och löprundor hamnar här, vecka för vecka.") : HIST.map(([w, ss]) => { const xs = ss.filter(keep); if (!xs.length) return "";
+      return `<div class="group"><div class="hweek"><span>Vecka ${w}</span><small>${sum(xs)}</small></div>${v === "h2" ? `<div class="sumlist" style="display:grid;gap:var(--space-8)">${xs.map(s => ROW.h2(s, `${w}.${ss.indexOf(s)}`)).join("")}</div>`
+        : `<div class="list">${xs.map(s => ROW[v](s, `${w}.${ss.indexOf(s)}`)).join("")}</div>`}</div>`; }).join("");
+    stage.innerHTML = `<div class="titlebar fbar"><button type="button" class="press icon-btn glass" data-go="Du" aria-label="Tillbaka till Du">${ico("chevL")}</button><b>Historik</b><span></span></div>
+      <div class="exseg"><div class="segc" role="group" aria-label="Visa">${["Alla", "Styrka", "Löpning"].map(k => `<button type="button" class="press" data-seg="${k}" aria-pressed="${k === seg}">${k}</button>`).join("")}</div></div>
+      <div class="wscroll">${body}</div>`;
+    stage.querySelector(".wscroll").scrollTop = y;
+  }
+  stage.addEventListener("click", e => {
+    const t = s => e.target.closest(s); taps++;
+    if (t("[data-seg]")) { seg = t("[data-seg]").dataset.seg; stage.querySelector(".wscroll").scrollTop = 0; done(`Visa: ${seg}`); return draw(); }
+    if (t("[data-s]")) { const [w, i] = t("[data-s]").dataset.s.split("."), s = HIST.find(h => h[0] === +w)[1][+i]; return done(`${s.n}, ${s.d.toLowerCase()} › sessionsdetaljen, val 7`); }
+    if (t("[data-go]")) return done(t("[data-go]").dataset.go === "Du" ? "Tillbaka till Du" : "Start-arket, val 14c");
+    taps--;
+  });
+  HISTS.push(() => { seg = "Alla"; taps = 0; draw(); });
+  draw();
+});
+
+// Progress: volume per week (tonnes), the deload weeks in their own shade; a tap on a bar shows its value.
+const VOL = { "8 v": [...Array(8).keys()].map(i => [`v${36 + i}`, i === 4 ? 12.1 : 18 + i * 0.6 + (i % 2) * 0.8, i === 4]),
+  "6 mån": [...Array(26).keys()].map(i => [`v${18 + i}`, i % 6 === 5 ? 11.5 + i * 0.1 : 15 + i * 0.25 + (i % 3) * 0.7, i % 6 === 5]),
+  "1 år": [...Array(12).keys()].map(i => [["nov", "dec", "jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt"][i], 60 + i * 2.5 + (i % 3) * 3, false]) };
+const MSETS = [["Bröst", 10], ["Rygg", 12], ["Axlar", 9], ["Biceps", 6], ["Triceps", 7], ["Framsida lår", 8], ["Baksida lår", 6], ["Säte", 6], ["Vader", 4], ["Bål", 5]];
+const LIFTS = [["Knäböj", "128", "+4 kg"], ["Bänkpress", "103,5", "+2,5 kg"], ["Marklyft", "150", "±0"], ["Militärpress", "66", "+1,5 kg"]];
+const RECS = [["Bänkpress", "1RM 103,5 kg", "24 okt"], ["Sidolyft", "10 × 13", "24 okt"], ["Knäböj", "107,5 × 6", "20 okt"]];
+document.querySelectorAll(".stage[data-prog14]").forEach(stage => {
+  const v = stage.dataset.prog14, counter = stage.nextElementSibling;
+  let seg = "Styrka", period = "8 v", pt = -1, taps = 0;
+  const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; };
+  const unit = () => period === "1 år" ? "t per månad" : "t per vecka";
+  const vol = () => { const d = VOL[period], hi = Math.max(...d.map(x => x[1])), w = 320 / d.length;
+    return `<div class="chart"><div class="head"><span>${pt >= 0 ? d[pt][0] + (d[pt][2] ? " · deload" : "") : `Volym, ${unit()}`}</span><b>${pt >= 0 ? nkm(Math.round(d[pt][1] * 10) / 10) + " t" : ""}</b></div>
+      <div class="segc" role="group" aria-label="Period">${Object.keys(VOL).map(k => `<button type="button" class="press" data-period="${k}" aria-pressed="${k === period}">${k}</button>`).join("")}</div>
+      <svg viewBox="0 0 320 130" role="img" aria-label="Volym, ${period}">${d.map(([l, y, dl], i) => { const h = y / hi * 100;
+        return `<rect class="bar${dl ? " dl" : ""}${i === pt ? " on" : ""}" data-bar="${i}" x="${i * w + w * 0.15}" y="${110 - h}" width="${w * 0.7}" height="${h}"/>`; }).join("")}
+      <text class="tick" x="0" y="128">${d[0][0]}</text><text class="tick" x="320" y="128" text-anchor="end">${d.at(-1)[0]}</text></svg></div>`; };
+  const muscles = () => `<div class="group"><h4>Arbetsset per muskel, den här veckan</h4><div class="card mbars">${MSETS.map(([m, n]) => `<div class="mbar"><span>${m}</span><span class="track"><i style="width:${n / 20 * 100}%"></i></span><small>${n} set</small></div>`).join("")}</div></div>`;
+  const lifts = () => `<div class="group"><div class="thead2"><h4>Huvudlyft · 1RM</h4><button type="button" class="press btn small tinted" data-go="Välj lyft">Välj</button></div><div class="xtiles">${LIFTS.map(([n, rm, d]) =>
+    `<button type="button" class="press xtile" data-lift="${n}"><span class="k">${n}${ico("chevR")}</span><span class="v">${rm}</span><small><span class="up">${d}</span> på ${period}</small></button>`).join("")}</div></div>`;
+  const recs = () => `<div class="group"><h4>Rekord, 30 dagar</h4><div class="list">${RECS.map(([n, r, d]) => `<button type="button" class="press row" data-lift="${n}"><span>${n}<small>${r}</small></span><span class="val">${d}</span></button>`).join("")}</div></div>`;
+  const week = () => `<div class="card"><span class="eyebrow">Den här veckan · vecka 43</span><span class="title">4 av 5 pass · 63 arbetsset</span>${MSETS.map(([m, n]) => `<div class="mbar"><span>${m}</span><span class="track"><i style="width:${n / 20 * 100}%"></i></span><small>${n} set</small></div>`).join("")}</div>`;
+  const ORDER = { g1: () => vol() + muscles() + lifts() + recs(), g2: () => lifts() + vol() + muscles() + recs(), g3: () => week() + `<div class="hweek"><span>Trender</span></div>` + vol() + lifts() + recs() };
+  function draw() {
+    const box = stage.querySelector(".wscroll"), y = box ? box.scrollTop : 0;
+    const body = progFirst ? firstUse("Volym, set per muskel och dina lyft visas när du har loggat ett pass.")
+      : seg === "Löpning" ? `<div class="chart"><div class="nodata">Löpningen ritas i #18: km per vecka och veckans längsta pass.</div></div>` : ORDER[v]();
+    stage.innerHTML = `<div class="titlebar fbar"><button type="button" class="press icon-btn glass" data-go="Du" aria-label="Tillbaka till Du">${ico("chevL")}</button><b>Framsteg</b><span></span></div>
+      <div class="exseg"><div class="segc" role="group" aria-label="Visa">${["Styrka", "Löpning"].map(k => `<button type="button" class="press" data-seg="${k}" aria-pressed="${k === seg}">${k}</button>`).join("")}</div></div>
+      <div class="wscroll">${body}</div>`;
+    stage.querySelector(".wscroll").scrollTop = y;
+  }
+  stage.addEventListener("click", e => {
+    const t = s => e.target.closest(s); taps++;
+    if (t("[data-seg]")) { seg = t("[data-seg]").dataset.seg; done(`Visa: ${seg}`); return draw(); }
+    if (t("[data-period]")) { period = t("[data-period]").dataset.period; pt = -1; return draw(); }
+    if (t("[data-bar]")) { const i = +t("[data-bar]").dataset.bar, d = VOL[period][i]; pt = pt === i ? -1 : i; done(`${d[0]}: ${nkm(Math.round(d[1] * 10) / 10)} t${d[2] ? ", deload" : ""}`); return draw(); }
+    if (t("[data-lift]")) return done(`${t("[data-lift]").dataset.lift} › övningsdetaljen, val 10`);
+    if (t("[data-go]")) { const g = t("[data-go]").dataset.go; return done(g === "Du" ? "Tillbaka till Du" : g === "Start" ? "Start-arket, val 14c" : "Välj 3–5 huvudlyft i en lista"); }
+    taps--;
+  });
+  PROGS14.push(() => { seg = "Styrka"; pt = -1; taps = 0; draw(); });
+  draw();
+});
+
+// The Start sheet, opened by + over Hem. Templates other than today's come last done first.
+const OTHERS = [["Pull A", "tor 22 okt"], ["Ben A", "tis 20 okt"], ["Push B", "mån 19 okt"]];
+document.querySelectorAll(".stage[data-start14]").forEach(stage => {
+  const v = stage.dataset.start14, counter = stage.nextElementSibling;
+  let open = false, more = false, kind = "Styrka", taps = 0;
+  const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; open = more = false; kind = "Styrka"; };
+  const tabs = [["home", "Hem"], ["food", "Mat"], ["plus", ""], ["plan", "Plan"], ["you", "Du"]];
+  const bg = `<div class="titlebar fbar"><span></span><span></span><span></span></div><div class="startbg"><div class="largetitle"><h5>Hem</h5></div>
+    <div class="card"><span class="eyebrow">Idag · lördag 24 okt</span><span class="title">${startMode === 2 ? "Inget planerat" : "Push A"}</span><span class="meta">${startMode === 2 ? "Lägg upp ett program i Plan." : "4 övningar · 30 min"}</span></div></div>
+    <nav class="tabbar glass" aria-label="Flikar">${tabs.map(([k, t], j) => `<button type="button" class="press tab"${j ? "" : ' aria-current="page"'}${k === "plus" ? " data-plus" : ""} aria-label="${t || "Starta"}">${t ? ico(k) + t : `<span class="dot">${ico(k)}</span>`}</button>`).join("")}</nav>`;
+  const go = (attr, label, cls = "row") => `<button type="button" class="press ${cls}" data-st="${attr}">${label}</button>`;
+  const row = (attr, icon, label, sub = "") => go(attr, `<span class="kind">${ico(icon)}<span>${label}${sub ? `<small>${sub}</small>` : ""}</span></span><span class="chev">${ico("chevR")}</span>`);
+  const going = () => `<div class="card"><span class="eyebrow">Pass pågår</span><span class="title">Push A</span><span class="meta">Två pass kan inte pågå samtidigt. Avsluta det här för att starta ett nytt.</span>${go("Fortsätt Push A", "Fortsätt Push A · 0:42", "btn filled")}</div>`;
+  const today = () => `<div class="card"><span class="eyebrow">Idag · Plan</span><span class="title">Push A</span><span class="meta">4 övningar · 30 min</span>${go("Push A", "Starta Push A", "btn filled")}</div>`;
+  const SHEET = {
+    n1: () => startMode === 1 ? going() : (startMode === 2 ? "" : today())
+      + `<div class="list">${row("Tomt pass", "lift", "Tomt pass")}${row("Löpning", "run", "Löpning")}${startMode === 2 ? row("Skapa mall", "plus", "Skapa mall") : ""}</div>`
+      + (startMode === 2 ? "" : `<div class="group"><h4>Andra mallar</h4><div class="list">${OTHERS.map(([n, d]) => row(n, "lift", n, `Senast ${d}`)).join("")}</div></div>`),
+    n3: () => startMode === 1 ? going() : `<div class="kinds">${[["Styrka", "lift"], ["Löpning", "run"]].map(([k, i]) => `<button type="button" class="press ktile" data-kind="${k}" aria-pressed="${kind === k}">${ico(i)}${k}</button>`).join("")}</div>${
+      kind === "Löpning" ? `<p class="caption">Löpningen ritas i #18.</p>${go("Löpning", "Starta löpning", "btn filled")}`
+      : startMode === 2 ? `${go("Tomt pass", "Starta tomt pass", "btn filled")}${go("Skapa mall", "Skapa mall", "btn tinted")}`
+      : `${go("Push A", "Starta Push A · idag", "btn filled")}<div class="tpills">${OTHERS.map(([n]) => go(n, n, "btn small tinted")).join("")}</div>${go("Tomt pass", "Tomt pass", "btn text")}`}`,
+  };
+  const sheet = () => v === "n2"
+    ? `<div class="scrim" data-close></div><div class="asheet">${startMode === 1 ? `<div class="list"><div class="row head">Två pass kan inte pågå samtidigt.</div></div>${go("Fortsätt Push A", "Fortsätt Push A · 0:42", "btn filled")}`
+      : `${startMode === 2 ? "" : go("Push A", "Starta Push A · idag", "btn filled")}<div class="list">${more ? `<div class="row head">Andra mallar, senast gjorda först</div>${OTHERS.map(([n, d]) => go(n, `${n} · ${d}`)).join("")}`
+        : `${go("Tomt pass", "Tomt pass")}${go("Löpning", "Löpning")}${startMode === 2 ? go("Skapa mall", "Skapa mall") : `<button type="button" class="press row" data-more>Annan mall…</button>`}`}</div>`}
+      <div class="list"><button type="button" class="press row cancel" data-close>Avbryt</button></div></div>`
+    : `<div class="scrim" data-close></div><div class="sheet glass ssheet" role="dialog" aria-label="Starta"><span class="grabber" aria-hidden="true"></span>
+      <div class="sheet-head"><span></span><h5>Starta</h5><button type="button" class="press btn text" data-close>Stäng</button></div>${SHEET[v]()}</div>`;
+  function draw() { stage.innerHTML = bg + (open ? sheet() : ""); }
+  stage.addEventListener("click", e => {
+    const t = s => e.target.closest(s); taps++;
+    if (t("[data-plus]")) { open = true; return draw(); }
+    if (!open) return taps--;
+    if (t("[data-st]")) { const s = t("[data-st]").dataset.st; done(s === "Skapa mall" ? "Skapa mall › mallredigeraren, val 8" : s.startsWith("Fortsätt") ? "Fortsätt Push A" : `Startar ${s}`); return draw(); }
+    if (t("[data-more]")) { more = true; return draw(); }
+    if (t("[data-kind]")) { kind = t("[data-kind]").dataset.kind; return draw(); }
+    if (t("[data-close]")) { open = more = false; taps = 0; return draw(); }
+    taps--;
+  });
+  STARTS.push(() => { open = more = false; kind = "Styrka"; taps = 0; draw(); });
+  draw();
+});
+[["histmode", v => histFirst = v === "1", HISTS], ["progmode", v => progFirst = v === "1", PROGS14], ["startmode", v => startMode = +v, STARTS]].forEach(([k, set, list]) =>
+  document.querySelectorAll(`[data-${k}]`).forEach(b => b.addEventListener("click", () => {
+    set(b.dataset[k]);
+    document.querySelectorAll(`[data-${k}]`).forEach(x => x.setAttribute("aria-pressed", x === b));
+    list.forEach(f => f());
+  })));
+
+// First use on Plan (Q47): W2's card without a programme, and no templates.
+document.querySelectorAll(".stage[data-plan0]").forEach(stage => {
+  const counter = stage.nextElementSibling; let taps = 0;
+  const strip = WD.map((d, i) => `<span class="wkday"${i === 5 ? " data-today" : ""}>${d.slice(0, 3)}<b>${19 + i}</b><span>–</span></span>`).join("");
+  stage.innerHTML = `<div class="titlebar fbar"><span></span><span></span><span></span></div><div class="wscroll"><div class="largetitle"><h5>Plan</h5></div>
+    <div class="card wkcard"><div class="wkhead"><button type="button" class="press icon-btn" data-x="Förra veckan" aria-label="Förra veckan">${ico("chevL")}</button><span><b>Vecka 43</b><small>19–25 okt</small></span>
+      <button type="button" class="press icon-btn" data-x="Nästa vecka" aria-label="Nästa vecka">${ico("chevR")}</button></div><div class="wkdays">${strip}</div>
+      <div class="dlrec"><span><b style="color:inherit">Inget program</b><small>Allt annat fungerar utan ett.</small></span><button type="button" class="press btn small tinted" data-x="Skapa program">Skapa program</button></div></div>
+    <div class="card tday"><div class="th"><span class="eyebrow">Lördag 24 okt · idag</span></div><span class="title">Inget planerat</span><button type="button" class="press btn tinted" data-x="Starta tomt pass">Starta tomt pass</button></div>
+    <div class="thead2"><h4>Mallar</h4></div><div class="card empty"><h5>Inga mallar än</h5><p>En mall är ett pass du gör om och om igen.</p>
+      <button type="button" class="press btn filled" data-x="Skapa mall">Skapa mall</button><button type="button" class="press btn text" data-x="Starta tomt pass">Starta tomt pass</button></div>
+    <div class="list"><div class="row dis" aria-disabled="true"><span>Importera från Strong<small>Kommer med import</small></span></div>
+      <button type="button" class="press row" data-x="Övningsbiblioteket"><span>Övningsbibliotek<small>142 övningar</small></span><span class="chev">${ico("chevR")}</span></button></div></div>`;
+  stage.addEventListener("click", e => { const x = e.target.closest("[data-x]"); if (!x) return; taps++;
+    counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${x.dataset.x}`; taps = 0; });
 });
 
 document.querySelectorAll("[data-hist]").forEach(b => b.addEventListener("click", () => {
