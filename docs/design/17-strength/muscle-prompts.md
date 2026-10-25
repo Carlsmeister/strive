@@ -18,7 +18,9 @@ Anatomical fitness illustration on a pure white background. One athletic adult m
 figure shown twice side by side: left the start position, right the end position of
 the movement. Realistic proportions, smooth greyscale 3D rendering with soft studio
 lighting, every superficial muscle visible as defined anatomy, skin in light grey.
-Plain black fitted shorts, barefoot, short dark hair, neutral expression.
+Plain black fitted shorts, barefoot, short dark hair, neutral expression. Where a
+coloured muscle lies under the shorts, the shorts turn semi-transparent over it so the
+red muscle shows through with its own clean outline; elsewhere they stay opaque black.
 Only the named muscles are coloured: primary muscles in saturated red, secondary
 muscles in light, semi-transparent red. Everything else stays greyscale.
 Equipment in matte dark grey and black. No text, no labels, no arrows, no logo,
@@ -53,7 +55,7 @@ Secondary muscles (light red): <list>.
 | Exercise | View | Start → end | Primary | Secondary |
 |---|---|---|---|---|
 | Bench press | Side three-quarter from the lifter's left, camera just above bench height | Lying flat on a horizontal bench, bar touching the lower chest, forearms vertical → arms straight and vertical, bar directly over the shoulders | Pectoralis major | Anterior deltoid, triceps brachii |
-| Back squat | Front three-quarter | Standing, bar on the upper back → thighs below parallel, knees over the toes | Quadriceps, gluteus maximus | Adductor magnus, erector spinae |
+| Back squat | Side, from the lifter's right, camera at hip height | Standing, bar on the upper back → thighs just below parallel, knees over the toes, torso leaning slightly forward | Quadriceps, gluteus maximus | Adductor magnus |
 | Lateral raise | Front | Standing, dumbbells at the sides → arms raised to shoulder height, elbows slightly bent | Lateral deltoid | Upper trapezius |
 
 **Learned from the first bench press (2026-10-25):** a view from the feet foreshortens the
@@ -62,6 +64,13 @@ exercises are drawn from the side, and the prompt says the bench angle in words.
 passed (Carl, 2026-10-25): flat bench, right muscles, the style wanted. Its one flaw is the
 lockout, where the arms lean toward the feet instead of standing vertical over the
 shoulders; regenerate it in the batch.
+
+**Learned from the first back squat (2026-10-25):** red painted on top of the shorts
+broke them up, and muscles facing away from the camera (glutes, erector spinae in a
+front view) came out as red smudges at the edges. The style block now makes the shorts
+semi-transparent over a coloured muscle, and **every listed muscle must face the
+camera**: choose the view for the primary muscles, and drop a secondary muscle the view
+cannot show rather than let the model guess.
 
 ## Acceptance
 
