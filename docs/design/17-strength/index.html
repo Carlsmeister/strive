@@ -191,7 +191,7 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 @media (prefers-reduced-motion: reduce) { .swipe > .crow, .swipe .del { transition: none; } }
 
 /* Choice 5: the frame around the sets. The list scrolls under a fixed title bar. */
-.stage[data-frame], .stage[data-summary], .stage[data-tpl], .stage[data-tpl4] { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0; padding: 0; height: 780px; }
+.stage[data-frame], .stage[data-summary], .stage[data-tpl], .stage[data-tpl4], .stage[data-exd] { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0; padding: 0; height: 780px; }
 .fbar { padding: var(--space-8) var(--space-16); }
 .fbar .wtitle { transition: opacity var(--motion-fade); }
 .stage[data-frame="f2"]:not(.scrolled) .fbar .wtitle { opacity: 0; pointer-events: none; }
@@ -349,6 +349,41 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
 .samma { display: flex; justify-content: flex-end; }
 .samma .btn { display: inline-flex; align-items: center; gap: var(--space-4); }
 .samma svg.icon { width: var(--space-16); height: var(--space-16); }
+
+/* Choice 10: exercise detail (Q31–Q37). */
+.vid { display: grid; place-items: center; align-content: center; gap: var(--space-8); width: 100%; aspect-ratio: 16 / 9; border-radius: var(--shape-large);
+  background: var(--color-scrim); color: var(--color-primary-fixed); font: var(--type-label-medium); }
+.vid svg.icon { width: var(--size-touch); height: var(--size-touch); fill: currentColor; }
+.mmap { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: var(--space-16); }
+.mmap svg { width: calc(4 * var(--size-touch)); height: auto; }
+.mmap .body { fill: var(--color-surface-container-highest); }
+.mmap .m1 { fill: var(--color-tertiary); }
+.mmap .m2 { fill: var(--color-tertiary-container); }
+.mlegend { display: grid; gap: var(--space-8); font: var(--type-body-medium); }
+.mlegend span { display: flex; align-items: center; gap: var(--space-8); }
+.mlegend i { width: var(--space-12); height: var(--space-12); border-radius: var(--shape-full); }
+.mlegend .k1 { background: var(--color-tertiary); }
+.mlegend .k2 { background: var(--color-tertiary-container); }
+.steps { margin: 0; padding-left: var(--space-20); display: grid; gap: var(--space-8); font: var(--type-body-medium); }
+.rm { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+.rm span { display: grid; justify-items: center; padding: var(--space-8) 0; border-radius: var(--shape-medium); background: var(--color-surface); font: var(--type-title-small); font-variant-numeric: tabular-nums; }
+.rm small { font: var(--type-label-small); color: var(--color-on-surface-variant); }
+.hcard { display: grid; gap: var(--space-4); padding: var(--space-12) var(--space-16); border-radius: var(--shape-large); background: var(--color-surface); }
+.hcard .th { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-8); font: var(--type-title-small); }
+.hcard .th small { font: var(--type-label-medium); color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+.hcard .crow { padding: var(--space-4) 0; min-height: 0; }
+.exseg { padding: 0 var(--space-16) var(--space-8); }
+.xtiles { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
+.xtile { display: grid; gap: var(--space-4); align-content: start; padding: var(--space-12) var(--space-16); border-radius: var(--shape-large); background: var(--color-surface); text-align: left; min-height: calc(3 * var(--size-touch)); }
+.xtile.wide { grid-column: 1 / -1; padding: 0; overflow: hidden; }
+.xtile .k { display: flex; justify-content: space-between; align-items: center; font: var(--type-title-small); color: var(--color-on-surface-variant); }
+.xtile .k svg.icon { width: var(--space-16); height: var(--space-16); }
+.xtile .v { font: var(--type-headline-small); font-variant-numeric: tabular-nums; }
+.xtile small { font: var(--type-label-medium); color: var(--color-on-surface-variant); }
+.xtile svg.spark { width: 100%; height: var(--space-32); }
+.mmap.one { grid-template-columns: 1fr; }
+.xtile .mmap svg { width: 100%; }
+.spark polyline { fill: none; stroke: var(--color-on-surface-variant); stroke-width: 2; }
 /* The knob stays white, as iOS draws it: the lightest token in each scheme. */
 @media (prefers-color-scheme: dark) { .stage:not(.scheme-light) .switch::after { background: var(--color-on-surface); } }
 .scheme-dark .switch::after { background: var(--color-on-surface); }
@@ -812,6 +847,40 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
     </div>
     <p><strong>Recommendation: S2.</strong> It appears at the moment it is useful, under the set you just changed, and says which sets it will change, so it never copies the wrong way. S1 is always there but does not say what it touches; S3 costs a tap and is found only by someone who knows to look.</p>
     <p><strong>Chosen: S1, a key beside Nästa</strong> (Carl, 2026-10-25). "Samma för resten" copies the reps and RIR of the set you are in to every set below it in that exercise. The keypad's range key "–" takes the comma's place. S2 and S3 stay above as the record of why.</p>
+  </section>
+
+  <section aria-labelledby="q-exd">
+    <h2 id="q-exd">Choice 10: exercise detail</h2>
+    <p>Queue item 6 (Q31–Q37), for Bänkpress. The content is decided: a looping video with <strong>a muscle map Strive draws</strong> under it (primary muscle strong, secondary light); numbered instructions, muscles, equipment, Carl's library mark, the sticky note and the exercise's settings; a card per workout with its sets, estimated 1RM and record stars; estimated 1RM per workout in D1 style over 3 mån · 1 år · Allt, where a tap shows the value and date and a second tap opens the workout; and the records, the best weight for 1–12 reps, and the records history. It opens as a sheet from the active workout's exercise name and as a screen from the library. The open question is how the page is built. <strong>Tap the tabs, the chart's points, and the tiles.</strong></p>
+    <div class="tablewrap"><table class="costs">
+      <thead><tr><th></th><th>X1</th><th>X2</th><th>X3</th></tr></thead>
+      <tbody>
+        <tr><td>Last time's sets</td><td>1 (Historik)</td><td class="best">0, scroll</td><td>0 for the top set, 1 for all</td></tr>
+        <tr><td>Estimated 1RM and its trend</td><td>1 (Diagram)</td><td class="best">0, scroll</td><td class="best">0</td></tr>
+        <tr><td>Everything without a tap</td><td class="bad">no</td><td class="best">yes</td><td>no</td></tr>
+      </tbody>
+    </table></div>
+    <div class="options">
+      <div class="option">
+        <h3>X1 · Four tabs (Q32 as written)</h3>
+        <p>A segmented control under the name switches between Om, Historik, Diagram and Rekord; each is its own page. Om opens first.</p>
+        <div class="stage bleed" data-exd="x1"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>X2 · One page</h3>
+        <p>No tabs. In the order you need it at the gym: the video and the map, three numbers, the chart, the last workouts, the records, then the instructions and settings.</p>
+        <div class="stage bleed" data-exd="x2"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+      <div class="option">
+        <h3>X3 · Tiles that open</h3>
+        <p>A board of tiles, the way Health shows a summary: the video, the muscles, estimated 1RM with its trend, last time, records, instructions. Each tile opens its full page.</p>
+        <div class="stage bleed" data-exd="x3"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
+    <p><strong>Recommendation: X2.</strong> Opened mid-workout, you want the form and last time, and X2 shows both without a tap; at home, the chart and records are a scroll away, not behind a tab you have to guess. It changes Q32's four tabs into four sections. X3 is the quickest overview but puts every detail one tap deeper; X1 hides three quarters of the page.</p>
   </section>
 
   <section aria-labelledby="dec">
@@ -1724,6 +1793,88 @@ document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
     if (q("[data-field]")) return done(`${q("[data-field]").dataset.field}, knappsatsen med intervalltangenten kommer i nästa val`);
     if (q("[data-delete]")) return done("Ta bort mallen, som en alert bekräftar först");
     taps--;  // a tap on nothing
+  });
+  draw();
+});
+
+// Choice 10: exercise detail for Bänkpress.
+ICONS.play = '<path d="M8 5v14l11-7z"/>';
+const EXD = {
+  e1rm: { "3 mån": [[95, "3 aug"], [96.5, "10 aug"], [97, "17 aug"], [98, "24 aug"], [98.5, "31 aug"], [100, "7 sep"], [99, "14 sep"], [101, "21 sep"], [102, "28 sep"], [101.5, "5 okt"], [103, "12 okt"], [103.5, "24 okt"]],
+    "1 år": [[86, "nov"], [88, "dec"], [89.5, "jan"], [90, "feb"], [91, "mar"], [92.5, "apr"], [94, "maj"], [93, "jun"], [95, "jul"], [97, "aug"], [100, "sep"], [103.5, "okt"]],
+    "Allt": [[70, "2024"], [76, "2024"], [81, "2025"], [84, "2025"], [86, "2025"], [90, "2026"], [94, "2026"], [103.5, "2026"]] },
+  hist: [["Lördag 24 okt", "Push A", "103,5", [["W", "40 × 10"], ["1", "80 × 8 @2"], ["2", "82,5 × 8 @2", 1], ["3", "82,5 × 7 @1"]]],
+    ["Lördag 17 okt", "Push A", "102,0", [["W", "40 × 10"], ["1", "80 × 8 @3"], ["2", "80 × 8 @2"], ["3", "80 × 7 @1"]]],
+    ["Måndag 12 okt", "Push B", "103,0", [["W", "40 × 10"], ["1", "85 × 5 @2", 1], ["2", "85 × 5 @1"], ["3", "80 × 6 @1"]]]],
+  rec: [["Tyngsta vikt", "85 kg", "12 okt"], ["Bästa uppskattade 1RM", "103,5 kg", "24 okt"], ["Mest volym i ett set", "660 kg · 82,5 × 8", "24 okt"]],
+  rm: [95, 92.5, 90, 87.5, 85, 85, 82.5, 82.5, 80, 75, "–", 70],
+  rechist: [["24 okt", "1RM 103,5 kg · 82,5 × 8"], ["12 okt", "Tyngsta vikt 85 kg · 85 × 5"], ["7 sep", "1RM 100 kg · 80 × 8"]],
+};
+// Strive's own muscle map: a front and a back figure; the exercise's primary muscles strong, secondary light.
+const fig = (x, parts) => `<g transform="translate(${x} 0)"><circle class="body" cx="30" cy="12" r="9"/><rect class="body" x="16" y="24" width="28" height="44" rx="10"/>
+  <rect class="body" x="6" y="26" width="9" height="40" rx="4.5"/><rect class="body" x="45" y="26" width="9" height="40" rx="4.5"/>
+  <rect class="body" x="18" y="66" width="11" height="50" rx="5.5"/><rect class="body" x="31" y="66" width="11" height="50" rx="5.5"/>${parts}</g>`;
+const muscleMap = () => `<svg viewBox="0 0 130 120" role="img" aria-label="Muskler: bröst primärt; främre axlar och triceps sekundärt">${
+  fig(0, `<ellipse class="m1" cx="23.5" cy="35" rx="7" ry="6"/><ellipse class="m1" cx="36.5" cy="35" rx="7" ry="6"/><circle class="m2" cx="12" cy="30" r="5"/><circle class="m2" cx="48" cy="30" r="5"/>`)}${
+  fig(68, `<ellipse class="m2" cx="10.5" cy="46" rx="4" ry="9"/><ellipse class="m2" cx="49.5" cy="46" rx="4" ry="9"/>`)}</svg>`;
+document.querySelectorAll(".stage[data-exd]").forEach(stage => {
+  const v = stage.dataset.exd, counter = stage.nextElementSibling;
+  let tab = "Om", period = "3 mån", pt = -1, page = null, mark = "Ja", taps = 0;
+  const done = what => { counter.querySelector("strong").textContent = taps; counter.querySelector(".picked").textContent = `: ${what}`; taps = 0; };
+  const nf = n => String(n).replace(".", ",");
+  const video = () => `<button type="button" class="press vid" data-video aria-label="Spela videon i helskärm">${ico("play")}<span>Loopar utan ljud · tryck för helskärm</span></button>`;
+  const map = () => `<div class="mmap">${muscleMap()}<div class="mlegend"><span><i class="k1"></i>Bröst</span><span><i class="k2"></i>Främre axlar, triceps</span></div></div>`;
+  const nums = () => `<div class="stats three"><div class="stat"><span class="k">1RM</span><span class="v">103,5</span></div><div class="stat"><span class="k">Bästa set</span><span class="v">85×5</span></div><div class="stat"><span class="k">Senast</span><span class="v">82,5×8</span></div></div>`;
+  const chart = () => { const d = EXD.e1rm[period], lo = Math.min(...d.map(x => x[0])) - 2, hi = Math.max(...d.map(x => x[0])) + 2;
+    const X = i => 16 + i * (288 / (d.length - 1)), Y = y => 120 - (y - lo) / (hi - lo) * 100;
+    return `<div class="chart"><div class="head"><span>${pt >= 0 ? d[pt][1] : "Uppskattat 1RM per pass"}</span><b>${pt >= 0 ? nf(d[pt][0]) + " kg" : ""}</b></div>
+      <div class="segc" role="group" aria-label="Period">${Object.keys(EXD.e1rm).map(k => `<button type="button" class="press" data-period="${k}" aria-pressed="${k === period}">${k}</button>`).join("")}</div>
+      <svg viewBox="0 0 320 140" role="img" aria-label="Uppskattat 1RM, ${period}">${[0, 1, 2].map(k => `<line class="grid" x1="0" x2="320" y1="${20 + k * 50}" y2="${20 + k * 50}"/>`).join("")}
+      <polyline class="line" points="${d.map((x, i) => `${X(i)},${Y(x[0])}`).join(" ")}"/>${d.map((x, i) => `<g data-pt="${i}"><circle cx="${X(i)}" cy="${Y(x[0])}" r="14" fill="transparent"/><circle class="pt${i === pt ? " on" : ""}" cx="${X(i)}" cy="${Y(x[0])}" r="4"/></g>`).join("")}
+      <text class="tick" x="0" y="138">${d[0][1]}</text><text class="tick" x="320" y="138" text-anchor="end">${d.at(-1)[1]}</text></svg></div>`; };
+  const history = n => EXD.hist.slice(0, n).map(([day, w, rm, ss]) => `<div class="hcard"><div class="th"><span>${day} · ${w}</span><small>1RM ${rm}</small></div>${ss.map(([b, val, pr]) =>
+    `<div class="crow"><span class="badge${b === "W" ? " w" : ""}">${b}</span><span class="v">${val}</span>${pr ? `<span class="pr" aria-label="Rekord">${ico("star")}</span>` : "<span></span>"}</div>`).join("")}</div>`).join("");
+  const records = () => sec("Rekord", `<div class="list">${EXD.rec.map(([k, val, d]) => `<div class="row"><span>${k}<small>${d}</small></span><span class="val">${val}</span></div>`).join("")}</div>`)
+    + sec("Bästa vikt per reps", `<div class="rm">${EXD.rm.map((w, i) => `<span><small>${i + 1} rep</small>${nf(w)}</span>`).join("")}</div>`)
+    + sec("Rekordhistorik", `<div class="list">${EXD.rechist.map(([d, t]) => `<div class="row"><span>${t}</span><span class="val">${d}</span></div>`).join("")}</div>`);
+  const about = () => sec("Så gör du", `<ol class="steps"><li>Ligg med ögonen under stången, skulderbladen ihop och ned.</li><li>Greppa lite bredare än axlarna, tummen runt stången.</li>
+    <li>Sänk stången kontrollerat till nedre delen av bröstet.</li><li>Pressa upp och lite bakåt tills armarna är raka.</li></ol>
+    <div class="list"><div class="row"><span>Utrustning</span><span class="val">Skivstång, bänk</span></div><div class="row"><span>Fast anteckning</span><span class="val">Tummen runt stången</span></div></div>`)
+    + sec("Din markering", `<div class="segc" role="group" aria-label="Markering">${["Ja", "Byt", "Nej", "Testa"].map(k => `<button type="button" class="press" data-mark="${k}" aria-pressed="${k === mark}">${k}</button>`).join("")}</div>`)
+    + sec("Inställningar", `<div class="list">${[["Typ", "Vikt × reps"], ["Steg", "2,5 kg"], ["Stång", "Olympisk, 20 kg"], ["Enhet", "kg"]].map(([k, val]) => `<button type="button" class="press row" data-setting="${k}"><span>${k}</span><span class="val">${val} ›</span></button>`).join("")}</div>`);
+  const sec = (h, body) => `<div class="group"><h4>${h}</h4>${body}</div>`;
+  const TABS = { Om: () => video() + map() + about(), Historik: () => history(3), Diagram: () => chart(), Rekord: () => records() };
+  const PAGES = { Video: () => video(), Muskler: () => map(), "1RM": () => chart(), Senast: () => history(3), Rekord: () => records(), "Så gör du": () => about() };
+  const spark = () => { const d = EXD.e1rm["3 mån"], lo = 94, hi = 104; return `<svg class="spark" viewBox="0 0 100 32" aria-hidden="true"><polyline points="${d.map((x, i) => `${i * 100 / (d.length - 1)},${30 - (x[0] - lo) / (hi - lo) * 28}`).join(" ")}"/></svg>`; };
+  const tiles = () => `<div class="xtiles"><div class="xtile wide">${video()}</div>
+    <button type="button" class="press xtile" data-page="Muskler"><span class="k">Muskler${ico("chevR")}</span><span class="mmap one">${muscleMap()}</span></button>
+    <button type="button" class="press xtile" data-page="1RM"><span class="k">1RM${ico("chevR")}</span><span class="v">103,5</span>${spark()}<small>↑ 8,5 kg på 3 mån</small></button>
+    <button type="button" class="press xtile" data-page="Senast"><span class="k">Senast${ico("chevR")}</span><span class="v">82,5×8</span><small>Lördag 24 okt · 4 set</small></button>
+    <button type="button" class="press xtile" data-page="Rekord"><span class="k">Rekord${ico("chevR")}</span><span class="v">85 kg</span><small>Tyngsta · senast nytt 24 okt</small></button>
+    <button type="button" class="press xtile" data-page="Så gör du"><span class="k">Så gör du${ico("chevR")}</span><small>4 steg · skivstång, bänk · markerad Ja</small></button></div>`;
+  const bar = back => `<div class="titlebar fbar"><button type="button" class="press icon-btn glass" data-back aria-label="Tillbaka">${ico("chevL")}</button><b>${back ? page : "Bänkpress"}</b>
+    <button type="button" class="press icon-btn glass" data-more aria-label="Fler val för Bänkpress">${ico("more")}</button></div>`;
+  function draw() {
+    const box = stage.querySelector(".wscroll"), top = box ? box.scrollTop : 0;
+    let body;
+    if (v === "x1") body = bar() + `<div class="exseg"><div class="segc" role="group" aria-label="Del">${Object.keys(TABS).map(k => `<button type="button" class="press" data-tab="${k}" aria-pressed="${k === tab}">${k}</button>`).join("")}</div></div><div class="wscroll">${TABS[tab]()}</div>`;
+    if (v === "x2") body = bar() + `<div class="wscroll">${video()}${map()}${nums()}${chart()}${sec("Senaste passen", history(2))}${records()}${about()}</div>`;
+    if (v === "x3") body = page ? bar(true) + `<div class="wscroll">${PAGES[page]()}</div>` : bar() + `<div class="wscroll">${tiles()}</div>`;
+    stage.innerHTML = body;
+    const nb = stage.querySelector(".wscroll"); if (nb) nb.scrollTop = top;
+  }
+  stage.addEventListener("click", e => {
+    const q = sel => e.target.closest(sel); taps++;
+    if (q("[data-tab]")) { tab = q("[data-tab]").dataset.tab; pt = -1; stage.querySelector(".wscroll").scrollTop = 0; done(`Fliken ${tab}`); return draw(); }
+    if (q("[data-period]")) { period = q("[data-period]").dataset.period; pt = -1; return draw(); }
+    if (q("[data-pt]")) { const i = +q("[data-pt]").dataset.pt; if (i === pt) return done(`Passet ${EXD.e1rm[period][i][1]}, som öppnas`); pt = i; done(`${EXD.e1rm[period][i][1]}: ${nf(EXD.e1rm[period][i][0])} kg`); return draw(); }
+    if (q("[data-page]")) { page = q("[data-page]").dataset.page; done(`Rutan ${page}`); stage.querySelector(".wscroll").scrollTop = 0; return draw(); }
+    if (q("[data-back]")) { if (page) { page = null; taps = 0; return draw(); } return done("Tillbaka till passet eller biblioteket"); }
+    if (q("[data-video]")) return done("Videon i helskärm");
+    if (q("[data-mark]")) { mark = q("[data-mark]").dataset.mark; done(`Markering ${mark}${mark === "Byt" ? ", som frågar efter alternativet" : ""}`); return draw(); }
+    if (q("[data-setting]")) return done(`${q("[data-setting]").dataset.setting}, en lista att välja ur`);
+    if (q("[data-more]")) return done("⋯: Redigera övningen, Arkivera");
+    taps--;
   });
   draw();
 });
