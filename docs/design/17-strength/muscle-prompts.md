@@ -70,7 +70,9 @@ broke them up, and muscles facing away from the camera (glutes, erector spinae i
 front view) came out as red smudges at the edges. The style block now makes the shorts
 semi-transparent over a coloured muscle, and **every listed muscle must face the
 camera**: choose the view for the primary muscles, and drop a secondary muscle the view
-cannot show rather than let the model guess.
+cannot show rather than let the model guess. The second squat passed (Carl, 2026-10-25): the shorts show
+the glutes through cleanly and nothing else is red. The model kept a front three-quarter
+view instead of the side view asked for; it still shows both thighs and glutes.
 
 ## Acceptance
 
