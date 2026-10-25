@@ -761,7 +761,15 @@ th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .04
       </div>
     </div>
     <p><strong>Recommendation: P3.</strong> With a programme, the question when you open Plan is "what is today", and P3 answers it before you tap: today's template is already open, one tap from starting. Other days and other templates use the same card, so there is one place to look. P2 is the calmest list if you train without a programme; P1 is the most to look at and the slowest to scan.</p>
-    <p><strong>Chosen: P1</strong> (Carl, 2026-10-24). Plan's templates are a row of large cards you swipe, each with its name, muscles, number of exercises, time and last done, and a ⋯ with Redigera, Duplicera, Dela, Arkivera and Ta bort. A card zooms open to a full-screen preview: muscles, tiles for exercises, sets and minutes, the template note, the exercises in order with their target and an info button, and Starta passet at the bottom. Redigera opens T4's editor. <em>Changes Q41:</em> the templates were to be joined tiles with exercise count and time. T1–T4, P2 and P3 stay above as the record of why.</p>
+    <p><strong>Chosen: P3 with P1's templates</strong> (Carl, 2026-10-25, changing his pick of P1). The week is the way in, and today's template stands open in a card under it with Starta passet, as in P3. Below the programme card, the templates are P1's: a row of large cards you swipe, each with its name, muscles, number of exercises, time and last done, and a ⋯ with Redigera, Duplicera, Dela, Arkivera and Ta bort. A card zooms open to a full-screen preview: muscles, tiles for exercises, sets and minutes, the template note, the exercises in order with their target and an info button, and Starta passet at the bottom. Redigera opens T4's editor. <em>Changes Q41:</em> the templates were to be joined tiles with exercise count and time. T1–T4 and P1–P3 stay above as the record of why.</p>
+    <div class="options">
+      <div class="option">
+        <h3>Chosen · P3 with P1's templates</h3>
+        <p>Start today's template from the day card, pick another day, or swipe the templates and open one full screen.</p>
+        <div class="stage bleed" data-tpl4="p13"></div>
+        <div class="counter">Last action took <strong>–</strong> taps<span class="picked"></span></div>
+      </div>
+    </div>
   </section>
 
   <section aria-labelledby="dec">
@@ -1513,16 +1521,19 @@ document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
   const work = e => e.sets.filter(x => x[0] !== "W").length;
   const week = () => `<div class="wk"><div class="wkhead"><button type="button" class="press icon-btn" aria-label="Förra veckan">${ico("chevL")}</button><span><b>Vecka 43</b><small>Vecka 3 av 8 · block 1</small></span>
     <button type="button" class="press icon-btn" aria-label="Nästa vecka">${ico("chevR")}</button></div><div class="wkdays">${WEEK.map(([d, n, what, ok], i) =>
-    `<button type="button" class="press wkday" data-day="${i}"${i === 5 ? " data-today" : ""}${v === "p3" ? ` aria-pressed="${i === day}"` : ""} aria-label="${d} ${n}, ${what || "vila"}${ok ? ", klart" : ""}">${d.slice(0, 3)}<b>${n}</b><span>${ok ? "✓" : what ? what.split(" ")[0].replace("Löpning", "Löp") : "–"}</span></button>`).join("")}</div></div>`;
+    `<button type="button" class="press wkday" data-day="${i}"${i === 5 ? " data-today" : ""}${pickWeek ? ` aria-pressed="${i === day}"` : ""} aria-label="${d} ${n}, ${what || "vila"}${ok ? ", klart" : ""}">${d.slice(0, 3)}<b>${n}</b><span>${ok ? "✓" : what ? what.split(" ")[0].replace("Löpning", "Löp") : "–"}</span></button>`).join("")}</div></div>`;
   const progCard = `<button type="button" class="press card prog4" data-prog4><span class="eyebrow">Program</span><span class="title">Hypertrofi, block 1</span><span class="meta">Vecka 3 av 8 · deload vecka 6</span></button>`;
   const library = `<div class="list"><button type="button" class="press row" data-lib><span>Övningsbibliotek<small>142 övningar</small></span><span class="chev">${ico("chevR")}</span></button></div>`;
   const tHead = `<div class="thead2"><h4>Mallar</h4><span class="inline nowrap"><button type="button" class="press btn small tinted">Ny mall</button><button type="button" class="press icon-btn" data-secmenu aria-label="Fler val för mallar">${ico("more")}</button></span></div>`;
   const tagOf = (x, j) => { const e = x.ex[j]; if (!e.g) return ""; let n = 0; while (x.ex[j - n - 1]?.g === e.g) n++; return `<span class="tag">${"AB"[n]}</span>`; };
   const exLines = x => `<ol class="tex">${x.ex.map((e, j) => `<li><span>${tagOf(x, j)}${e.n}</span><span>${work(e)} × ${e.sets.at(-1)[1]}</span></li>`).join("")}</ol>`;
-  const PLAN = {
-    p1: () => `${week()}${progCard}${tHead}<div class="tcar">${TPL4.map((x, i) => `<div class="tcard2" role="button" tabindex="0" data-card="${i}"><div class="th"><span>${x.n}</span>
+  const carousel = () => `<div class="tcar">${TPL4.map((x, i) => `<div class="tcard2" role="button" tabindex="0" data-card="${i}"><div class="th"><span>${x.n}</span>
       <button type="button" class="press icon-btn" data-cardmenu="${i}" aria-label="Fler val för ${x.n}">${ico("more")}</button></div><span class="mus">${muscles(x)}</span>
-      <span class="tstat">${x.ex.length} övningar · ${x.min} min</span><small>${ico("clock")}Senast ${x.last}</small></div>`).join("")}</div>${library}`,
+      <span class="tstat">${x.ex.length} övningar · ${x.min} min</span><small>${ico("clock")}Senast ${x.last}</small></div>`).join("")}</div>`;
+  const pickWeek = v === "p3" || v === "p13";
+  const PLAN = {
+    p1: () => `${week()}${progCard}${tHead}${carousel()}${library}`,
+    p13: () => PLAN.p3(),
     p2: () => `${week()}${progCard}${tHead}<div class="list">${TPL4.map((x, i) => `<div class="trow"><button type="button" class="press row" data-toggle="${i}" aria-expanded="${open === i}">
       <span>${x.n}<small>${muscles(x)}</small></span><span class="chev">${ico(open === i ? "chevD" : "chevR")}</span></button>${open !== i ? "" : `<div class="tdetail">${exLines(x)}
       <small>${x.min} min · senast ${x.last}</small><div class="inline nowrap"><button type="button" class="press btn small filled" data-start>Starta</button>
@@ -1532,7 +1543,7 @@ document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
         : `<span class="title">${x.n}</span><span class="meta">${x.ex.length} övningar · ${x.min} min · senast ${x.last}</span>${exLines(x)}<div class="inline nowrap">${day >= 0 && d[3]
           ? `<button type="button" class="press btn small tinted" data-seen>Visa passet</button>` : `<button type="button" class="press btn filled" data-start>Starta passet</button>`}<button type="button" class="press btn small tinted" data-edit>Redigera</button></div>`;
       return `${week()}<div class="card tday"><div class="th"><span class="eyebrow">${label}</span>${x ? `<button type="button" class="press icon-btn" data-cardmenu="${shown}" aria-label="Fler val för ${x.n}">${ico("more")}</button>` : ""}</div>${body}</div>
-      ${progCard}${tHead}<div class="tpills">${TPL4.map((y, i) => `<button type="button" class="press btn small tinted" data-pick="${i}" aria-pressed="${day < 0 && i === shown}">${y.n}</button>`).join("")}</div>${library}`; },
+      ${progCard}${tHead}${v === "p13" ? carousel() : `<div class="tpills">${TPL4.map((y, i) => `<button type="button" class="press btn small tinted" data-pick="${i}" aria-pressed="${day < 0 && i === shown}">${y.n}</button>`).join("")}</div>`}${library}`; },
   };
   const pvRowN = (e, j, tag) => `<div class="pvrow n"><span class="ord">${tag || j + 1 - t().ex.slice(0, j).filter((x, k) => x.g && t().ex[k + 1]?.g === x.g).length}</span><span><b>${e.n}</b>
     <small>${work(e)} set · ${e.sets.at(-1)[1]} @ ${e.sets.at(-1)[2]} · ${e.m}</small></span><button type="button" class="press icon-btn" data-info="${j}" aria-label="Om ${e.n}">${ico("info")}</button></div>`;
@@ -1572,8 +1583,8 @@ document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
   const alertHtml = () => `<div class="scrim"></div><div class="center"><div class="alert"><h5>Släng ändringar?</h5><p>Ändringarna i ${t().n} sparas inte.</p>
     <div class="inline"><button type="button" class="press btn tinted" data-a="keep">Fortsätt</button><button type="button" class="press btn danger" data-a="drop">Släng</button></div></div></div>`;
   function place() {
-    // The last match is the topmost: P1's preview repeats the card's ⋯ over the card itself.
-    const m = stage.querySelector(".menu"), a = [...stage.querySelectorAll(menu.anchor)].at(-1), s = stage.getBoundingClientRect(), r = a.getBoundingClientRect();
+    // The same ⋯ can appear twice (the day card and its template's card), so the menu keeps which one was tapped.
+    const m = stage.querySelector(".menu"), a = stage.querySelectorAll(menu.anchor)[menu.idx || 0], s = stage.getBoundingClientRect(), r = a.getBoundingClientRect();
     const gap = parseFloat(getComputedStyle(stage).getPropertyValue("--space-8")), right = r.left + r.width / 2 - s.left > s.width / 2;
     let top = r.bottom - s.top + gap; if (top + m.offsetHeight > s.height - gap) top = r.top - s.top - m.offsetHeight - gap;
     m.style.left = `${Math.min(Math.max(2 * gap, right ? r.right - s.left - m.offsetWidth : r.left - s.left), s.width - m.offsetWidth - 2 * gap)}px`; m.style.top = `${top}px`;
@@ -1582,7 +1593,7 @@ document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
   function draw() {
     const sc = [...stage.querySelectorAll(".wscroll")].map(x => x.scrollTop);
     const planHtml = v === "t4" ? plan() : `<div class="titlebar fbar"><span></span><span></span><span></span></div><div class="wscroll"><div class="largetitle"><h5>Plan</h5></div>${PLAN[v]()}</div>`;
-    stage.innerHTML = (view === "edit" ? editor() : planHtml + (view === "preview" ? (v === "p1" ? previewFull() : preview()) : "")) + (menu ? menuHtml() : "") + (alert ? alertHtml() : "");
+    stage.innerHTML = (view === "edit" ? editor() : planHtml + (view === "preview" ? (v === "p1" || v === "p13" ? previewFull() : preview()) : "")) + (menu ? menuHtml() : "") + (alert ? alertHtml() : "");
     stage.querySelectorAll(".wscroll").forEach((x, i) => x.scrollTop = sc[i] ?? 0);
     if (menu) place();
   }
@@ -1596,10 +1607,11 @@ document.querySelectorAll(".stage[data-tpl4]").forEach(stage => {
       const why = { del: ", som en alert bekräftar först", dup: `, som skapar ${t().n} (kopia)`, share: ", med iOS delningsark", arch: ", flyttas till Visa arkiverade", showarch: ", en lista under Mallar" };
       if (act === "arch" || act === "del") view = "plan";
       done(`${key === "card" ? t().n + " › " : ""}${mi.textContent.trim()}${why[act] || ""}`); return draw(); }
-    if (q("[data-cardmenu]")) { cur = +q("[data-cardmenu]").dataset.cardmenu; menu = { key: "card", anchor: `[data-cardmenu="${cur}"]` }; return draw(); }
+    if (q("[data-cardmenu]")) { const b = q("[data-cardmenu]"), anchor = `[data-cardmenu="${b.dataset.cardmenu}"]`;
+      cur = +b.dataset.cardmenu; menu = { key: "card", anchor, idx: [...stage.querySelectorAll(anchor)].indexOf(b) }; return draw(); }
     if (q("[data-namemenu]")) { menu = { key: "name", anchor: "[data-namemenu]" }; return draw(); }
     if (q("[data-secmenu]")) { menu = { key: "section", anchor: "[data-secmenu]" }; return draw(); }
-    if (q("[data-day]")) { const i = +q("[data-day]").dataset.day; if (v !== "p3") return done(`${WEEK[i][0]}, veckovyn ritas i punkt 8`);
+    if (q("[data-day]")) { const i = +q("[data-day]").dataset.day; if (!pickWeek) return done(`${WEEK[i][0]}, veckovyn ritas i punkt 8`);
       day = i; shown = WEEK[i][2] ? tix(WEEK[i][2]) : -1; if (shown >= 0) cur = shown; return draw(); }
     if (q("[data-pick]")) { day = -1; shown = cur = +q("[data-pick]").dataset.pick; return draw(); }
     if (q("[data-toggle]")) { const i = +q("[data-toggle]").dataset.toggle; open = open === i ? -1 : i; cur = i; return draw(); }
