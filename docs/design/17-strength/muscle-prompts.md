@@ -52,9 +52,13 @@ Secondary muscles (light red): <list>.
 
 | Exercise | View | Start → end | Primary | Secondary |
 |---|---|---|---|---|
-| Bench press | Front three-quarter, from slightly above | Lying on a flat bench, bar touching the lower chest → arms straight, bar over the shoulders | Pectoralis major | Anterior deltoid, triceps brachii |
+| Bench press | Side three-quarter from the lifter's left, camera just above bench height | Lying flat on a horizontal bench, bar touching the lower chest, forearms vertical → arms straight and vertical, bar directly over the shoulders | Pectoralis major | Anterior deltoid, triceps brachii |
 | Back squat | Front three-quarter | Standing, bar on the upper back → thighs below parallel, knees over the toes | Quadriceps, gluteus maximus | Adductor magnus, erector spinae |
 | Lateral raise | Front | Standing, dumbbells at the sides → arms raised to shoulder height, elbows slightly bent | Lateral deltoid | Upper trapezius |
+
+**Learned from the first bench press (2026-10-25):** a view from the feet foreshortens the
+body, so a flat bench reads as an incline and the pressed bar ends up over the face. Lying
+exercises are drawn from the side, and the prompt says the bench angle in words.
 
 ## Acceptance
 
