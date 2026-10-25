@@ -1,6 +1,6 @@
 # Muscle illustration prompts
 
-Carl can generate the exercise illustrations with an image model (2026-10-25), in place
+Carl generates the exercise illustrations with ChatGPT's image model (2026-10-25), in place
 of a licensed set (strive#4) or a map Strive draws itself (#17 Q36). This is the prompt
 spec. **Pilot three exercises before any batch**, and check every image against the
 acceptance list: a model that draws the wrong muscle teaches the wrong exercise.
@@ -23,7 +23,7 @@ Only the named muscles are coloured: primary muscles in saturated red, secondary
 muscles in light, semi-transparent red. Everything else stays greyscale.
 Equipment in matte dark grey and black. No text, no labels, no arrows, no logo,
 no watermark, no floor, no shadow beyond a faint contact shadow.
-Wide 16:9 frame, both figures fully in view with even margins.
+Landscape 3:2 frame, both figures fully in view with even margins.
 ```
 
 ### Exercise block (one per exercise)
@@ -38,6 +38,15 @@ End position: <one sentence>.
 Primary muscles (saturated red): <list>.
 Secondary muscles (light red): <list>.
 ```
+
+## In ChatGPT
+
+1. Start a new chat and send the style block and the bench press block as one message.
+2. Regenerate until it passes the acceptance list.
+3. In the **same chat**, send only the next exercise block, starting with "Same figure, style
+   and framing as the accepted image:". The chat keeps the figure consistent.
+4. Download each accepted image as PNG and name it by the exercise in English, e.g.
+   `bench-press.png`.
 
 ## Pilot
 
@@ -61,8 +70,9 @@ Reject and regenerate an image when any of these fails:
 
 ## Open before a batch
 
-- **The model's terms.** Which model, and whether its output may be stored in the app
-  and, later, shipped on the App Store.
+- **The model's terms.** OpenAI's terms page could not be read here (it refuses automated
+  requests). As remembered, they assign the output to the user and allow commercial use;
+  **check it on openai.com/policies/terms-of-use before the batch.**
 - **One image or two.** Q36 puts a video on top and a muscle map under it; an image like
   this shows both the movement and the muscles, and could replace the map, or the video
   for exercises without one.
