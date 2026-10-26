@@ -44,6 +44,9 @@ sub-issues are written when it is next, not before.
 
   The free Apple ID signs for 7 days; reinstall at least weekly.
 - **Tests:** `./gradlew :shared:testAndroidHostTest`.
+- **A new language** touches three places: a `values-<code>/strings.xml` under
+  `shared/src/commonMain/composeResources`, `androidApp/src/main/res/xml/locales_config.xml`,
+  and `CFBundleLocalizations` in `iosApp/iosApp/Info.plist`. A test checks only the first.
 
 ## How work is written down
 
