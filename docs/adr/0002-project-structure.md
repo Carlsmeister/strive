@@ -44,8 +44,9 @@ per-tab stacks through its save and restore options on a graph.
   graph.
 
 The back stacks are plain lists rather than `rememberNavBackStack`, which skips registering
-serializers for iOS. Android loses the stacks if it kills the process; the code marks this
-as a shortcut.
+serializers for iOS. On Android, navigation resets to Home whenever the activity is
+recreated: on rotation, on a change of the app's language, and when the system kills the
+process. An open session closes with it. The code marks this as a shortcut.
 
 ## Consequences
 
@@ -55,5 +56,5 @@ as a shortcut.
   (ADR 0001).
 - **Revisit modules when** an incremental iOS build after a one-line change passes about
   90 s, or two features start depending on each other's internals.
-- **Revisit the plain lists when** a feature has state worth restoring after Android kills
-  the process.
+- **Revisit the plain lists when** a feature has state worth restoring after the activity is
+  recreated, at the latest when #4's session is open during a rotation.
