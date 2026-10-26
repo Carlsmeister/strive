@@ -3,8 +3,10 @@
 A personal training app for iPhone and Android from one Kotlin codebase: strength
 sessions, GPS runs, and export of everything to Carl's own training log.
 
-**Nothing is built yet.** This repository holds the plan: issue templates, the
-Definition of Done and the architecture decision records. Code starts with the spike.
+**No product code yet.** The spike is under way: a throwaway app in `spike/` builds
+and runs on Carl's iPhone (#10); background GPS (#11) is next. The design is prototyped in
+`docs/design/`. Beside those, this repository holds the plan: issue templates, the
+Definition of Done and the architecture decision records.
 
 | | |
 |---|---|
