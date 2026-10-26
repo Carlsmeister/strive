@@ -25,6 +25,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -95,6 +96,7 @@ private fun TabsScreen(
     onStart: (StringResource) -> Unit,
 ) {
     var sheet by remember { mutableStateOf(false) }
+    val tabState = rememberSaveableStateHolder()
 
     Scaffold(
         bottomBar = {
@@ -120,23 +122,26 @@ private fun TabsScreen(
         },
     ) { padding ->
         val stack: SnapshotStateList<Screen> = stacks.getValue(selected)
-        // A fresh display per tab, so switching tabs swaps stacks instead of animating as a push.
+        // A fresh display per tab, so switching tabs swaps stacks instead of animating as a push; the holder
+        // keeps each tab's saved screen state (scroll, drafts) while its display is gone.
         key(selected) {
-            NavDisplay(
-                backStack = stack,
-                modifier = Modifier.padding(padding),
-                onBack = { stack.pop() },
-                entryProvider = { screen ->
-                    NavEntry(screen) {
-                        val title = stringResource(screen.tab.title)
-                        Placeholder(
-                            if (screen.depth == 1) title else "$title ${screen.depth}",
-                            back = if (screen.depth > 1) ({ stack.pop() }) else null,
-                            next = { stack += Screen(screen.tab, screen.depth + 1) },
-                        )
-                    }
-                },
-            )
+            tabState.SaveableStateProvider(selected.name) {
+                NavDisplay(
+                    backStack = stack,
+                    modifier = Modifier.padding(padding),
+                    onBack = { stack.pop() },
+                    entryProvider = { screen ->
+                        NavEntry(screen) {
+                            val title = stringResource(screen.tab.title)
+                            Placeholder(
+                                if (screen.depth == 1) title else "$title ${screen.depth}",
+                                back = if (screen.depth > 1) ({ stack.pop() }) else null,
+                                next = { stack += Screen(screen.tab, screen.depth + 1) },
+                            )
+                        }
+                    },
+                )
+            }
         }
     }
 
