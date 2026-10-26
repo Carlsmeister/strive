@@ -57,6 +57,11 @@ private data object Tabs : Route
 private data class Session(val title: StringResource) : Route
 private data class Screen(val tab: Tab, val depth: Int)
 
+// removeAt, not removeLast: on Android below 15 removeLast binds to a Java method that does not exist.
+internal fun <T> MutableList<T>.pop() {
+    if (size > 1) removeAt(lastIndex)
+}
+
 // shortcut: back stacks are plain lists, so Android loses them when it recreates the activity (rotation,
 // a language change) or kills the process; switch to rememberNavBackStack with serializable keys when a
 // feature has state worth restoring.
@@ -69,12 +74,12 @@ fun App() {
         val selected = remember { mutableStateOf(Tab.Home) }
         NavDisplay(
             backStack = root,
-            onBack = { root.removeLastOrNull() },
+            onBack = { root.pop() },
             entryProvider = { route ->
                 when (route) {
                     Tabs -> NavEntry(route) { TabsScreen(stacks, selected, onStart = { root += Session(it) }) }
                     is Session -> NavEntry(route) {
-                        Placeholder(stringResource(route.title), Modifier.safeContentPadding(), close = { root.removeLastOrNull() })
+                        Placeholder(stringResource(route.title), Modifier.safeContentPadding(), close = { root.pop() })
                     }
                 }
             },
@@ -121,13 +126,13 @@ private fun TabsScreen(
             NavDisplay(
                 backStack = stack,
                 modifier = Modifier.padding(padding),
-                onBack = { if (stack.size > 1) stack.removeLast() },
+                onBack = { stack.pop() },
                 entryProvider = { screen ->
                     NavEntry(screen) {
                         val title = stringResource(screen.tab.title)
                         Placeholder(
                             if (screen.depth == 1) title else "$title ${screen.depth}",
-                            back = if (screen.depth > 1) ({ stack.removeLast() }) else null,
+                            back = if (screen.depth > 1) ({ stack.pop() }) else null,
                             next = { stack += Screen(screen.tab, screen.depth + 1) },
                         )
                     }
