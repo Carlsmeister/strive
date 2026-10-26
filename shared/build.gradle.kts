@@ -19,7 +19,7 @@ kotlin {
     }
     
     android {
-       namespace = "se.carlsmeister.strive.spike.shared"
+       namespace = "se.carlsmeister.strive.shared"
        compileSdk = libs.versions.android.compileSdk.get().toInt()
        minSdk = libs.versions.android.minSdk.get().toInt()
     

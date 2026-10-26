@@ -20,11 +20,11 @@ dependencies {
 }
 
 android {
-    namespace = "se.carlsmeister.strive.spike"
+    namespace = "se.carlsmeister.strive"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "se.carlsmeister.strive.spike"
+        applicationId = "se.carlsmeister.strive"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

@@ -1,4 +1,4 @@
-package se.carlsmeister.strive.spike
+package se.carlsmeister.strive
 
 import androidx.compose.ui.window.ComposeUIViewController
 

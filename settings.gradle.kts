@@ -1,4 +1,4 @@
-rootProject.name = "StriveSpike"
+rootProject.name = "Strive"
 
 pluginManagement {
     repositories {

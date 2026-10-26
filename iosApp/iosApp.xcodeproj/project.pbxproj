@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		BAF888805F282ED662400FA1 /* StriveSpike.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StriveSpike.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BAF888805F282ED662400FA1 /* Strive.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Strive.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -59,7 +59,7 @@
 		F011E41776091F45CB96C292 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BAF888805F282ED662400FA1 /* StriveSpike.app */,
+				BAF888805F282ED662400FA1 /* Strive.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -87,7 +87,7 @@
 			packageProductDependencies = (
 			);
 			productName = iosApp;
-			productReference = BAF888805F282ED662400FA1 /* StriveSpike.app */;
+			productReference = BAF888805F282ED662400FA1 /* Strive.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
