@@ -1,4 +1,4 @@
-TEAM_ID=
+TEAM_ID=Y327M7P3FT
 
 PRODUCT_NAME=StriveSpike
 PRODUCT_BUNDLE_IDENTIFIER=se.carlsmeister.strive.spike.StriveSpike$(TEAM_ID)
