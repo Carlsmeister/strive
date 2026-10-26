@@ -55,6 +55,7 @@ process. An open session closes with it. The code marks this as a shortcut.
 - **The bundle ID is fixed.** Changing it, or the team, starts the app with an empty database
   (ADR 0001).
 - **Revisit modules when** an incremental iOS build after a one-line change passes about
-  90 s, or two features start depending on each other's internals.
+  60 s (the bar set in #31; 50 s measured here), or two features start depending on each
+  other's internals.
 - **Revisit the plain lists when** a feature has state worth restoring after the activity is
   recreated, at the latest when #4's session is open during a rotation.
