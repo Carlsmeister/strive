@@ -1,0 +1,12 @@
+<resources>
+    <string name="tab_home">Home</string>
+    <string name="tab_food">Food</string>
+    <string name="tab_start">Start</string>
+    <string name="tab_plan">Plan</string>
+    <string name="tab_you">You</string>
+    <string name="start_workout">Workout</string>
+    <string name="start_run">Run</string>
+    <string name="next_screen">Next screen</string>
+    <string name="back">Back</string>
+    <string name="close">Close</string>
+</resources>
