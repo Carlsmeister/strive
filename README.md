@@ -3,16 +3,17 @@
 A personal training app for iPhone and Android from one Kotlin codebase: strength
 sessions, GPS runs, and export of everything to Carl's own training log.
 
-**No product code yet.** The spike is under way: a throwaway app in `spike/` builds
-and runs on Carl's iPhone (#10); background GPS (#11) is next. The design is prototyped in
-`docs/design/`. Beside those, this repository holds the plan: issue templates, the
-Definition of Done and the architecture decision records.
+**No features yet.** The empty app runs on Carl's iPhone: four tabs around a Start
+button, every screen a placeholder, text in Swedish and English (#31). Not built: CI (#32),
+the theme (#30) and the database (#33). The design is prototyped in `docs/design/`. Beside
+those, this repository holds the plan: issue templates, the Definition of Done and the
+architecture decision records.
 
 | | |
 |---|---|
 | Stack | Compose Multiplatform (Kotlin), local database first, Supabase sync later |
 | iPhone | Built and installed from Xcode with a free Apple ID (7-day signing) |
-| CI | Linux on every pull request; macOS (iOS build and tests) on pull requests to `main` |
+| CI | Planned (#32): Linux on every pull request; macOS (iOS build and tests) on pull requests to `main` |
 | Branches | Work happens on `dev`. `main` is for release-ready work only |
 | Predecessor | `Carlsmeister/mobile-exercise-app-kotlin-strive`, Android only, archived. Used as a specification, not as code |
 
@@ -27,6 +28,22 @@ Definition of Done and the architecture decision records.
 
 After version 1: import, Supabase sync, nutrition. Each step is a parent issue; its
 sub-issues are written when it is next, not before.
+
+## Build and run
+
+- **Android:** `./gradlew :androidApp:installDebug` with a device or emulator attached.
+- **iPhone, over Wi-Fi:** the team ID lives in `iosApp/Configuration/Config.xcconfig`, never
+  in Xcode's Signing pane (ADR 0001). `xcrun devicectl list devices` gives the phone's UDID.
+
+  ```sh
+  xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -destination id=<UDID> \
+    -derivedDataPath build/xcode -allowProvisioningUpdates build
+  xcrun devicectl device install app --device <UDID> build/xcode/Build/Products/Debug-iphoneos/Strive.app
+  xcrun devicectl device process launch --device <UDID> se.carlsmeister.strive
+  ```
+
+  The free Apple ID signs for 7 days; reinstall at least weekly.
+- **Tests:** `./gradlew :shared:testAndroidHostTest`.
 
 ## How work is written down
 
