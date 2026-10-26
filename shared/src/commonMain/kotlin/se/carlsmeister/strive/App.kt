@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
@@ -56,18 +57,22 @@ private data object Tabs : Route
 private data class Session(val title: StringResource) : Route
 private data class Screen(val tab: Tab, val depth: Int)
 
-// shortcut: back stacks are plain lists, so Android loses them if it kills the process; switch to
-// rememberNavBackStack with serializable keys when a feature has state worth restoring.
+// shortcut: back stacks are plain lists, so Android loses them when it recreates the activity (rotation,
+// a language change) or kills the process; switch to rememberNavBackStack with serializable keys when a
+// feature has state worth restoring.
 @Composable
 fun App() {
     MaterialTheme {
         val root = remember { mutableStateListOf<Route>(Tabs) }
+        // Held here, not in TabsScreen, which leaves the composition while a session is open.
+        val stacks = remember { Tab.entries.associateWith { mutableStateListOf(Screen(it, 1)) } }
+        val selected = remember { mutableStateOf(Tab.Home) }
         NavDisplay(
             backStack = root,
             onBack = { root.removeLastOrNull() },
             entryProvider = { route ->
                 when (route) {
-                    Tabs -> NavEntry(route) { TabsScreen(onStart = { root += Session(it) }) }
+                    Tabs -> NavEntry(route) { TabsScreen(stacks, selected, onStart = { root += Session(it) }) }
                     is Session -> NavEntry(route) {
                         Placeholder(stringResource(route.title), Modifier.safeContentPadding(), close = { root.removeLastOrNull() })
                     }
@@ -79,9 +84,12 @@ fun App() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TabsScreen(onStart: (StringResource) -> Unit) {
-    val stacks = remember { Tab.entries.associateWith { mutableStateListOf(Screen(it, 1)) } }
-    var selected by remember { mutableStateOf(Tab.Home) }
+private fun TabsScreen(
+    stacks: Map<Tab, SnapshotStateList<Screen>>,
+    selectedState: MutableState<Tab>,
+    onStart: (StringResource) -> Unit,
+) {
+    var selected by selectedState
     var sheet by remember { mutableStateOf(false) }
 
     Scaffold(
