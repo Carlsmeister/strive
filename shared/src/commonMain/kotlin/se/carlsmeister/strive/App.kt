@@ -20,7 +20,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
@@ -71,13 +70,13 @@ fun App() {
         val root = remember { mutableStateListOf<Route>(Tabs) }
         // Held here, not in TabsScreen, which leaves the composition while a session is open.
         val stacks = remember { Tab.entries.associateWith { mutableStateListOf(Screen(it, 1)) } }
-        val selected = remember { mutableStateOf(Tab.Home) }
+        var selected by remember { mutableStateOf(Tab.Home) }
         NavDisplay(
             backStack = root,
             onBack = { root.pop() },
             entryProvider = { route ->
                 when (route) {
-                    Tabs -> NavEntry(route) { TabsScreen(stacks, selected, onStart = { root += Session(it) }) }
+                    Tabs -> NavEntry(route) { TabsScreen(stacks, selected, onSelect = { selected = it }, onStart = { root += Session(it) }) }
                     is Session -> NavEntry(route) {
                         Placeholder(stringResource(route.title), Modifier.safeContentPadding(), close = { root.pop() })
                     }
@@ -91,10 +90,10 @@ fun App() {
 @Composable
 private fun TabsScreen(
     stacks: Map<Tab, SnapshotStateList<Screen>>,
-    selectedState: MutableState<Tab>,
+    selected: Tab,
+    onSelect: (Tab) -> Unit,
     onStart: (StringResource) -> Unit,
 ) {
-    var selected by selectedState
     var sheet by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -103,7 +102,7 @@ private fun TabsScreen(
                 @Composable
                 fun item(tab: Tab) = NavigationBarItem(
                     selected = tab == selected,
-                    onClick = { selected = tab },
+                    onClick = { onSelect(tab) },
                     icon = {},
                     label = { Text(stringResource(tab.title)) },
                 )
