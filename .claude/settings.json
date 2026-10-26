@@ -1,5 +1,12 @@
 {
   "env": {
     "NO_UPDATE_NOTIFIER": "1"
+  },
+  "permissions": {
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(gh repo fork:*)"
+    ]
   }
 }
