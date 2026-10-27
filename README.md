@@ -4,16 +4,16 @@ A personal training app for iPhone and Android from one Kotlin codebase: strengt
 sessions, GPS runs, and export of everything to Carl's own training log.
 
 **No features yet.** The empty app runs on Carl's iPhone: four tabs around a Start
-button, every screen a placeholder, text in Swedish and English (#31). Not built: CI (#32),
-the theme (#30) and the database (#33). The design is prototyped in `docs/design/`. Beside
-those, this repository holds the plan: issue templates, the Definition of Done and the
-architecture decision records.
+button, every screen a placeholder, text in Swedish and English (#31). CI checks every pull
+request (#32). Not built: the theme (#30) and the database (#33). The design is prototyped
+in `docs/design/`. Beside those, this repository holds the plan: issue templates, the
+Definition of Done and the architecture decision records.
 
 | | |
 |---|---|
 | Stack | Compose Multiplatform (Kotlin), local database first, Supabase sync later |
 | iPhone | Built and installed from Xcode with a free Apple ID (7-day signing) |
-| CI | Planned (#32): Linux on every pull request; macOS (iOS build and tests) on pull requests to `main` |
+| CI | Linux on every pull request: shared tests, Android build, lint (shared included), a Kover report. macOS on pull requests to `main`: iOS simulator tests and an unsigned build (#32) |
 | Branches | Work happens on `dev`. `main` is for release-ready work only |
 | Predecessor | `Carlsmeister/mobile-exercise-app-kotlin-strive`, Android only, archived. Used as a specification, not as code |
 
@@ -43,7 +43,10 @@ sub-issues are written when it is next, not before.
   ```
 
   The free Apple ID signs for 7 days; reinstall at least weekly.
-- **Tests:** `./gradlew :shared:testAndroidHostTest`.
+- **Tests:** `./gradlew :shared:testAndroidHostTest` (JVM), `./gradlew :shared:iosSimulatorArm64Test`
+  (iOS simulator).
+- **Lint:** `./gradlew lint`, both modules. **Coverage:** `./gradlew :shared:koverHtmlReport`, report
+  only; `iosMain` is never in the number.
 - **A new language** touches three places: a `values-<code>/strings.xml` under
   `shared/src/commonMain/composeResources`, `androidApp/src/main/res/xml/locales_config.xml`,
   and `CFBundleLocalizations` in `iosApp/iosApp/Info.plist`. A test checks only the first.
