@@ -6,6 +6,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 
 internal enum class Scheme(val colors: ColorScheme, val materials: StriveMaterials) {
     Light(lightColors, lightMaterials),
@@ -42,6 +44,11 @@ internal expect fun accessibility(): Accessibility
 /** Text that grows with the phone's text size setting, up to its largest accessibility size. */
 @Composable
 internal expect fun ProvideTextScale(content: @Composable () -> Unit)
+
+/** Text that keeps its standard size whatever the phone's text size setting, as iOS's own tab bar does (#30). */
+@Composable
+internal fun FixedTextSize(content: @Composable () -> Unit) =
+    CompositionLocalProvider(LocalDensity provides Density(LocalDensity.current.density), content = content)
 
 private val LocalGlass = staticCompositionLocalOf { lightMaterials }
 private val LocalReduceMotion = staticCompositionLocalOf { false }

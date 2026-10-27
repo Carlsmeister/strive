@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
 import org.jetbrains.compose.resources.StringResource
+import se.carlsmeister.strive.theme.FixedTextSize
 import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.StriveTheme
 import org.jetbrains.compose.resources.stringResource
@@ -100,13 +101,13 @@ private fun TabsScreen(
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
+            FixedTextSize { NavigationBar {
                 @Composable
                 fun item(tab: Tab) = NavigationBarItem(
                     selected = tab == selected,
                     onClick = { onSelect(tab) },
                     icon = {},
-                    label = { Text(stringResource(tab.title)) },
+                    label = { Text(stringResource(tab.title), maxLines = 1) },
                 )
                 item(Tab.Home)
                 item(Tab.Food)
@@ -114,11 +115,11 @@ private fun TabsScreen(
                     selected = false,
                     onClick = { sheet = true },
                     icon = { Box(Modifier.size(StriveTheme.sizes.touch).background(MaterialTheme.colorScheme.primary, ShapeFull)) },
-                    label = { Text(stringResource(Res.string.tab_start)) },
+                    label = { Text(stringResource(Res.string.tab_start), maxLines = 1) },
                 )
                 item(Tab.Plan)
                 item(Tab.You)
-            }
+            } }
         },
     ) { padding ->
         val stack: SnapshotStateList<Screen> = stacks.getValue(selected)
