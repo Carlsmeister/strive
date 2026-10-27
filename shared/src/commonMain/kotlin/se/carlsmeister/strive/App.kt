@@ -29,11 +29,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import org.jetbrains.compose.resources.StringResource
 import se.carlsmeister.strive.theme.FixedTextSize
 import se.carlsmeister.strive.theme.ShapeFull
+import se.carlsmeister.strive.theme.glass
 import se.carlsmeister.strive.theme.StriveTheme
 import org.jetbrains.compose.resources.stringResource
 import strive.shared.generated.resources.Res
@@ -98,10 +102,11 @@ private fun TabsScreen(
 ) {
     var sheet by remember { mutableStateOf(false) }
     val tabState = rememberSaveableStateHolder()
+    val haze = rememberHazeState()
 
     Scaffold(
         bottomBar = {
-            FixedTextSize { NavigationBar {
+            FixedTextSize { NavigationBar(Modifier.glass(haze, StriveTheme.glass), containerColor = Color.Transparent) {
                 @Composable
                 fun item(tab: Tab) = NavigationBarItem(
                     selected = tab == selected,
@@ -129,13 +134,15 @@ private fun TabsScreen(
             tabState.SaveableStateProvider(selected.name) {
                 NavDisplay(
                     backStack = stack,
-                    modifier = Modifier.padding(padding),
+                    // Screens run on under the glass bar; each pads its own content clear of it.
+                    modifier = Modifier.hazeSource(haze),
                     onBack = { stack.pop() },
                     entryProvider = { screen ->
                         NavEntry(screen) {
                             val title = stringResource(screen.tab.title)
                             Placeholder(
                                 if (screen.depth == 1) title else "$title ${screen.depth}",
+                                Modifier.padding(padding),
                                 back = if (screen.depth > 1) ({ stack.pop() }) else null,
                                 next = { stack += Screen(screen.tab, screen.depth + 1) },
                             )
