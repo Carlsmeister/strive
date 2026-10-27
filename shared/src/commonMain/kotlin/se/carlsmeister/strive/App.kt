@@ -59,7 +59,7 @@ private data class Screen(val tab: Tab, val depth: Int)
 
 // removeAt, not removeLast: on Android below 15 removeLast binds to a Java method that does not exist.
 internal fun <T> MutableList<T>.pop() {
-    if (size > 1) removeAt(lastIndex)
+    if (size > 1) removeLast()
 }
 
 // shortcut: back stacks are plain lists, so Android loses them when it recreates the activity (rotation,
