@@ -13,7 +13,7 @@ Definition of Done and the architecture decision records.
 |---|---|
 | Stack | Compose Multiplatform (Kotlin), local database first, Supabase sync later |
 | iPhone | Built and installed from Xcode with a free Apple ID (7-day signing) |
-| CI | Linux on every pull request: shared tests, Android build, lint (shared included), a Kover report. macOS on pull requests to `main`: iOS simulator tests and an unsigned build (#32) |
+| CI | Linux on every pull request, required to merge: shared tests, Android build, lint (shared included), a Kover report. macOS on pull requests to `main`: iOS simulator tests and an unsigned build (#32) |
 | Branches | Work happens on `dev`. `main` is for release-ready work only |
 | Predecessor | `Carlsmeister/mobile-exercise-app-kotlin-strive`, Android only, archived. Used as a specification, not as code |
 
