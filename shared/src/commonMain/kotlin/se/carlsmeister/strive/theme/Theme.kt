@@ -39,6 +39,10 @@ internal data class Accessibility(
 @Composable
 internal expect fun accessibility(): Accessibility
 
+/** Text that grows with the phone's text size setting, up to its largest accessibility size. */
+@Composable
+internal expect fun ProvideTextScale(content: @Composable () -> Unit)
+
 private val LocalGlass = staticCompositionLocalOf { lightMaterials }
 private val LocalReduceMotion = staticCompositionLocalOf { false }
 
@@ -50,7 +54,9 @@ internal fun StriveTheme(content: @Composable () -> Unit) {
         LocalGlass provides glass(scheme, settings.reduceTransparency),
         LocalReduceMotion provides settings.reduceMotion,
     ) {
-        MaterialTheme(colorScheme = scheme.colors, shapes = StriveShapes, typography = StriveTypography, content = content)
+        MaterialTheme(colorScheme = scheme.colors, shapes = StriveShapes, typography = StriveTypography) {
+            ProvideTextScale(content)
+        }
     }
 }
 
