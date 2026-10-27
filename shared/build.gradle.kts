@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.androidLint)
+    alias(libs.plugins.kover)
 }
 
 kotlin {
@@ -63,4 +65,10 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+}
+kover {
+    reports {
+        // Report only, no minimum, until #4 (#32). Generated resource accessors are not ours to cover.
+        filters { excludes { packages("strive.shared.generated.resources") } }
+    }
 }
