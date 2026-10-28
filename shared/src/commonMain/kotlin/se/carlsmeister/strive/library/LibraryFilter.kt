@@ -1,5 +1,6 @@
 package se.carlsmeister.strive.library
 
+import androidx.compose.runtime.saveable.listSaver
 import se.carlsmeister.strive.data.Category
 import se.carlsmeister.strive.data.Exercise
 import se.carlsmeister.strive.data.Mark
@@ -23,6 +24,30 @@ internal data class LibraryFilter(
     /** The filter button fills while a filter is on (#17 R1). */
     val filtering get() = equipment.isNotEmpty() || marks != DefaultMarks
 }
+
+/** Keeps the filter while an exercise is open on top of the library; Android needs plain strings and lists to save it. */
+@Suppress("UNCHECKED_CAST")
+internal val LibraryFilterSaver = listSaver<LibraryFilter, Any>(
+    save = { f ->
+        val chip = when (val c = f.chip) {
+            is Chip.Pattern -> "p:" + c.name
+            is Chip.Of -> "c:" + c.category.key
+            null -> ""
+        }
+        listOf(f.query, chip, ArrayList(f.equipment), ArrayList(f.marks.map { it?.name ?: "" }))
+    },
+    restore = { saved ->
+        val chip = (saved[1] as String).let {
+            when {
+                it.startsWith("p:") -> Chip.Pattern(it.drop(2))
+                it.startsWith("c:") -> Chip.Of(Category.of(it.drop(2)))
+                else -> null
+            }
+        }
+        LibraryFilter(saved[0] as String, chip, (saved[2] as List<String>).toSet(),
+            (saved[3] as List<String>).map { if (it.isEmpty()) null else Mark.valueOf(it) }.toSet())
+    },
+)
 
 /**
  * The library's sections: exercises grouped by primary muscle in [Muscle] order, A–Ö within each. Without a search or a

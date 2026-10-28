@@ -4146,7 +4146,7 @@
    "secondary": "anterior deltoid"
   },
   "aliases": "Stretch, bröst",
-  "equipment": "Maskin",
+  "equipment": "Kroppsvikt",
   "carls": false,
   "category": "mobility",
   "verified": false
@@ -9968,7 +9968,7 @@
    "secondary": "gluteus maximus, biceps femoris, semitendinosus, semimembranosus"
   },
   "aliases": "Gående utfall | Walking Lunges | Bodyweight Walking Lunge",
-  "equipment": "Annat",
+  "equipment": "Kroppsvikt",
   "carls": false,
   "category": "strength",
   "verified": false
@@ -9997,7 +9997,7 @@
    "secondary": "rectus abdominis"
   },
   "aliases": "",
-  "equipment": "Skivstång",
+  "equipment": "Annat",
   "carls": false,
   "category": "strength",
   "verified": false
@@ -10085,7 +10085,7 @@
    "secondary": ""
   },
   "aliases": "Airbike",
-  "equipment": "Annat",
+  "equipment": "Kroppsvikt",
   "carls": false,
   "category": "strength",
   "verified": false
@@ -11232,7 +11232,7 @@
    "secondary": "rectus abdominis, biceps brachii"
   },
   "aliases": "",
-  "equipment": "Maskin",
+  "equipment": "Kroppsvikt",
   "carls": false,
   "category": "strength",
   "verified": false
@@ -11666,7 +11666,7 @@
    "secondary": "posterior deltoid, biceps brachii"
   },
   "aliases": "",
-  "equipment": "Maskin",
+  "equipment": "Kroppsvikt",
   "carls": false,
   "category": "strength",
   "verified": false
@@ -16067,7 +16067,7 @@
    "secondary": "none"
   },
   "aliases": "",
-  "equipment": "Annat",
+  "equipment": "Kroppsvikt",
   "carls": false,
   "category": "mobility",
   "verified": false
@@ -16094,7 +16094,7 @@
    "secondary": "none"
   },
   "aliases": "",
-  "equipment": "Annat",
+  "equipment": "Kroppsvikt",
   "carls": false,
   "category": "mobility",
   "verified": false
