@@ -26,6 +26,7 @@
   "aliases": "Alternating Kettlebell Press | Alternerande axelpress, kettlebell | kettlebell alternating press",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -55,6 +56,7 @@
   "aliases": "Alternating Cable Shoulder Press | Alternerande axelpress, kabel | cable alternate shoulder press",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -84,6 +86,7 @@
   "aliases": "Arnold Press | Arnoldpress | Arnold Dumbbell Press | dumbbell arnold press | dumbbell arnold press v. 2 | Arnold Shoulder Press",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -113,6 +116,7 @@
   "aliases": "Kettlebell Arnold Press | Arnoldpress, kettlebell",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -141,6 +145,7 @@
   "aliases": "Omvända flyes, band | Back Flyes - With Bands | Band Reverse Fly",
   "equipment": "Band",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -169,6 +174,7 @@
   "aliases": "Band pull-aparts",
   "equipment": "Band",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -199,6 +205,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -228,6 +235,7 @@
   "aliases": "Cuban Dumbbell Press | Cuban dumbbell press | dumbbell cuban press | dumbbell cuban press v. 2",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -258,6 +266,7 @@
   "aliases": "Double Kettlebell Push Press | Dubbel push press, kettlebell | kettlebell double push press",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -286,6 +295,7 @@
   "aliases": "",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -314,6 +324,7 @@
   "aliases": "Face Pull (cable) | Face pull | Cable Face Pull | Facepull | Face Pull",
   "equipment": "Kabel",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -342,6 +353,7 @@
   "aliases": "Barbell Front Raise | Framåtlyft, skivstång | Front Barbell Raises | Front Raises",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -370,6 +382,7 @@
   "aliases": "Cable Front Raise | Framåtlyft, kabel | Front Raise (Cable) | Front Cable Raises | Front Cable Raise | Straight-Bar Cable Front Raise | Straight Bar Cable Front Raise",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -398,6 +411,7 @@
   "aliases": "Dumbbell Front Raise | Framåtlyft | Front Dumbbell Raise | dumbbell front raise v. 2 | Front Two-Dumbbell Raise",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -428,6 +442,7 @@
   "aliases": "Barbell Front Raise and Pullover | Barbell front raise and pullover",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -457,6 +472,7 @@
   "aliases": "KB Halo | Kettlebell halo | Kettlebell Halo",
   "equipment": "Kettlebell",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -487,6 +503,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -515,6 +532,7 @@
   "aliases": "Barbell Incline Shoulder Raise | Barbell incline shoulder raise",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -543,6 +561,7 @@
   "aliases": "Dumbbell Incline Shoulder Raise | Dumbbell incline shoulder raise",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -571,6 +590,7 @@
   "aliases": "Incline DB Y-Raise | Incline db y-raise | dumbbell incline y-raise",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -599,6 +619,7 @@
   "aliases": "Lateral Raise (cable) | Sidolyft, kabel | Cable Lateral Raise | Cable Lateral Raises (Single Arm) | Cable Single-Arm Lateral Raise | cable one arm lateral raise | Side Lateral Raise (Cable)",
   "equipment": "Kabel",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -627,6 +648,7 @@
   "aliases": "Lateral Raise (DB) | Sidolyft | Dumbbell Lateral Raise | Lateral Raises | Lateral Dumbbell Raises | dumbbell lateral raise | Side Lateral Raise | Bodyweight Lateral Raise",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -655,6 +677,7 @@
   "aliases": "Machine Lateral Raise | Sidolyft, maskin | lever lateral raise | Machine Side Lateral Raises | Plate-Loaded Lateral Raise",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -683,6 +706,7 @@
   "aliases": "Dumbbell Lying Rear Lateral Raise | Liggande omvända flyes | Lying Rear Delt Raise | Dumbbell Lying On Floor Rear Delt Raise",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -713,6 +737,7 @@
   "aliases": "Barbell OHP | Militärpress | Barbell Overhead Press | Bodyweight Overhead Press | Overhead Barbell Press | Overhead Press | Shoulder Press, Barbell | Barbell Shoulder Press | Standing Military Press",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -743,6 +768,7 @@
   "aliases": "Dumbbell OHP | Axelpress | Standing Dumbbell Press | Dumbbell Standing Overhead Press",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -772,6 +798,7 @@
   "aliases": "Seated Machine Press | Sittande maskinpress | Machine Shoulder Press | Shoulder Press, on Machine | lever shoulder press | lever shoulder press v. 2 | lever shoulder press v. 3 | Machine Shoulder (Military) Press | Leverage Shoulder Press | Machine Military Press | lever military press | Seated Shoulder Press Machine",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -802,6 +829,7 @@
   "aliases": "Full Planche",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -831,6 +859,7 @@
   "aliases": "KB Press + Halo | Kettlebellpress med halo",
   "equipment": "Kettlebell",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -861,6 +890,7 @@
   "aliases": "Push Press | Push press",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -891,6 +921,7 @@
   "aliases": "Dumbbell Push Press | Push press, hantlar",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -919,6 +950,7 @@
   "aliases": "Rear Delt Fly (DB) | Omvända flyes | Dumbbell Reverse Fly | Reverse Flyes | Dumbbell Rear Fly | Rear Delt Fly | Dumbbell Bent-Over Reverse Fly | Bent-over Lateral Raises | Dumbbell Rear Lateral Raise | Rear Delt Raises | dumbbell rear delt raise",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -947,6 +979,7 @@
   "aliases": "Rear Delt Fly (machine) | Omvända flyes, maskin | Machine Reverse Fly | Reverse Machine Flyes | Machine Seated Reverse Fly | lever seated reverse fly",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -976,6 +1009,7 @@
   "aliases": "Barbell Rear Delt Row | Barbell rear delt row | Rear Deltoid Row Barbell",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1004,6 +1038,7 @@
   "aliases": "Cable Reverse Fly | Omvända flyes, kabel | Reverse Cable Flye | Reverse Fly Standing | Cable Crossover Reverse Fly | Cable Cross-Over Revers Fly | Cable Rear Delt Fly",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1032,6 +1067,7 @@
   "aliases": "Seated Dumbbell Lateral Raise | Sittande sidolyft | dumbbell seated lateral raise | dumbbell seated lateral raise v. 2 | Seated Side Lateral Raise | Seated Dumbbell Side Lateral",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1061,6 +1097,7 @@
   "aliases": "Seated Barbell Overhead Press | Sittande militärpress | barbell seated overhead press | Seated Barbell Shoulder Press | Seated Military Press | Seated Barbell Military Press",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1090,6 +1127,7 @@
   "aliases": "Dumbbell Shoulder Press | Dumbbell shoulder press | Shoulder Press, Dumbbells | Seated Dumbbell Press | Seated Dumbbell Shoulder Press | dumbbell seated shoulder press | Dumbbell Bench Seated Press",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1119,6 +1157,7 @@
   "aliases": "Kettlebell Seated Press | Sittande axelpress, kettlebell",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1147,6 +1186,7 @@
   "aliases": "Seated Rear Lateral Cable Raise | Seated rear lateral cable raise | cable seated rear lateral raise",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1176,6 +1216,7 @@
   "aliases": "Seated Smith Machine Shoulder Press | Sittande axelpress, smithmaskin | smith seated shoulder press",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1205,6 +1246,7 @@
   "aliases": "Kettlebell Seesaw Press | Kettlebell seesaw press",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1233,6 +1275,7 @@
   "aliases": "Shoulder External Rotation (Cable) | Utåtrotation | Cable Standing Shoulder External Rotation | Cable External Rotation | External Rotation with Cable",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1261,6 +1304,7 @@
   "aliases": "Shoulder External Rotation with Dumbbell | Utåtrotation, hantlar | Dumbbell Lying External Shoulder Rotation",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1289,6 +1333,7 @@
   "aliases": "Shoulder Internal Rotation (Cable) | Inåtrotation | Internal Cable Rotation | Cable Internal Rotation",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1318,6 +1363,7 @@
   "aliases": "Axelpress, band | band shoulder press",
   "equipment": "Band",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1347,6 +1393,7 @@
   "aliases": "Cable Shoulder Press | Axelpress, kabel",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1375,6 +1422,7 @@
   "aliases": "Lateral-to-Front Raises | dumbbell lateral to front raise",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1403,6 +1451,7 @@
   "aliases": "One-Arm Incline Lateral Raise | Lutande enarms sidolyft | Dumbbell Incline Single-Arm Lateral Raise | dumbbell incline one arm lateral raise",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1433,6 +1482,7 @@
   "aliases": "Landmine Press | Landminepress | One-Arm Landmine Press",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1461,6 +1511,7 @@
   "aliases": "Dumbbell Single-Arm Lateral Raise | Enarms sidolyft | dumbbell one arm lateral raise | One-Arm Side Laterals",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1489,6 +1540,7 @@
   "aliases": "Lying One Arm Rear Lateral Raise | Liggande enarms omvända flyes | Dumbbell Lying One-Arm Rear Lateral Raise | Dumbbell Lying Single-Arm Rear Lateral Raise | dumbbell lying one arm rear lateral raise",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1518,6 +1570,7 @@
   "aliases": "One-Arm Kettlebell Military Press To The Side | One-arm kettlebell military press to the side | Kettlebell Single-Arm Military Press To The Side | kettlebell one arm military press to the side",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1548,6 +1601,7 @@
   "aliases": "One Arm Kettlebell Push Press | Enarms push press, kettlebell | One-Arm Kettlebell Push Press | Kettlebell Single-Arm Push Press | kettlebell one arm push press",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1577,6 +1631,7 @@
   "aliases": "One Arm Dumbbell Shoulder Press | Enarms axelpress | Single-arm dumbbell shoulder press | Dumbbell One-Arm Shoulder Press | Dumbbell Single-Arm Shoulder Press | dumbbell one arm shoulder press | dumbbell one arm shoulder press v. 2",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1605,6 +1660,7 @@
   "aliases": "Single-Arm Machine Shoulder Press | Enarms axelpress, maskin | Machine Single-Arm Shoulder Press | lever one arm shoulder press",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1634,6 +1690,7 @@
   "aliases": "Standing Palm-In One-Arm Dumbbell Press | Stående enarms axelpress med neutralt grepp | Dumbbell Standing Single-Arm Palm In Press | dumbbell standing one arm palm in press",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1663,6 +1720,7 @@
   "aliases": "One Arm Upright Row | Enarms upprätt rodd, hantlar | Dumbbell One-Arm Upright Row | Dumbbell Single-Arm Upright Row | dumbbell one arm upright row",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1691,6 +1749,7 @@
   "aliases": "smith incline shoulder raises",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1720,6 +1779,7 @@
   "aliases": "Smith Machine Rear Deltoid Row",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1750,6 +1810,7 @@
   "aliases": "Smith Machine Shoulder Press | Axelpress, smithmaskin | Smith Machine Overhead Shoulder Press",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1779,6 +1840,7 @@
   "aliases": "Smith Machine Upright Row | Upprätt rodd, smithmaskin",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1809,6 +1871,7 @@
   "aliases": "barbell standing bradford press",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1838,6 +1901,7 @@
   "aliases": "Standing Front Barbell Raise Over Head | Standing front barbell raise over head | barbell standing front raise over head",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1867,6 +1931,7 @@
   "aliases": "Standing Barbell Press Behind Neck | Stående nackpress | standing behind neck press | Behind the Neck Press",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1896,6 +1961,7 @@
   "aliases": "Cable Standing Rear Delt Row (With Rope) | Cable standing rear delt row (with rope) | Cable Rope Rear-Delt Rows | cable rear delt row (with rope)",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1925,6 +1991,7 @@
   "aliases": "Two-Arm Kettlebell Military Press | Axelpress, kettlebell | Kettlebell Two-Arm Military Press | kettlebell two arm military press",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1954,6 +2021,7 @@
   "aliases": "Barbell Upright Row | Upprätt rodd | Upright Barbell Rows | Upright Barbell Row | barbell upright row v. 2 | barbell upright row v. 3",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -1983,6 +2051,7 @@
   "aliases": "Cable Upright Row | Upprätt rodd, kabel | Upright Cable Row",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2012,6 +2081,7 @@
   "aliases": "Dumbbell Upright Row | Upprätt rodd, hantlar | Upright Row w/ Dumbbells | Dumbbell Upright Rows | Dumbbell Upright Row (Back Pov) | Standing Dumbbell Upright Row",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2038,6 +2108,7 @@
   "aliases": "",
   "equipment": "Annat",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -2067,6 +2138,7 @@
   "aliases": "Glute Ham Raise",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2096,6 +2168,7 @@
   "aliases": "Good Morning | Good morning | Barbell Good Mornings | barbell good morning | Bodyweight Good Morning",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2122,6 +2195,7 @@
   "aliases": "Stretch, baksida lår",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -2151,6 +2225,7 @@
   "aliases": "inchworm v. 2",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -2179,6 +2254,7 @@
   "aliases": "Stående lårcurl | Standing Leg Curls | Standing Leg Curl",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2205,6 +2281,7 @@
   "aliases": "leg up hamstring stretch",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -2233,6 +2310,7 @@
   "aliases": "Leg Curl (lying) | Liggande lårcurl | Lying Leg Curl | Lying Leg Curls | Machine Lying Leg Curl | lever lying leg curl | Leg Curls (laying) | Leg Curl",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2262,6 +2340,7 @@
   "aliases": "Natural Glute Ham Raise | Nordic Hamstring Curl",
   "equipment": "Kroppsvikt",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2291,6 +2370,7 @@
   "aliases": "Barbell Romanian Deadlift | Rumänsk marklyft, skivstång | Barbell Romanian Deadlift (RDL) | Romanian Dead Lift | barbell romanian deadlift | Romanian Deadlift",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2320,6 +2400,7 @@
   "aliases": "Romanian Deadlift | Rumänsk marklyft | Dumbbell Romanian Deadlift",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2346,6 +2427,7 @@
   "aliases": "Runners Stretch",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -2375,6 +2457,7 @@
   "aliases": "Seated Good Mornings | Sittande good morning | barbell seated good morning",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2403,6 +2486,7 @@
   "aliases": "Leg Curl (seated) | Sittande lårcurl | Machine Seated Leg Curl | lever seated leg curl | Leg Curls (sitting)",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2432,6 +2516,7 @@
   "aliases": "Stiff Leg Deadlift | Stelbent marklyft | Stiff-legged Deadlifts | Stiff-Legged Barbell Deadlift | Barbell Straight-Leg Deadlift | barbell straight leg deadlift",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2461,6 +2546,7 @@
   "aliases": "Stiff Leg Barbell Good Morning | Stiff leg barbell good morning | barbell stiff leg good morning",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2490,6 +2576,7 @@
   "aliases": "Stiff-Legged Dumbbell Deadlift | Stiff-legged dumbbell deadlift | dumbbell stiff leg deadlift | Dumbbell Straight-Leg Deadlift | dumbbell straight leg deadlift",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2519,6 +2606,7 @@
   "aliases": "World Greatest Stretch",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -2547,6 +2635,7 @@
   "aliases": "Alternating Biceps Curls With Dumbbell | Alternerande hantelcurl | Alternating bicep curls | Alternating Bicep Curl with Dumbbell | Dumbbell Alternate Bicep Curl | dumbbell alternate biceps curl | Alternating Dumbbell Curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2575,6 +2664,7 @@
   "aliases": "Alternating dumbbell hammer curl | Alternerande hammercurl | Alternating Hammer Curl with Dumbbell | Alternate Hammer Curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2603,6 +2693,7 @@
   "aliases": "Machine Bicep Curl | Bicepscurl, maskin | Biceps Curl Machine | Bicep Curl with Machine | Machine Biceps Curl | lever bicep curl",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2631,6 +2722,7 @@
   "aliases": "Biceps Curl Seated on Stability Ball with Dumbbell | Sittande hantelcurl på boll | dumbbell seated biceps curl (on stability ball)",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2659,6 +2751,7 @@
   "aliases": "Close-Grip EZ-Bar Curl | EZ-curl med smalt grepp | Close-Grip EZ Bar Curl | EZ-Bar Close-Grip Curl | ez barbell close-grip curl | Close Grip EZ Bar Curl with Barbell",
   "equipment": "EZ-stång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2687,6 +2780,7 @@
   "aliases": "Close-Grip Standing Barbell Curl | Stående skivstångscurl med smalt grepp | Barbell Standing Close-Grip Curl | barbell standing close grip curl | Close-Grip Barbell Curl | Close Grip Standing Biceps Curls with Barbell",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2715,6 +2809,7 @@
   "aliases": "Cable Concentration Curl | Koncentrationscurl, kabel",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2743,6 +2838,7 @@
   "aliases": "Concentration Curl | Koncentrationscurl | Dumbbell Concentration Curl | Concentration Curls with Dumbbell | Concentration Curls | dumbbell concentration curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2771,6 +2867,7 @@
   "aliases": "DB Cross Body Hammer Curls | Cross Body Hammer Curl with Dumbbell | dumbbell cross body hammer curl | dumbbell cross body hammer curl v. 2",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2799,6 +2896,7 @@
   "aliases": "Barbell Curl | Skivstångscurl | Biceps Curls With Barbell",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2827,6 +2925,7 @@
   "aliases": "Cable Curl | Kabelcurl | Cable Curls | Biceps Curl With Cable | Standing Biceps Curl with Cable | Standing Biceps Cable Curl | Straight Bar Cable Curls",
   "equipment": "Kabel",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2855,6 +2954,7 @@
   "aliases": "Dumbbell Curl | Hantelcurl | Dumbbell Bicep Curl | Biceps Curls With Dumbbell | Biceps Curl with Dumbbell | dumbbell biceps curl | Standing Bicep Curl | dumbbell standing biceps curl",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2883,6 +2983,7 @@
   "aliases": "EZ-Bar Curl | EZ-curl | ez barbell curl | EZ Bar Curl with Barbell | Biceps Curls With SZ-bar",
   "equipment": "EZ-stång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2912,6 +3013,7 @@
   "aliases": "Drag Curl | Drag curl | Drag Curl with Barbell | barbell drag curl",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2940,6 +3042,7 @@
   "aliases": "Hammer Curl | Hammercurl | Dumbbell Hammer Curl | Hammer Curls | dumbbell hammer curl v. 2 | Biceps Hammer Curl with Dumbbell",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2968,6 +3071,7 @@
   "aliases": "Hammer Curls with Rope and Cable | Hammercurl med rep, kabel | cable hammer curl (with rope) | Cable Hammer Curls - Rope Attachment",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -2996,6 +3100,7 @@
   "aliases": "Incline Dumbbell Curl | Lutande hantelcurl | Dumbbell Incline Curl | dumbbell incline curl | dumbbell incline curl v. 2 | Incline Biceps Curl with Dumbbell | dumbbell incline biceps curl",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3024,6 +3129,7 @@
   "aliases": "Lutande hammercurl | Incline Hammer Curls | dumbbell incline hammer curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3052,6 +3158,7 @@
   "aliases": "Incline Inner Biceps Curl with Dumbbell | Incline inner biceps curl with dumbbell | dumbbell incline inner biceps curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3080,6 +3187,7 @@
   "aliases": "Lying Bicep Cable Curl | Lying bicep cable curl | Cable Lying Biceps Curl | cable lying bicep curl",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3108,6 +3216,7 @@
   "aliases": "Lying Close Grip Biceps Curls with Cable | Liggande kabelcurl med smalt grepp | Cable Lying Close-Grip Curl",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3136,6 +3245,7 @@
   "aliases": "Lying Supine Biceps Curl with Dumbbell | Liggande hantelcurl | dumbbell lying supine biceps curl | Lying Dumbbell Curls | Lying Supine Dumbbell Curl | dumbbell lying supine curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3164,6 +3274,7 @@
   "aliases": "Overhead Curl with Cable | Kabelcurl över huvudet | Overhead Cable Curl | cable overhead curl",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3192,6 +3303,7 @@
   "aliases": "Barbell Preacher Curl | Preachercurl, skivstång | Preacher Curl with Barbell | Preacher Curl | Preacher Curls",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3220,6 +3332,7 @@
   "aliases": "Preacher Curl with Cable | Preachercurl, kabel | Cable Preacher Curl | cable preacher curl",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3248,6 +3361,7 @@
   "aliases": "Dumbbell Preacher Curl | Preachercurl, hantlar | Two-Arm Preacher Curl with Dumbbell | Two-Arm Dumbbell Preacher Curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3276,6 +3390,7 @@
   "aliases": "Preacher Curl (machine) | Preachercurl | Machine Preacher Curl | Preacher Curl with Machine | Machine Preacher Curls | lever preacher curl | lever preacher curl v. 2",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3304,6 +3419,7 @@
   "aliases": "Preacher Hammer Curl with Dumbbell | Preacher Hammer Dumbbell Curl | dumbbell preacher hammer curl | Dumbbell Peacher Hammer Curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3332,6 +3448,7 @@
   "aliases": "Barbell Prone Incline Curl | Liggande lutande skivstångscurl | Lying Incline Curl with Barbell",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3360,6 +3477,7 @@
   "aliases": "Dumbbell Prone Incline Curl | Liggande lutande hantelcurl | Prone Incline Biceps Curl with Dumbbell",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3388,6 +3506,7 @@
   "aliases": "Reverse Barbell Curl | Skivstångscurl med omvänt grepp | barbell reverse curl | Reverse Curl | Barbell Standing Reverse-Grip Curl | barbell standing reverse grip curl | Reverse Grip Barbell Curls",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3416,6 +3535,7 @@
   "aliases": "Reverse Cable Curl | Kabelcurl med omvänt grepp | cable reverse curl",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3444,6 +3564,7 @@
   "aliases": "Dumbbell Reverse Curl | Omvänd curl, hantlar | Standing Dumbbell Reverse Curl | dumbbell standing reverse curl | Biceps Curl Reverse with Dumbbells | dumbbell biceps curl reverse | Dumbbell Reverse-Grip Biceps Curl | Dumbbell Revers Grip Biceps Curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3472,6 +3593,7 @@
   "aliases": "Reverse Barbell Preacher Curls | Preachercurl med omvänt grepp, skivstång | barbell reverse preacher curl",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3500,6 +3622,7 @@
   "aliases": "EZ-Bar Reverse-Grip Curl | Omvänd curl, EZ-stång | ez barbell reverse grip curl | EZ-Bar Reverse Curl",
   "equipment": "EZ-stång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3528,6 +3651,7 @@
   "aliases": "Seated Close Grip Concentration Curls with Barbell | Sittande koncentrationscurl med smalt grepp, skivstång | Seated Close-Grip Concentration Barbell Curl | barbell seated close-grip concentration curl",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3556,6 +3680,7 @@
   "aliases": "Seated Dumbbell Curl | Sittande hantelcurl | Seated Dumbbell Curls | dumbbell seated curl | Seated Bicep Curl with Dumbbell | Dumbbell Seated Biceps Curl | dumbbell seated bicep curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3584,6 +3709,7 @@
   "aliases": "Seated Inner Biceps Curl with Dumbbell | Seated inner biceps curl with dumbbell | Seated Dumbbell Inner Biceps Curl | dumbbell seated inner biceps curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3612,6 +3738,7 @@
   "aliases": "Single-Arm Hammer Curl | Enarms hammercurl | Dumbbell Single-Arm Standing Hammer Curl | dumbbell one arm standing hammer curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3640,6 +3767,7 @@
   "aliases": "One Arm Dumbbell Preacher Curl | Enarms preachercurl, hantlar | Single-arm Preacher Curl | One Arm Preacher Curl with Dumbbell",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3668,6 +3796,7 @@
   "aliases": "Standing One-Arm Cable Curl | Stående enarms kabelcurl | Cable Single-Arm Curl | cable one arm curl | Standing One Arm Bicep Curl with Cable",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3696,6 +3825,7 @@
   "aliases": "Standing One Arm Curl Over Incline Bench with Dumbbell | Stående lutande enarms hantelcurl | Standing One-Arm Dumbbell Curl Over Incline Bench | Dumbbell Standing Single-Arm Curl (Over Incline Bench) | Dumbbell Standing Single-Arm Curl Over Incline Bench | dumbbell standing one arm curl (over incline bench) | dumbbell standing one arm curl over incline bench",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3724,6 +3854,7 @@
   "aliases": "Spider Curl | Spidercurl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3752,6 +3883,7 @@
   "aliases": "EZ Bar Spider Curl | Spidercurl, EZ-stång | EZ-Bar Spider Curl | ez barbell spider curl",
   "equipment": "EZ-stång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3780,6 +3912,7 @@
   "aliases": "Standing Concentration Curl | Stående koncentrationscurl | dumbbell standing concentration curl | Dumbbell Standing Single-Arm Concentration Curl | dumbbell standing one arm concentration curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3808,6 +3941,7 @@
   "aliases": "Standing Inner Biceps Curl with Dumbbell | Standing inner biceps curl with dumbbell | Standing Inner-Biceps Curl | dumbbell standing inner biceps curl | dumbbell standing inner biceps curl v. 2",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3837,6 +3971,7 @@
   "aliases": "Stork Stance Bicep Curl with Dumbbells | Stork stance bicep curl with dumbbells | Dumbbell Biceps Curl With Stork Stance | dumbbell bicep curl with stork stance",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3865,6 +4000,7 @@
   "aliases": "Wide Grip Standing Biceps Curl with Barbell | Stående skivstångscurl med brett grepp | Barbell Standing Wide-Grip Biceps Curl | barbell standing wide grip biceps curl | Wide-Grip Standing Barbell Curl | barbell standing wide-grip curl",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3893,6 +4029,7 @@
   "aliases": "Zottman Curl with Dumbbells | dumbbell zottman curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3921,6 +4058,7 @@
   "aliases": "Zottman Preacher Curl with Dumbbells | Zottman preacher curl with dumbbells | dumbbell zottman preacher curl | Dumbbell Standing Zottman Preacher Curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3950,6 +4088,7 @@
   "aliases": "Alternerande golvpress, kettlebell | kettlebell alternating press on floor",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -3980,6 +4119,7 @@
   "aliases": "archer push up",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4008,6 +4148,7 @@
   "aliases": "Stretch, bröst",
   "equipment": "Maskin",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -4037,6 +4178,7 @@
   "aliases": "Bänkpress, band | band bench press",
   "equipment": "Band",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4066,6 +4208,7 @@
   "aliases": "Barbell Bench Press | Bänkpress | Bench Press | Barbell Bench Press - Medium Grip",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4095,6 +4238,7 @@
   "aliases": "Dumbbell Bench Press | Hantelpress | Bench Press Dumbbell | Benchpress Dumbbells",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4124,6 +4268,7 @@
   "aliases": "Dumbbell Bench Press with Neutral Grip | Hantelpress med neutralt grepp | dumbbell neutral grip bench press",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4154,6 +4299,7 @@
   "aliases": "push up on bosu ball | push-up (bosu ball)",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4183,6 +4329,7 @@
   "aliases": "Dips för bröst | chest dip | Dips",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4212,6 +4359,7 @@
   "aliases": "Machine Chest Press | Maskinpress | Leverage Machine Chest Press | lever chest press | Leverage Chest Press | Machine Bench Press | Flat Machine Press",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4240,6 +4388,7 @@
   "aliases": "Stretch, bröst och axlar",
   "equipment": "Annat",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -4269,6 +4418,7 @@
   "aliases": "Clap Push-UP | clap push up",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4298,6 +4448,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4327,6 +4478,7 @@
   "aliases": "Armhävningar med smalt grepp | Close-grip Press-ups | close-grip push-up | Close Triceps Pushup",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4356,6 +4508,7 @@
   "aliases": "Close-Grip Dumbbell Bench Press | Hantelpress med smalt grepp | Dumbbell close grip bench press | Close-Grip Dumbbell Press | Dumbbell Close-Grip Press | dumbbell close-grip press | dumbbell close grip press",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4385,6 +4538,7 @@
   "aliases": "Close-Grip EZ-Bar Bench Press | Bänkpress med smalt grepp, EZ-stång | ez-bar close-grip bench press | Close-Grip EZ-Bar Press",
   "equipment": "EZ-stång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4414,6 +4568,7 @@
   "aliases": "Lutande bänkpress med smalt grepp | Incline Close Grip Barbell Bench Press | Barbell Incline Close-Grip Bench Press | barbell incline close grip bench press",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4443,6 +4598,7 @@
   "aliases": "Close-Grip Push-Up off of a Dumbbell | Close-grip push-up off of a dumbbell | push-up close-grip off dumbbell",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4472,6 +4628,7 @@
   "aliases": "Decline Dumbbell Bench Press | Negativ hantelpress | Decline Bench Press Dumbbell | dumbbell decline bench press | Decline Bench Press",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4501,6 +4658,7 @@
   "aliases": "Machine Decline Chest Press | Negativ bröstpress | lever decline chest press | Decline Chest Press | Leverage Decline Chest Press",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4529,6 +4687,7 @@
   "aliases": "Decline Dumbbell Fly | Negativa hantelflyes | Decline Dumbbell Flyes | dumbbell decline fly | Decline Dumbbell Fly's | Fly With Dumbbells, Decline Bench",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4558,6 +4717,7 @@
   "aliases": "Decline Press | Negativ bänkpress | Decline Barbell Bench Press | Decline Bench Press Barbell | barbell decline bench press",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4587,6 +4747,7 @@
   "aliases": "Negativa armhävningar | Push-Ups | Decline",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4615,6 +4776,7 @@
   "aliases": "dynamic chest stretch (male)",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -4644,6 +4806,7 @@
   "aliases": "Dumbbell Floor Press | Golvpress, hantlar",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4672,6 +4835,7 @@
   "aliases": "Cable Fly | Kabelflyes | Fly With Cable | Cable Crossover | Cable Cross-over | Cable Middle Fly | Cable Standing Fly",
   "equipment": "Kabel",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4700,6 +4864,7 @@
   "aliases": "Dumbbell Fly | Hantelflyes | Fly With Dumbbells | Dumbbell Flys | Dumbbell Flyes",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4729,6 +4894,7 @@
   "aliases": "Barbell Guillotine Bench Press | Barbell guillotine bench press",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4758,6 +4924,7 @@
   "aliases": "Hammer Grip Incline DB Bench Press | Lutande hantelpress med neutralt grepp | Dumbbell Incline Palm-In Press | Dumbbell Palms In Incline Bench Press",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4787,6 +4954,7 @@
   "aliases": "Handstående armhävningar | Handstand Pushup | Handstand Push-Ups | handstand push-up",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4816,6 +4984,7 @@
   "aliases": "Machine Incline Chest Press | Lutande bröstpress | lever incline chest press | lever incline chest press v. 2 | Incline Chest Press | Leverage Incline Chest Press",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4844,6 +5013,7 @@
   "aliases": "Incline Dumbbell Fly | Lutande hantelflyes | Incline Dumbbell Flyes | dumbbell incline fly | Incline Dumbbell Fly's",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4872,6 +5042,7 @@
   "aliases": "Incline Cable Flye | Lutande kabelflyes | cable incline fly | Incline Cable Fly's",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4901,6 +5072,7 @@
   "aliases": "Incline Barbell Press | Lutande bänkpress | Incline Barbell Bench Press | Incline Bench Press - Barbell | Incline Bench Press | Barbell Incline Bench Press - Medium Grip | barbell incline bench press",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4930,6 +5102,7 @@
   "aliases": "Incline Dumbbell Press | Lutande hantelpress | Incline Bench Press - Dumbbell | Dumbbell Incline Bench Press | dumbbell incline bench press",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4959,6 +5132,7 @@
   "aliases": "Lutande armhävningar | Push-Ups | Incline | Incline Push-Up (On Box)",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -4988,6 +5162,7 @@
   "aliases": "Lutande armhävningar med smalt grepp | incline close-grip push-up",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5017,6 +5192,7 @@
   "aliases": "incline push up depth jump",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5047,6 +5223,7 @@
   "aliases": "Lutande armhävningar med omvänt grepp | Incline Reverse-Grip Push-Up | incline reverse grip push-up",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5075,6 +5252,7 @@
   "aliases": "Dumbbell Incline Twisted Flyes | Dumbbell incline twisted flyes | Incline Dumbbell Flyes - With A Twist | Incline Fly's with a Twist",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5103,6 +5281,7 @@
   "aliases": "isometric chest squeeze",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5132,6 +5311,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5161,6 +5341,7 @@
   "aliases": "Knästående armhävningar | kneeling push-up (male) | Knee Push Ups | knee push-ups",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5190,6 +5371,7 @@
   "aliases": "",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5218,6 +5400,7 @@
   "aliases": "Pec Dec (machine) | Pec deck | Butterfly | Butterfly Machine | Machine Seated Fly | lever seated fly | Pec Deck",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5247,6 +5430,7 @@
   "aliases": "plyo push up",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5276,6 +5460,7 @@
   "aliases": "Plyo Kettlebell Pushups | Plyo kettlebell pushups | kettlebell plyo push-up",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5306,6 +5491,7 @@
   "aliases": "push-up to side plank",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5335,6 +5521,7 @@
   "aliases": "Armhävningar | Push Ups | Pushups",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5364,6 +5551,7 @@
   "aliases": "Dumbbell Reverse Bench Press | Hantelpress med omvänt grepp | DB Underhand bench press",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5393,6 +5581,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5421,6 +5610,7 @@
   "aliases": "Scapular Pushups",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5450,6 +5640,7 @@
   "aliases": "Seated Dip Machine | Sittande dips, maskin | Machine Seated Dip | lever seated dip | Plate-Loaded Seated Dip Machine",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5479,6 +5670,7 @@
   "aliases": "side push-up",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5509,6 +5701,7 @@
   "aliases": "Single Arm Dumbbell Bench Press | Enarms hantelpress | One Arm Bench Press | One Arm Dumbbell Bench Press",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5538,6 +5731,7 @@
   "aliases": "Extended Range One-Arm Kettlebell Floor Press | Extended range one-arm kettlebell floor press | Kettlebell Extended Range Single-Arm Press On Floor | kettlebell extended range one arm press on floor",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5566,6 +5760,7 @@
   "aliases": "One-Arm Flat Bench Dumbbell Flye | Enarms hantelflyes | Dumbbell Single-Arm Bench Fly | dumbbell one arm bench fly | One Arm Flat Bench Fly’s",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5595,6 +5790,7 @@
   "aliases": "One Arm Barbell Floor Press | Enarms golvpress | One Arm Floor Press | Barbell Single-Arm Floor Press | barbell one arm floor press",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5624,6 +5820,7 @@
   "aliases": "One Arm Kettlebell Floor Press | Enarms golvpress, kettlebell | One-Arm Kettlebell Floor Press | Kettlebell Single-Arm Floor Press | kettlebell one arm floor press",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5654,6 +5851,7 @@
   "aliases": "One armed push-ups | Enarms armhävningar | Single-Arm Push-Up | single arm push-up",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5683,6 +5881,7 @@
   "aliases": "Smith Machine Bench Press | Bänkpress, smithmaskin",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5712,6 +5911,7 @@
   "aliases": "Smith Machine Decline Bench Press | Negativ bänkpress, smithmaskin | Decline Smith Press | Smith Machine Decline Press",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5741,6 +5941,7 @@
   "aliases": "Smith Machine Incline Bench Press | Lutande bänkpress, smithmaskin",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5771,6 +5972,7 @@
   "aliases": "Armhävningar på boll | push-up (on stability ball)",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5801,6 +6003,7 @@
   "aliases": "",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5830,6 +6033,7 @@
   "aliases": "Wall Pushup | push-up (wall) | push-up (wall) v. 2",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5859,6 +6063,7 @@
   "aliases": "Negativ bänkpress med brett grepp | Wide-Grip Decline Barbell Bench Press | Barbell Decline Wide-Grip Press",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5888,6 +6093,7 @@
   "aliases": "Armhävningar med brett grepp | Push-Up Wide | Wide Hand Push Up | Wide Grip Push Ups",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5917,6 +6123,7 @@
   "aliases": "Bänkpress med brett grepp | Wide Grip Bench Press | Wide-Grip Barbell Bench Press | Barbell Wide Bench Press",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5943,6 +6150,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -5972,6 +6180,7 @@
   "aliases": "Ab Wheel Rollout | Ab Roller | Wheel Rollout | Wheel Rollerout",
   "equipment": "Annat",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6002,6 +6211,7 @@
   "aliases": "Advanced Kettlebell Windmill | Advanced kettlebell windmill | kettlebell advanced windmill",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6028,6 +6238,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6057,6 +6268,7 @@
   "aliases": "KB Around the World | Kettlebell around the world",
   "equipment": "Kettlebell",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6083,6 +6295,7 @@
   "aliases": "Crunches på boll | Exercise Ball Crunch | Crunch (On Stability Ball)",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6112,6 +6325,7 @@
   "aliases": "Ab wheel, skivstång | Barbell Rollerout | Barbell Ab Rollout | Ab Rollout with Barbell",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6140,6 +6354,7 @@
   "aliases": "Flat Bench Leg Pull-In | leg pull in flat bench",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6168,6 +6383,7 @@
   "aliases": "Bent-Knee Hip Raise | hip raise (bent knee)",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6198,6 +6414,7 @@
   "aliases": "kettlebell bent press",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6224,6 +6441,7 @@
   "aliases": "Cykelcrunches | bicycle crunches",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6250,6 +6468,7 @@
   "aliases": "Bosu Ball Cable Crunch With Side Bends | Bosu ball cable crunch with side bends | cable side bend crunch (bosu ball)",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6278,6 +6497,7 @@
   "aliases": "bottoms-up",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6306,6 +6526,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6335,6 +6556,7 @@
   "aliases": "Captains Chair Straight-Leg Raise | captains chair straight leg raise",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6363,6 +6585,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6389,6 +6612,7 @@
   "aliases": "Cross Body Crunch | cross body crunch",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6415,6 +6639,7 @@
   "aliases": "crunch (hands overhead)",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6441,6 +6666,7 @@
   "aliases": "Cable Crunch | Kabelcrunch | Crunches With Cable | Cable Kneeling Crunch",
   "equipment": "Kabel",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6467,6 +6693,7 @@
   "aliases": "Crunch Floor",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6495,6 +6722,7 @@
   "aliases": "Deadbug",
   "equipment": "Kroppsvikt",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6521,6 +6749,7 @@
   "aliases": "Negativa crunches",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6551,6 +6780,7 @@
   "aliases": "Double Kettlebell Windmill | Dubbel kettlebell windmill | kettlebell double windmill",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6577,6 +6807,7 @@
   "aliases": "elbow-to-knee",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6607,6 +6838,7 @@
   "aliases": "Kettlebell Figure 8 | Kettlebell figure 8",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6635,6 +6867,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6664,6 +6897,7 @@
   "aliases": "Hängande benlyft | Hanging Leg Raises | Hanging Straight-Leg Raise | hanging straight leg raise",
   "equipment": "Kroppsvikt",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6693,6 +6927,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6721,6 +6956,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6750,6 +6986,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6779,6 +7016,7 @@
   "aliases": "Cable Judo Flip | Cable judo flip",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6808,6 +7046,7 @@
   "aliases": "L-sit | L-Sit On Floor",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6837,6 +7076,7 @@
   "aliases": "Landmine-rotation | Landmine 180's | Landmine 180",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6865,6 +7105,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6893,6 +7134,7 @@
   "aliases": "Liggande benlyft | Leg Raises, Lying | Flat Bench Lying Leg Raise | lying leg raise flat bench | Flat Bench Leg Raises | Leg Raise",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6921,6 +7163,7 @@
   "aliases": "Hip Raise, Lying",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6950,6 +7193,7 @@
   "aliases": "mountain climber",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -6976,6 +7220,7 @@
   "aliases": "negative crunch",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7002,6 +7247,7 @@
   "aliases": "Sneda crunches | oblique crunch | oblique crunch v. 2 | Oblique Crunches - On The Floor | oblique crunches floor",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7031,6 +7277,7 @@
   "aliases": "otis up",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7059,6 +7306,7 @@
   "aliases": "Cable Pallof Press",
   "equipment": "Kabel",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7087,6 +7335,7 @@
   "aliases": "pelvic tilt",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -7116,6 +7365,7 @@
   "aliases": "Plankan | Front Plank",
   "equipment": "Kroppsvikt",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7145,6 +7395,7 @@
   "aliases": "barbell press sit-up",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7173,6 +7424,7 @@
   "aliases": "Cable Reverse Crunch | Omvända crunches, kabel",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7201,6 +7453,7 @@
   "aliases": "Omvända crunches | Reverse crunch | Reverse Crunch | reverse crunch",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7230,6 +7483,7 @@
   "aliases": "Barbell Rollout from Bench | Barbell rollout from bench | Barbell Rollerout From Bench",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7258,6 +7512,7 @@
   "aliases": "Russian Twist | Russian twist, hantlar",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7284,6 +7539,7 @@
   "aliases": "Seated Ab Crunch with Cable | Seated ab crunch with cable | Cable Seated Crunch",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7310,6 +7566,7 @@
   "aliases": "Machine Seated Crunch | Sittande crunches, maskin | lever seated crunch | lever seated crunch v. 2",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7338,6 +7595,7 @@
   "aliases": "Seated Barbell Twist | Seated barbell twist | barbell seated twist",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7364,6 +7622,7 @@
   "aliases": "Barbell Side Bend | Sidoböjningar, skivstång | Barbell Side Bent | barbell side bent v. 2",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7392,6 +7651,7 @@
   "aliases": "Dumbbell Side Bend | Sidoböjningar | Side bend | Side Bend with Dumbbell",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7421,6 +7681,7 @@
   "aliases": "Sidoplanka | Side plank right | Side Bridge | side bridge v. 2",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7449,6 +7710,7 @@
   "aliases": "Stretch, sida | side lying floor stretch",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -7478,6 +7740,7 @@
   "aliases": "One-Arm Medicine Ball Slam | One-arm medicine ball slam | Single-Arm Slam (With Medicine Ball) | one arm slam (with medicine ball)",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7506,6 +7769,7 @@
   "aliases": "Situps | Sit-Up | sit-up | sit-up v. 2",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7534,6 +7798,7 @@
   "aliases": "Smith Machine Hip Raise | Smith machine hip raise",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7563,6 +7828,7 @@
   "aliases": "",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7591,6 +7857,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -7617,6 +7884,7 @@
   "aliases": "Cable Standing Crunch (With Rope Attachment) | Stående kabelcrunch med rep | Standing Rope Crunch",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7645,6 +7913,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -7674,6 +7943,7 @@
   "aliases": "Standing Cable Lift | Standing cable lift | cable standing lift",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7703,6 +7973,7 @@
   "aliases": "",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7732,6 +8003,7 @@
   "aliases": "",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7760,6 +8032,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7788,6 +8061,7 @@
   "aliases": "V-Sit On Floor",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7814,6 +8088,7 @@
   "aliases": "Crunches med vikt, hantlar | Weighted Crunches",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7844,6 +8119,7 @@
   "aliases": "KB Windmill | Kettlebell windmill | Kettlebell Windmills | Kettlebell Windmill | kettlebell windmill",
   "equipment": "Kettlebell",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7872,6 +8148,7 @@
   "aliases": "Stretch, framsida lår | All Fours Squad Stretch",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -7901,6 +8178,7 @@
   "aliases": "Biceps Curl Squat with Dumbbell | Biceps curl squat with dumbbell | dumbbell biceps curl squat",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7931,6 +8209,7 @@
   "aliases": "Boxhopp | box jumps | Box Jump (Multiple Response)",
   "equipment": "Kroppsvikt",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7961,6 +8240,7 @@
   "aliases": "Box Squat | Boxböj",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -7990,6 +8270,7 @@
   "aliases": "Bulgarian Split Squat | Bulgarisk utfallsböj",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8020,6 +8301,7 @@
   "aliases": "",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8050,6 +8332,7 @@
   "aliases": "barbell clean-grip front squat",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8080,6 +8363,7 @@
   "aliases": "Barbell Front Squat | Frontböj | Front Squat | Front Squats | Front Squat with Barbell | Front Barbell Squat | barbell front squat",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8110,6 +8394,7 @@
   "aliases": "Kettlebell Front Squat | Frontböj, kettlebell | Front Squats With Two Kettlebells",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8140,6 +8425,7 @@
   "aliases": "Front Squat to Bench with Barbells | Front squat to bench with barbells | Front Barbell Squat To A Bench | barbell bench front squat",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8169,6 +8455,7 @@
   "aliases": "Goblet Squat | Gobletböj | Dumbbell Goblet Squat",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8198,6 +8485,7 @@
   "aliases": "Kettlebell Goblet Squat | Gobletböj, kettlebell | kettlebell goblet squat | Goblet Squat",
   "equipment": "Kettlebell",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8227,6 +8515,7 @@
   "aliases": "Hack Squat (machine) | Hackböj | Hack Squat | Hack Squats | Sled Hack Squat",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8257,6 +8546,7 @@
   "aliases": "Barbell Hack Squats | Hackböj, skivstång | Hack Squat with barbell | Barbell Hack Squat | barbell hack squat",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8285,6 +8575,7 @@
   "aliases": "Hip Adduction | Höftadduktion, kabel | Cable Hip Adduction | cable hip adduction",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8311,6 +8602,7 @@
   "aliases": "Stretch, framsida lår och höftböjare",
   "equipment": "Annat",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -8340,6 +8632,7 @@
   "aliases": "Iron Cross with Dumbbells | Iron cross with dumbbells | Iron Cross | dumbbell iron cross",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8369,6 +8662,7 @@
   "aliases": "iron cross stretch",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -8399,6 +8693,7 @@
   "aliases": "Jefferson Squats with Barbell | Jefferson squats with barbell | barbell jefferson squat",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8429,6 +8724,7 @@
   "aliases": "Jump squats | Squat Jumps | jump squat v. 2",
   "equipment": "Kroppsvikt",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8455,6 +8751,7 @@
   "aliases": "Leg Extension (machine) | Benspark | Leg Extension | Leg Extensions | Machine Leg Extension | lever leg extension",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8484,6 +8781,7 @@
   "aliases": "Benpress | Sled 45° Leg Press | sled 45в° leg press | Sled 45° Leg Press (Back Pov) | sled 45в° leg press (back pov) | Sled 45° Leg Press (Side Pov)",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8514,6 +8812,7 @@
   "aliases": "Utfall, kroppsvikt | Lunges | Bodyweight lunge HD | Forward Lunge | forward lunge (male)",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8544,6 +8843,7 @@
   "aliases": "kettlebell lunge pass through",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8574,6 +8874,7 @@
   "aliases": "Lunges (barbell/DB) | Utfall | Barbell Lunge | Barbell Lunges | Barbell Lunges Standing",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8604,6 +8905,7 @@
   "aliases": "Dumbbell Lunge | Utfall, hantlar | Dumbbell Lunges | Dumbbell Lunges Standing",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8633,6 +8935,7 @@
   "aliases": "Narrow Stance Squat with Barbell | Narrow stance squat with barbell | Narrow Stance Squats | barbell narrow stance squat",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8663,6 +8966,7 @@
   "aliases": "Overhead Squat with Barbell | barbell overhead squat",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8692,6 +8996,7 @@
   "aliases": "KB Goblet Squat (pause) | Gobletböj med paus, kettlebell",
   "equipment": "Kettlebell",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8722,6 +9027,7 @@
   "aliases": "Kettlebell Pistol Squat | Pistol squat, kettlebell",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8751,6 +9057,7 @@
   "aliases": "Plie Dumbbell Squat | Sumoböj | Pile Squat with Dumbbell | Dumbbell Sumo Squat",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8781,6 +9088,7 @@
   "aliases": "Dumbbell Rear Lunge | Bakåtutfall, hantlar | Rear Lunges with Dumbbell | Bodyweight Reverse Lunge | Reverse Lunge | Reverse lunges",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8811,6 +9119,7 @@
   "aliases": "Rear Lunges with Barbell | Bakåtutfall, skivstång | barbell rear lunge | barbell rear lunge v. 2 | Barbell Reverse Lunge",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8841,6 +9150,7 @@
   "aliases": "Knäböj, safety bar",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8871,6 +9181,7 @@
   "aliases": "Scissor Jumps | scissor jumps (male)",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8899,6 +9210,7 @@
   "aliases": "Sidliggande höftadduktion, kroppsvikt | Side-Lying Hip Adduction | side lying hip adduction (male)",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8928,6 +9240,7 @@
   "aliases": "Barbell Side Split Squat | Barbell side split squat | barbell side split squat v. 2",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8954,6 +9267,7 @@
   "aliases": "Single-Leg Leg Extension | Enbens benspark",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -8983,6 +9297,7 @@
   "aliases": "Smith Single-Leg Split Squat | Enbens utfallsböj, smithmaskin | smith single leg split squat",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9013,6 +9328,7 @@
   "aliases": "One Leg Squat with Barbell | Enbens knäböj | Single Leg Squat with Barbell | One Leg Barbell Squat | Barbell Single-Leg Squat | barbell one leg squat",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9042,6 +9358,7 @@
   "aliases": "Dumbbell Step Up Single Leg Balance With Biceps Curl | Dumbbell step up single leg balance with biceps curl | dumbbell step up single leg balance with bicep curl | Step Up Single Leg Balance with Bicep Curl using Dumbbells",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9071,6 +9388,7 @@
   "aliases": "Smith Machine Hack Squat | Hackböj, smithmaskin",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9100,6 +9418,7 @@
   "aliases": "Smith Machine Leg Press | Benpress, smithmaskin",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9130,6 +9449,7 @@
   "aliases": "Smith Machine Squat | Knäböj, smithmaskin | Smith Machine Squats | Smith Full Squat",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9160,6 +9480,7 @@
   "aliases": "Speed Squats with Barbell | Speed squats with barbell | barbell speed squat",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9189,6 +9510,7 @@
   "aliases": "Utfallsböj | Split Squats | split squats | Split squats left | Split squats right",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9218,6 +9540,7 @@
   "aliases": "Dumbbell Split Squat | Utfallsböj, hantlar | Split Squat with Dumbbells",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9248,6 +9571,7 @@
   "aliases": "Barbell Back Squat | Knäböj | Bodyweight Squat | Squats | Barbell Squat | Barbell Full Squat | Barbell Full Squat (Back Pov) | Barbell Full Squat (Side Pov)",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9277,6 +9601,7 @@
   "aliases": "Dumbbell Squat | Knäböj, hantlar | Squats using Dumbbells",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9307,6 +9632,7 @@
   "aliases": "",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9337,6 +9663,7 @@
   "aliases": "Squat to Bench with Barbell | Squat to bench with barbell | Barbell Squat To A Bench | barbell bench squat",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9366,6 +9693,7 @@
   "aliases": "Squat to Bench with Dumbbells | Squat to bench with dumbbells | Dumbbell Squat To A Bench | dumbbell bench squat",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9395,6 +9723,7 @@
   "aliases": "Knäböj, band | Squat with Bands | Squats - With Bands | band squat",
   "equipment": "Band",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9425,6 +9754,7 @@
   "aliases": "star jump (male)",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9454,6 +9784,7 @@
   "aliases": "Step-ups",
   "equipment": "Kroppsvikt",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9484,6 +9815,7 @@
   "aliases": "Step Ups with Barbell | Step-ups, skivstång | Barbell Step Ups | barbell step-up",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9513,6 +9845,7 @@
   "aliases": "Step Ups with Dumbbells | Step-ups, hantlar | Dumbbell Step Ups | dumbbell step-up",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9543,6 +9876,7 @@
   "aliases": "Kettlebell Sumo High Pull | Kettlebell sumo high pull",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9573,6 +9907,7 @@
   "aliases": "",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9603,6 +9938,7 @@
   "aliases": "Kettlebell Turkish Get-Up (Squat style) | Kettlebell turkish get-up (squat style) | kettlebell turkish get up (squat style)",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9633,6 +9969,7 @@
   "aliases": "Gående utfall | Walking Lunges | Bodyweight Walking Lunge",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9661,6 +9998,7 @@
   "aliases": "",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9690,6 +10028,7 @@
   "aliases": "Knäböj med vikt",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9720,6 +10059,7 @@
   "aliases": "Zercherböj | Zercher Squats | barbell zercher squat | Barbell Full Zercher Squat | Zecher Squats",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9746,6 +10086,7 @@
   "aliases": "Airbike",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9776,6 +10117,7 @@
   "aliases": "Hängande alternerande kettlebell clean | kettlebell alternating hang clean",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9806,6 +10148,7 @@
   "aliases": "Battling Ropes",
   "equipment": "Annat",
   "carls": false,
+  "category": "conditioning",
   "verified": false
  },
  {
@@ -9836,6 +10179,7 @@
   "aliases": "kettlebell bottoms up clean from the hang position",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9866,6 +10210,7 @@
   "aliases": "burpee",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9896,6 +10241,7 @@
   "aliases": "Clean",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9926,6 +10272,7 @@
   "aliases": "Dumbbell Clean | Frivändning, hantlar",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9956,6 +10303,7 @@
   "aliases": "Stöt | Clean and Jerk OL",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -9986,6 +10334,7 @@
   "aliases": "Barbell Clean and press | Barbell clean and press | Clean and Press",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10016,6 +10365,7 @@
   "aliases": "Double Kettlebell Alternating Hang Clean | Hängande dubbel alternerande kettlebell clean | kettlebell double alternating hang clean",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10046,6 +10396,7 @@
   "aliases": "Double Kettlebell Jerk | Double kettlebell jerk | kettlebell double jerk",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10076,6 +10427,7 @@
   "aliases": "Double Kettlebell Snatch | Dubbel kettlebell snatch | kettlebell double snatch",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10106,6 +10458,7 @@
   "aliases": "Elliptical | Walk Elliptical Cross Trainer",
   "equipment": "Maskin",
   "carls": false,
+  "category": "conditioning",
   "verified": false
  },
  {
@@ -10136,6 +10489,7 @@
   "aliases": "Kettlebell Hang Clean | Hängande kettlebell clean",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10166,6 +10520,7 @@
   "aliases": "Lutande gång på löpband | Walking On Incline Treadmill",
   "equipment": "Annat",
   "carls": false,
+  "category": "conditioning",
   "verified": false
  },
  {
@@ -10196,6 +10551,7 @@
   "aliases": "Frivändning",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10226,6 +10582,7 @@
   "aliases": "One-Arm Kettlebell Clean and Jerk | Enarms stöt, kettlebell | Kettlebell Single-Arm Clean And Jerk | kettlebell one arm clean and jerk",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10256,6 +10613,7 @@
   "aliases": "One-Arm Kettlebell Jerk | One-arm kettlebell jerk | Kettlebell Single-Arm Jerk | kettlebell one arm jerk",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10286,6 +10644,7 @@
   "aliases": "One Arm Snatch with Barbell | Enarms ryck | Barbell Single-Arm Snatch | barbell one arm snatch",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10316,6 +10675,7 @@
   "aliases": "One-Arm Kettlebell Snatch | Enarms kettlebell snatch | Kettlebell Single-Arm Snatch | kettlebell one arm snatch",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10346,6 +10706,7 @@
   "aliases": "Ski Ergometer | Ski Machine",
   "equipment": "Annat",
   "carls": false,
+  "category": "conditioning",
   "verified": false
  },
  {
@@ -10376,6 +10737,7 @@
   "aliases": "Snatch | Ryck | Snatch OL",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10406,6 +10768,7 @@
   "aliases": "",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10436,6 +10799,7 @@
   "aliases": "Trappmaskin | Stairmaster | Stair Master | Walking On Stepmill | ClimbMill",
   "equipment": "Annat",
   "carls": false,
+  "category": "conditioning",
   "verified": false
  },
  {
@@ -10466,6 +10830,7 @@
   "aliases": "Motionscykel | Stationary bike cardio | Bicycling, Stationary | Stationary Bike Run | stationary bike run v. 3 | Stationary Bike Walk",
   "equipment": "Annat",
   "carls": false,
+  "category": "conditioning",
   "verified": false
  },
  {
@@ -10496,6 +10861,7 @@
   "aliases": "KB Swing | Kettlebell swing | Kettlebell Swing | Kettlebell Swings | 2 Handed Kettlebell Swing",
   "equipment": "Kettlebell",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10526,6 +10892,7 @@
   "aliases": "Thruster | Thrusters | barbell thruster",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10556,6 +10923,7 @@
   "aliases": "Kettlebell Thruster | Thrusters, kettlebell",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10586,6 +10954,7 @@
   "aliases": "Löpband | Running, Treadmill | Jogging, Treadmill | Treadmill Cardio",
   "equipment": "Maskin",
   "carls": false,
+  "category": "conditioning",
   "verified": false
  },
  {
@@ -10616,6 +10985,7 @@
   "aliases": "KB Turkish Get-Up | Kettlebell Turkish Get Ups",
   "equipment": "Kettlebell",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10646,6 +11016,7 @@
   "aliases": "Two-Arm Kettlebell Clean | Kettlebell clean | Kettlebell Two-Arm Clean | kettlebell two arm clean",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10676,6 +11047,7 @@
   "aliases": "kettlebell alternating renegade row",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10706,6 +11078,7 @@
   "aliases": "Alternating Kettlebell Row | Alternerande kettlebellrodd | kettlebell alternating row",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10736,6 +11109,7 @@
   "aliases": "Archer Pull Up | Archer Pull-Up | archer pull up",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10766,6 +11140,7 @@
   "aliases": "Machine Assisted Pull-Up | Assisterade pull-ups, maskin | Assisted Pull Ups | Assisted Pull-Up | assisted pull-up",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10796,6 +11171,7 @@
   "aliases": "Machine Back Extension | Ryggresningar, maskin | lever back extension",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10826,6 +11202,7 @@
   "aliases": "Ryggresningar på boll | Back Extension on Stability Ball",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10856,6 +11233,7 @@
   "aliases": "",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10886,6 +11264,7 @@
   "aliases": "Assisterade pull-ups, band | Band Assisted Pull-Up | band assisted pull-up",
   "equipment": "Band",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10916,6 +11295,7 @@
   "aliases": "Bent Arm Barbell Pullover | Pullover, skivstång | Bent Arm Pullover | Bent-Arm Barbell Pullover | barbell bent arm pullover",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10946,6 +11326,7 @@
   "aliases": "Barbell Bent Over Row | Skivstångsrodd | Bent-Over Barbell Row | Bent Over Row with Barbell | Bent Over Barbell Row | barbell bent over row | Bent Over Rowing",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -10976,6 +11357,7 @@
   "aliases": "Bent-Over Dumbbell Row | Bent-over dumbbell row | dumbbell bent over row | Bent Over Dumbbell Rows (Two Arms) | Bent Over Two-Dumbbell Row",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11006,6 +11388,7 @@
   "aliases": "Chest Supported Row | Bröststödd rodd | Chest-Supported Dumbbell Row | Incline Dumbbell Row | Dumbbell Incline Row | dumbbell incline row",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11036,6 +11419,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -11066,6 +11450,7 @@
   "aliases": "Chins | Chin-Ups | Chin Ups | Chin-Up | chin-up | Reverse-grip pull-ups | Reverse-Grip Pull-Up | reverse grip pull-up",
   "equipment": "Kroppsvikt",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11096,6 +11481,7 @@
   "aliases": "Dead Lifts Smith Machine | Dead lifts smith machine | Smith Machine Dead Lifts | smith deadlift",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11126,6 +11512,7 @@
   "aliases": "Conventional Deadlift | Marklyft | Barbell Deadlift | Deadlifts | Barbell Dead Lifts",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11156,6 +11543,7 @@
   "aliases": "Dumbbell Deadlift | Marklyft, hantlar | Dumbbell Dead Lifts",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11186,6 +11574,7 @@
   "aliases": "Machine Deadlift | Marklyft, maskin | lever deadlift | Leverage Deadlift",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11216,6 +11605,7 @@
   "aliases": "Cable Deadlifts | Marklyft, kabel | cable deadlift",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11246,6 +11636,7 @@
   "aliases": "",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11276,6 +11667,7 @@
   "aliases": "",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11306,6 +11698,7 @@
   "aliases": "cable lat pulldown full range of motion",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11336,6 +11729,7 @@
   "aliases": "Gironda Sternum Chins | gironda sternum chin",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11366,6 +11760,7 @@
   "aliases": "Marklyft, trap bar | Trap Bar Deadlift | trap bar deadlift",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11396,6 +11791,7 @@
   "aliases": "Machine High Row | Machine high row | lever high row | Leverage High Row",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11426,6 +11822,7 @@
   "aliases": "Hug Keens To Chest",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -11456,6 +11853,7 @@
   "aliases": "exercise ball hug",
   "equipment": "Annat",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -11486,6 +11884,7 @@
   "aliases": "Ryggresningar | hyperextension | Hyperextension (On Bench) | Back Extension",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11516,6 +11915,7 @@
   "aliases": "Inverterad rodd | Inverted Rows | inverted row v. 2 | Australian pull-ups",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11546,6 +11946,7 @@
   "aliases": "",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11576,6 +11977,7 @@
   "aliases": "",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11606,6 +12008,7 @@
   "aliases": "Lat Pulldown (bar) | Latsdrag | Wide Grip Lat Pull Down | Wide-Grip Lat Pulldown | Wide-grip Pulldown | Lat Pulldown | Cable Pulldown",
   "equipment": "Kabel",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11636,6 +12039,7 @@
   "aliases": "Lying Cambered Barbell Row | Lying cambered barbell row | Cambered Bar Lying Row",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11666,6 +12070,7 @@
   "aliases": "Meadows-rodd",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11696,6 +12101,7 @@
   "aliases": "Muscle-ups | Muscle Ups",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11726,6 +12132,7 @@
   "aliases": "Machine Narrow Grip Seated Row | Sittande rodd med smalt grepp, maskin | lever narrow grip seated row | Rowing seated, narrow grip",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11756,6 +12163,7 @@
   "aliases": "Chins med smalt neutralt grepp | chin-ups (narrow parallel grip)",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11784,6 +12192,7 @@
   "aliases": "Stretch, nacke och sida | Side Neck Stretch",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -11814,6 +12223,7 @@
   "aliases": "Lat Pulldown (neutral) | Latsdrag med neutralt grepp | V-Bar Pulldown | V Bar Pull Down",
   "equipment": "Kabel",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11844,6 +12254,7 @@
   "aliases": "Pull-ups med neutralt grepp | Pull-Ups (Neutral Grip) | Pull-Up (Neutral Grip) | pull up (neutral grip)",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11874,6 +12285,7 @@
   "aliases": "Pendlay-rodd | barbell pendlay row | Pendelay Rows",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11904,6 +12316,7 @@
   "aliases": "Pull Up (bodyweight) | Pull-ups | Pull-Up | Pull Ups | Pullups",
   "equipment": "Kroppsvikt",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11934,6 +12347,7 @@
   "aliases": "Barbell Pullover | Barbell pullover",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11964,6 +12378,7 @@
   "aliases": "Dumbbell Pullover | Pullover | Straight Arm Dumbbell Pullover | Straight-Arm Dumbbell Pullover | dumbbell straight arm pullover",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -11994,6 +12409,7 @@
   "aliases": "Pullover, maskin | Machine Pullover | lever pullover",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12024,6 +12440,7 @@
   "aliases": "Dumbbell Pullover On Exercise Ball | Pullover på boll | Pullover On Stability Ball With Weight",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12054,6 +12471,7 @@
   "aliases": "Rack Pull | Rack pull | Rack Pulls | barbell rack pull",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12084,6 +12502,7 @@
   "aliases": "Reverse Grip Bent Over Row | Skivstångsrodd med omvänt grepp | Reverse Grips Bent Over Barbell Rows | Reverse Grip Bent-Over Rows | Barbell Reverse-Grip Bent Over Row | barbell reverse grip bent over row | Barbell Row (Underhand)",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12114,6 +12533,7 @@
   "aliases": "Machine Reverse Hyperextension | lever reverse hyperextension",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12143,6 +12563,7 @@
   "aliases": "EZ-Bar Reverse-Grip Bent Over Row | Rodd med omvänt grepp, EZ-stång | ez bar reverse grip bent over row | EZ Bar Reverse Grip Row",
   "equipment": "EZ-stång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12173,6 +12594,7 @@
   "aliases": "rocky pull-up pulldown",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12203,6 +12625,7 @@
   "aliases": "",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12232,6 +12655,7 @@
   "aliases": "Scapular Pull-Up | scapular pull-up | Scapula Pulls",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12261,6 +12685,7 @@
   "aliases": "Cable Row (seated) | Sittande kabelrodd | Seated Cable Row | Seated Cable Rows | cable seated row",
   "equipment": "Kabel",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12290,6 +12715,7 @@
   "aliases": "Machine Row | Rodd, maskin | Seated Row (Machine) | Machine Seated Row | lever seated row | Leverage Iso Row | Leverage Machine Iso Row",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12319,6 +12745,7 @@
   "aliases": "Barbell Shrug | Shrugs, skivstång | Shrugs, Barbells | Barbell Shrugs",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12348,6 +12775,7 @@
   "aliases": "Dumbbell Shrug | Shrugs | Shrugs, Dumbbells | Shoulder Shrug | Shoulder Shrugs",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12377,6 +12805,7 @@
   "aliases": "Machine Shrug | Shrugs, maskin | lever shrug | Leverage Shrug | Plate-Loaded Shrug",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12406,6 +12835,7 @@
   "aliases": "Cable Shrugs | Shrugs, kabel | cable shrug",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12436,6 +12866,7 @@
   "aliases": "side-to-side chin",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12464,6 +12895,7 @@
   "aliases": "One Arm Against Wall | One arm against wall | Single-Arm Against Wall",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -12494,6 +12926,7 @@
   "aliases": "One Arm Chin-Up | Enarms chins | Single-Arm Chin-Up",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12523,6 +12956,7 @@
   "aliases": "Single Arm Pulldown | Enarms latsdrag | One-Arm Lat Pulldown | Single-Arm Lat Pulldown | One Arm Lat Pulldown | Cable Single-Arm Pulldown | cable one arm pulldown",
   "equipment": "Kabel",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12553,6 +12987,7 @@
   "aliases": "Single-Leg Deadlift with Dumbbell | Enbens marklyft, hantlar | dumbbell single leg deadlift",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12583,6 +13018,7 @@
   "aliases": "Kettlebell Single Leg Deadlift | Enbens marklyft, kettlebell | Kettlebell One Legged Deadlift | Kettlebell One-Legged Deadlift",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12612,6 +13048,7 @@
   "aliases": "Dumbbell Row | Hantelrodd | Single-Arm Dumbbell Row | Dumbbell single arm row | One-Arm Dumbbell Row | Bent Over Dumbbell Rows (Single Arm) | Dumbbell Single-Arm Bent-Over Row | Single-Arm Dumbbell Bent-Over Row | dumbbell one arm bent-over row",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12641,6 +13078,7 @@
   "aliases": "KB Single-Arm Row | Enarms kettlebellrodd | One Arm Kettlebell Row | One-Arm Kettlebell Row | Kettlebell Single-Arm Row | kettlebell one arm row",
   "equipment": "Kettlebell",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12671,6 +13109,7 @@
   "aliases": "One Arm Side Deadlift with Barbell | One arm side deadlift with barbell | One-Arm Side Deadlift | Barbell Single-Arm Side Deadlift | barbell one arm side deadlift",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12700,6 +13139,7 @@
   "aliases": "Smith Machine Behind the Back Shrug | Smith machine behind the back shrug | Smith Back Shrug",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12729,6 +13169,7 @@
   "aliases": "Smith Machine Bent Over Row | Rodd, smithmaskin",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12758,6 +13199,7 @@
   "aliases": "Smith Machine Reverse Grip Bent Over Row | Rodd med omvänt grepp, smithmaskin | Smith Reverse-Grip Bent Over Row",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12787,6 +13229,7 @@
   "aliases": "Smith Machine Shrug | Shrugs, smithmaskin",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12816,6 +13259,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -12845,6 +13289,7 @@
   "aliases": "Straight-Arm Pulldown | Straight-Arm Pulldown (Cable) | cable straight arm pulldown | Straight-arm Pull Down (bar Attachment)",
   "equipment": "Kabel",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12874,6 +13319,7 @@
   "aliases": "cable pushdown (straight arm) | cable pushdown (straight arm) v. 2",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12903,6 +13349,7 @@
   "aliases": "Straight arm pulldown med rep | Rope Straight-Arm Pulldown | cable straight arm pulldown (with rope) | Cable Standing Pulldown (With Rope)",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12932,6 +13379,7 @@
   "aliases": "Supermans",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12962,6 +13410,7 @@
   "aliases": "",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -12992,6 +13441,7 @@
   "aliases": "T-Bar Row | T-bar-rodd | T-Bar Rows | Rowing, T-bar",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13021,6 +13471,7 @@
   "aliases": "Two-Arm Kettlebell Row | Kettlebellrodd | Kettlebell Two-Arm Row | kettlebell two arm row",
   "equipment": "Kettlebell",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13050,6 +13501,7 @@
   "aliases": "Underhand Pull down | Latsdrag med omvänt grepp | Underhand Pull downs | Underhand Cable Pulldowns | cable underhand pulldown | Reverse Grip Lat Pulldown",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13078,6 +13530,7 @@
   "aliases": "Stretch, rygg",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -13107,6 +13560,7 @@
   "aliases": "upward facing dog",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -13136,6 +13590,7 @@
   "aliases": "Ryggresningar med vikt på boll | Weighted Ball Hyperextension",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13166,6 +13621,7 @@
   "aliases": "Pull-ups med vikt | Weighted Pull-Up | Weighted Pull Ups",
   "equipment": "Kroppsvikt",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13195,6 +13651,7 @@
   "aliases": "Wide Grip Decline Barbell Pullover | Negativ pullover med brett grepp, skivstång | Wide-Grip Decline Barbell Pullover | barbell decline wide-grip pullover",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13225,6 +13682,7 @@
   "aliases": "Pull-ups med brett grepp | Pull-Ups (Wide Grip) | Wide-Grip Pull-Up | wide grip pull-up",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13254,6 +13712,7 @@
   "aliases": "Wide Grip Seated Cable Row | Sittande kabelrodd med brett grepp | cable seated wide-grip row | Cable Floor Seated Wide-Grip Row",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13283,6 +13742,7 @@
   "aliases": "Latsdrag med brett grepp bakom nacken | Cable Wide-Grip Rear Pulldown Behind Neck | cable wide grip rear pulldown behind neck",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13313,6 +13773,7 @@
   "aliases": "wide grip rear pull-up",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13342,6 +13803,7 @@
   "aliases": "Butt Lift (Bridge) | Low Glute Bridge On Floor | Hip Bridge",
   "equipment": "Kroppsvikt",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13371,6 +13833,7 @@
   "aliases": "Barbell Glute Bridge | Glute bridge, skivstång",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13400,6 +13863,7 @@
   "aliases": "band hip lift",
   "equipment": "Band",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13430,6 +13894,7 @@
   "aliases": "Hip Thrust (barbell) | Höftlyft | Barbell Hip Thrust | Hip Thrust",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13459,6 +13924,7 @@
   "aliases": "Hip Thrust (machine) | Höftlyft, maskin | Plate-Loaded Glute Drive | Glute Drive",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13489,6 +13955,7 @@
   "aliases": "Knästående jump squats, skivstång",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13518,6 +13985,7 @@
   "aliases": "london bridge",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13547,6 +14015,7 @@
   "aliases": "",
   "equipment": "Band",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13576,6 +14045,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -13605,6 +14075,7 @@
   "aliases": "Cable Pull Through | Pull-through | Cable Pull-Through | Cable pull through | Pull Through",
   "equipment": "Kabel",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13631,6 +14102,7 @@
   "aliases": "Stretch, säte",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -13660,6 +14132,7 @@
   "aliases": "Enbens glute bridge",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13690,6 +14163,7 @@
   "aliases": "Sumo Deadlift | Sumomarklyft | barbell sumo deadlift",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13719,6 +14193,7 @@
   "aliases": "Bänkdips | Bench Dips On Floor HD",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13748,6 +14223,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13777,6 +14253,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13805,6 +14282,7 @@
   "aliases": "Triceps kickback, kabel | Cable Tricep Kickback",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13834,6 +14312,7 @@
   "aliases": "Close Grip Bench Press | Smal bänkpress | Close-Grip Bench Press | Close Grip Barbell Bench Press | Close-Grip Barbell Bench Press | barbell close-grip bench press",
   "equipment": "Skivstång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13862,6 +14341,7 @@
   "aliases": "Decline Triceps Extension with Dumbbell | Negativ tricepsextension, hantlar | Decline Dumbbell Triceps Extension | dumbbell decline triceps extension",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13890,6 +14370,7 @@
   "aliases": "Decline EZ Bar Triceps Extension | Negativ tricepsextension, EZ-stång | EZ-Bar Decline Triceps Extension | ez barbell decline triceps extension | Decline EZ Bar Triceps Extension with Barbell",
   "equipment": "EZ-stång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13920,6 +14401,7 @@
   "aliases": "Diamantarmhävningar | diamond push-up",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13948,6 +14430,7 @@
   "aliases": "Incline Pushdown with Cable | Lutande triceps pushdown | Cable Incline Pushdown | cable incline pushdown",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -13976,6 +14459,7 @@
   "aliases": "Incline Triceps Extension with Cable | Lutande tricepsextension | Cable Incline Triceps Extension | cable incline triceps extension",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14004,6 +14488,7 @@
   "aliases": "Incline Triceps Extensions with Dumbbell | Lutande tricepsextension, hantlar | dumbbell incline triceps extension",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14033,6 +14518,7 @@
   "aliases": "Barbell Jm Bench Press",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14061,6 +14547,7 @@
   "aliases": "Kneeling Triceps Extension with Cable | Knästående tricepsextension | Kneeling Cable Triceps Extension | cable kneeling triceps extension",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14089,6 +14576,7 @@
   "aliases": "Lying Tricep Extension with Cable | Skull crushers, kabel | Cable Lying Triceps Extension | cable lying triceps extension | cable lying triceps extension v. 2",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14117,6 +14605,7 @@
   "aliases": "Lying Triceps Extension Across Face with Dumbbell | Lying triceps extension across face with dumbbell | Dumbbell Lying Extension (Across Face)",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14145,6 +14634,7 @@
   "aliases": "Lying Triceps Extension with Dumbbells | Skull crushers, hantlar | Lying Dumbbell Tricep Extension | dumbbell lying triceps extension | Lying Two Arm Triceps Extension with Dumbbell | Dumbbell Skull Crusher | Skullcrusher Dumbbells",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14174,6 +14664,7 @@
   "aliases": "Overhead Tricep Ext (cable) | Triceps overhead, kabel | Cable Overhead Tricep Extension | Overhead Cable Tricep Extension | Cable Rope Overhead Triceps Extension | Triceps Overhead Extension with Rope",
   "equipment": "Kabel",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14202,6 +14693,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -14231,6 +14723,7 @@
   "aliases": "barbell pin presses",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14259,6 +14752,7 @@
   "aliases": "Dumbbell Pronate-Grip Triceps Extension | Dumbbell pronate-grip triceps extension | Dumbbell Tricep Extension -Pronated Grip",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14287,6 +14781,7 @@
   "aliases": "Triceps pushdown med omvänt grepp | Cable Reverse-Grip Pushdown",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14315,6 +14810,7 @@
   "aliases": "Seated Bent-Over Two-Arm Dumbbell Triceps Extension | Seated bent-over two-arm dumbbell triceps extension | Dumbbell Seated Bent Over Triceps Extension",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14343,6 +14839,7 @@
   "aliases": "Seated Overhead Triceps Extension with Barbell | Sittande triceps overhead, skivstång | barbell seated overhead triceps extension",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14371,6 +14868,7 @@
   "aliases": "Seated Dumbbell Tricep Extension | Sittande tricepsextension, hantlar | dumbbell seated triceps extension | dumbbells seated triceps extension | Seated Two-Arm Triceps Extension with Dumbbell",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14399,6 +14897,7 @@
   "aliases": "Seated Triceps Press with Dumbbell",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14427,6 +14926,7 @@
   "aliases": "Single Arm Pronated Triceps Extension with Dumbbell | Single arm pronated triceps extension with dumbbell | One Arm Pronated Dumbbell Triceps Extension | Dumbbell Lying Single-Arm Pronated Triceps Extension | dumbbell lying one arm pronated triceps extension",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14455,6 +14955,7 @@
   "aliases": "Standing Bent-Over One-Arm Dumbbell Triceps Extension | Stående enarms tricepsextension, hantlar | Dumbbell Standing Bent Over Single-Arm Triceps Extension | dumbbell standing bent over one arm triceps extension | Bent-Over One Arm Triceps Extension with Dumbbell",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14483,6 +14984,7 @@
   "aliases": "Cable Standing Single-Arm Triceps Extension | Stående enarms tricepsextension | cable standing one arm triceps extension | One Arm Triceps Extensions on Cable | One Arm Tricep Extension with Cable | Cable One Arm Tricep Extension",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14511,6 +15013,7 @@
   "aliases": "Standing One Arm Triceps Extension with Dumbbell | Standing one arm triceps extension with dumbbell | Standing One-Arm Dumbbell Triceps Extension | Dumbbell Standing Single-Arm Extension | dumbbell standing one arm extension",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14539,6 +15042,7 @@
   "aliases": "Single Arm Supinated Triceps Extension with Dumbbell | Enarms tricepsextension med omvänt grepp, hantlar | One Arm Supinated Dumbbell Triceps Extension | Dumbbell Lying Single-Arm Supinated Triceps Extension | dumbbell lying one arm supinated triceps extension",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14567,6 +15071,7 @@
   "aliases": "Single Arm Tricep Pushdown | Enarms triceps pushdown | Cable Single-Arm Triceps Pushdown | cable one arm tricep pushdown | Single-arm cable pushdown",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14596,6 +15101,7 @@
   "aliases": "Skull Crusher | Skull crushers, skivstång | Barbell Lying Triceps Extension Skull Crusher | Barbell Lying Triceps Extension | Lying Tricep Extension | Lying Triceps Extensions | Lying Triceps Press with Barbell",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14625,6 +15131,7 @@
   "aliases": "Skull Crushers | Skull crushers | Skullcrusher SZ-bar | EZ-Bar Skullcrusher | EZ-Bar Lying Triceps Extension | Lying Triceps Press",
   "equipment": "EZ-stång",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14654,6 +15161,7 @@
   "aliases": "Smith Machine Close-grip Bench Press | Smal bänkpress, smithmaskin | Smith Machine Close Grip Bench Press",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14682,6 +15190,7 @@
   "aliases": "Standing Bent-Over Two-Arm Dumbbell Triceps Extension | Stående tricepsextension, hantlar | Dumbbell Standing Bent Over Two-Arm Triceps Extension | dumbbell standing bent over two arm triceps extension | Bent-Over Dumbbell Triceps Extension | Bent-Over Two Arm Triceps Extension with Dumbbell",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14711,6 +15220,7 @@
   "aliases": "Standing Overhead Triceps Extension with Barbell | Stående triceps overhead, skivstång | Standing Overhead Barbell Triceps Extension | barbell standing overhead triceps extension",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14740,6 +15250,7 @@
   "aliases": "Tate Press with Dumbbell | dumbbell tate press | Dumbell Tate Press",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14769,6 +15280,7 @@
   "aliases": "Dips (tricep) | Dips | Triceps Dip | Dips - Triceps Version | Tricep Dips using Body Weight",
   "equipment": "Kroppsvikt",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14797,6 +15309,7 @@
   "aliases": "Dumbbell Tricep Extension | Tricepsextension, hantlar | Dumbbell Triceps Extension | Standing Triceps Extension | Standing Dumbbell Triceps Extension | dumbbell standing triceps extension",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14825,6 +15338,7 @@
   "aliases": "Dumbbell Tricep Kickback | Triceps kickback | Tricep Dumbbell Kickback | Triceps Kickback with Dumbbell | Dumbbell Kickback",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14853,6 +15367,7 @@
   "aliases": "Tricep Pushdown (cable) | Triceps pushdown | Cable Tricep Pushdown | Tricep Pushdown on Cable | Triceps Pushdown | Triceps Pushdown with Cable | Cable Pushdown",
   "equipment": "Kabel",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14881,6 +15396,7 @@
   "aliases": "Triceps Pushdown with Rope and Cable | Triceps Pushdown - Rope Attachment | Cable Pushdown (With Rope Attachment)",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14909,6 +15425,7 @@
   "aliases": "Machine Triceps Extension | Tricepsextension, maskin | lever triceps extension | Triceps Extensions using Machine",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14938,6 +15455,7 @@
   "aliases": "Body Tricep Press",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -14966,6 +15484,7 @@
   "aliases": "Stretch, triceps | Triceps stretch left | Triceps stretch right",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -14994,6 +15513,7 @@
   "aliases": "Triceps pushdown med V-handtag | Triceps Pushdown with V Bar and Cable | cable triceps pushdown (v-bar) | Triceps Pushdown - V-Bar Attachment",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15023,6 +15543,7 @@
   "aliases": "Bänkdips med vikt",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15053,6 +15574,7 @@
   "aliases": "Farmer's Carry | Farmers walk | Farmer's Walk | Farmers Walk | Dumbbell Farmer's Walk | Dumbbell farmer's carry",
   "equipment": "Hantlar",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15079,6 +15601,7 @@
   "aliases": "Finger Curls | Finger curls",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15105,6 +15628,7 @@
   "aliases": "Dumbbell Lying Pronation | Dumbbell lying pronation | Dumbbell Lying Pronation On Floor",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15133,6 +15657,7 @@
   "aliases": "Dumbbell Lying Supination | Dumbbell lying supination | Dumbbell Lying Supination On Floor",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15159,6 +15684,7 @@
   "aliases": "Palms-Down Wrist Curl Over A Bench | Handledscurl med överhandsgrepp, skivstång | barbell palms down wrist curl over a bench",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15185,6 +15711,7 @@
   "aliases": "Palms-Up Barbell Wrist Curl Over A Bench | Handledscurl med underhandsgrepp, skivstång | barbell palms up wrist curl over a bench",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15211,6 +15738,7 @@
   "aliases": "Barbell Reverse Wrist Curl | Omvänd handledscurl, skivstång",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15237,6 +15765,7 @@
   "aliases": "Dumbbell Reverse Wrist Curl | Omvänd handledscurl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15263,6 +15792,7 @@
   "aliases": "Seated Dumbbell Palms-Up Wrist Curl | Sittande handledscurl med underhandsgrepp | dumbbell seated palms up wrist curl",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15289,6 +15819,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -15315,6 +15846,7 @@
   "aliases": "Barbell Wrist Curl | Handledscurl, skivstång | barbell wrist curl v. 2",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15341,6 +15873,7 @@
   "aliases": "Cable Wrist Curl | Handledscurl, kabel | Wrist curl, cable",
   "equipment": "Kabel",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15367,6 +15900,7 @@
   "aliases": "",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -15395,6 +15929,7 @@
   "aliases": "",
   "equipment": "Annat",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -15421,6 +15956,7 @@
   "aliases": "calf stretch with hands against wall | Calf Push Stretch With Hands Against Wall",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -15447,6 +15983,7 @@
   "aliases": "Donkey Calf Raises",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15476,6 +16013,7 @@
   "aliases": "Hopprep | Jump rope: basic jumps | Rope Jumping | Skipping - Standard",
   "equipment": "Annat",
   "carls": false,
+  "category": "conditioning",
   "verified": false
  },
  {
@@ -15502,6 +16040,7 @@
   "aliases": "Vadpress i benpress | Calf Press On The Leg Press Machine | Calf Press | Machine Calf Press | lever calf press | Sled Calf Press On Leg Press | Calf Press Using Leg Press Machine | Calves Press on Leg Machine",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15528,6 +16067,7 @@
   "aliases": "",
   "equipment": "Annat",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -15554,6 +16094,7 @@
   "aliases": "",
   "equipment": "Annat",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -15582,6 +16123,7 @@
   "aliases": "Rocking Standing Calf Raise with Barbell | Rocking standing calf raise with barbell | Barbell Standing Rocking Leg Calf Raise",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15608,6 +16150,7 @@
   "aliases": "Seated Calf Raise with Barbell | Sittande vadpress, skivstång | Barbell Seated Calf Raise | barbell seated calf raise",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15634,6 +16177,7 @@
   "aliases": "Seated Dumbbell Calf Raise | Sittande vadpress, hantlar | dumbbell seated calf raise",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15660,6 +16204,7 @@
   "aliases": "Seated Calf Raise | Sittande vadpress | Machine Seated Calf Raise | lever seated calf raise | Seated Calf Raise using Machine | Machine Seated Calf Press | lever seated calf press",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15686,6 +16231,7 @@
   "aliases": "seated calf stretch (male)",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  },
  {
@@ -15712,6 +16258,7 @@
   "aliases": "Seated One Leg Calf Raise with Dumbbell | Sittande enbens vadpress, hantlar | Dumbbell Seated One-Leg Calf Raise | Dumbbell Seated Single-Leg Calf Raise | dumbbell seated one leg calf raise",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15741,6 +16288,7 @@
   "aliases": "",
   "equipment": "Annat",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15767,6 +16315,7 @@
   "aliases": "Smith Machine Reverse Calf Raises | Smith machine reverse calf raises",
   "equipment": "Maskin",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15795,6 +16344,7 @@
   "aliases": "Standing Barbell Calf Raise | Stående vadpress, skivstång | barbell standing calf raise | Barbell Calf Raise | Barbell Standing Leg Calf Raise",
   "equipment": "Skivstång",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15821,6 +16371,7 @@
   "aliases": "Standing Calf Raise with Dumbbell | Stående vadpress, hantlar | Standing Dumbbell Calf Raise | dumbbell standing calf raise | Dumbbell Calf Raise | Calf Raise On A Dumbbell",
   "equipment": "Hantlar",
   "carls": false,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15847,6 +16398,7 @@
   "aliases": "Standing Calf Raise | Stående vadpress | Standing Calf Raises | Machine Standing Calf Raise | bodyweight standing calf raise | lever standing calf raise | Standing Calf Raises using Machine | Machine Calf Raise",
   "equipment": "Maskin",
   "carls": true,
+  "category": "strength",
   "verified": false
  },
  {
@@ -15873,6 +16425,7 @@
   "aliases": "Stretch, vader | Standing Calves Calf Stretch",
   "equipment": "Kroppsvikt",
   "carls": false,
+  "category": "mobility",
   "verified": false
  }
 ]
