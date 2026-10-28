@@ -62,6 +62,7 @@ kotlin {
             implementation(libs.haze)
             implementation(libs.sqldelight.coroutines)
             implementation(libs.kotlinx.serializationJson)
+            implementation(libs.kotlinx.datetime)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.nativeDriver)
