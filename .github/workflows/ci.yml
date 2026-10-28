@@ -27,7 +27,8 @@ jobs:
           cache-provider: basic
       # Tokens.kt, tokens.css and tokens.json are generated; a hand edit or a stale file fails here (#30).
       - run: python3 docs/design/15-tokens/tokens.py && git status --porcelain && test -z "$(git status --porcelain)"
-      - run: ./gradlew :shared:testAndroidHostTest :androidApp:assembleDebug lint
+      # verifySqlDelightMigration fails when a schema change has no migration from the last released schema (#33).
+      - run: ./gradlew :shared:testAndroidHostTest :shared:verifySqlDelightMigration :androidApp:assembleDebug lint
       # Report only, no minimum, until #4 (#32). Covers commonMain and androidMain, never iosMain.
       - run: ./gradlew -q :shared:koverHtmlReport :shared:koverXmlReport :shared:koverLog | tee -a "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v7
