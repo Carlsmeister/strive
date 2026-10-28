@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -32,6 +33,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,10 +60,17 @@ import strive.shared.generated.resources.search
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBack: () -> Unit) {
-    val all by LocalAppGraph.current.exercises.all().collectAsState(emptyList())
-    var filter by remember { mutableStateOf(LibraryFilter()) }
+    // Null until the first read, so the saved scroll position is not spent on an empty list.
+    val all by LocalAppGraph.current.exercises.all().collectAsState(null)
+    var filter by rememberSaveable(stateSaver = LibraryFilterSaver) { mutableStateOf(LibraryFilter()) }
     var sheet by remember { mutableStateOf(false) }
-    val sections = remember(all, filter) { filter(all, filter) }
+    val sections = remember(all, filter) { all?.let { filter(it, filter) } }
+    val list = rememberLazyListState()
+    // A new filter starts at the top; a plain scroll would be undone by the list following the old first row's key.
+    fun change(f: LibraryFilter) {
+        filter = f
+        list.requestScrollToItem(0)
+    }
     val space = StriveTheme.spacing
     val direction = LocalLayoutDirection.current
     val sides = Modifier.padding(start = padding.calculateStartPadding(direction), end = padding.calculateEndPadding(direction))
@@ -71,17 +80,18 @@ internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBac
         Text(stringResource(Res.string.library), Modifier.padding(horizontal = space.s16), style = MaterialTheme.typography.headlineMedium)
         Row(Modifier.padding(horizontal = space.s16, vertical = space.s8), verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(space.s8)) {
-            OutlinedTextField(filter.query, { filter = filter.copy(query = it) }, Modifier.weight(1f), singleLine = true,
+            OutlinedTextField(filter.query, { change(filter.copy(query = it)) }, Modifier.weight(1f), singleLine = true,
                 placeholder = { Text(stringResource(Res.string.search)) })
             // The button fills while a filter is on (#17 R1).
             if (filter.filtering) FilledTonalButton({ sheet = true }) { Text(stringResource(Res.string.filter)) }
             else TextButton({ sheet = true }) { Text(stringResource(Res.string.filter)) }
         }
-        Chips(filter.chip) { filter = filter.copy(chip = if (filter.chip == it) null else it) }
+        Chips(filter.chip) { change(filter.copy(chip = if (filter.chip == it) null else it)) }
+        if (sections == null) return@Column
         if (sections.isEmpty()) {
             Text(stringResource(Res.string.no_match), Modifier.padding(space.s16), style = MaterialTheme.typography.bodyLarge)
         }
-        LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = padding.calculateBottomPadding())) {
+        LazyColumn(Modifier.fillMaxSize(), list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding())) {
             for ((muscle, exercises) in sections) {
                 stickyHeader(key = muscle) {
                     Text(stringResource(muscle.label),
@@ -92,7 +102,7 @@ internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBac
             }
         }
     }
-    if (sheet) FilterSheet(filter, onChange = { filter = it }, onDone = { sheet = false })
+    if (sheet) FilterSheet(filter, onChange = ::change, onDone = { sheet = false })
 }
 
 @Composable

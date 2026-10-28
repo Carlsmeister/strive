@@ -1,5 +1,6 @@
 package se.carlsmeister.strive.library
 
+import androidx.compose.runtime.saveable.SaverScope
 import se.carlsmeister.strive.data.Category
 import se.carlsmeister.strive.data.Exercise
 import se.carlsmeister.strive.data.ExerciseType
@@ -61,4 +62,17 @@ class LibraryFilterTest {
         listOf("Bench Press BB", "Fly DB", "Pec Dec"),
         names(filter(all, LibraryFilter(marks = Mark.entries.toSet() + null))).getValue(Muscle.Chest),
     )
+
+    @Test
+    fun theFilterSurvivesSavingAndRestoring() {
+        val scope = SaverScope { true }
+        for (f in listOf(
+            LibraryFilter(),
+            LibraryFilter("bänk", Chip.Pattern("Horisontell press"), setOf("Hantlar", "Kabel"), setOf(Mark.No, null)),
+            LibraryFilter(chip = Chip.Of(Category.Mobility), marks = emptySet()),
+        )) {
+            val saved = with(LibraryFilterSaver) { scope.save(f) }!!
+            assertEquals(f, LibraryFilterSaver.restore(saved))
+        }
+    }
 }
