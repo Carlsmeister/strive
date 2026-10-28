@@ -95,7 +95,7 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
                 when (route) {
                     Tabs -> NavEntry(route) { TabsScreen(stacks, selected, onSelect = { selected = it }, onStart = { root += Session(it) }) }
                     is Session -> NavEntry(route) {
-                        Placeholder(stringResource(route.title), Modifier.safeContentPadding(), close = { root.pop() })
+                        Page { Placeholder(stringResource(route.title), Modifier.safeContentPadding(), close = { root.pop() }) }
                     }
                 }
             },
@@ -149,7 +149,7 @@ private fun TabsScreen(
                     modifier = Modifier.hazeSource(haze),
                     onBack = { stack.pop() },
                     entryProvider = { screen ->
-                        NavEntry(screen) {
+                        NavEntry(screen) { Page {
                             when (screen) {
                                 is Stub -> {
                                     val title = stringResource(screen.tab.title)
@@ -164,7 +164,7 @@ private fun TabsScreen(
                                 Library -> LibraryScreen(padding, onOpen = { stack += ExerciseDetail(it) }, onBack = { stack.pop() })
                                 is ExerciseDetail -> ExerciseScreen(screen.id, padding, onBack = { stack.pop() })
                             }
-                        }
+                        } }
                     },
                 )
             }
@@ -181,6 +181,11 @@ private fun TabsScreen(
         }
     }
 }
+
+// Opaque, so the screen sliding in covers the one it leaves instead of showing both at once.
+@Composable
+private fun Page(content: @Composable () -> Unit) =
+    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { content() }
 
 @Composable
 private fun Placeholder(
