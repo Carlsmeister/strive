@@ -1385,6 +1385,18 @@ Primary muscles (saturated red): erector spinae.
 Secondary muscles (light red): gluteus maximus, biceps femoris.
 ```
 
+## Incline Pushdown
+
+```
+Exercise: Incline Pushdown.
+Equipment: incline bench and a high cable pulley with a straight bar.
+View: side, chosen so the primary muscles face the viewer.
+Start position: Lying on an incline bench, arms straight overhead holding the bar from the high pulley behind.
+End position: Arms still straight, bar swept down in an arc to the thighs.
+Primary muscles (saturated red): latissimus dorsi.
+Secondary muscles (light red): long head of triceps brachii.
+```
+
 ## Inverted Row
 
 ```
@@ -1419,6 +1431,18 @@ Start position: hanging from the bar with a swing, arms straight, hips behind th
 End position: above the bar with arms locked out and the torso upright over the bar
 Primary muscles (saturated red): latissimus dorsi, pectoralis major, triceps brachii.
 Secondary muscles (light red): rectus abdominis, biceps brachii.
+```
+
+## London Bridges
+
+```
+Exercise: London Bridges.
+Equipment: a thick climbing rope hanging from a high beam.
+View: side, chosen so the primary muscles face the viewer.
+Start position: Lying under the rope, body straight, both hands gripping the rope above the chest.
+End position: Body pulled up to upright by climbing hand over hand, arms bent.
+Primary muscles (saturated red): latissimus dorsi.
+Secondary muscles (light red): biceps brachii, forearm flexors.
 ```
 
 ## Lying Cambered Row
@@ -2657,18 +2681,6 @@ Primary muscles (saturated red): soleus.
 Secondary muscles (light red): gastrocnemius.
 ```
 
-## Sled Push
-
-```
-Exercise: Sled Push.
-Equipment: weight sled loaded with black plates on a gym turf strip.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Leaning forward at about 45 degrees with straight arms on the sled handles, back flat and one foot driving back.
-End position: Mid-stride with the rear leg fully extended, torso in a straight line from head to heel and the sled moving forward.
-Primary muscles (saturated red): quadriceps femoris, gastrocnemius.
-Secondary muscles (light red): gluteus maximus, rectus abdominis.
-```
-
 ## Smith Reverse Calf Raises
 
 ```
@@ -2990,18 +3002,6 @@ View: side, chosen so the primary muscles face the viewer.
 Start position: Lying on a bench inclined about 30 degrees with the dumbbells over the upper chest, palms facing each other, arms straight.
 End position: Dumbbells at the sides of the upper chest, palms still facing each other.
 Primary muscles (saturated red): pectoralis major (clavicular head).
-Secondary muscles (light red): anterior deltoid, triceps brachii.
-```
-
-## Handstand Push Ups
-
-```
-Exercise: Handstand Push Ups.
-Equipment: wall to stabilise the feet.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Handstand with the feet resting against a wall, arms straight, body in a straight line.
-End position: Head lowered to just above the floor, elbows bent, body still straight against the wall.
-Primary muscles (saturated red): pectoralis major.
 Secondary muscles (light red): anterior deltoid, triceps brachii.
 ```
 
@@ -3461,6 +3461,18 @@ Primary muscles (saturated red): obliques.
 Secondary muscles (light red): anterior deltoid, gluteus maximus, hamstrings.
 ```
 
+## Air Bike
+
+```
+Exercise: Air Bike.
+Equipment: none.
+View: front three-quarter, chosen so the primary muscles face the viewer.
+Start position: Lying on the back, shoulders lifted, hands beside the head, both knees bent at 90 degrees.
+End position: Right elbow turned to the left knee while the right leg is straight and low.
+Primary muscles (saturated red): rectus abdominis, external obliques.
+Secondary muscles (light red): none.
+```
+
 ## Alternate Heel Touchers
 
 ```
@@ -3573,12 +3585,12 @@ Secondary muscles (light red): rectus femoris.
 
 ```
 Exercise: Butt-Ups.
-Equipment: none, exercise mat.
+Equipment: none.
 View: side, chosen so the primary muscles face the viewer.
-Start position: In a high plank on the hands and toes, body in a straight line.
-End position: Hips piked up high into an inverted V, abs tight.
+Start position: Forearm plank, elbows under the shoulders, body straight.
+End position: Hips raised high into an inverted V, forearms still on the floor.
 Primary muscles (saturated red): rectus abdominis.
-Secondary muscles (light red): anterior deltoid.
+Secondary muscles (light red): none.
 ```
 
 ## Captain's Chair Leg Raise
@@ -3741,12 +3753,12 @@ Secondary muscles (light red): biceps femoris, gluteus maximus.
 
 ```
 Exercise: Judo Flip.
-Equipment: cable machine with D-handle at high setting.
+Equipment: cable machine with a rope on the lowest pulley.
 View: front three-quarter, chosen so the primary muscles face the viewer.
-Start position: Standing side-on to a high cable, both hands holding the handle above the shoulder on the cable side.
-End position: Handle swept diagonally down across the body to the opposite hip, torso rotated and bent.
-Primary muscles (saturated red): obliques, rectus abdominis.
-Secondary muscles (light red): anterior deltoid, gluteus maximus.
+Start position: Standing side-on to the low pulley, wide stance, both hands on the rope near the knee.
+End position: Twisted away from the pulley, rope over the far shoulder, trunk crunched forward.
+Primary muscles (saturated red): external obliques, rectus abdominis.
+Secondary muscles (light red): none.
 ```
 
 ## L Sit
@@ -3765,12 +3777,12 @@ Secondary muscles (light red): triceps brachii, rectus femoris.
 
 ```
 Exercise: Lower Back Curl.
-Equipment: none, exercise mat.
+Equipment: none.
 View: side, chosen so the primary muscles face the viewer.
-Start position: Lying on the back with knees bent and drawn over the hips, arms by the sides.
-End position: Pelvis and lower back curled off the mat with the knees pulled toward the chest.
-Primary muscles (saturated red): rectus abdominis.
-Secondary muscles (light red): gluteus maximus, rectus femoris.
+Start position: Lying face down, arms out to the sides, legs straight.
+End position: Chest lifted off the floor by extending the spine, arms still out to the sides.
+Primary muscles (saturated red): erector spinae.
+Secondary muscles (light red): gluteus maximus.
 ```
 
 ## Lying Leg Raise
@@ -4041,12 +4053,12 @@ Secondary muscles (light red): rectus femoris.
 
 ```
 Exercise: Spell Caster.
-Equipment: one or two dumbbells.
+Equipment: two dumbbells.
 View: front, chosen so the primary muscles face the viewer.
-Start position: Standing in a wide stance in a half squat, holding a dumbbell at one hip.
-End position: Torso rotated and the dumbbell swept diagonally up across the body to the opposite side.
-Primary muscles (saturated red): obliques, rectus abdominis.
-Secondary muscles (light red): deltoid, gluteus maximus.
+Start position: Standing wide, both dumbbells held together beside the right hip, torso turned right.
+End position: Both dumbbells swung across to beside the left hip with straight arms, torso turned left.
+Primary muscles (saturated red): external obliques, internal obliques.
+Secondary muscles (light red): anterior deltoid.
 ```
 
 ## Sphinx
@@ -4275,18 +4287,6 @@ Start position: Seated at a bench facing the pulley with forearms resting on it,
 End position: Wrists curled upward with the bar raised, forearms still flat on the bench.
 Primary muscles (saturated red): wrist flexors (flexor carpi radialis, flexor carpi ulnaris).
 Secondary muscles (light red): none.
-```
-
-## Air Bike
-
-```
-Exercise: Air Bike.
-Equipment: air bike with fan wheel and moving handles.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Seated upright on the air bike, feet on the pedals, hands on the handles.
-End position: Mid-stroke, one leg extended, one arm pushed forward and the other pulled back.
-Primary muscles (saturated red): rectus femoris, vastus lateralis, vastus medialis, deltoids, latissimus dorsi.
-Secondary muscles (light red): gluteus maximus.
 ```
 
 ## Alternating Hang Clean
@@ -4661,18 +4661,6 @@ Primary muscles (saturated red): gluteus maximus, quadriceps.
 Secondary muscles (light red): biceps femoris, gastrocnemius.
 ```
 
-## London Bridges
-
-```
-Exercise: London Bridges.
-Equipment: flat bench.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Lying on the back on the floor with the heels on a flat bench, knees bent, arms at the sides.
-End position: Hips lifted so the body forms a straight line from the heels to the shoulders, glutes squeezed.
-Primary muscles (saturated red): gluteus maximus.
-Secondary muscles (light red): biceps femoris, semitendinosus, rectus abdominis.
-```
-
 ## Monster Walk
 
 ```
@@ -4985,28 +4973,16 @@ Primary muscles (saturated red): rectus femoris, vastus lateralis, vastus medial
 Secondary muscles (light red): rectus abdominis.
 ```
 
-## Iron Cross DB
-
-```
-Exercise: Iron Cross DB.
-Equipment: exercise mat and two light dumbbells.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Lying on the back, arms straight out to the sides holding a dumbbell each, one leg lifted vertically.
-End position: The lifted leg lowered diagonally across the body toward the opposite hand, shoulders still on the floor.
-Primary muscles (saturated red): rectus femoris, vastus lateralis, vastus medialis, iliopsoas.
-Secondary muscles (light red): rectus abdominis, obliques.
-```
-
 ## Iron Crosses (Stretch)
 
 ```
 Exercise: Iron Crosses (Stretch).
-Equipment: exercise mat.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Lying on the back, arms straight out to the sides, one leg lifted vertically.
-End position: The lifted leg lowered diagonally across the body toward the opposite hand, shoulders flat.
-Primary muscles (saturated red): rectus femoris, vastus lateralis, vastus medialis, iliopsoas.
-Secondary muscles (light red): rectus abdominis, obliques.
+Equipment: none.
+View: back three-quarter, chosen so the primary muscles face the viewer.
+Start position: Lying face down, arms straight out to the sides, legs straight.
+End position: One knee bent and that leg crossed behind the body toward the opposite hand, hips rotated.
+Primary muscles (saturated red): rectus femoris, hip flexors.
+Secondary muscles (light red): gluteus maximus.
 ```
 
 ## Jefferson Squats
@@ -5199,6 +5175,18 @@ Start position: Standing in front of a box with a dumbbell in each hand, one foo
 End position: Standing tall on one leg on the box, free knee lifted, both dumbbells curled to the shoulders.
 Primary muscles (saturated red): rectus femoris, vastus lateralis, vastus medialis.
 Secondary muscles (light red): biceps brachii, brachialis.
+```
+
+## Sled Push
+
+```
+Exercise: Sled Push.
+Equipment: weight sled loaded with black plates on a gym turf strip.
+View: side, chosen so the primary muscles face the viewer.
+Start position: Leaning forward at about 45 degrees with straight arms on the sled handles, back flat and one foot driving back.
+End position: Mid-stride with the rear leg fully extended, torso in a straight line from head to heel and the sled moving forward.
+Primary muscles (saturated red): quadriceps femoris, gastrocnemius.
+Secondary muscles (light red): gluteus maximus, rectus abdominis.
 ```
 
 ## Smith Hack Squat
@@ -5457,12 +5445,12 @@ Secondary muscles (light red): gluteus maximus, rectus abdominis, obliques.
 
 ```
 Exercise: Alternating Press.
-Equipment: one kettlebell.
-View: front three-quarter, chosen so the primary muscles face the viewer.
-Start position: Stand tall holding a kettlebell in the rack position at one shoulder, other arm relaxed.
-End position: Press the kettlebell overhead with a straight arm, ready to switch hands.
+Equipment: two kettlebells.
+View: front, chosen so the primary muscles face the viewer.
+Start position: Standing, a kettlebell at each shoulder.
+End position: Right kettlebell pressed straight overhead, left still at the shoulder.
 Primary muscles (saturated red): anterior deltoid, lateral deltoid.
-Secondary muscles (light red): triceps brachii, rectus abdominis.
+Secondary muscles (light red): triceps brachii.
 ```
 
 ## Alternating Shoulder Press
@@ -5481,12 +5469,12 @@ Secondary muscles (light red): triceps brachii, rectus abdominis.
 
 ```
 Exercise: Arnold Press KB.
-Equipment: two kettlebells.
-View: front three-quarter, chosen so the primary muscles face the viewer.
-Start position: Stand holding the kettlebells in front of the shoulders, palms facing you.
-End position: Arms straight overhead, palms facing forward.
+Equipment: one kettlebell.
+View: front, chosen so the primary muscles face the viewer.
+Start position: Standing, one kettlebell at the right shoulder, palm facing the body.
+End position: Right arm straight overhead, palm facing forward.
 Primary muscles (saturated red): anterior deltoid, lateral deltoid.
-Secondary muscles (light red): triceps brachii, rectus abdominis.
+Secondary muscles (light red): triceps brachii.
 ```
 
 ## Back Fly's with Exercise Band
@@ -5554,11 +5542,11 @@ Secondary muscles (light red): triceps brachii, quadriceps.
 ```
 Exercise: Dumbbell Raise.
 Equipment: two dumbbells.
-View: front three-quarter, chosen so the primary muscles face the viewer.
-Start position: Stand with a dumbbell in each hand hanging in front of the thighs, palms facing the body.
-End position: Arms raised forward to shoulder height.
-Primary muscles (saturated red): anterior deltoid.
-Secondary muscles (light red): pectoralis major, serratus anterior.
+View: front, chosen so the primary muscles face the viewer.
+Start position: Standing, dumbbells at the sides, palms facing back.
+End position: Arms raised out to the sides to shoulder height, elbows slightly bent.
+Primary muscles (saturated red): lateral deltoid.
+Secondary muscles (light red): upper trapezius.
 ```
 
 ## Front Raise BB
@@ -5621,6 +5609,18 @@ Primary muscles (saturated red): anterior deltoid, lateral deltoid.
 Secondary muscles (light red): triceps brachii, rectus abdominis, trapezius.
 ```
 
+## Handstand Push Ups
+
+```
+Exercise: Handstand Push Ups.
+Equipment: wall to stabilise the feet.
+View: side, chosen so the primary muscles face the viewer.
+Start position: Handstand with the feet resting against a wall, arms straight, body in a straight line.
+End position: Head lowered to just above the floor, elbows bent, body still straight against the wall.
+Primary muscles (saturated red): pectoralis major.
+Secondary muscles (light red): anterior deltoid, triceps brachii.
+```
+
 ## Incline Shoulder Raise BB
 
 ```
@@ -5655,6 +5655,18 @@ Start position: Lie chest down on a 45 degree incline bench, arms hanging straig
 End position: Arms raised overhead and out in a Y shape in line with the body.
 Primary muscles (saturated red): lateral deltoid, posterior deltoid.
 Secondary muscles (light red): lower trapezius, supraspinatus.
+```
+
+## Iron Cross DB
+
+```
+Exercise: Iron Cross DB.
+Equipment: two light dumbbells.
+View: front, chosen so the primary muscles face the viewer.
+Start position: Standing upright, a dumbbell in each hand in front of the thighs.
+End position: In a half squat with both arms straight out to the sides at shoulder height, forming a cross.
+Primary muscles (saturated red): anterior deltoid, lateral deltoid.
+Secondary muscles (light red): quadriceps.
 ```
 
 ## Lateral Raise Machine
@@ -5769,12 +5781,12 @@ Secondary muscles (light red): triceps brachii, upper pectoralis major.
 
 ```
 Exercise: Seated Press.
-Equipment: one kettlebell and a flat bench.
-View: front three-quarter, chosen so the primary muscles face the viewer.
-Start position: Seated on a flat bench with a kettlebell in the rack position at one shoulder.
-End position: Kettlebell pressed overhead with a straight arm.
+Equipment: one kettlebell.
+View: front, chosen so the primary muscles face the viewer.
+Start position: Sitting on the floor, legs apart, one kettlebell at the right shoulder.
+End position: Right arm locked out overhead.
 Primary muscles (saturated red): anterior deltoid, lateral deltoid.
-Secondary muscles (light red): triceps brachii, rectus abdominis.
+Secondary muscles (light red): triceps brachii.
 ```
 
 ## Seated Rear Lateral Raise
@@ -6221,18 +6233,6 @@ Primary muscles (saturated red): triceps brachii.
 Secondary muscles (light red): pectoralis major, anterior deltoid, rectus abdominis.
 ```
 
-## Incline Pushdown
-
-```
-Exercise: Incline Pushdown.
-Equipment: incline bench and high cable pulley with a straight bar.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Reclined on a 45-degree incline bench facing away from a high pulley, upper arms near the head, elbows bent holding the bar behind the head.
-End position: Elbows fully extended with arms straight and the bar pushed forward above the face, upper arms still.
-Primary muscles (saturated red): triceps brachii.
-Secondary muscles (light red): anterior deltoid.
-```
-
 ## Incline Triceps Extension Cable
 
 ```
@@ -6561,12 +6561,12 @@ Secondary muscles (light red): anterior deltoid.
 
 ```
 Exercise: Tricep Kickback.
-Equipment: flat bench and one dumbbell.
+Equipment: two dumbbells.
 View: side, chosen so the primary muscles face the viewer.
-Start position: One knee and hand on the bench, torso nearly parallel to the floor, working upper arm parallel to the torso with the elbow bent 90 degrees.
-End position: Working arm fully extended straight back in line with the torso.
+Start position: Hinged forward, torso almost parallel to the floor, upper arms at the sides, elbows bent 90 degrees.
+End position: Both arms straightened back in line with the torso.
 Primary muscles (saturated red): triceps brachii.
-Secondary muscles (light red): posterior deltoid.
+Secondary muscles (light red): none.
 ```
 
 ## Tricep Rope Pushdowns
