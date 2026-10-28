@@ -1,5 +1,6 @@
 package se.carlsmeister.strive.data
 
+import se.carlsmeister.strive.db.StriveDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.androidLint)
     alias(libs.plugins.kover)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -60,6 +61,7 @@ kotlin {
             implementation(libs.navigation3.ui)
             implementation(libs.haze)
             implementation(libs.sqldelight.coroutines)
+            implementation(libs.kotlinx.serializationJson)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.nativeDriver)
@@ -80,7 +82,7 @@ dependencies {
 sqldelight {
     databases {
         create("StriveDatabase") {
-            packageName = "se.carlsmeister.strive.data"
+            packageName = "se.carlsmeister.strive.db"
             // Each released schema is kept here, so a migration can be checked against the one it upgrades.
             schemaOutputDirectory = file("src/commonMain/sqldelight/databases")
             verifyMigrations = true
