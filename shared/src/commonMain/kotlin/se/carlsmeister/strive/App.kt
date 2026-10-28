@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -38,6 +39,8 @@ import dev.chrisbanes.haze.rememberHazeState
 import org.jetbrains.compose.resources.StringResource
 import se.carlsmeister.strive.data.AppGraph
 import se.carlsmeister.strive.data.LocalAppGraph
+import se.carlsmeister.strive.library.ExerciseScreen
+import se.carlsmeister.strive.library.LibraryScreen
 import se.carlsmeister.strive.theme.FixedTextSize
 import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.glass
@@ -46,6 +49,7 @@ import org.jetbrains.compose.resources.stringResource
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.back
 import strive.shared.generated.resources.close
+import strive.shared.generated.resources.library
 import strive.shared.generated.resources.next_screen
 import strive.shared.generated.resources.start_run
 import strive.shared.generated.resources.start_workout
@@ -63,7 +67,10 @@ private enum class Tab(val title: StringResource) {
 private sealed interface Route
 private data object Tabs : Route
 private data class Session(val title: StringResource) : Route
-private data class Screen(val tab: Tab, val depth: Int)
+private sealed interface Screen
+private data class Stub(val tab: Tab, val depth: Int) : Screen
+private data object Library : Screen
+private data class ExerciseDetail(val id: Long) : Screen
 
 // removeAt, not removeLast: on Android below 15 removeLast binds to a Java method that does not exist.
 internal fun <T> MutableList<T>.pop() {
@@ -75,10 +82,11 @@ internal fun <T> MutableList<T>.pop() {
 // feature has state worth restoring.
 @Composable
 fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph) {
+    LaunchedEffect(graph) { graph.prepare() }
     StriveTheme {
         val root = remember { mutableStateListOf<Route>(Tabs) }
         // Held here, not in TabsScreen, which leaves the composition while a session is open.
-        val stacks = remember { Tab.entries.associateWith { mutableStateListOf(Screen(it, 1)) } }
+        val stacks = remember { Tab.entries.associateWith { mutableStateListOf<Screen>(Stub(it, 1)) } }
         var selected by remember { mutableStateOf(Tab.Home) }
         NavDisplay(
             backStack = root,
@@ -142,13 +150,20 @@ private fun TabsScreen(
                     onBack = { stack.pop() },
                     entryProvider = { screen ->
                         NavEntry(screen) {
-                            val title = stringResource(screen.tab.title)
-                            Placeholder(
-                                if (screen.depth == 1) title else "$title ${screen.depth}",
-                                Modifier.padding(padding),
-                                back = if (screen.depth > 1) ({ stack.pop() }) else null,
-                                next = { stack += Screen(screen.tab, screen.depth + 1) },
-                            )
+                            when (screen) {
+                                is Stub -> {
+                                    val title = stringResource(screen.tab.title)
+                                    Placeholder(
+                                        if (screen.depth == 1) title else "$title ${screen.depth}",
+                                        Modifier.padding(padding),
+                                        back = if (screen.depth > 1) ({ stack.pop() }) else null,
+                                        next = { stack += Stub(screen.tab, screen.depth + 1) },
+                                        library = if (screen.tab == Tab.Plan && screen.depth == 1) ({ stack += Library }) else null,
+                                    )
+                                }
+                                Library -> LibraryScreen(padding, onOpen = { stack += ExerciseDetail(it) }, onBack = { stack.pop() })
+                                is ExerciseDetail -> ExerciseScreen(screen.id, padding, onBack = { stack.pop() })
+                            }
                         }
                     },
                 )
@@ -174,6 +189,7 @@ private fun Placeholder(
     back: (() -> Unit)? = null,
     close: (() -> Unit)? = null,
     next: (() -> Unit)? = null,
+    library: (() -> Unit)? = null,
 ) {
     Column(
         modifier.fillMaxSize().padding(StriveTheme.spacing.s16),
@@ -183,6 +199,7 @@ private fun Placeholder(
         back?.let { TextButton(it) { Text(stringResource(Res.string.back)) } }
         Text(title, style = MaterialTheme.typography.headlineMedium)
         next?.let { Button(it) { Text(stringResource(Res.string.next_screen)) } }
+        library?.let { Button(it) { Text(stringResource(Res.string.library)) } }
         close?.let { TextButton(it) { Text(stringResource(Res.string.close)) } }
     }
 }
