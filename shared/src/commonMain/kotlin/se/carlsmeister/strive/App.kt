@@ -33,6 +33,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import androidx.navigation3.ui.NavDisplay
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
@@ -184,8 +188,16 @@ private fun TabsScreen(
 
 // Opaque, so the screen sliding in covers the one it leaves instead of showing both at once.
 @Composable
-private fun Page(content: @Composable () -> Unit) =
+private fun Page(content: @Composable () -> Unit) {
+    // A back swipe that starts mid-push seeks a transition whose start state never settled, and the screens jump.
+    // Like UIKit, swallow back until the slide ends; this handler, added after NavDisplay's, is asked first.
+    NavigationBackHandler(
+        rememberNavigationEventState(NavigationEventInfo.None),
+        isBackEnabled = LocalNavAnimatedContentScope.current.transition.isRunning,
+        onBackCompleted = {},
+    )
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { content() }
+}
 
 @Composable
 private fun Placeholder(
