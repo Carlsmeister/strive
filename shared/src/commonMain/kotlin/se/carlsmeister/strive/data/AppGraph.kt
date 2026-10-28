@@ -21,7 +21,7 @@ class AppGraph internal constructor(driver: SqlDriver) {
 }
 
 /** Raise when files/exercises.json changes, so installed apps take the new seed (#41). */
-internal const val EXERCISE_SEED = 1
+internal const val EXERCISE_SEED = 2
 
 /** How a screen reaches the graph: `LocalAppGraph.current.settings`. */
 internal val LocalAppGraph = staticCompositionLocalOf<AppGraph> { error("App provides the AppGraph") }
