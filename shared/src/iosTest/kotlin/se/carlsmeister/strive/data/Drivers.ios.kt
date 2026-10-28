@@ -1,5 +1,6 @@
 package se.carlsmeister.strive.data
 
+import se.carlsmeister.strive.db.StriveDatabase
 import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.db.SqlSchema

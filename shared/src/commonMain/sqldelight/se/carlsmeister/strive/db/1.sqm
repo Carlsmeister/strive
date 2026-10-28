@@ -1,0 +1,25 @@
+import kotlin.Boolean;
+
+-- Version 1 to 2: the exercise library (#41).
+CREATE TABLE exercise (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    aliases TEXT NOT NULL,
+    primary_muscle TEXT NOT NULL,
+    secondary_muscles TEXT NOT NULL,
+    pattern TEXT NOT NULL,
+    equipment TEXT NOT NULL,
+    type TEXT NOT NULL,
+    per_side INTEGER AS Boolean NOT NULL,
+    step REAL,
+    bar REAL,
+    category TEXT NOT NULL,
+    steps_en TEXT NOT NULL,
+    tips_en TEXT NOT NULL,
+    steps_sv TEXT NOT NULL,
+    tips_sv TEXT NOT NULL,
+    mark TEXT,
+    note TEXT,
+    edited INTEGER AS Boolean NOT NULL DEFAULT 0,
+    archived INTEGER AS Boolean NOT NULL DEFAULT 0
+);

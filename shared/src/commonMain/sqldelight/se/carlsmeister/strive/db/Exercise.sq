@@ -1,0 +1,47 @@
+import kotlin.Boolean;
+
+-- One row per exercise, seeded from files/exercises.json (#41). A seed update rewrites an exercise
+-- only while edited is false, and never touches mark or note, which are Carl's.
+CREATE TABLE exercise (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    aliases TEXT NOT NULL,
+    primary_muscle TEXT NOT NULL,
+    secondary_muscles TEXT NOT NULL,
+    pattern TEXT NOT NULL,
+    equipment TEXT NOT NULL,
+    type TEXT NOT NULL,
+    per_side INTEGER AS Boolean NOT NULL,
+    step REAL,
+    bar REAL,
+    category TEXT NOT NULL,
+    steps_en TEXT NOT NULL,
+    tips_en TEXT NOT NULL,
+    steps_sv TEXT NOT NULL,
+    tips_sv TEXT NOT NULL,
+    mark TEXT,
+    note TEXT,
+    edited INTEGER AS Boolean NOT NULL DEFAULT 0,
+    archived INTEGER AS Boolean NOT NULL DEFAULT 0
+);
+
+all:
+SELECT * FROM exercise WHERE archived = 0;
+
+byId:
+SELECT * FROM exercise WHERE id = ?;
+
+-- Two statements, not an upsert: Android's SQLite before API 30 has no ON CONFLICT DO UPDATE.
+insertSeed:
+INSERT OR IGNORE INTO exercise(name, aliases, primary_muscle, secondary_muscles, pattern, equipment, type, per_side, step, bar,
+    category, steps_en, tips_en, steps_sv, tips_sv)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateSeed:
+UPDATE exercise SET aliases = :aliases, primary_muscle = :primary_muscle, secondary_muscles = :secondary_muscles,
+    pattern = :pattern, equipment = :equipment, type = :type, per_side = :per_side, step = :step, bar = :bar,
+    category = :category, steps_en = :steps_en, tips_en = :tips_en, steps_sv = :steps_sv, tips_sv = :tips_sv
+WHERE name = :name AND edited = 0;
+
+setMark:
+UPDATE exercise SET mark = ? WHERE id = ?;

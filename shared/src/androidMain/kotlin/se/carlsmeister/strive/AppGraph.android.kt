@@ -1,10 +1,10 @@
 package se.carlsmeister.strive
 
+import se.carlsmeister.strive.db.StriveDatabase
 import android.content.Context
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import se.carlsmeister.strive.data.AppGraph
 import se.carlsmeister.strive.data.DATABASE
-import se.carlsmeister.strive.data.StriveDatabase
 
 private var graph: AppGraph? = null
 
