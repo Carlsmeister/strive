@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLint)
     alias(libs.plugins.kover)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -43,6 +44,7 @@ kotlin {
     
     sourceSets {
         androidMain.dependencies {
+            implementation(libs.sqldelight.androidDriver)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.compose.uiTooling)
         }
@@ -57,9 +59,17 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.navigation3.ui)
             implementation(libs.haze)
+            implementation(libs.sqldelight.coroutines)
+        }
+        iosMain.dependencies {
+            implementation(libs.sqldelight.nativeDriver)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutinesTest)
+        }
+        getByName("androidHostTest").dependencies {
+            implementation(libs.sqldelight.sqliteDriver)
         }
     }
 }
@@ -67,6 +77,17 @@ kotlin {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
 }
+sqldelight {
+    databases {
+        create("StriveDatabase") {
+            packageName = "se.carlsmeister.strive.data"
+            // Each released schema is kept here, so a migration can be checked against the one it upgrades.
+            schemaOutputDirectory = file("src/commonMain/sqldelight/databases")
+            verifyMigrations = true
+        }
+    }
+}
+
 kover {
     reports {
         // Report only, no minimum, until #4 (#32). Generated resource accessors are not ours to cover.

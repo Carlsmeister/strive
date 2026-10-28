@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
@@ -35,6 +36,8 @@ import androidx.navigation3.ui.NavDisplay
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import org.jetbrains.compose.resources.StringResource
+import se.carlsmeister.strive.data.AppGraph
+import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.theme.FixedTextSize
 import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.glass
@@ -71,7 +74,7 @@ internal fun <T> MutableList<T>.pop() {
 // a language change) or kills the process; switch to rememberNavBackStack with serializable keys when a
 // feature has state worth restoring.
 @Composable
-fun App() {
+fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph) {
     StriveTheme {
         val root = remember { mutableStateListOf<Route>(Tabs) }
         // Held here, not in TabsScreen, which leaves the composition while a session is open.

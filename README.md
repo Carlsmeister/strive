@@ -5,8 +5,9 @@ sessions, GPS runs, and export of everything to Carl's own training log.
 
 **No features yet.** The empty app runs on Carl's iPhone: four tabs around a Start
 button, every screen a placeholder, text in Swedish and English (#31), themed from the design
-tokens and following the phone's dark mode, contrast, transparency and text size (#30). CI
-checks every pull request (#32). Not built: the database (#33). The design is prototyped
+tokens and following the phone's dark mode, contrast, transparency and text size (#30), with
+a local database holding one settings table (#33). CI checks every pull request (#32). The
+design is prototyped
 in `docs/design/`. Beside those, this repository holds the plan: issue templates, the
 Definition of Done and the architecture decision records.
 
@@ -51,6 +52,10 @@ sub-issues are written when it is next, not before.
 - **A new language** touches three places: a `values-<code>/strings.xml` under
   `shared/src/commonMain/composeResources`, `androidApp/src/main/res/xml/locales_config.xml`,
   and `CFBundleLocalizations` in `iosApp/iosApp/Info.plist`. A test checks only the first.
+- **A schema change:** edit the `CREATE` in the `.sq` file and add `<n>.sqm` beside it, the
+  migration from version n. `./gradlew :shared:verifySqlDelightMigration`, which CI runs, fails
+  when they disagree with the released `databases/<n>.db`. When the new version ships, keep its
+  schema with `./gradlew :shared:generateCommonMainStriveDatabaseSchema` (ADR 0004).
 
 ## How work is written down
 
