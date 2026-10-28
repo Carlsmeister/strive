@@ -4,8 +4,9 @@ A personal training app for iPhone and Android from one Kotlin codebase: strengt
 sessions, GPS runs, and export of everything to Carl's own training log.
 
 **No features yet.** The empty app runs on Carl's iPhone: four tabs around a Start
-button, every screen a placeholder, text in Swedish and English (#31). CI checks every pull
-request (#32). Not built: the theme (#30) and the database (#33). The design is prototyped
+button, every screen a placeholder, text in Swedish and English (#31), themed from the design
+tokens and following the phone's dark mode, contrast, transparency and text size (#30). CI
+checks every pull request (#32). Not built: the database (#33). The design is prototyped
 in `docs/design/`. Beside those, this repository holds the plan: issue templates, the
 Definition of Done and the architecture decision records.
 

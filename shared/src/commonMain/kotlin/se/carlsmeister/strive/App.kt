@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -30,10 +29,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import org.jetbrains.compose.resources.StringResource
+import se.carlsmeister.strive.theme.FixedTextSize
+import se.carlsmeister.strive.theme.ShapeFull
+import se.carlsmeister.strive.theme.glass
+import se.carlsmeister.strive.theme.StriveTheme
 import org.jetbrains.compose.resources.stringResource
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.back
@@ -67,7 +72,7 @@ internal fun <T> MutableList<T>.pop() {
 // feature has state worth restoring.
 @Composable
 fun App() {
-    MaterialTheme {
+    StriveTheme {
         val root = remember { mutableStateListOf<Route>(Tabs) }
         // Held here, not in TabsScreen, which leaves the composition while a session is open.
         val stacks = remember { Tab.entries.associateWith { mutableStateListOf(Screen(it, 1)) } }
@@ -97,28 +102,29 @@ private fun TabsScreen(
 ) {
     var sheet by remember { mutableStateOf(false) }
     val tabState = rememberSaveableStateHolder()
+    val haze = rememberHazeState()
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
+            FixedTextSize { NavigationBar(Modifier.glass(haze, StriveTheme.glass), containerColor = Color.Transparent) {
                 @Composable
                 fun item(tab: Tab) = NavigationBarItem(
                     selected = tab == selected,
                     onClick = { onSelect(tab) },
                     icon = {},
-                    label = { Text(stringResource(tab.title)) },
+                    label = { Text(stringResource(tab.title), maxLines = 1) },
                 )
                 item(Tab.Home)
                 item(Tab.Food)
                 NavigationBarItem(
                     selected = false,
                     onClick = { sheet = true },
-                    icon = { Box(Modifier.size(40.dp).background(MaterialTheme.colorScheme.primary, CircleShape)) },
-                    label = { Text(stringResource(Res.string.tab_start)) },
+                    icon = { Box(Modifier.size(StriveTheme.sizes.touch).background(MaterialTheme.colorScheme.primary, ShapeFull)) },
+                    label = { Text(stringResource(Res.string.tab_start), maxLines = 1) },
                 )
                 item(Tab.Plan)
                 item(Tab.You)
-            }
+            } }
         },
     ) { padding ->
         val stack: SnapshotStateList<Screen> = stacks.getValue(selected)
@@ -128,13 +134,15 @@ private fun TabsScreen(
             tabState.SaveableStateProvider(selected.name) {
                 NavDisplay(
                     backStack = stack,
-                    modifier = Modifier.padding(padding),
+                    // Screens run on under the glass bar; each pads its own content clear of it.
+                    modifier = Modifier.hazeSource(haze),
                     onBack = { stack.pop() },
                     entryProvider = { screen ->
                         NavEntry(screen) {
                             val title = stringResource(screen.tab.title)
                             Placeholder(
                                 if (screen.depth == 1) title else "$title ${screen.depth}",
+                                Modifier.padding(padding),
                                 back = if (screen.depth > 1) ({ stack.pop() }) else null,
                                 next = { stack += Screen(screen.tab, screen.depth + 1) },
                             )
@@ -147,7 +155,7 @@ private fun TabsScreen(
 
     if (sheet) {
         ModalBottomSheet(onDismissRequest = { sheet = false }) {
-            Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(Modifier.fillMaxWidth().padding(StriveTheme.spacing.s16), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
                 for (title in listOf(Res.string.start_workout, Res.string.start_run)) {
                     Button(onClick = { sheet = false; onStart(title) }, Modifier.fillMaxWidth()) { Text(stringResource(title)) }
                 }
@@ -165,9 +173,9 @@ private fun Placeholder(
     next: (() -> Unit)? = null,
 ) {
     Column(
-        modifier.fillMaxSize().padding(16.dp),
+        modifier.fillMaxSize().padding(StriveTheme.spacing.s16),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s16, Alignment.CenterVertically),
     ) {
         back?.let { TextButton(it) { Text(stringResource(Res.string.back)) } }
         Text(title, style = MaterialTheme.typography.headlineMedium)

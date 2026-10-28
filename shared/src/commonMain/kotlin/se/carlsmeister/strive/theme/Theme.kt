@@ -1,0 +1,79 @@
+package se.carlsmeister.strive.theme
+
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+
+internal enum class Scheme(val colors: ColorScheme, val materials: StriveMaterials) {
+    Light(lightColors, lightMaterials),
+    Dark(darkColors, darkMaterials),
+    LightHc(lightHcColors, lightHcMaterials),
+    DarkHc(darkHcColors, darkHcMaterials),
+}
+
+internal fun scheme(dark: Boolean, highContrast: Boolean) = when {
+    dark && highContrast -> Scheme.DarkHc
+    dark -> Scheme.Dark
+    highContrast -> Scheme.LightHc
+    else -> Scheme.Light
+}
+
+// Reduce Transparency: the solid surface instead of a translucent fill; edge and shadow stay.
+internal fun glass(scheme: Scheme, reduceTransparency: Boolean): StriveMaterials {
+    if (!reduceTransparency) return scheme.materials
+    val solid = scheme.colors.surface
+    return StriveMaterials(regular = solid, thick = solid, edge = scheme.materials.edge, shadow = scheme.materials.shadow)
+}
+
+/** The phone's settings the theme follows beside light and dark. */
+internal data class Accessibility(
+    val highContrast: Boolean = false,
+    val reduceTransparency: Boolean = false,
+    val reduceMotion: Boolean = false,
+)
+
+/** The current settings, recomposing when one changes. */
+@Composable
+internal expect fun accessibility(): Accessibility
+
+/** Text that grows with the phone's text size setting, up to its largest accessibility size. */
+@Composable
+internal expect fun ProvideTextScale(content: @Composable () -> Unit)
+
+/** Text that keeps its standard size whatever the phone's text size setting, as iOS's own tab bar does (#30). */
+@Composable
+internal fun FixedTextSize(content: @Composable () -> Unit) =
+    CompositionLocalProvider(LocalDensity provides Density(LocalDensity.current.density), content = content)
+
+private val LocalGlass = staticCompositionLocalOf { lightMaterials }
+private val LocalReduceMotion = staticCompositionLocalOf { false }
+
+@Composable
+internal fun StriveTheme(content: @Composable () -> Unit) {
+    val settings = accessibility()
+    val scheme = scheme(isSystemInDarkTheme(), settings.highContrast)
+    CompositionLocalProvider(
+        LocalGlass provides glass(scheme, settings.reduceTransparency),
+        LocalReduceMotion provides settings.reduceMotion,
+    ) {
+        MaterialTheme(colorScheme = scheme.colors, shapes = StriveShapes, typography = StriveTypography) {
+            ProvideTextScale(content)
+        }
+    }
+}
+
+/** Strive's own groups beside MaterialTheme's colours, type and shapes. */
+internal object StriveTheme {
+    val spacing = Spacing()
+    val sizes = Sizes()
+    val borders = Borders()
+    val states = States()
+    val glass: StriveMaterials @Composable get() = LocalGlass.current
+    /** Reduce Motion is on: what an animation does instead is the animating component's call. */
+    val reduceMotion: Boolean @Composable get() = LocalReduceMotion.current
+}
