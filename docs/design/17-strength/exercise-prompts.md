@@ -1325,18 +1325,6 @@ Primary muscles (saturated red): latissimus dorsi, teres major, rhomboids.
 Secondary muscles (light red): biceps brachii, posterior deltoid.
 ```
 
-## Hex Bar Deadlift
-
-```
-Exercise: Hex Bar Deadlift.
-Equipment: trap bar with two black plates.
-View: side, chosen so the primary muscles face the viewer.
-Start position: standing inside the trap bar, crouched with a flat back and the handles gripped, arms straight
-End position: standing tall inside the trap bar with the handles held at the sides
-Primary muscles (saturated red): quadriceps femoris, gluteus maximus, erector spinae, biceps femoris.
-Secondary muscles (light red): trapezius.
-```
-
 ## High Row Machine
 
 ```
@@ -1517,6 +1505,18 @@ Primary muscles (saturated red): latissimus dorsi, teres major, rhomboids.
 Secondary muscles (light red): biceps brachii, brachioradialis.
 ```
 
+## Pelvic Tilt Into Bridge
+
+```
+Exercise: Pelvic Tilt Into Bridge.
+Equipment: exercise mat.
+View: side, chosen so the primary muscles face the viewer.
+Start position: Lying on the back on a mat with knees bent and feet flat, pelvis tilted so the lower back is pressed into the floor.
+End position: Spine peeled off the mat into a bridge with hips high and the body in a straight line from knees to shoulders.
+Primary muscles (saturated red): erector spinae (lower back).
+Secondary muscles (light red): gluteus maximus, rectus abdominis.
+```
+
 ## Pullover BB
 
 ```
@@ -1525,18 +1525,6 @@ Equipment: flat bench and Olympic barbell with two black plates.
 View: side, chosen so the primary muscles face the viewer.
 Start position: lying on a flat bench with the bar above the chest on straight arms
 End position: the bar lowered behind the head with straight arms and the lats stretched
-Primary muscles (saturated red): latissimus dorsi, teres major.
-Secondary muscles (light red): pectoralis major, triceps brachii.
-```
-
-## Pullover DB
-
-```
-Exercise: Pullover DB.
-Equipment: flat bench and one dumbbell.
-View: side, chosen so the primary muscles face the viewer.
-Start position: lying with the upper back across a flat bench, hips low, a dumbbell held above the chest with both hands
-End position: the dumbbell lowered behind the head with arms nearly straight and the lats stretched
 Primary muscles (saturated red): latissimus dorsi, teres major.
 Secondary muscles (light red): pectoralis major, triceps brachii.
 ```
@@ -1589,18 +1577,6 @@ Primary muscles (saturated red): latissimus dorsi, rhomboids, trapezius, erector
 Secondary muscles (light red): biceps brachii, posterior deltoid.
 ```
 
-## Reverse Hyperextension
-
-```
-Exercise: Reverse Hyperextension.
-Equipment: reverse hyperextension machine.
-View: side, chosen so the primary muscles face the viewer.
-Start position: lying face down with the hips at the pad edge and the legs hanging straight down
-End position: legs lifted until they are in a straight line with the torso
-Primary muscles (saturated red): gluteus maximus, erector spinae.
-Secondary muscles (light red): biceps femoris.
-```
-
 ## Reverse-Grip Bent Over Row EZ
 
 ```
@@ -1647,6 +1623,18 @@ Start position: Dead hang from the bar with arms straight and shoulders elevated
 End position: Arms still straight, shoulder blades pulled down and together, body lifted a few centimeters.
 Primary muscles (saturated red): lower trapezius, latissimus dorsi, rhomboids.
 Secondary muscles (light red): posterior deltoid.
+```
+
+## Seated Good Mornings BB
+
+```
+Exercise: Seated Good Mornings BB.
+Equipment: flat bench and Olympic barbell with two black plates.
+View: back three-quarter, chosen so the primary muscles face the viewer.
+Start position: Sit upright on the end of a bench with the barbell on your upper back and feet flat on the floor.
+End position: Torso is folded forward from the hips until nearly parallel to the floor, back flat.
+Primary muscles (saturated red): erector spinae.
+Secondary muscles (light red): gluteus maximus, biceps femoris.
 ```
 
 ## Shrug BB
@@ -1709,6 +1697,18 @@ Primary muscles (saturated red): latissimus dorsi, teres major.
 Secondary muscles (light red): posterior deltoid.
 ```
 
+## Side-Lying Floor Stretch
+
+```
+Exercise: Side-Lying Floor Stretch.
+Equipment: none, exercise mat.
+View: front, chosen so the primary muscles face the viewer.
+Start position: Lying on one side with the legs together and the bottom arm stretched overhead.
+End position: Torso and arms stretched long overhead with the body curved sideways in a gentle arc.
+Primary muscles (saturated red): latissimus dorsi, quadratus lumborum.
+Secondary muscles (light red): external obliques.
+```
+
 ## Single Against Wall
 
 ```
@@ -1743,30 +1743,6 @@ Start position: Standing on one leg, dumbbell held in the opposite hand at the t
 End position: Torso hinged forward until nearly parallel to the floor, free leg extended straight back in line with the torso, dumbbell hanging below the shoulder.
 Primary muscles (saturated red): erector spinae, gluteus maximus.
 Secondary muscles (light red): biceps femoris, semitendinosus, semimembranosus.
-```
-
-## Single Leg Deadlift KB
-
-```
-Exercise: Single Leg Deadlift KB.
-Equipment: one kettlebell.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Standing on one leg, kettlebell held in the opposite hand at the thigh, torso upright.
-End position: Torso hinged forward until nearly parallel to the floor, free leg extended straight back, kettlebell hanging below the shoulder.
-Primary muscles (saturated red): erector spinae, gluteus maximus.
-Secondary muscles (light red): biceps femoris, semitendinosus, semimembranosus.
-```
-
-## Single Side Deadlift
-
-```
-Exercise: Single Side Deadlift.
-Equipment: Olympic barbell with two black plates.
-View: front three-quarter, chosen so the primary muscles face the viewer.
-Start position: Standing beside a barbell on the floor, hips hinged and knees bent, one hand gripping the bar at its center, other arm out for balance.
-End position: Standing fully upright holding the bar at the side of the thigh with a straight arm, torso level and not leaning.
-Primary muscles (saturated red): erector spinae, gluteus maximus.
-Secondary muscles (light red): rectus abdominis, obliques, wrist flexors.
 ```
 
 ## Smith Behind the Back Shrug
@@ -1947,18 +1923,6 @@ Start position: Face down over a stability ball with hips on the ball and toes o
 End position: Torso raised until the body forms a straight line from head to heels, plate still at the chest.
 Primary muscles (saturated red): erector spinae.
 Secondary muscles (light red): gluteus maximus, biceps femoris.
-```
-
-## Wide Grip Decline Pullover
-
-```
-Exercise: Wide Grip Decline Pullover.
-Equipment: decline bench and Olympic barbell with two black plates.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Lying on a decline bench with the head at the low end, bar held wide above the chest with slightly bent elbows.
-End position: Bar lowered in an arc behind and below the head, arms nearly straight, lats stretched.
-Primary muscles (saturated red): latissimus dorsi, teres major.
-Secondary muscles (light red): pectoralis major, triceps brachii long head.
 ```
 
 ## Wide Grip Pull Ups
@@ -2861,30 +2825,6 @@ Primary muscles (saturated red): pectoralis major.
 Secondary muscles (light red): triceps brachii, anterior deltoid.
 ```
 
-## Close-Grip Bench Press DB
-
-```
-Exercise: Close-Grip Bench Press DB.
-Equipment: flat bench and a pair of hexagonal dumbbells.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Lying flat with the dumbbells pressed together over the chest, palms facing each other, arms straight.
-End position: Dumbbells touching, lowered to the lower chest, elbows close to the torso.
-Primary muscles (saturated red): pectoralis major.
-Secondary muscles (light red): triceps brachii, anterior deltoid.
-```
-
-## Close-Grip Bench Press EZ
-
-```
-Exercise: Close-Grip Bench Press EZ.
-Equipment: flat bench and EZ curl bar with two black plates.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Lying flat with the EZ bar held on the inner bends, hands about shoulder-width apart, arms straight over the chest.
-End position: Bar touching the lower chest, elbows close to the torso.
-Primary muscles (saturated red): pectoralis major.
-Secondary muscles (light red): triceps brachii, anterior deltoid.
-```
-
 ## Close-Grip Incline Bench Press
 
 ```
@@ -2895,18 +2835,6 @@ Start position: Lying on a bench inclined about 30 degrees, bar held over the up
 End position: Bar touching the upper chest, elbows close to the torso.
 Primary muscles (saturated red): pectoralis major (clavicular head).
 Secondary muscles (light red): anterior deltoid, triceps brachii.
-```
-
-## Close-Grip Push-Up Off of
-
-```
-Exercise: Close-Grip Push-Up Off of.
-Equipment: one dumbbell standing upright on the floor.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Push-up position with both hands on the end of one dumbbell, body straight.
-End position: Chest just above the dumbbell, elbows close to the torso.
-Primary muscles (saturated red): pectoralis major.
-Secondary muscles (light red): triceps brachii, anterior deltoid.
 ```
 
 ## Decline Bench Press DB
@@ -2969,16 +2897,16 @@ Primary muscles (saturated red): pectoralis major.
 Secondary muscles (light red): anterior deltoid.
 ```
 
-## Floor Press DB
+## Front Raise and Pullover
 
 ```
-Exercise: Floor Press DB.
-Equipment: a pair of hexagonal dumbbells on a bare floor.
+Exercise: Front Raise and Pullover.
+Equipment: flat bench and a light Olympic barbell.
 View: side, chosen so the primary muscles face the viewer.
-Start position: Lying on the floor with the knees bent and the feet flat, dumbbells over the chest, arms straight.
-End position: Upper arms resting on the floor, elbows bent to about 90 degrees, dumbbells beside the chest.
+Start position: Lying on a flat bench, straight arms holding the bar on the thighs.
+End position: Arms straight, bar lowered in an arc behind the head, level with the bench.
 Primary muscles (saturated red): pectoralis major.
-Secondary muscles (light red): anterior deltoid, triceps brachii.
+Secondary muscles (light red): latissimus dorsi, anterior deltoid.
 ```
 
 ## Guillotine Bench Press
@@ -3051,18 +2979,6 @@ Start position: Hands on a bench slightly wider than the shoulders, feet on the 
 End position: Chest touching the edge of the bench, elbows at about 45 degrees.
 Primary muscles (saturated red): pectoralis major.
 Secondary muscles (light red): anterior deltoid, triceps brachii, serratus anterior.
-```
-
-## Incline Push-Up Close-Grip
-
-```
-Exercise: Incline Push-Up Close-Grip.
-Equipment: bench or sturdy box for the hands.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Hands close together on a bench under the chest, feet on the floor, body in a straight diagonal line.
-End position: Chest above the hands, elbows close to the torso.
-Primary muscles (saturated red): pectoralis major.
-Secondary muscles (light red): triceps brachii, anterior deltoid.
 ```
 
 ## Incline Push-Up Depth Jump
@@ -3173,6 +3089,18 @@ Primary muscles (saturated red): pectoralis major.
 Secondary muscles (light red): anterior deltoid, triceps brachii, serratus anterior.
 ```
 
+## Pullover DB
+
+```
+Exercise: Pullover DB.
+Equipment: flat bench and one dumbbell.
+View: side, chosen so the primary muscles face the viewer.
+Start position: lying with the upper back across a flat bench, hips low, a dumbbell held above the chest with both hands
+End position: the dumbbell lowered behind the head with arms nearly straight and the lats stretched
+Primary muscles (saturated red): pectoralis major.
+Secondary muscles (light red): latissimus dorsi, teres major, triceps brachii long head.
+```
+
 ## Push Up to Side Plank
 
 ```
@@ -3206,18 +3134,6 @@ View: side, chosen so the primary muscles face the viewer.
 Start position: Lying flat with the dumbbells over the upper chest, palms facing the face (underhand grip), arms straight.
 End position: Dumbbells at the upper chest, palms still facing the face, elbows tucked close.
 Primary muscles (saturated red): pectoralis major (clavicular head).
-Secondary muscles (light red): anterior deltoid, triceps brachii.
-```
-
-## Ring Dips
-
-```
-Exercise: Ring Dips.
-Equipment: gymnastics rings hung at about hip height.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Supported on the rings with straight arms, rings turned out, torso leaning slightly forward.
-End position: Elbows bent beyond 90 degrees, chest low between the rings.
-Primary muscles (saturated red): pectoralis major (sternal head).
 Secondary muscles (light red): anterior deltoid, triceps brachii.
 ```
 
@@ -3291,18 +3207,6 @@ Start position: Lying flat with one dumbbell over the chest, palm turned in, elb
 End position: Dumbbell lowered in an arc out to the side until the chest stretches.
 Primary muscles (saturated red): pectoralis major.
 Secondary muscles (light red): anterior deltoid.
-```
-
-## Single Floor Press BB
-
-```
-Exercise: Single Floor Press BB.
-Equipment: Olympic barbell with two black plates on a bare floor.
-View: side, chosen so the primary muscles face the viewer.
-Start position: Lying on the floor with the knees bent, one hand gripping the bar at its centre over the chest, the other arm out to the side.
-End position: Upper arm resting on the floor, elbow bent to about 90 degrees.
-Primary muscles (saturated red): pectoralis major.
-Secondary muscles (light red): anterior deltoid, triceps brachii.
 ```
 
 ## Single Floor Press KB
@@ -3411,6 +3315,18 @@ Start position: Lying on a decline bench about 20 degrees with the legs hooked u
 End position: Bar touching the lower chest, elbows at about 60 degrees to the torso.
 Primary muscles (saturated red): pectoralis major (sternal head).
 Secondary muscles (light red): anterior deltoid, triceps brachii.
+```
+
+## Wide Grip Decline Pullover
+
+```
+Exercise: Wide Grip Decline Pullover.
+Equipment: decline bench and Olympic barbell with two black plates.
+View: side, chosen so the primary muscles face the viewer.
+Start position: Lying on a decline bench with the head at the low end, bar held wide above the chest with slightly bent elbows.
+End position: Bar lowered in an arc behind and below the head, arms nearly straight, lats stretched.
+Primary muscles (saturated red): pectoralis major.
+Secondary muscles (light red): latissimus dorsi, teres major, triceps brachii long head.
 ```
 
 ## Wide Push-Up
@@ -3999,18 +3915,6 @@ Start position: Lying on one side propped on the forearm with elbow under the sh
 End position: Hips lifted so the body forms a straight line from head to feet, held still.
 Primary muscles (saturated red): obliques, quadratus lumborum.
 Secondary muscles (light red): deltoid, gluteus medius.
-```
-
-## Side-Lying Floor Stretch
-
-```
-Exercise: Side-Lying Floor Stretch.
-Equipment: none, exercise mat.
-View: front, chosen so the primary muscles face the viewer.
-Start position: Lying on one side with the legs together and the bottom arm stretched overhead.
-End position: Torso and arms stretched long overhead with the body curved sideways in a gentle arc.
-Primary muscles (saturated red): obliques, quadratus lumborum.
-Secondary muscles (light red): latissimus dorsi.
 ```
 
 ## Single Medicine Ball Slam
@@ -4673,16 +4577,16 @@ Primary muscles (saturated red): gluteus medius, gluteus maximus.
 Secondary muscles (light red): tensor fasciae latae.
 ```
 
-## Pelvic Tilt Into Bridge
+## Reverse Hyperextension
 
 ```
-Exercise: Pelvic Tilt Into Bridge.
-Equipment: exercise mat.
+Exercise: Reverse Hyperextension.
+Equipment: reverse hyperextension machine.
 View: side, chosen so the primary muscles face the viewer.
-Start position: Lying on the back on a mat with knees bent and feet flat, pelvis tilted so the lower back is pressed into the floor.
-End position: Spine peeled off the mat into a bridge with hips high and the body in a straight line from knees to shoulders.
+Start position: lying face down with the hips at the pad edge and the legs hanging straight down
+End position: legs lifted until they are in a straight line with the torso
 Primary muscles (saturated red): gluteus maximus.
-Secondary muscles (light red): biceps femoris, rectus abdominis.
+Secondary muscles (light red): biceps femoris, erector spinae.
 ```
 
 ## Seated Piriformis Stretch
@@ -4805,14 +4709,14 @@ Primary muscles (saturated red): biceps femoris, semitendinosus, semimembranosus
 Secondary muscles (light red): none.
 ```
 
-## Seated Good Mornings BB
+## Single Leg Deadlift KB
 
 ```
-Exercise: Seated Good Mornings BB.
-Equipment: flat bench and Olympic barbell with two black plates.
-View: back three-quarter, chosen so the primary muscles face the viewer.
-Start position: Sit upright on the end of a bench with the barbell on your upper back and feet flat on the floor.
-End position: Torso is folded forward from the hips until nearly parallel to the floor, back flat.
+Exercise: Single Leg Deadlift KB.
+Equipment: one kettlebell.
+View: side, chosen so the primary muscles face the viewer.
+Start position: Standing on one leg, kettlebell held in the opposite hand at the thigh, torso upright.
+End position: Torso hinged forward until nearly parallel to the floor, free leg extended straight back, kettlebell hanging below the shoulder.
 Primary muscles (saturated red): biceps femoris, semitendinosus, semimembranosus.
 Secondary muscles (light red): gluteus maximus, erector spinae.
 ```
@@ -4947,6 +4851,18 @@ Start position: Standing with the barbell held behind the thighs with straight a
 End position: Thighs about parallel to the floor, torso upright, bar sliding down the back of the legs.
 Primary muscles (saturated red): rectus femoris, vastus lateralis, vastus medialis.
 Secondary muscles (light red): gluteus maximus, biceps femoris, semitendinosus, semimembranosus, erector spinae.
+```
+
+## Hex Bar Deadlift
+
+```
+Exercise: Hex Bar Deadlift.
+Equipment: trap bar with two black plates.
+View: side, chosen so the primary muscles face the viewer.
+Start position: standing inside the trap bar, crouched with a flat back and the handles gripped, arms straight
+End position: standing tall inside the trap bar with the handles held at the sides
+Primary muscles (saturated red): quadriceps femoris.
+Secondary muscles (light red): gluteus maximus, erector spinae, biceps femoris.
 ```
 
 ## Hip Adduction Cable
@@ -5177,6 +5093,18 @@ Primary muscles (saturated red): rectus femoris, vastus lateralis, vastus medial
 Secondary muscles (light red): biceps brachii, brachialis.
 ```
 
+## Single Side Deadlift
+
+```
+Exercise: Single Side Deadlift.
+Equipment: Olympic barbell with two black plates.
+View: front three-quarter, chosen so the primary muscles face the viewer.
+Start position: Standing beside a barbell on the floor, hips hinged and knees bent, one hand gripping the bar at its center, other arm out for balance.
+End position: Standing fully upright holding the bar at the side of the thigh with a straight arm, torso level and not leaning.
+Primary muscles (saturated red): quadriceps femoris.
+Secondary muscles (light red): gluteus maximus, obliques, forearm flexors.
+```
+
 ## Sled Push
 
 ```
@@ -5357,18 +5285,6 @@ Primary muscles (saturated red): rectus femoris, vastus lateralis, vastus medial
 Secondary muscles (light red): gluteus maximus, biceps femoris, semitendinosus, semimembranosus.
 ```
 
-## Sumo High Pull
-
-```
-Exercise: Sumo High Pull.
-Equipment: one kettlebell between the feet.
-View: front, chosen so the primary muscles face the viewer.
-Start position: Wide sumo stance, toes turned out, torso hinged forward, both hands on the kettlebell handle between the feet.
-End position: Standing tall, kettlebell pulled to chest height, elbows high and wide.
-Primary muscles (saturated red): rectus femoris, vastus lateralis, vastus medialis.
-Secondary muscles (light red): deltoids, trapezius.
-```
-
 ## Suspended Split Squat
 
 ```
@@ -5379,18 +5295,6 @@ Start position: Standing on the front leg, back foot in the strap handle behind,
 End position: Front thigh near parallel, back knee just above the floor, torso upright.
 Primary muscles (saturated red): rectus femoris, vastus lateralis, vastus medialis.
 Secondary muscles (light red): gluteus maximus, biceps femoris, semitendinosus, semimembranosus.
-```
-
-## Turkish Get-Up (Squat Style)
-
-```
-Exercise: Turkish Get-Up (Squat Style).
-Equipment: one kettlebell.
-View: front, chosen so the primary muscles face the viewer.
-Start position: Lying on the back, a kettlebell pressed straight up in one hand, same-side knee bent with the foot flat.
-End position: Standing tall with the kettlebell locked out overhead, feet under the hips.
-Primary muscles (saturated red): rectus femoris, vastus lateralis, vastus medialis.
-Secondary muscles (light red): deltoids, rectus abdominis, obliques.
 ```
 
 ## Walking Lunge
@@ -5583,18 +5487,6 @@ Start position: Stand with a dumbbell in each hand hanging in front of the thigh
 End position: Arms raised forward to shoulder height.
 Primary muscles (saturated red): anterior deltoid.
 Secondary muscles (light red): pectoralis major, serratus anterior.
-```
-
-## Front Raise and Pullover
-
-```
-Exercise: Front Raise and Pullover.
-Equipment: Olympic barbell with two black plates.
-View: front three-quarter, chosen so the primary muscles face the viewer.
-Start position: Stand holding the barbell in front of the thighs with straight arms.
-End position: Barbell held overhead behind the head line with straight arms.
-Primary muscles (saturated red): anterior deltoid.
-Secondary muscles (light red): pectoralis major, latissimus dorsi.
 ```
 
 ## Handstand
@@ -6101,6 +5993,30 @@ Primary muscles (saturated red): posterior deltoid.
 Secondary muscles (light red): rhomboids, infraspinatus, middle trapezius.
 ```
 
+## Sumo High Pull
+
+```
+Exercise: Sumo High Pull.
+Equipment: one kettlebell between the feet.
+View: front, chosen so the primary muscles face the viewer.
+Start position: Wide sumo stance, toes turned out, torso hinged forward, both hands on the kettlebell handle between the feet.
+End position: Standing tall, kettlebell pulled to chest height, elbows high and wide.
+Primary muscles (saturated red): upper trapezius, lateral deltoid.
+Secondary muscles (light red): gluteus maximus, quadriceps.
+```
+
+## Turkish Get-Up (Squat Style)
+
+```
+Exercise: Turkish Get-Up (Squat Style).
+Equipment: one kettlebell.
+View: front, chosen so the primary muscles face the viewer.
+Start position: Lying on the back, a kettlebell pressed straight up in one hand, same-side knee bent with the foot flat.
+End position: Standing tall with the kettlebell locked out overhead, feet under the hips.
+Primary muscles (saturated red): deltoids, rotator cuff.
+Secondary muscles (light red): quadriceps, gluteus maximus, obliques.
+```
+
 ## Two-Arm Military Press
 
 ```
@@ -6197,6 +6113,42 @@ Primary muscles (saturated red): triceps brachii.
 Secondary muscles (light red): posterior deltoid.
 ```
 
+## Close-Grip Bench Press DB
+
+```
+Exercise: Close-Grip Bench Press DB.
+Equipment: flat bench and a pair of hexagonal dumbbells.
+View: side, chosen so the primary muscles face the viewer.
+Start position: Lying flat with the dumbbells pressed together over the chest, palms facing each other, arms straight.
+End position: Dumbbells touching, lowered to the lower chest, elbows close to the torso.
+Primary muscles (saturated red): triceps brachii.
+Secondary muscles (light red): pectoralis major, anterior deltoid.
+```
+
+## Close-Grip Bench Press EZ
+
+```
+Exercise: Close-Grip Bench Press EZ.
+Equipment: flat bench and EZ curl bar with two black plates.
+View: side, chosen so the primary muscles face the viewer.
+Start position: Lying flat with the EZ bar held on the inner bends, hands about shoulder-width apart, arms straight over the chest.
+End position: Bar touching the lower chest, elbows close to the torso.
+Primary muscles (saturated red): triceps brachii.
+Secondary muscles (light red): pectoralis major, anterior deltoid.
+```
+
+## Close-Grip Push-Up Off of
+
+```
+Exercise: Close-Grip Push-Up Off of.
+Equipment: one dumbbell standing upright on the floor.
+View: side, chosen so the primary muscles face the viewer.
+Start position: Push-up position with both hands on the end of one dumbbell, body straight.
+End position: Chest just above the dumbbell, elbows close to the torso.
+Primary muscles (saturated red): triceps brachii.
+Secondary muscles (light red): pectoralis major, anterior deltoid.
+```
+
 ## Decline Triceps Extension DB
 
 ```
@@ -6231,6 +6183,30 @@ Start position: High plank with the hands together beneath the chest forming a d
 End position: Chest lowered to just above the hands with elbows bent and tucked close to the ribs, body still straight.
 Primary muscles (saturated red): triceps brachii.
 Secondary muscles (light red): pectoralis major, anterior deltoid, rectus abdominis.
+```
+
+## Floor Press DB
+
+```
+Exercise: Floor Press DB.
+Equipment: a pair of hexagonal dumbbells on a bare floor.
+View: side, chosen so the primary muscles face the viewer.
+Start position: Lying on the floor with the knees bent and the feet flat, dumbbells over the chest, arms straight.
+End position: Upper arms resting on the floor, elbows bent to about 90 degrees, dumbbells beside the chest.
+Primary muscles (saturated red): triceps brachii.
+Secondary muscles (light red): pectoralis major, anterior deltoid.
+```
+
+## Incline Push-Up Close-Grip
+
+```
+Exercise: Incline Push-Up Close-Grip.
+Equipment: bench or sturdy box for the hands.
+View: side, chosen so the primary muscles face the viewer.
+Start position: Hands close together on a bench under the chest, feet on the floor, body in a straight diagonal line.
+End position: Chest above the hands, elbows close to the torso.
+Primary muscles (saturated red): triceps brachii.
+Secondary muscles (light red): pectoralis major, anterior deltoid.
 ```
 
 ## Incline Triceps Extension Cable
@@ -6365,6 +6341,18 @@ Primary muscles (saturated red): triceps brachii.
 Secondary muscles (light red): wrist flexors.
 ```
 
+## Ring Dips
+
+```
+Exercise: Ring Dips.
+Equipment: gymnastics rings hung at about hip height.
+View: side, chosen so the primary muscles face the viewer.
+Start position: Supported on the rings with straight arms, rings turned out, torso leaning slightly forward.
+End position: Elbows bent beyond 90 degrees, chest low between the rings.
+Primary muscles (saturated red): triceps brachii.
+Secondary muscles (light red): pectoralis major (sternal head), anterior deltoid.
+```
+
 ## Seated Bent-Over Two-Arm Triceps Extension
 
 ```
@@ -6411,6 +6399,18 @@ Start position: Seated upright on a bench with one dumbbell held overhead in bot
 End position: Dumbbell lowered behind the head with elbows bent about 90 degrees and upper arms vertical.
 Primary muscles (saturated red): triceps brachii.
 Secondary muscles (light red): anterior deltoid.
+```
+
+## Single Floor Press BB
+
+```
+Exercise: Single Floor Press BB.
+Equipment: Olympic barbell with two black plates on a bare floor.
+View: side, chosen so the primary muscles face the viewer.
+Start position: Lying on the floor with the knees bent, one hand gripping the bar at its centre over the chest, the other arm out to the side.
+End position: Upper arm resting on the floor, elbow bent to about 90 degrees.
+Primary muscles (saturated red): triceps brachii.
+Secondary muscles (light red): pectoralis major, anterior deltoid.
 ```
 
 ## Single Pronated Triceps Extension

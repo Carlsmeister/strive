@@ -416,9 +416,9 @@
  },
  {
   "name": "Front Raise and Pullover",
-  "primary_muscle": "shoulders",
+  "primary_muscle": "chest",
   "secondary_muscles": [
-   "chest",
+   "shoulders",
    "back",
    "triceps"
   ],
@@ -427,17 +427,17 @@
   "per_side": false,
   "step": 2.5,
   "bar": 20,
-  "steps_en": "1. Stand holding the bar in front of your thighs, hands shoulder-width apart.\n2. Raise the bar forward to shoulder height.\n3. Keep going overhead as far back as your shoulders allow.\n4. Reverse the arc back to your thighs.",
-  "tips_en": "Keep your arms nearly straight and your ribs down.\nUse a light weight and control the whole arc.",
-  "steps_sv": "1. Stå med stången framför låren, händerna axelbrett.\n2. Lyft stången framåt till axelhöjd.\n3. Fortsätt över huvudet så långt bak som axlarna tillåter.\n4. Gör bågen baklänges tillbaka till låren.",
-  "tips_sv": "Håll armarna nästan raka och revbenen nere.\nTa lätt vikt och kontrollera hela bågen.",
+  "steps_en": "1. Lie on a flat bench and hold a barbell on your thighs with a shoulder-width overhand grip.\n2. Raise the bar with straight arms until it is over your chest.\n3. Keep going in an arc behind your head until you feel a stretch.\n4. Bring it back over your chest and down to your thighs.",
+  "tips_en": "Keep a slight bend in the elbows.\nUse a light bar; the arc behind the head stretches the shoulders.",
+  "steps_sv": "1. Ligg på en plan bänk och håll en skivstång på låren med axelbrett överhandsgrepp.\n2. Lyft stången med raka armar tills den är över bröstet.\n3. Fortsätt i en båge bakom huvudet tills det sträcker.\n4. För tillbaka den över bröstet och ner till låren.",
+  "tips_sv": "Ha en lätt böj i armbågarna.\nAnvänd en lätt stång; bågen bakom huvudet sträcker axlarna.",
   "prompt": {
-   "equipment": "Olympic barbell with two black plates",
-   "view": "front three-quarter",
-   "start": "Stand holding the barbell in front of the thighs with straight arms.",
-   "end": "Barbell held overhead behind the head line with straight arms.",
-   "primary": "anterior deltoid",
-   "secondary": "pectoralis major, latissimus dorsi"
+   "equipment": "flat bench and a light Olympic barbell",
+   "view": "side",
+   "start": "Lying on a flat bench, straight arms holding the bar on the thighs.",
+   "end": "Arms straight, bar lowered in an arc behind the head, level with the bench.",
+   "primary": "pectoralis major",
+   "secondary": "latissimus dorsi, anterior deltoid"
   },
   "aliases": "Barbell Front Raise and Pullover | Barbell front raise and pullover",
   "equipment": "Skivstång",
@@ -2432,10 +2432,10 @@
  },
  {
   "name": "Seated Good Mornings BB",
-  "primary_muscle": "hamstrings",
+  "primary_muscle": "back",
   "secondary_muscles": [
-   "glutes",
-   "back"
+   "hamstrings",
+   "glutes"
   ],
   "pattern": "Höftdominant",
   "type": "weight_reps",
@@ -2451,8 +2451,8 @@
    "view": "back three-quarter",
    "start": "Sit upright on the end of a bench with the barbell on your upper back and feet flat on the floor.",
    "end": "Torso is folded forward from the hips until nearly parallel to the floor, back flat.",
-   "primary": "biceps femoris, semitendinosus, semimembranosus",
-   "secondary": "gluteus maximus, erector spinae"
+   "primary": "erector spinae",
+   "secondary": "gluteus maximus, biceps femoris"
   },
   "aliases": "Seated Good Mornings | Sittande good morning | barbell seated good morning",
   "equipment": "Skivstång",
@@ -4483,9 +4483,9 @@
  },
  {
   "name": "Close-Grip Bench Press DB",
-  "primary_muscle": "chest",
+  "primary_muscle": "triceps",
   "secondary_muscles": [
-   "triceps",
+   "chest",
    "shoulders"
   ],
   "pattern": "Horisontell press",
@@ -4502,8 +4502,8 @@
    "view": "side",
    "start": "Lying flat with the dumbbells pressed together over the chest, palms facing each other, arms straight.",
    "end": "Dumbbells touching, lowered to the lower chest, elbows close to the torso.",
-   "primary": "pectoralis major",
-   "secondary": "triceps brachii, anterior deltoid"
+   "primary": "triceps brachii",
+   "secondary": "pectoralis major, anterior deltoid"
   },
   "aliases": "Close-Grip Dumbbell Bench Press | Hantelpress med smalt grepp | Dumbbell close grip bench press | Close-Grip Dumbbell Press | Dumbbell Close-Grip Press | dumbbell close-grip press | dumbbell close grip press",
   "equipment": "Hantlar",
@@ -4513,9 +4513,9 @@
  },
  {
   "name": "Close-Grip Bench Press EZ",
-  "primary_muscle": "chest",
+  "primary_muscle": "triceps",
   "secondary_muscles": [
-   "triceps",
+   "chest",
    "shoulders"
   ],
   "pattern": "Horisontell press",
@@ -4532,8 +4532,8 @@
    "view": "side",
    "start": "Lying flat with the EZ bar held on the inner bends, hands about shoulder-width apart, arms straight over the chest.",
    "end": "Bar touching the lower chest, elbows close to the torso.",
-   "primary": "pectoralis major",
-   "secondary": "triceps brachii, anterior deltoid"
+   "primary": "triceps brachii",
+   "secondary": "pectoralis major, anterior deltoid"
   },
   "aliases": "Close-Grip EZ-Bar Bench Press | Bänkpress med smalt grepp, EZ-stång | ez-bar close-grip bench press | Close-Grip EZ-Bar Press",
   "equipment": "EZ-stång",
@@ -4573,9 +4573,9 @@
  },
  {
   "name": "Close-Grip Push-Up Off of",
-  "primary_muscle": "chest",
+  "primary_muscle": "triceps",
   "secondary_muscles": [
-   "triceps",
+   "chest",
    "shoulders"
   ],
   "pattern": "Horisontell press",
@@ -4592,8 +4592,8 @@
    "view": "side",
    "start": "Push-up position with both hands on the end of one dumbbell, body straight.",
    "end": "Chest just above the dumbbell, elbows close to the torso.",
-   "primary": "pectoralis major",
-   "secondary": "triceps brachii, anterior deltoid"
+   "primary": "triceps brachii",
+   "secondary": "pectoralis major, anterior deltoid"
   },
   "aliases": "Close-Grip Push-Up off of a Dumbbell | Close-grip push-up off of a dumbbell | push-up close-grip off dumbbell",
   "equipment": "Hantlar",
@@ -4781,9 +4781,9 @@
  },
  {
   "name": "Floor Press DB",
-  "primary_muscle": "chest",
+  "primary_muscle": "triceps",
   "secondary_muscles": [
-   "triceps",
+   "chest",
    "shoulders"
   ],
   "pattern": "Horisontell press",
@@ -4800,8 +4800,8 @@
    "view": "side",
    "start": "Lying on the floor with the knees bent and the feet flat, dumbbells over the chest, arms straight.",
    "end": "Upper arms resting on the floor, elbows bent to about 90 degrees, dumbbells beside the chest.",
-   "primary": "pectoralis major",
-   "secondary": "anterior deltoid, triceps brachii"
+   "primary": "triceps brachii",
+   "secondary": "pectoralis major, anterior deltoid"
   },
   "aliases": "Dumbbell Floor Press | Golvpress, hantlar",
   "equipment": "Hantlar",
@@ -5137,9 +5137,9 @@
  },
  {
   "name": "Incline Push-Up Close-Grip",
-  "primary_muscle": "chest",
+  "primary_muscle": "triceps",
   "secondary_muscles": [
-   "triceps",
+   "chest",
    "shoulders"
   ],
   "pattern": "Horisontell press",
@@ -5156,8 +5156,8 @@
    "view": "side",
    "start": "Hands close together on a bench under the chest, feet on the floor, body in a straight diagonal line.",
    "end": "Chest above the hands, elbows close to the torso.",
-   "primary": "pectoralis major",
-   "secondary": "triceps brachii, anterior deltoid"
+   "primary": "triceps brachii",
+   "secondary": "pectoralis major, anterior deltoid"
   },
   "aliases": "Lutande armhävningar med smalt grepp | incline close-grip push-up",
   "equipment": "Kroppsvikt",
@@ -5556,9 +5556,9 @@
  },
  {
   "name": "Ring Dips",
-  "primary_muscle": "chest",
+  "primary_muscle": "triceps",
   "secondary_muscles": [
-   "triceps",
+   "chest",
    "shoulders"
   ],
   "pattern": "Armar",
@@ -5575,8 +5575,8 @@
    "view": "side",
    "start": "Supported on the rings with straight arms, rings turned out, torso leaning slightly forward.",
    "end": "Elbows bent beyond 90 degrees, chest low between the rings.",
-   "primary": "pectoralis major (sternal head)",
-   "secondary": "anterior deltoid, triceps brachii"
+   "primary": "triceps brachii",
+   "secondary": "pectoralis major (sternal head), anterior deltoid"
   },
   "aliases": "",
   "equipment": "Kroppsvikt",
@@ -5765,9 +5765,9 @@
  },
  {
   "name": "Single Floor Press BB",
-  "primary_muscle": "chest",
+  "primary_muscle": "triceps",
   "secondary_muscles": [
-   "triceps",
+   "chest",
    "shoulders"
   ],
   "pattern": "Horisontell press",
@@ -5784,8 +5784,8 @@
    "view": "side",
    "start": "Lying on the floor with the knees bent, one hand gripping the bar at its centre over the chest, the other arm out to the side.",
    "end": "Upper arm resting on the floor, elbow bent to about 90 degrees.",
-   "primary": "pectoralis major",
-   "secondary": "anterior deltoid, triceps brachii"
+   "primary": "triceps brachii",
+   "secondary": "pectoralis major, anterior deltoid"
   },
   "aliases": "One Arm Barbell Floor Press | Enarms golvpress | One Arm Floor Press | Barbell Single-Arm Floor Press | barbell one arm floor press",
   "equipment": "Skivstång",
@@ -7686,8 +7686,9 @@
  },
  {
   "name": "Side-Lying Floor Stretch",
-  "primary_muscle": "core",
+  "primary_muscle": "back",
   "secondary_muscles": [
+   "core",
    "shoulders"
   ],
   "pattern": "Bål",
@@ -7704,8 +7705,8 @@
    "view": "front",
    "start": "Lying on one side with the legs together and the bottom arm stretched overhead.",
    "end": "Torso and arms stretched long overhead with the body curved sideways in a gentle arc.",
-   "primary": "obliques, quadratus lumborum",
-   "secondary": "latissimus dorsi"
+   "primary": "latissimus dorsi, quadratus lumborum",
+   "secondary": "external obliques"
   },
   "aliases": "Stretch, sida | side lying floor stretch",
   "equipment": "Kroppsvikt",
@@ -9850,10 +9851,10 @@
  },
  {
   "name": "Sumo High Pull",
-  "primary_muscle": "quads",
+  "primary_muscle": "shoulders",
   "secondary_muscles": [
+   "quads",
    "glutes",
-   "shoulders",
    "back"
   ],
   "pattern": "Kettlebell",
@@ -9870,8 +9871,8 @@
    "view": "front",
    "start": "Wide sumo stance, toes turned out, torso hinged forward, both hands on the kettlebell handle between the feet.",
    "end": "Standing tall, kettlebell pulled to chest height, elbows high and wide.",
-   "primary": "rectus femoris, vastus lateralis, vastus medialis",
-   "secondary": "deltoids, trapezius"
+   "primary": "upper trapezius, lateral deltoid",
+   "secondary": "gluteus maximus, quadriceps"
   },
   "aliases": "Kettlebell Sumo High Pull | Kettlebell sumo high pull",
   "equipment": "Kettlebell",
@@ -9912,10 +9913,10 @@
  },
  {
   "name": "Turkish Get-Up (Squat Style)",
-  "primary_muscle": "quads",
+  "primary_muscle": "shoulders",
   "secondary_muscles": [
+   "quads",
    "core",
-   "shoulders",
    "glutes"
   ],
   "pattern": "Kettlebell",
@@ -9932,8 +9933,8 @@
    "view": "front",
    "start": "Lying on the back, a kettlebell pressed straight up in one hand, same-side knee bent with the foot flat.",
    "end": "Standing tall with the kettlebell locked out overhead, feet under the hips.",
-   "primary": "rectus femoris, vastus lateralis, vastus medialis",
-   "secondary": "deltoids, rectus abdominis, obliques"
+   "primary": "deltoids, rotator cuff",
+   "secondary": "quadriceps, gluteus maximus, obliques"
   },
   "aliases": "Kettlebell Turkish Get-Up (Squat style) | Kettlebell turkish get-up (squat style) | kettlebell turkish get up (squat style)",
   "equipment": "Kettlebell",
@@ -11734,9 +11735,9 @@
  },
  {
   "name": "Hex Bar Deadlift",
-  "primary_muscle": "back",
+  "primary_muscle": "quads",
   "secondary_muscles": [
-   "quads",
+   "back",
    "glutes",
    "hamstrings"
   ],
@@ -11754,8 +11755,8 @@
    "view": "side",
    "start": "standing inside the trap bar, crouched with a flat back and the handles gripped, arms straight",
    "end": "standing tall inside the trap bar with the handles held at the sides",
-   "primary": "quadriceps femoris, gluteus maximus, erector spinae, biceps femoris",
-   "secondary": "trapezius"
+   "primary": "quadriceps femoris",
+   "secondary": "gluteus maximus, erector spinae, biceps femoris"
   },
   "aliases": "Marklyft, trap bar | Trap Bar Deadlift | trap bar deadlift",
   "equipment": "Skivstång",
@@ -12352,9 +12353,9 @@
  },
  {
   "name": "Pullover DB",
-  "primary_muscle": "back",
+  "primary_muscle": "chest",
   "secondary_muscles": [
-   "chest",
+   "back",
    "triceps",
    "core"
   ],
@@ -12372,8 +12373,8 @@
    "view": "side",
    "start": "lying with the upper back across a flat bench, hips low, a dumbbell held above the chest with both hands",
    "end": "the dumbbell lowered behind the head with arms nearly straight and the lats stretched",
-   "primary": "latissimus dorsi, teres major",
-   "secondary": "pectoralis major, triceps brachii"
+   "primary": "pectoralis major",
+   "secondary": "latissimus dorsi, teres major, triceps brachii long head"
   },
   "aliases": "Dumbbell Pullover | Pullover | Straight Arm Dumbbell Pullover | Straight-Arm Dumbbell Pullover | dumbbell straight arm pullover",
   "equipment": "Hantlar",
@@ -12507,9 +12508,9 @@
  },
  {
   "name": "Reverse Hyperextension",
-  "primary_muscle": "back",
+  "primary_muscle": "glutes",
   "secondary_muscles": [
-   "glutes",
+   "back",
    "hamstrings",
    "core"
   ],
@@ -12527,8 +12528,8 @@
    "view": "side",
    "start": "lying face down with the hips at the pad edge and the legs hanging straight down",
    "end": "legs lifted until they are in a straight line with the torso",
-   "primary": "gluteus maximus, erector spinae",
-   "secondary": "biceps femoris"
+   "primary": "gluteus maximus",
+   "secondary": "biceps femoris, erector spinae"
   },
   "aliases": "Machine Reverse Hyperextension | lever reverse hyperextension",
   "equipment": "Maskin",
@@ -12992,10 +12993,10 @@
  },
  {
   "name": "Single Leg Deadlift KB",
-  "primary_muscle": "back",
+  "primary_muscle": "hamstrings",
   "secondary_muscles": [
+   "back",
    "glutes",
-   "hamstrings",
    "core"
   ],
   "pattern": "Höftdominant",
@@ -13012,8 +13013,8 @@
    "view": "side",
    "start": "Standing on one leg, kettlebell held in the opposite hand at the thigh, torso upright.",
    "end": "Torso hinged forward until nearly parallel to the floor, free leg extended straight back, kettlebell hanging below the shoulder.",
-   "primary": "erector spinae, gluteus maximus",
-   "secondary": "biceps femoris, semitendinosus, semimembranosus"
+   "primary": "biceps femoris, semitendinosus, semimembranosus",
+   "secondary": "gluteus maximus, erector spinae"
   },
   "aliases": "Kettlebell Single Leg Deadlift | Enbens marklyft, kettlebell | Kettlebell One Legged Deadlift | Kettlebell One-Legged Deadlift",
   "equipment": "Kettlebell",
@@ -13083,11 +13084,11 @@
  },
  {
   "name": "Single Side Deadlift",
-  "primary_muscle": "back",
+  "primary_muscle": "quads",
   "secondary_muscles": [
+   "back",
    "glutes",
-   "core",
-   "forearms"
+   "core"
   ],
   "pattern": "Höftdominant",
   "type": "weight_reps",
@@ -13103,8 +13104,8 @@
    "view": "front three-quarter",
    "start": "Standing beside a barbell on the floor, hips hinged and knees bent, one hand gripping the bar at its center, other arm out for balance.",
    "end": "Standing fully upright holding the bar at the side of the thigh with a straight arm, torso level and not leaning.",
-   "primary": "erector spinae, gluteus maximus",
-   "secondary": "rectus abdominis, obliques, wrist flexors"
+   "primary": "quadriceps femoris",
+   "secondary": "gluteus maximus, obliques, forearm flexors"
   },
   "aliases": "One Arm Side Deadlift with Barbell | One arm side deadlift with barbell | One-Arm Side Deadlift | Barbell Single-Arm Side Deadlift | barbell one arm side deadlift",
   "equipment": "Skivstång",
@@ -13626,9 +13627,9 @@
  },
  {
   "name": "Wide Grip Decline Pullover",
-  "primary_muscle": "back",
+  "primary_muscle": "chest",
   "secondary_muscles": [
-   "chest",
+   "back",
    "triceps"
   ],
   "pattern": "Vertikalt drag",
@@ -13645,8 +13646,8 @@
    "view": "side",
    "start": "Lying on a decline bench with the head at the low end, bar held wide above the chest with slightly bent elbows.",
    "end": "Bar lowered in an arc behind and below the head, arms nearly straight, lats stretched.",
-   "primary": "latissimus dorsi, teres major",
-   "secondary": "pectoralis major, triceps brachii long head"
+   "primary": "pectoralis major",
+   "secondary": "latissimus dorsi, teres major, triceps brachii long head"
   },
   "aliases": "Wide Grip Decline Barbell Pullover | Negativ pullover med brett grepp, skivstång | Wide-Grip Decline Barbell Pullover | barbell decline wide-grip pullover",
   "equipment": "Skivstång",
@@ -14020,8 +14021,9 @@
  },
  {
   "name": "Pelvic Tilt Into Bridge",
-  "primary_muscle": "glutes",
+  "primary_muscle": "back",
   "secondary_muscles": [
+   "glutes",
    "core",
    "hamstrings"
   ],
@@ -14039,8 +14041,8 @@
    "view": "side",
    "start": "Lying on the back on a mat with knees bent and feet flat, pelvis tilted so the lower back is pressed into the floor.",
    "end": "Spine peeled off the mat into a bridge with hips high and the body in a straight line from knees to shoulders.",
-   "primary": "gluteus maximus",
-   "secondary": "biceps femoris, rectus abdominis"
+   "primary": "erector spinae (lower back)",
+   "secondary": "gluteus maximus, rectus abdominis"
   },
   "aliases": "",
   "equipment": "Kroppsvikt",
