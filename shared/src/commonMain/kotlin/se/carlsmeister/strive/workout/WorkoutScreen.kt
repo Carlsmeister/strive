@@ -71,6 +71,7 @@ import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.data.WorkoutSet
 import se.carlsmeister.strive.data.loggable
 import se.carlsmeister.strive.theme.Motion
+import se.carlsmeister.strive.theme.settle
 import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.theme.glass

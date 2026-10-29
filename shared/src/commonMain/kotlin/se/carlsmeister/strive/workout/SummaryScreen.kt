@@ -53,6 +53,7 @@ import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.library.kilos
 import se.carlsmeister.strive.theme.Motion
+import se.carlsmeister.strive.theme.settle
 import se.carlsmeister.strive.theme.StriveTheme
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.back

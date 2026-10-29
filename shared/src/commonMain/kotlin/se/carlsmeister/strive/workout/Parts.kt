@@ -58,6 +58,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
 import se.carlsmeister.strive.theme.Motion
+import se.carlsmeister.strive.theme.settle
 import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.StriveTheme
 import strive.shared.generated.resources.Res

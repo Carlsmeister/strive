@@ -7,8 +7,6 @@ import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.SpringSpec
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ColorScheme
@@ -323,7 +321,4 @@ internal object Motion {
     fun <T> spin(): InfiniteRepeatableSpec<T> = infiniteRepeatable(tween<T>(900, easing = LinearEasing))
     fun <T> tick(): TweenSpec<T> = tween<T>(1000, easing = LinearEasing)
     const val staggerMillis = 40
-
-    /** Critically damped, response about 0.3 s: apple-motion's default for anything that moves into place. */
-    fun <T> settle(visibilityThreshold: T? = null): SpringSpec<T> = spring(dampingRatio = 1f, stiffness = 400f, visibilityThreshold = visibilityThreshold)
 }

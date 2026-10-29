@@ -1,5 +1,7 @@
 package se.carlsmeister.strive.theme
 
+import androidx.compose.animation.core.SpringSpec
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -77,3 +79,9 @@ internal object StriveTheme {
     /** Reduce Motion is on: what an animation does instead is the animating component's call. */
     val reduceMotion: Boolean @Composable get() = LocalReduceMotion.current
 }
+/**
+ * Critically damped, response about 0.3 s: apple-motion's default for anything that moves into place. Not a token, since the
+ * CSS prototypes have no springs, so it lives here rather than in the generated Tokens.kt.
+ */
+internal fun <T> Motion.settle(visibilityThreshold: T? = null): SpringSpec<T> =
+    spring(dampingRatio = 1f, stiffness = 400f, visibilityThreshold = visibilityThreshold)

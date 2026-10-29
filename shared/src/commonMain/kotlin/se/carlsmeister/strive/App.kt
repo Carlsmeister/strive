@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.theme.Motion
+import se.carlsmeister.strive.theme.settle
 import se.carlsmeister.strive.workout.HistoryScreen
 import se.carlsmeister.strive.workout.MiniBar
 import se.carlsmeister.strive.workout.SummaryScreen
