@@ -66,7 +66,7 @@ import strive.shared.generated.resources.delete
 import strive.shared.generated.resources.save
 import kotlin.math.roundToInt
 
-/** A chevron drawn with two strokes, since the app carries no icon font. */
+/** A chevron drawn with two strokes, since the app carries no icon font: down, or right for something that opens. */
 @Composable
 internal fun Chevron(down: Boolean, modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.onSurface, size: Dp = 16.dp) =
     Canvas(modifier.size(size)) {
@@ -74,7 +74,7 @@ internal fun Chevron(down: Boolean, modifier: Modifier = Modifier, color: Color 
         val h = this.size.height
         val stroke = 2.dp.toPx()
         val (a, b, c) = if (down) Triple(Offset(w * .15f, h * .35f), Offset(w * .5f, h * .7f), Offset(w * .85f, h * .35f))
-            else Triple(Offset(w * .65f, h * .15f), Offset(w * .3f, h * .5f), Offset(w * .65f, h * .85f))
+            else Triple(Offset(w * .35f, h * .15f), Offset(w * .7f, h * .5f), Offset(w * .35f, h * .85f))
         drawLine(color, a, b, stroke, StrokeCap.Round)
         drawLine(color, b, c, stroke, StrokeCap.Round)
     }
@@ -209,7 +209,8 @@ internal fun SwipeToDelete(shape: Shape, onDelete: () -> Unit, content: @Composa
     }
     val offset = state.offset.takeUnless { it.isNaN() } ?: 0f
     Box(Modifier.fillMaxWidth().onSizeChanged { width = it.width }.clip(shape)) {
-        Box(
+        // Only while the row moves: at rest the red would show through the antialiased corners as a pink rim.
+        if (offset < 0f) Box(
             Modifier.matchParentSize().background(MaterialTheme.colorScheme.error).clickable(onClick = onDelete),
             contentAlignment = Alignment.CenterEnd,
         ) {

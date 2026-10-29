@@ -118,6 +118,7 @@
     <string name="log_set">Logga set %1$d</string>
     <string name="logged">Loggat</string>
     <string name="minutes">%1$d min</string>
+    <string name="min_unit">min</string>
     <string name="tile_time">Tid</string>
     <string name="tile_rir">Snitt-RIR</string>
     <string name="tile_sets">Set</string>
@@ -132,7 +133,7 @@
     <string name="back_to_workout">Tillbaka till passet</string>
     <string name="continue_workout">Fortsätt %1$s · %2$s</string>
     <string name="history_sets">%1$d set</string>
-    <plurals name="unlogged"><item quantity="one">%d set är inte loggat</item><item quantity="other">%d set är inte loggade</item></plurals>
+    <plurals name="unlogged"><item quantity="one">%1$d set är inte loggat</item><item quantity="other">%1$d set är inte loggade</item></plurals>
     <plurals name="week_workouts"><item quantity="one">Vecka %1$d · %2$d pass</item><item quantity="other">Vecka %1$d · %2$d pass</item></plurals>
     <string-array name="weekdays"><item>Måndag</item><item>Tisdag</item><item>Onsdag</item><item>Torsdag</item><item>Fredag</item><item>Lördag</item><item>Söndag</item></string-array>
     <string-array name="weekdays_short"><item>Mån</item><item>Tis</item><item>Ons</item><item>Tor</item><item>Fre</item><item>Lör</item><item>Sön</item></string-array>

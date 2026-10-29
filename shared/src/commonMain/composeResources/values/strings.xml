@@ -118,6 +118,7 @@
     <string name="log_set">Log set %1$d</string>
     <string name="logged">Logged</string>
     <string name="minutes">%1$d min</string>
+    <string name="min_unit">min</string>
     <string name="tile_time">Time</string>
     <string name="tile_rir">Avg RIR</string>
     <string name="tile_sets">Sets</string>
@@ -132,7 +133,7 @@
     <string name="back_to_workout">Back to the workout</string>
     <string name="continue_workout">Continue %1$s · %2$s</string>
     <string name="history_sets">%1$d sets</string>
-    <plurals name="unlogged"><item quantity="one">%d set not logged</item><item quantity="other">%d sets not logged</item></plurals>
+    <plurals name="unlogged"><item quantity="one">%1$d set not logged</item><item quantity="other">%1$d sets not logged</item></plurals>
     <plurals name="week_workouts"><item quantity="one">Week %1$d · %2$d workout</item><item quantity="other">Week %1$d · %2$d workouts</item></plurals>
     <string-array name="weekdays"><item>Monday</item><item>Tuesday</item><item>Wednesday</item><item>Thursday</item><item>Friday</item><item>Saturday</item><item>Sunday</item></string-array>
     <string-array name="weekdays_short"><item>Mon</item><item>Tue</item><item>Wed</item><item>Thu</item><item>Fri</item><item>Sat</item><item>Sun</item></string-array>

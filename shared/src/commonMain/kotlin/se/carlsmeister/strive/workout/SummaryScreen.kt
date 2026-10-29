@@ -32,7 +32,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -55,7 +58,7 @@ import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.back
 import strive.shared.generated.resources.done
 import strive.shared.generated.resources.ended
-import strive.shared.generated.resources.minutes
+import strive.shared.generated.resources.min_unit
 import strive.shared.generated.resources.months
 import strive.shared.generated.resources.rir_of
 import strive.shared.generated.resources.rpe_question
@@ -67,6 +70,7 @@ import strive.shared.generated.resources.tile_sets
 import strive.shared.generated.resources.tile_time
 import strive.shared.generated.resources.week
 import strive.shared.generated.resources.weekdays
+import kotlin.math.roundToLong
 import kotlin.time.Instant
 
 internal fun local(ms: Long): LocalDateTime = Instant.fromEpochMilliseconds(ms).toLocalDateTime(TimeZone.currentSystemDefault())
@@ -125,8 +129,8 @@ private fun Summary(w: Workout) {
 
     // Snitt-RIR replaces volume (decision 32); with RIR on only some sets it says how many (#17 choice 7).
     Row(horizontalArrangement = Arrangement.spacedBy(space.s8)) {
-        Tile(Res.string.tile_time, stringResource(Res.string.minutes, s.minutes.toInt()))
-        Tile(Res.string.tile_rir, s.rir?.let { kilos((it * 10).toLong() / 10.0, swedish) } ?: "–",
+        Tile(Res.string.tile_time, "${s.minutes}", unit = stringResource(Res.string.min_unit))
+        Tile(Res.string.tile_rir, s.rir?.let { kilos((it * 10).roundToLong() / 10.0, swedish) } ?: "–",
             sub = if (s.rir != null && s.rirSets < s.sets) stringResource(Res.string.rir_of, s.rirSets, s.sets) else null)
         Tile(Res.string.tile_sets, "${s.sets}")
         Tile(Res.string.tile_records, "–") // records arrive with #46
@@ -158,12 +162,16 @@ private fun Summary(w: Workout) {
 }
 
 @Composable
-private fun androidx.compose.foundation.layout.RowScope.Tile(label: StringResource, value: String, sub: String? = null) = Column(
+private fun androidx.compose.foundation.layout.RowScope.Tile(label: StringResource, value: String, unit: String? = null, sub: String? = null) = Column(
     Modifier.weight(1f).background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large).padding(StriveTheme.spacing.s8),
     verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4),
 ) {
     Text(stringResource(label), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
-    Text(value, style = MaterialTheme.typography.titleLarge, maxLines = 1)
+    // The value large, its unit small (#16 D1), so a long value wraps rather than losing the unit.
+    Text(buildAnnotatedString {
+        append(value)
+        unit?.let { withStyle(SpanStyle(fontSize = MaterialTheme.typography.labelMedium.fontSize)) { append(" $it") } }
+    }, style = MaterialTheme.typography.titleLarge, maxLines = 2)
     sub?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
 }
 
