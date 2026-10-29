@@ -14,6 +14,7 @@ class AppGraph internal constructor(driver: SqlDriver) {
     internal val settings: Settings = SqlSettings(database)
     private val sqlExercises = SqlExercises(database)
     internal val exercises: Exercises = sqlExercises
+    internal val sessions: Sessions = SqlSessions(database)
 
     /** Brings the exercise library up to the seed shipped with this build; cheap when it already is. */
     internal suspend fun prepare() =

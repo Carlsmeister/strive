@@ -98,3 +98,5 @@ internal fun clock(seconds: Long): String {
 /** Swedish groups thousands with a no-break space, English with a comma. */
 internal fun grouped(n: Long, swedish: Boolean): String =
     n.toString().reversed().chunked(3).joinToString(if (swedish) " " else ",").reversed()
+
+internal fun now() = kotlin.time.Clock.System.now().toEpochMilliseconds()
