@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -34,7 +35,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.graphics.graphicsLayer
@@ -56,6 +62,7 @@ import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.theme.glass
 import strive.shared.generated.resources.Res
+import strive.shared.generated.resources.close
 import strive.shared.generated.resources.field_metres
 import strive.shared.generated.resources.field_reps
 import strive.shared.generated.resources.field_seconds
@@ -107,6 +114,7 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, number: Int, haze:
     val swedish = Locale.current.language == "sv"
     val separator = if (swedish) ',' else '.'
     val fields = values(exercise.type)
+    val close = stringResource(Res.string.close)
     var texts by remember(set.id) { mutableStateOf(fields.map { v -> Field(set.read(v)?.let { kilos(it, swedish) } ?: "") }) }
     var focus by remember(set.id) { mutableStateOf<Int?>(null) }
     var rir by remember(set.id) { mutableStateOf(set.rir) }
@@ -141,8 +149,9 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, number: Int, haze:
             .graphicsLayer { translationY = drag.value }
             .clip(DockShape)
             .glass(haze, StriveTheme.glass, thick = true)
-            // Taps on the dock itself stay in it; only a tap outside closes it.
-            .clickable(remember { MutableInteractionSource() }, indication = null) {}
+            // Taps on the dock itself stay in it; only a tap outside closes it. Not clickable, which would merge the dock into one
+            // element for VoiceOver and hide the grabber's Stäng behind an empty action.
+            .pointerInput(Unit) { detectTapGestures { } }
             .navigationBarsPadding()
             .padding(horizontal = space.s16).padding(bottom = space.s16)
             .animateContentSize(if (StriveTheme.reduceMotion) Motion.fade() else Motion.settle()),
@@ -152,7 +161,9 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, number: Int, haze:
             Modifier.align(Alignment.CenterHorizontally).size(StriveTheme.sizes.touch, space.s24)
                 .draggable(dragState, Orientation.Vertical, onDragStopped = { velocity ->
                     if (drag.value > height / 3 || velocity > 1000f) onClose() else drag.animateTo(0f, Motion.settle())
-                }),
+                })
+                // VoiceOver cannot drag a grabber; it gets Stäng as the grabber's action instead.
+                .semantics { contentDescription = close; onClick { onClose(); true } },
             contentAlignment = Alignment.Center,
         ) { Box(Modifier.size(36.dp, 5.dp).background(MaterialTheme.colorScheme.outline, ShapeFull)) }
 
@@ -166,7 +177,7 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, number: Int, haze:
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(space.s4)) {
                     Text(stringResource(v.label), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     NumberField(
-                        texts[i].text, focused = focus == i, steppers = focus == null,
+                        stringResource(v.label), texts[i].text, focused = focus == i, steppers = focus == null,
                         onTap = { focus = i; edit(i, texts[i].copy(fresh = true)) },
                         onStep = { by -> edit(i, texts[i].step(by * stepOf(v), separator)) },
                     )
@@ -199,7 +210,7 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, number: Int, haze:
 
 /** A grey field with the number large (#16 I3); − and + beside it while the keypad is closed. */
 @Composable
-private fun NumberField(text: String, focused: Boolean, steppers: Boolean, onTap: () -> Unit, onStep: (Int) -> Unit) {
+private fun NumberField(label: String, text: String, focused: Boolean, steppers: Boolean, onTap: () -> Unit, onStep: (Int) -> Unit) {
     val colors = MaterialTheme.colorScheme
     Row(
         Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch + 8.dp)
@@ -208,19 +219,21 @@ private fun NumberField(text: String, focused: Boolean, steppers: Boolean, onTap
             .padding(StriveTheme.spacing.s4),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (steppers) StepKey("−") { onStep(-1) }
+        if (steppers) StepKey("−", "$label −") { onStep(-1) }
         Text(
-            text.ifEmpty { "–" }, Modifier.weight(1f).clickable(onClick = onTap).padding(vertical = StriveTheme.spacing.s4),
+            text.ifEmpty { "–" },
+            Modifier.weight(1f).clickable(onClick = onTap).semantics { contentDescription = label }.padding(vertical = StriveTheme.spacing.s4),
             style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center,
             color = if (text.isEmpty()) colors.onSurfaceVariant else colors.onSurface,
         )
-        if (steppers) StepKey("+") { onStep(1) }
+        if (steppers) StepKey("+", "$label +") { onStep(1) }
     }
 }
 
 @Composable
-private fun StepKey(label: String, onClick: () -> Unit) = Box(
-    Modifier.size(36.dp).background(MaterialTheme.colorScheme.surface, ShapeFull).clickable(onClick = onClick),
+private fun StepKey(label: String, description: String, onClick: () -> Unit) = Box(
+    Modifier.size(36.dp).background(MaterialTheme.colorScheme.surface, ShapeFull).clickable(onClick = onClick)
+        .semantics { contentDescription = description },
     contentAlignment = Alignment.Center,
 ) { Text(label, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary) }
 
@@ -284,7 +297,7 @@ private fun Key(
     shape: androidx.compose.ui.graphics.Shape = MaterialTheme.shapes.medium,
     onClick: () -> Unit,
 ) = Box(
-    modifier.height(StriveTheme.sizes.touch).background(background, shape).clickable(onClick = onClick),
+    modifier.height(StriveTheme.sizes.touch).background(background, shape).clickable(onClick = onClick).testTag("key-$label"),
     contentAlignment = Alignment.Center,
 ) {
     Text(

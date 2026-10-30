@@ -136,3 +136,25 @@ class FormatTest {
         assertEquals("950", grouped(950, swedish = true))
     }
 }
+
+class SwipeTest {
+    private val width = 1000f
+    private val open = -264f
+    private val flick = 900f
+    private fun target(offset: Float, velocity: Float = 0f) = swipeTarget(offset, velocity, width, open, flick)
+
+    @Test
+    fun pastHalfTheRowDeletes() = assertEquals(-width, target(-510f))
+
+    @Test
+    fun aQuickShortFlickLeftShowsDeleteInsteadOfDeleting() = assertEquals(open, target(-390f, velocity = -3000f))
+
+    @Test
+    fun aFlickRightHidesDeleteAgain() = assertEquals(0f, target(-264f, velocity = 2000f))
+
+    @Test
+    fun withoutAFlickTheRowGoesToTheNearerOfShutAndOpen() {
+        assertEquals(open, target(-200f))
+        assertEquals(0f, target(-100f))
+    }
+}

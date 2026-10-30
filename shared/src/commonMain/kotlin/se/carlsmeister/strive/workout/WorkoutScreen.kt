@@ -47,6 +47,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -170,12 +172,14 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                             SwipeToDelete(shape, onDelete = { scope.launch { sessions.deleteSet(s.id) } }) {
                                 SetLine(
                                     i + 1, setText(s, e.type, swedish), s, shape, current = s.id == current,
-                                    onOpen = { editing = s.id },
+                                    onOpen = { tap { editing = s.id } },
                                     onCheck = {
-                                        when {
-                                            s.done -> scope.launch { sessions.saveSet(s.copy(done = false)) }
-                                            s.loggable(e.type) -> log(s.copy(done = true))
-                                            else -> editing = s.id
+                                        tap {
+                                            when {
+                                                s.done -> scope.launch { sessions.saveSet(s.copy(done = false)) }
+                                                s.loggable(e.type) -> log(s.copy(done = true))
+                                                else -> editing = s.id
+                                            }
                                         }
                                     },
                                 )
@@ -352,7 +356,7 @@ private fun SetLine(number: Int, text: String, set: WorkoutSet, shape: RoundedCo
         Box(
             Modifier.size(StriveTheme.sizes.touch)
                 .background(if (set.done) colors.primary else colors.surfaceContainerHighest, MaterialTheme.shapes.medium)
-                .clickable(onClickLabel = check, onClick = onCheck),
+                .clickable(onClickLabel = check, onClick = onCheck).semantics { contentDescription = check },
             contentAlignment = Alignment.Center,
         ) {
             Text("✓", style = MaterialTheme.typography.titleMedium, color = if (set.done) colors.onPrimary else colors.onSurfaceVariant, textAlign = TextAlign.Center)

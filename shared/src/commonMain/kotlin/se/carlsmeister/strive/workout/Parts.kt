@@ -4,16 +4,16 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.AnchoredDraggableDefaults
-import androidx.compose.foundation.gestures.AnchoredDraggableState
-import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.animation.core.animate
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -31,13 +31,19 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -54,8 +60,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import se.carlsmeister.strive.theme.Motion
 import se.carlsmeister.strive.theme.settle
@@ -84,7 +89,8 @@ internal fun Chevron(down: Boolean, modifier: Modifier = Modifier, color: Color 
 @Composable
 internal fun IconTarget(label: String, onClick: () -> Unit, content: @Composable () -> Unit) =
     Box(
-        Modifier.size(StriveTheme.sizes.touch).clip(ShapeFull).clickable(onClickLabel = label, onClick = onClick),
+        Modifier.size(StriveTheme.sizes.touch).clip(ShapeFull).clickable(onClickLabel = label, onClick = onClick)
+            .semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) { content() }
 
@@ -102,6 +108,8 @@ internal fun Segments(options: List<String>, selected: Int?, onSelect: (Int?) ->
                 Modifier.weight(1f).heightIn(min = StriveTheme.sizes.touch - 4.dp)
                     .background(if (on) MaterialTheme.colorScheme.surface else Color.Transparent, MaterialTheme.shapes.small)
                     .clickable { onSelect(if (on && clearable) null else i) }
+                    // A tab that says whether it is chosen, as VoiceOver reads iOS's segmented control.
+                    .semantics { role = Role.Tab; this.selected = on }
                     .padding(vertical = space.s4),
                 contentAlignment = Alignment.Center,
             ) {
@@ -189,41 +197,57 @@ private fun SheetRow(label: String, color: Color, onClick: () -> Unit, bold: Boo
     style = if (bold) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodyLarge,
 )
 
-private enum class Swipe { Closed, Open, Gone }
+/**
+ * Where a row let go of settles, as Mail's rows do: past half its width it is deleted, a flick left shows Ta bort and a flick right
+ * hides it, and otherwise it goes to the nearer of shut and open. Speed alone never deletes, so a quick short swipe is safe.
+ */
+internal fun swipeTarget(offset: Float, velocity: Float, width: Float, open: Float, flick: Float): Float = when {
+    offset < -width / 2 -> -width
+    velocity < -flick -> open
+    velocity > flick -> 0f
+    offset < open / 2 -> open
+    else -> 0f
+}
+
+/** What a swiped row lets its content ask. */
+internal class SwipeRow(private val moved: () -> Boolean, private val shut: () -> Unit) {
+    /**
+     * A tap on the row's content. The finger that swiped is still over the row when it lifts, so a swipe also arrives as a tap;
+     * on a row that is open or moving it shuts the row instead, as Mail's rows do.
+     */
+    fun tap(action: () -> Unit) = if (moved()) shut() else action()
+}
 
 /**
  * A row that swipes left to show Ta bort, deleted by a tap on it or by swiping on past half the row: the iOS trailing swipe
- * action with full swipe, as in Mail (#17 choice 4).
+ * action with full swipe, as in Mail (#17 choice 4). Its content routes its taps through [SwipeRow.tap].
  */
 @Composable
-internal fun SwipeToDelete(shape: Shape, onDelete: () -> Unit, content: @Composable () -> Unit) {
+internal fun SwipeToDelete(shape: Shape, onDelete: () -> Unit, content: @Composable SwipeRow.() -> Unit) {
     val density = LocalDensity.current
-    val state = remember { AnchoredDraggableState(Swipe.Closed) }
     var width by remember { mutableIntStateOf(0) }
+    var offset by remember { mutableFloatStateOf(0f) }
     val open = with(density) { -(StriveTheme.sizes.touch * 2).toPx() }
-    LaunchedEffect(width) {
-        if (width > 0) state.updateAnchors(DraggableAnchors { Swipe.Closed at 0f; Swipe.Open at open; Swipe.Gone at -width.toFloat() })
-    }
-    LaunchedEffect(state) {
-        snapshotFlow { state.currentValue }.drop(1).first { it == Swipe.Gone }
-        onDelete()
-    }
-    val offset = state.offset.takeUnless { it.isNaN() } ?: 0f
+    val flick = with(density) { 300.dp.toPx() }
+    val drag = rememberDraggableState { delta -> offset = (offset + delta).coerceIn(-width.toFloat(), 0f) }
+    val scope = rememberCoroutineScope()
+    val row = remember { SwipeRow(moved = { offset != 0f }, shut = { scope.launch { animate(offset, 0f, 0f, Motion.settle()) { v, _ -> offset = v } } }) }
     Box(Modifier.fillMaxWidth().onSizeChanged { width = it.width }.clip(shape)) {
         // Only while the row moves: at rest the red would show through the antialiased corners as a pink rim.
-        if (offset < 0f) Box(
-            Modifier.matchParentSize().background(MaterialTheme.colorScheme.error).clickable(onClick = onDelete),
-            contentAlignment = Alignment.CenterEnd,
-        ) {
-            Text(
-                stringResource(Res.string.delete), Modifier.width(StriveTheme.sizes.touch * 2), color = MaterialTheme.colorScheme.onError,
-                style = MaterialTheme.typography.labelLarge, textAlign = TextAlign.Center,
-            )
+        if (offset < 0f) Box(Modifier.matchParentSize().background(MaterialTheme.colorScheme.error), contentAlignment = Alignment.CenterEnd) {
+            // Only the part the row uncovers is the button, so a tap or VoiceOver finds it where it shows.
+            Box(Modifier.width(StriveTheme.sizes.touch * 2).fillMaxHeight().clickable(onClick = onDelete), contentAlignment = Alignment.Center) {
+                Text(stringResource(Res.string.delete), color = MaterialTheme.colorScheme.onError, style = MaterialTheme.typography.labelLarge)
+            }
         }
         Box(
             Modifier.offset { IntOffset(offset.roundToInt(), 0) }
-                .anchoredDraggable(state, reverseDirection = false, orientation = Orientation.Horizontal,
-                    flingBehavior = AnchoredDraggableDefaults.flingBehavior(state, animationSpec = Motion.settle())),
-        ) { content() }
+                .draggable(drag, Orientation.Horizontal, onDragStopped = { velocity ->
+                    val target = swipeTarget(offset, velocity, width.toFloat(), open, flick)
+                    // The finger's speed carries into the spring, so letting go has no seam (apple-motion).
+                    animate(offset, target, velocity, Motion.settle()) { value, _ -> offset = value }
+                    if (target == -width.toFloat()) onDelete()
+                }),
+        ) { row.content() }
     }
 }
