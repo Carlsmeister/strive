@@ -1,0 +1,128 @@
+import kotlin.Boolean;
+
+-- A workout; open while ended_at is null. Times are epoch milliseconds.
+CREATE TABLE session (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    started_at INTEGER NOT NULL,
+    ended_at INTEGER,
+    note TEXT NOT NULL DEFAULT '',
+    rpe INTEGER
+);
+
+-- An exercise in a workout, in the order it is done.
+CREATE TABLE session_exercise (
+    id INTEGER NOT NULL PRIMARY KEY,
+    session_id INTEGER NOT NULL REFERENCES session(id),
+    exercise_id INTEGER NOT NULL REFERENCES exercise(id),
+    position INTEGER NOT NULL,
+    note TEXT NOT NULL DEFAULT ''
+);
+
+-- One set. The values the exercise's type uses are filled; kind waits for warm-up, drop and failure sets (#48).
+CREATE TABLE workout_set (
+    id INTEGER NOT NULL PRIMARY KEY,
+    session_exercise_id INTEGER NOT NULL REFERENCES session_exercise(id),
+    position INTEGER NOT NULL,
+    kind TEXT NOT NULL DEFAULT 'normal',
+    weight REAL,
+    reps INTEGER,
+    seconds INTEGER,
+    metres REAL,
+    rir INTEGER,
+    done INTEGER AS Boolean NOT NULL DEFAULT 0
+);
+
+CREATE INDEX session_exercise_session ON session_exercise(session_id);
+CREATE INDEX workout_set_exercise ON workout_set(session_exercise_id);
+
+-- Every row of the workouts asked for, flat: one per set, or per exercise or workout without one. Ordered for grouping.
+openRows:
+SELECT s.id, s.name, s.started_at, s.ended_at, s.note, s.rpe,
+    se.id AS se_id, se.exercise_id, se.note AS se_note, e.name AS exercise_name, e.type, e.step,
+    ws.id AS set_id, ws.weight, ws.reps, ws.seconds, ws.metres, ws.rir, ws.done
+FROM session s
+LEFT JOIN session_exercise se ON se.session_id = s.id
+LEFT JOIN exercise e ON e.id = se.exercise_id
+LEFT JOIN workout_set ws ON ws.session_exercise_id = se.id
+WHERE s.ended_at IS NULL
+ORDER BY s.started_at DESC, s.id, se.position, ws.position;
+
+rowsOf:
+SELECT s.id, s.name, s.started_at, s.ended_at, s.note, s.rpe,
+    se.id AS se_id, se.exercise_id, se.note AS se_note, e.name AS exercise_name, e.type, e.step,
+    ws.id AS set_id, ws.weight, ws.reps, ws.seconds, ws.metres, ws.rir, ws.done
+FROM session s
+LEFT JOIN session_exercise se ON se.session_id = s.id
+LEFT JOIN exercise e ON e.id = se.exercise_id
+LEFT JOIN workout_set ws ON ws.session_exercise_id = se.id
+WHERE s.id = ?
+ORDER BY se.position, ws.position;
+
+finishedRows:
+SELECT s.id, s.name, s.started_at, s.ended_at, s.note, s.rpe,
+    se.id AS se_id, se.exercise_id, se.note AS se_note, e.name AS exercise_name, e.type, e.step,
+    ws.id AS set_id, ws.weight, ws.reps, ws.seconds, ws.metres, ws.rir, ws.done
+FROM session s
+LEFT JOIN session_exercise se ON se.session_id = s.id
+LEFT JOIN exercise e ON e.id = se.exercise_id
+LEFT JOIN workout_set ws ON ws.session_exercise_id = se.id
+WHERE s.ended_at IS NOT NULL
+ORDER BY s.started_at DESC, s.id, se.position, ws.position;
+
+insertSession:
+INSERT INTO session(name, started_at) VALUES (?, ?);
+
+lastId:
+SELECT last_insert_rowid();
+
+rename:
+UPDATE session SET name = ? WHERE id = ?;
+
+setNote:
+UPDATE session SET note = ? WHERE id = ?;
+
+setRpe:
+UPDATE session SET rpe = ? WHERE id = ?;
+
+finish:
+UPDATE session SET ended_at = ? WHERE id = ?;
+
+insertExercise:
+INSERT INTO session_exercise(session_id, exercise_id, position)
+VALUES (:session_id, :exercise_id, (SELECT COALESCE(MAX(position), -1) + 1 FROM session_exercise WHERE session_id = :session_id));
+
+setExerciseNote:
+UPDATE session_exercise SET note = ? WHERE id = ?;
+
+insertSet:
+INSERT INTO workout_set(session_exercise_id, position, weight, reps, seconds, metres)
+VALUES (:session_exercise_id, (SELECT COALESCE(MAX(position), -1) + 1 FROM workout_set WHERE session_exercise_id = :session_exercise_id),
+    :weight, :reps, :seconds, :metres);
+
+lastSet:
+SELECT * FROM workout_set WHERE session_exercise_id = ? ORDER BY position DESC LIMIT 1;
+
+updateSet:
+UPDATE workout_set SET weight = ?, reps = ?, seconds = ?, metres = ?, rir = ?, done = ? WHERE id = ?;
+
+deleteSet:
+DELETE FROM workout_set WHERE id = ?;
+
+deleteSetsOf:
+DELETE FROM workout_set WHERE session_exercise_id = ?;
+
+deleteExercise:
+DELETE FROM session_exercise WHERE id = ?;
+
+deleteEmptyExercises:
+DELETE FROM session_exercise WHERE session_id = ? AND id NOT IN (SELECT session_exercise_id FROM workout_set);
+
+deleteSetsOfSession:
+DELETE FROM workout_set WHERE session_exercise_id IN (SELECT id FROM session_exercise WHERE session_id = ?);
+
+deleteExercisesOfSession:
+DELETE FROM session_exercise WHERE session_id = ?;
+
+deleteSession:
+DELETE FROM session WHERE id = ?;

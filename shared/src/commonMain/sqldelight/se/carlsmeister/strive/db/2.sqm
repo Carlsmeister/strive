@@ -1,0 +1,38 @@
+import kotlin.Boolean;
+
+-- Version 2 to 3: logging a workout (#42).
+-- A workout; open while ended_at is null. Times are epoch milliseconds.
+CREATE TABLE session (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    started_at INTEGER NOT NULL,
+    ended_at INTEGER,
+    note TEXT NOT NULL DEFAULT '',
+    rpe INTEGER
+);
+
+-- An exercise in a workout, in the order it is done.
+CREATE TABLE session_exercise (
+    id INTEGER NOT NULL PRIMARY KEY,
+    session_id INTEGER NOT NULL REFERENCES session(id),
+    exercise_id INTEGER NOT NULL REFERENCES exercise(id),
+    position INTEGER NOT NULL,
+    note TEXT NOT NULL DEFAULT ''
+);
+
+-- One set. The values the exercise's type uses are filled; kind waits for warm-up, drop and failure sets (#48).
+CREATE TABLE workout_set (
+    id INTEGER NOT NULL PRIMARY KEY,
+    session_exercise_id INTEGER NOT NULL REFERENCES session_exercise(id),
+    position INTEGER NOT NULL,
+    kind TEXT NOT NULL DEFAULT 'normal',
+    weight REAL,
+    reps INTEGER,
+    seconds INTEGER,
+    metres REAL,
+    rir INTEGER,
+    done INTEGER AS Boolean NOT NULL DEFAULT 0
+);
+
+CREATE INDEX session_exercise_session ON session_exercise(session_id);
+CREATE INDEX workout_set_exercise ON workout_set(session_exercise_id);

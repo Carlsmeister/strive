@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -38,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.style.TextAlign
 import org.jetbrains.compose.resources.stringResource
 import se.carlsmeister.strive.data.Category
 import se.carlsmeister.strive.data.Exercise
@@ -45,7 +47,10 @@ import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.data.Mark
 import se.carlsmeister.strive.theme.StriveTheme
 import strive.shared.generated.resources.Res
+import strive.shared.generated.resources.add_count
+import strive.shared.generated.resources.add_exercises
 import strive.shared.generated.resources.back
+import strive.shared.generated.resources.cancel
 import strive.shared.generated.resources.chip_conditioning
 import strive.shared.generated.resources.chip_mobility
 import strive.shared.generated.resources.done
@@ -56,10 +61,14 @@ import strive.shared.generated.resources.library
 import strive.shared.generated.resources.no_match
 import strive.shared.generated.resources.search
 
-/** The exercise library (#17 L1): one list with a sticky heading per muscle, search, pattern chips and a filter sheet. */
+/**
+ * The exercise library (#17 L1): one list with a sticky heading per muscle, search, pattern chips and a filter sheet. Given [pick] it
+ * is the add-exercise picker (Q19): rows tick in the order tapped, and Lägg till hands them over.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBack: () -> Unit) {
+internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBack: () -> Unit, pick: ((List<Long>) -> Unit)? = null) {
+    var picked by rememberSaveable { mutableStateOf(listOf<Long>()) }
     // Null until the first read, so the saved scroll position is not spent on an empty list.
     val all by LocalAppGraph.current.exercises.all().collectAsState(null)
     var filter by rememberSaveable(stateSaver = LibraryFilterSaver) { mutableStateOf(LibraryFilter()) }
@@ -76,8 +85,16 @@ internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBac
     val sides = Modifier.padding(start = padding.calculateStartPadding(direction), end = padding.calculateEndPadding(direction))
 
     Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()).then(sides)) {
-        TextButton(onBack, Modifier.padding(start = space.s8)) { Text(stringResource(Res.string.back)) }
-        Text(stringResource(Res.string.library), Modifier.padding(horizontal = space.s16), style = MaterialTheme.typography.headlineMedium)
+        if (pick == null) {
+            TextButton(onBack, Modifier.padding(start = space.s8)) { Text(stringResource(Res.string.back)) }
+            Text(stringResource(Res.string.library), Modifier.padding(horizontal = space.s16), style = MaterialTheme.typography.headlineMedium)
+        } else {
+            Row(Modifier.fillMaxWidth().padding(horizontal = space.s8), verticalAlignment = Alignment.CenterVertically) {
+                TextButton(onBack) { Text(stringResource(Res.string.cancel)) }
+                Text(stringResource(Res.string.add_exercises), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+                Button({ pick(picked) }, enabled = picked.isNotEmpty()) { Text(stringResource(Res.string.add_count, picked.size)) }
+            }
+        }
         Row(Modifier.padding(horizontal = space.s16, vertical = space.s8), verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(space.s8)) {
             OutlinedTextField(filter.query, { change(filter.copy(query = it)) }, Modifier.weight(1f), singleLine = true,
@@ -98,7 +115,10 @@ internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBac
                         Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(horizontal = space.s16, vertical = space.s8),
                         style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
                 }
-                items(exercises, key = { it.id }) { ExerciseRow(it) { onOpen(it.id) } }
+                items(exercises, key = { it.id }) { e ->
+                    if (pick == null) ExerciseRow(e, picked = null) { onOpen(e.id) }
+                    else ExerciseRow(e, picked = e.id in picked) { picked = if (e.id in picked) picked - e.id else picked + e.id }
+                }
             }
         }
     }
@@ -120,7 +140,7 @@ private fun Chips(selected: Chip?, onTap: (Chip) -> Unit) {
 }
 
 @Composable
-private fun ExerciseRow(exercise: Exercise, onClick: () -> Unit) {
+private fun ExerciseRow(exercise: Exercise, picked: Boolean?, onClick: () -> Unit) {
     val space = StriveTheme.spacing
     Row(Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch).clickable(onClick = onClick).padding(horizontal = space.s16, vertical = space.s8),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(space.s8)) {
@@ -135,6 +155,8 @@ private fun ExerciseRow(exercise: Exercise, onClick: () -> Unit) {
             Text(stringResource(it.label), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.background(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.shapes.small).padding(horizontal = space.s8))
         }
+        // A choice gets a checkmark (#16, Lists and tables).
+        if (picked != null) Text(if (picked) "✓" else "", Modifier.width(space.s24), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
     }
 }
 
