@@ -85,6 +85,7 @@ import strive.shared.generated.resources.discard_body
 import strive.shared.generated.resources.discard_question
 import strive.shared.generated.resources.discard_workout
 import strive.shared.generated.resources.empty_workout
+import strive.shared.generated.resources.no_exercises_yet
 import strive.shared.generated.resources.exercise_options
 import strive.shared.generated.resources.finish
 import strive.shared.generated.resources.keep_going
@@ -162,7 +163,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                 contentPadding = PaddingValues(start = StriveTheme.spacing.s16, end = StriveTheme.spacing.s16, top = StriveTheme.spacing.s8, bottom = 320.dp),
             ) {
                 if (w.exercises.isEmpty()) {
-                    item { Text(stringResource(Res.string.empty_workout), Modifier.padding(vertical = StriveTheme.spacing.s24), color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    item(key = "empty") { EmptyWorkout(onAddExercises) }
                 }
                 for (e in w.exercises) {
                     item(key = "h${e.id}") { ExerciseHeader(e, Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place)) }
@@ -194,8 +195,10 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                 }
                 item(key = "end") {
                     Column(Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s8), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
-                        FilledTonalButton(onAddExercises, Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch), shape = MaterialTheme.shapes.large) {
-                            Text(stringResource(Res.string.add_exercises))
+                        if (w.exercises.isNotEmpty()) {
+                            FilledTonalButton(onAddExercises, Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch), shape = MaterialTheme.shapes.large) {
+                                Text(stringResource(Res.string.add_exercises))
+                            }
                         }
                         TextButton({ discarding = true }, Modifier.fillMaxWidth()) {
                             Text(stringResource(Res.string.discard_workout), color = MaterialTheme.colorScheme.error)
@@ -245,6 +248,19 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     }
 }
 
+/** #16's empty state: what is missing, what to do, and the one filled button that does it. */
+@Composable
+private fun EmptyWorkout(onAdd: () -> Unit) = Column(
+    Modifier.fillMaxWidth().padding(horizontal = StriveTheme.spacing.s16, vertical = StriveTheme.spacing.s48),
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8),
+) {
+    Text(stringResource(Res.string.no_exercises_yet), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+    Text(stringResource(Res.string.empty_workout), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center)
+    Button(onAdd, Modifier.padding(top = StriveTheme.spacing.s8).heightIn(min = StriveTheme.sizes.touch)) { Text(stringResource(Res.string.add_exercises)) }
+}
+
 /** F1: ⌄ on the left, the name with ⋯ and the progress in the middle, Avsluta on the right, filled once every set is logged. */
 @Composable
 private fun TitleBar(w: Workout, onMinimise: () -> Unit, onFinish: () -> Unit) {
@@ -263,19 +279,21 @@ private fun TitleBar(w: Workout, onMinimise: () -> Unit, onFinish: () -> Unit) {
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box {
-                Row(
-                    Modifier.heightIn(min = StriveTheme.sizes.touch - 12.dp).clickable(onClickLabel = stringResource(Res.string.workout_options)) { menu = true },
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(w.name, Modifier.weight(1f, fill = false), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(" ⋯", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        w.name, Modifier.weight(1f, fill = false).clickable(onClickLabel = stringResource(Res.string.workout_options)) { menu = true },
+                        style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                    )
+                    IconTarget(stringResource(Res.string.workout_options), { menu = true }) {
+                        Text("⋯", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+                    }
                 }
                 DropdownMenu(menu, { menu = false }) {
                     DropdownMenuItem({ Text(stringResource(Res.string.rename)) }, onClick = { menu = false; prompt = "name" })
                     DropdownMenuItem({ Text(stringResource(Res.string.session_note)) }, onClick = { menu = false; prompt = "note" })
                 }
             }
-            Text(progress(w, nowMs), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(progress(w, nowMs), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
             val label = @Composable { Text(stringResource(Res.string.finish)) }

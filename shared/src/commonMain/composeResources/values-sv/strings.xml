@@ -93,6 +93,7 @@
     <string name="add_set">Lägg till set</string>
     <string name="add_exercises">Lägg till övningar</string>
     <string name="add_count">Lägg till (%1$d)</string>
+    <string name="no_exercises_yet">Inga övningar än</string>
     <string name="empty_workout">Lägg till övningarna du ska köra.</string>
     <string name="discard_workout">Släng passet</string>
     <string name="discard_question">Släng passet?</string>

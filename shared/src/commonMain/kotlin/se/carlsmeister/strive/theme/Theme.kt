@@ -4,6 +4,7 @@ import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -53,18 +54,23 @@ internal fun FixedTextSize(content: @Composable () -> Unit) =
     CompositionLocalProvider(LocalDensity provides Density(LocalDensity.current.density), content = content)
 
 private val LocalGlass = staticCompositionLocalOf { lightMaterials }
+
+/** Light or dark regardless of the phone, for the tests that look at both; null follows the phone. */
+internal val LocalDarkTheme = staticCompositionLocalOf<Boolean?> { null }
 private val LocalReduceMotion = staticCompositionLocalOf { false }
 
 @Composable
 internal fun StriveTheme(content: @Composable () -> Unit) {
     val settings = accessibility()
-    val scheme = scheme(isSystemInDarkTheme(), settings.highContrast)
+    val scheme = scheme(LocalDarkTheme.current ?: isSystemInDarkTheme(), settings.highContrast)
     CompositionLocalProvider(
         LocalGlass provides glass(scheme, settings.reduceTransparency),
         LocalReduceMotion provides settings.reduceMotion,
     ) {
         MaterialTheme(colorScheme = scheme.colors, shapes = StriveShapes, typography = StriveTypography) {
-            ProvideTextScale(content)
+            // Every text that names no colour reads on the background; without this, anything outside a Scaffold (the workout,
+            // the picker, the dock, dialogs) fell back to black, which is invisible in dark mode.
+            CompositionLocalProvider(LocalContentColor provides scheme.colors.onBackground) { ProvideTextScale(content) }
         }
     }
 }

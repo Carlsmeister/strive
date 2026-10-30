@@ -106,14 +106,16 @@ internal fun Segments(options: List<String>, selected: Int?, onSelect: (Int?) ->
             val on = i == selected
             Box(
                 Modifier.weight(1f).heightIn(min = StriveTheme.sizes.touch - 4.dp)
-                    .background(if (on) MaterialTheme.colorScheme.surface else Color.Transparent, MaterialTheme.shapes.small)
+                    // Teal, what the tokens keep for chosen: the catalogue's surface is darker than the track in dark mode.
+                    .background(if (on) MaterialTheme.colorScheme.primary else Color.Transparent, MaterialTheme.shapes.small)
                     .clickable { onSelect(if (on && clearable) null else i) }
                     // A tab that says whether it is chosen, as VoiceOver reads iOS's segmented control.
                     .semantics { role = Role.Tab; this.selected = on }
                     .padding(vertical = space.s4),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(label, style = MaterialTheme.typography.titleSmall, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal, maxLines = 1)
+                Text(label, style = MaterialTheme.typography.titleSmall, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal, maxLines = 1,
+                    color = if (on) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface)
             }
         }
     }

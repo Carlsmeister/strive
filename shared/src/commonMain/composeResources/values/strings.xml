@@ -93,6 +93,7 @@
     <string name="add_set">Add set</string>
     <string name="add_exercises">Add exercises</string>
     <string name="add_count">Add (%1$d)</string>
+    <string name="no_exercises_yet">No exercises yet</string>
     <string name="empty_workout">Add the exercises you will do.</string>
     <string name="discard_workout">Discard workout</string>
     <string name="discard_question">Discard the workout?</string>

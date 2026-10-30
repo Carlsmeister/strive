@@ -43,7 +43,9 @@ import platform.Foundation.NSData
 import platform.Foundation.NSFileManager
 import platform.Foundation.create
 import platform.Foundation.writeToFile
+import androidx.compose.runtime.CompositionLocalProvider
 import se.carlsmeister.strive.App
+import se.carlsmeister.strive.theme.LocalDarkTheme
 import se.carlsmeister.strive.data.AppGraph
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.data.deleteFileDatabase
@@ -106,11 +108,43 @@ import kotlin.test.assertTrue
  */
 @OptIn(ExperimentalTestApi::class)
 class FlowTest {
-    private fun flow(graph: AppGraph = AppGraph(memoryDriver()), block: suspend Flow.() -> Unit) =
+    private fun flow(graph: AppGraph = AppGraph(memoryDriver()), dark: Boolean? = null, block: suspend Flow.() -> Unit) =
         runSkikoComposeUiTest(Size(1284f, 2778f), Density(3f)) {
-            setContent { App(graph) }
+            setContent { CompositionLocalProvider(LocalDarkTheme provides dark) { App(graph) } }
             Flow(this, graph).block()
         }
+
+    /** The whole workout in dark mode, for a person to look at: text that named no colour was black on black there (#42). */
+    @Test
+    fun everyWorkoutScreenInDarkMode() = flow(dark = true) {
+        startWorkout()
+        shot("dark-01-empty")
+        tap(s(Res.string.add_exercises))
+        search("Bench Press")
+        shot("dark-02-picker")
+        tap("Bench Press BB")
+        tap(s(Res.string.add_count, 1))
+        see("Bench Press BB")
+        openSet(0)
+        tapSegment("2")
+        shot("dark-03-dock")
+        tapDesc(s(Res.string.field_weight))
+        shot("dark-04-keypad")
+        keys("80")
+        tap(s(Res.string.next))
+        keys("8")
+        tap(s(Res.string.log_next))
+        tap(s(Res.string.add_set))
+        waitUntilTrue { open().sets == 2 }
+        shot("dark-05-sets")
+        tap(s(Res.string.finish))
+        see(s(Res.string.keep_going))
+        shot("dark-06-sheet")
+        tap(s(Res.string.log_and_save))
+        see(s(Res.string.done))
+        tapSegment("7")
+        shot("dark-07-summary")
+    }
 
     @Test
     fun aNewWorkoutStartsEmpty() = flow {
