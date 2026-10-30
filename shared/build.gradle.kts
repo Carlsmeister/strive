@@ -67,6 +67,9 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.sqldelight.nativeDriver)
         }
+        iosTest.dependencies {
+            implementation(libs.compose.uiTest)
+        }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutinesTest)
