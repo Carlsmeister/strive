@@ -139,4 +139,21 @@
     <string-array name="weekdays"><item>Måndag</item><item>Tisdag</item><item>Onsdag</item><item>Torsdag</item><item>Fredag</item><item>Lördag</item><item>Söndag</item></string-array>
     <string-array name="weekdays_short"><item>Mån</item><item>Tis</item><item>Ons</item><item>Tor</item><item>Fre</item><item>Lör</item><item>Sön</item></string-array>
     <string-array name="months"><item>januari</item><item>februari</item><item>mars</item><item>april</item><item>maj</item><item>juni</item><item>juli</item><item>augusti</item><item>september</item><item>oktober</item><item>november</item><item>december</item></string-array>
+    <string name="now_set">Nu · %1$s · set %2$d av %3$d</string>
+    <string name="edit">Ändra</string>
+    <string name="col_set">Set</string>
+    <string name="col_previous">Förra</string>
+    <string name="col_kg">kg</string>
+    <string name="col_reps">Reps</string>
+    <string name="col_seconds">Tid</string>
+    <string name="col_metres">m</string>
+    <string name="collapse">Fäll ihop %1$s</string>
+    <string name="expand">Fäll ut %1$s</string>
+    <string name="what_today">Vad kör du idag?</string>
+    <string name="what_today_body">Välj ur biblioteket, eller tryck på en övning nedan.</string>
+    <string name="quick_picks">Snabbval</string>
+    <string name="quick_marked">Ja i I mina program</string>
+    <string name="quick_recent">Senast körda</string>
+    <string name="sets_progress">%1$d av %2$d set</string>
+    <string name="add_named">Lägg till %1$s</string>
 </resources>

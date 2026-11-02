@@ -88,7 +88,7 @@ private fun values(type: ExerciseType) = when (type) {
     ExerciseType.Distance -> listOf(Value.Metres)
 }
 
-private fun ExerciseType.hasRir() = this == ExerciseType.WeightReps || this == ExerciseType.BodyweightReps || this == ExerciseType.Reps
+internal fun ExerciseType.hasRir() = this == ExerciseType.WeightReps || this == ExerciseType.BodyweightReps || this == ExerciseType.Reps
 
 private fun WorkoutSet.read(v: Value) = when (v) {
     Value.Weight -> weight
@@ -109,14 +109,14 @@ private fun WorkoutSet.write(v: Value, d: Double?) = when (v) {
  * − and + until one is tapped; then the keypad takes over and Nästa walks the fields, becoming Logga › on the last (Q16).
  */
 @Composable
-internal fun Dock(exercise: SessionExercise, set: WorkoutSet, number: Int, haze: HazeState, onSave: (WorkoutSet) -> Unit, onClose: () -> Unit) {
+internal fun Dock(exercise: SessionExercise, set: WorkoutSet, number: Int, haze: HazeState, onSave: (WorkoutSet) -> Unit, onClose: () -> Unit, field: Int? = null) {
     val space = StriveTheme.spacing
     val swedish = Locale.current.language == "sv"
     val separator = if (swedish) ',' else '.'
     val fields = values(exercise.type)
     val close = stringResource(Res.string.close)
     var texts by remember(set.id) { mutableStateOf(fields.map { v -> Field(set.read(v)?.let { kilos(it, swedish) } ?: "") }) }
-    var focus by remember(set.id) { mutableStateOf<Int?>(null) }
+    var focus by remember(set.id) { mutableStateOf(field) }
     var rir by remember(set.id) { mutableStateOf(set.rir) }
     var more by remember(set.id) { mutableStateOf((set.rir ?: 0) >= 4) }
 
@@ -239,7 +239,7 @@ private fun StepKey(label: String, description: String, onClick: () -> Unit) = B
 
 /** RIR 0 · 1 · 2 · 3 · 4+; 4+ opens 4 to 10, and then shows the value picked (#17, change to Q13.3). */
 @Composable
-private fun RirRow(rir: Int?, more: Boolean, onRir: (Int?) -> Unit, onMore: (Boolean) -> Unit) {
+internal fun RirRow(rir: Int?, more: Boolean, onRir: (Int?) -> Unit, onMore: (Boolean) -> Unit) {
     val space = StriveTheme.spacing
     Column(verticalArrangement = Arrangement.spacedBy(space.s4)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(space.s8)) {

@@ -47,6 +47,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
@@ -74,12 +75,13 @@ import kotlin.math.roundToInt
 
 /** A chevron drawn with two strokes, since the app carries no icon font: down, or right for something that opens. */
 @Composable
-internal fun Chevron(down: Boolean, modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.onSurface, size: Dp = 16.dp) =
+internal fun Chevron(down: Boolean, modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.onSurface, size: Dp = 16.dp, up: Boolean = false) =
     Canvas(modifier.size(size)) {
         val w = this.size.width
         val h = this.size.height
         val stroke = 2.dp.toPx()
-        val (a, b, c) = if (down) Triple(Offset(w * .15f, h * .35f), Offset(w * .5f, h * .7f), Offset(w * .85f, h * .35f))
+        val (a, b, c) = if (up) Triple(Offset(w * .15f, h * .65f), Offset(w * .5f, h * .3f), Offset(w * .85f, h * .65f))
+            else if (down) Triple(Offset(w * .15f, h * .35f), Offset(w * .5f, h * .7f), Offset(w * .85f, h * .35f))
             else Triple(Offset(w * .35f, h * .15f), Offset(w * .7f, h * .5f), Offset(w * .35f, h * .85f))
         drawLine(color, a, b, stroke, StrokeCap.Round)
         drawLine(color, b, c, stroke, StrokeCap.Round)
@@ -236,10 +238,14 @@ internal fun SwipeToDelete(shape: Shape, onDelete: () -> Unit, content: @Composa
     val row = remember { SwipeRow(moved = { offset != 0f }, shut = { scope.launch { animate(offset, 0f, 0f, Motion.settle()) { v, _ -> offset = v } } }) }
     Box(Modifier.fillMaxWidth().onSizeChanged { width = it.width }.clip(shape)) {
         // Only while the row moves: at rest the red would show through the antialiased corners as a pink rim.
-        if (offset < 0f) Box(Modifier.matchParentSize().background(MaterialTheme.colorScheme.error), contentAlignment = Alignment.CenterEnd) {
+        // The error token is pale pink in dark mode; its container is the deep red that reads as delete there.
+        val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+        val red = if (dark) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.error
+        val onRed = if (dark) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onError
+        if (offset < 0f) Box(Modifier.matchParentSize().background(red), contentAlignment = Alignment.CenterEnd) {
             // Only the part the row uncovers is the button, so a tap or VoiceOver finds it where it shows.
             Box(Modifier.width(StriveTheme.sizes.touch * 2).fillMaxHeight().clickable(onClick = onDelete), contentAlignment = Alignment.Center) {
-                Text(stringResource(Res.string.delete), color = MaterialTheme.colorScheme.onError, style = MaterialTheme.typography.labelLarge)
+                Text(stringResource(Res.string.delete), color = onRed, style = MaterialTheme.typography.labelLarge)
             }
         }
         Box(

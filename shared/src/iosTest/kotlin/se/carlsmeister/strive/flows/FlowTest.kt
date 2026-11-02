@@ -97,6 +97,18 @@ import strive.shared.generated.resources.tab_start
 import strive.shared.generated.resources.tab_you
 import strive.shared.generated.resources.unlogged
 import strive.shared.generated.resources.workout
+import androidx.compose.ui.test.hasScrollToIndexAction
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.performScrollToKey
+import se.carlsmeister.strive.data.Mark
+import strive.shared.generated.resources.add_named
+import strive.shared.generated.resources.collapse
+import strive.shared.generated.resources.edit
+import strive.shared.generated.resources.expand
+import strive.shared.generated.resources.now_set
+import strive.shared.generated.resources.quick_picks
+import strive.shared.generated.resources.sets_progress
+import strive.shared.generated.resources.what_today
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -149,7 +161,7 @@ class FlowTest {
     @Test
     fun aNewWorkoutStartsEmpty() = flow {
         startWorkout()
-        see(s(Res.string.empty_workout))
+        see(s(Res.string.what_today))
         see("0/0", substring = true)
         shot("01-empty-workout")
     }
@@ -159,6 +171,9 @@ class FlowTest {
         startWorkout()
         addExercises("Chest Dips", "Bench Press BB")
         assertEquals(listOf("Chest Dips", "Bench Press BB"), open().exercises.map { it.name })
+        // Only the exercise in focus stands open; the second waits folded below it.
+        test.waitUntil(timeoutMillis = TIMEOUT) { setRows().fetchSemanticsNodes().size == 1 }
+        seeDesc(s(Res.string.expand, "Bench Press BB"))
         assertEquals(listOf(1, 1), open().exercises.map { it.sets.size })
     }
 
@@ -169,7 +184,7 @@ class FlowTest {
         search("Bench Press BB")
         tap("Bench Press BB")
         tap(s(Res.string.cancel))
-        see(s(Res.string.empty_workout))
+        see(s(Res.string.what_today))
         assertEquals(0, open().exercises.size)
     }
 
@@ -185,8 +200,7 @@ class FlowTest {
         tap(s(Res.string.next))
         keys("8")
         tap(s(Res.string.log_next))
-        see("80 × 8")
-        see("1/1", substring = true)
+        see(s(Res.string.sets_progress, 1, 1))
         seeDesc(s(Res.string.logged, 1))
         val set = open().exercises.single().sets.single()
         assertEquals(80.0 to 8, set.weight to set.reps)
@@ -217,7 +231,7 @@ class FlowTest {
         tapDesc("${s(Res.string.field_reps)} −")
         tapSegment("2")
         tap(s(Res.string.log))
-        see("5 × 2 @2")
+        waitUntilTrue { open().exercises.single().sets.single().let { it.done && it.weight == 5.0 && it.reps == 2 && it.rir == 2 } }
     }
 
     @Test
@@ -227,12 +241,10 @@ class FlowTest {
         openSet(0)
         tapSegment("4+")
         tapSegment("7")
-        gone(hasText("4+"))
         tapDesc("${s(Res.string.field_weight)} +")
         tapDesc("${s(Res.string.field_reps)} +")
         tap(s(Res.string.log))
-        see("2,5 × 1 @7".let { if (s(Res.string.field_weight).startsWith("Vikt")) it else it.replace(',', '.') })
-        assertEquals(7, open().exercises.single().sets.single().rir)
+        waitUntilTrue { open().exercises.single().sets.single().rir == 7 }
     }
 
     @Test
@@ -277,10 +289,10 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
-        openSetWithText("80 × 8")
+        openSet(0)
         tapDesc("${s(Res.string.field_reps)} +")
         tap(s(Res.string.save_change))
-        see("80 × 9")
+        waitUntilTrue { open().exercises.single().sets.single().reps == 9 }
     }
 
     @Test
@@ -317,7 +329,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         tap(s(Res.string.add_set))
         waitUntilTrue { open().exercises.single().sets.size == 2 }
-        rows("–")[1].performTouchInput { swipeLeft(startX = right - 10f, endX = left + 10f) }
+        setRows()[1].performTouchInput { swipeLeft(startX = right - 10f, endX = left + 10f) }
         waitUntilTrue { open().exercises.single().sets.size == 1 }
     }
 
@@ -325,7 +337,7 @@ class FlowTest {
     fun aShortSwipeShowsDeleteAndATapOnItDeletes() = flow {
         startWorkout()
         addExercises("Bench Press BB")
-        rows("–")[0].performTouchInput { swipeLeft(startX = right - 10f, endX = right - 400f) }
+        setRows()[0].performTouchInput { swipeLeft(startX = right - 10f, endX = right - 400f) }
         see(s(Res.string.delete))
         // The swipe began on the set's ✓ and ended over the row: neither may count as a tap.
         gone(hasContentDescription(s(Res.string.field_weight)))
@@ -337,9 +349,9 @@ class FlowTest {
     fun aTapOnARowSwipedOpenShutsItInsteadOfOpeningTheDock() = flow {
         startWorkout()
         addExercises("Bench Press BB")
-        rows("–")[0].performTouchInput { swipeLeft(startX = centerX, endX = centerX - 400f) }
+        setRows()[0].performTouchInput { swipeLeft(startX = centerX, endX = centerX - 400f) }
         see(s(Res.string.delete))
-        rows("–")[0].performClick()
+        setRows()[0].performClick()
         gone(hasText(s(Res.string.delete)))
         gone(hasContentDescription(s(Res.string.field_weight)))
         assertEquals(1, open().exercises.single().sets.size)
@@ -486,7 +498,7 @@ class FlowTest {
         tapDesc(s(Res.string.minimise))
         bar()
         test.onNode(clickLabel(s(Res.string.back_to_workout))).performClick()
-        see(s(Res.string.empty_workout))
+        see(s(Res.string.what_today))
     }
 
     @Test
@@ -495,7 +507,7 @@ class FlowTest {
         tap(s(Res.string.all_activities))
         see(s(Res.string.no_workouts))
         tap(s(Res.string.start_a_workout))
-        see(s(Res.string.empty_workout))
+        see(s(Res.string.what_today))
     }
 
     @Test
@@ -536,7 +548,78 @@ class FlowTest {
         tapDesc(s(Res.string.field_seconds))
         keys("45")
         tap(s(Res.string.log_next))
-        see("0:45")
+        waitUntilTrue { open().exercises.single().sets.single().let { it.done && it.seconds == 45 } }
+    }
+
+    @Test
+    fun theFocusCardLogsTheNextSetAndMovesOnToTheNextExercise() = flow {
+        startWorkout()
+        addExercises("Bench Press BB", "Chest Dips")
+        logFirstSet("80", "8")
+        // Bench Press's one set is done, so the card has moved to Chest Dips.
+        see(s(Res.string.now_set, "Chest Dips", 1, 1).uppercase())
+        // Bench Press folded once the card moved on; opened, a new set there comes first, so the card goes back to it.
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
+        test.onAllNodes(hasText(s(Res.string.add_set)) and hasClickAction())[0].performClick()
+        see(s(Res.string.now_set, "Bench Press BB", 2, 2).uppercase())
+        tapContaining(s(Res.string.log_set, 2))
+        waitUntilTrue { open().exercises.first().sets.all { it.done } }
+        shot("10-focus-moved")
+    }
+
+    @Test
+    fun theFocusCardsEditOpensTheDockOnItsSet() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        tap(s(Res.string.edit))
+        seeDesc(s(Res.string.field_weight))
+    }
+
+    @Test
+    fun aValueFieldOpensTheKeypadOnThatField() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        test.onNodeWithTag("set Bench Press BB 1 cell 1").performClick()
+        // Reps is the last field, so the keypad's button already says Logga ›.
+        see(s(Res.string.log_next))
+        keys("8")
+        see("8")
+    }
+
+    @Test
+    fun anExerciseFoldsToItsOverviewAndUnfolds() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        tapDesc(s(Res.string.collapse, "Bench Press BB"))
+        test.waitUntil(timeoutMillis = TIMEOUT) { setRows().fetchSemanticsNodes().isEmpty() }
+        see("0/1")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
+        test.waitUntil(timeoutMillis = TIMEOUT) { setRows().fetchSemanticsNodes().size == 1 }
+    }
+
+    @Test
+    fun theStripLogsTheNextSetOnceTheFocusCardIsScrolledAway() = flow {
+        startWorkout()
+        addExercises("Bench Press BB", "Chest Dips", "Squat BB", "Pull Up", "Incline Press DB")
+        logFirstSet("80", "8")
+        test.onNode(hasScrollToIndexAction()).performScrollToKey("end")
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("focus-strip")).fetchSemanticsNodes().isNotEmpty() }
+        shot("11-strip")
+        // Chest Dips' first set has no reps yet, so the strip's Logga opens the dock, as the card's does.
+        tapContaining(s(Res.string.log_set, 1))
+        seeDesc(s(Res.string.field_reps))
+    }
+
+    @Test
+    fun anEmptyWorkoutOffersQuickPicksMarkedJa() = flow {
+        val bench = graph.exercises.all().first { it.isNotEmpty() }.first { it.name == "Bench Press BB" }
+        graph.exercises.setMark(bench.id, Mark.Yes)
+        startWorkout()
+        see(s(Res.string.quick_picks))
+        shot("12-quick-picks")
+        test.onNode(clickLabel(s(Res.string.add_named, "Bench Press BB"))).performClick()
+        waitUntilTrue { open().exercises.map { it.name } == listOf("Bench Press BB") }
+        see(s(Res.string.sets_progress, 0, 1))
     }
 
     @Test
@@ -563,7 +646,7 @@ class FlowTest {
                 bar()
                 see("1/1", substring = true)
                 test.onNode(clickLabel(s(Res.string.back_to_workout))).performClick()
-                see("80 × 8")
+                seeDesc(s(Res.string.logged, 1))
             }
         } finally {
             again.close()
@@ -637,17 +720,15 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
         test.waitForIdle()
     }
 
-    fun rows(text: String) = test.onAllNodes(hasText(text) and hasClickAction() and !hasSetTextAction())
+    /** The set rows on screen, in order; each carries the tag "set <exercise> <number>". */
+    fun setRows() = test.onAllNodes(SemanticsMatcher("set row") {
+        val tag = it.config.getOrNull(SemanticsProperties.TestTag) ?: ""
+        tag.startsWith("set ") && " cell " !in tag
+    })
 
     fun openSet(index: Int) {
-        see("–")
-        rows("–")[index].performClick()
-        test.waitForIdle()
-    }
-
-    fun openSetWithText(text: String) {
-        see(text)
-        rows(text)[0].performClick()
+        test.waitUntil(timeoutMillis = TIMEOUT) { setRows().fetchSemanticsNodes().size > index }
+        setRows()[index].performClick()
         test.waitForIdle()
     }
 
@@ -668,8 +749,10 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
             search(name)
             tap(name)
         }
+        val before = open().exercises.size
         tap(s(Res.string.add_count, names.size))
-        for (name in names) see(name)
+        // The database, not the screen: an exercise far down the list is not drawn until scrolled to.
+        waitUntilTrue { open().exercises.size == before + names.size }
     }
 
     suspend fun logFirstSet(weight: String, reps: String) {
@@ -678,8 +761,9 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
         keys(weight)
         tap(s(Res.string.next))
         keys(reps)
+        val before = open().logged
         tap(s(Res.string.log_next))
-        see("$weight × $reps")
+        waitUntilTrue { open().logged > before }
     }
 
     /** A picture of the screen for a person to look at; the tests never compare them. */

@@ -47,6 +47,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import strive.shared.generated.resources.collapse
+import androidx.compose.ui.draw.alpha
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
@@ -137,14 +143,31 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     val reduceMotion = StriveTheme.reduceMotion
     val place = if (reduceMotion) null else Motion.settle(IntOffset.VisibilityThreshold)
     var editing by remember { mutableStateOf<Long?>(null) }
+    val nowMs = rememberNow()
+    var editField by remember { mutableStateOf<Int?>(null) }
+    val list = rememberLazyListState()
+    // Only the exercise being done stands open; the rest fold to C's overview rows, as in E, until their chevron opens them
+    // (decision 39). When the focus moves on, the next one opens and the finished one folds.
+    val folds = remember { mutableStateMapOf<Long, Boolean>() }
     var finishing by remember { mutableStateOf(false) }
     var discarding by remember { mutableStateOf(false) }
     // The next set to do is outlined (#17 S3): the first one not logged, in the order the list is lifted.
     val current = w.exercises.firstNotNullOfOrNull { e -> e.sets.firstOrNull { !it.done } }?.id
+    // The focus card follows the next set, into the next exercise once one is done (decision 39).
+    val focus = w.exercises.firstNotNullOfOrNull { e -> e.sets.indexOfFirst { !it.done }.takeIf { it >= 0 }?.let { e to it } }
+    var focusRir by remember(current) { mutableStateOf<Int?>(null) }
+    var focusMore by remember(current) { mutableStateOf(false) }
+    val picks = quickPicks()
 
     fun log(set: WorkoutSet) {
         haptics.performHapticFeedback(HapticFeedbackType.Confirm) // Q23: a short haptic confirms ✓
         scope.launch { sessions.saveSet(set) }
+    }
+
+    fun logFocus() {
+        val (e, i) = focus ?: return
+        val set = e.sets[i]
+        if (set.loggable(e.type)) log(set.copy(rir = focusRir, done = true)) else { editing = set.id; editField = null }
     }
 
     fun finish() {
@@ -157,54 +180,83 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
 
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            TitleBar(w, onMinimise, ::finish)
-            LazyColumn(
-                Modifier.weight(1f).hazeSource(haze),
-                contentPadding = PaddingValues(start = StriveTheme.spacing.s16, end = StriveTheme.spacing.s16, top = StriveTheme.spacing.s8, bottom = 320.dp),
-            ) {
-                if (w.exercises.isEmpty()) {
-                    item(key = "empty") { EmptyWorkout(onAddExercises) }
-                }
-                for (e in w.exercises) {
-                    item(key = "h${e.id}") { ExerciseHeader(e, Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place)) }
-                    itemsIndexed(e.sets, key = { _, s -> s.id }) { i, s ->
-                        val shape = tileShape(i, e.sets.size)
-                        Box(Modifier.padding(top = if (i == 0) 0.dp else 2.dp).animateItem(placementSpec = place)) {
-                            SwipeToDelete(shape, onDelete = { scope.launch { sessions.deleteSet(s.id) } }) {
-                                SetLine(
-                                    i + 1, setText(s, e.type, swedish), s, shape, current = s.id == current,
-                                    onOpen = { tap { editing = s.id } },
-                                    onCheck = {
-                                        tap {
-                                            when {
-                                                s.done -> scope.launch { sessions.saveSet(s.copy(done = false)) }
-                                                s.loggable(e.type) -> log(s.copy(done = true))
-                                                else -> editing = s.id
+            // The name rides in the bar only while the large header is out of sight (decision 40).
+            val scrolled by remember { derivedStateOf { list.firstVisibleItemIndex > 0 } }
+            TitleBar(w, nowMs, showTitle = w.exercises.isEmpty() || scrolled, onMinimise, ::finish)
+            Box(Modifier.weight(1f)) {
+                LazyColumn(
+                    Modifier.fillMaxSize().hazeSource(haze), list,
+                    contentPadding = PaddingValues(start = StriveTheme.spacing.s16, end = StriveTheme.spacing.s16, bottom = 320.dp),
+                ) {
+                    if (w.exercises.isEmpty()) {
+                        item(key = "empty") {
+                            QuickStart(picks.first, picks.second, onAddExercises) { id -> scope.launch { sessions.add(w.id, listOf(id)) } }
+                        }
+                    } else {
+                        item(key = "header") { LargeHeader(w, nowMs) }
+                        focus?.let { (e, i) ->
+                            item(key = "focus") {
+                                FocusCard(e, e.sets[i], i + 1, focusRir, focusMore, { focusRir = it }, { focusMore = it },
+                                    onEdit = { editing = e.sets[i].id; editField = null }, onLog = { logFocus() })
+                            }
+                        }
+                    }
+                    for (e in w.exercises) {
+                        val folded = folds[e.id] ?: (focus != null && e.id != focus.first.id)
+                        if (folded) {
+                            item(key = "o${e.id}") {
+                                Box(Modifier.padding(top = StriveTheme.spacing.s12).animateItem(placementSpec = place)) { ExerciseOverview(e) { folds[e.id] = false } }
+                            }
+                            continue
+                        }
+                        item(key = "h${e.id}") { ExerciseHeader(e, { folds[e.id] = true }, Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place)) }
+                        item(key = "c${e.id}") { ColumnLabels(e.type) }
+                        itemsIndexed(e.sets, key = { _, s -> s.id }) { i, s ->
+                            Box(Modifier.padding(vertical = 1.dp).animateItem(placementSpec = place)) {
+                                SwipeToDelete(MaterialTheme.shapes.medium, onDelete = { scope.launch { sessions.deleteSet(s.id) } }) {
+                                    SetRow(
+                                        "set ${e.name} ${i + 1}", i + 1, s, e.type, current = s.id == current,
+                                        onOpen = { f -> tap { editing = s.id; editField = f } },
+                                        onCheck = {
+                                            tap {
+                                                when {
+                                                    s.done -> scope.launch { sessions.saveSet(s.copy(done = false)) }
+                                                    s.loggable(e.type) -> log(s.copy(done = true))
+                                                    else -> { editing = s.id; editField = null }
+                                                }
                                             }
-                                        }
-                                    },
-                                )
+                                        },
+                                    )
+                                }
+                            }
+                        }
+                        item(key = "a${e.id}") {
+                            FilledTonalButton(
+                                { scope.launch { sessions.addSet(e.id) } },
+                                Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s4, bottom = StriveTheme.spacing.s8).animateItem(placementSpec = place),
+                                shape = MaterialTheme.shapes.medium,
+                            ) {
+                                Text("+", Modifier.padding(end = StriveTheme.spacing.s8), color = MaterialTheme.colorScheme.primary)
+                                Text(stringResource(Res.string.add_set))
                             }
                         }
                     }
-                    item(key = "a${e.id}") {
-                        TextButton({ scope.launch { sessions.addSet(e.id) } }, Modifier.padding(bottom = StriveTheme.spacing.s16).animateItem(placementSpec = place)) {
-                            Text(stringResource(Res.string.add_set))
-                        }
-                    }
-                }
-                item(key = "end") {
-                    Column(Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s8), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
-                        if (w.exercises.isNotEmpty()) {
-                            FilledTonalButton(onAddExercises, Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch), shape = MaterialTheme.shapes.large) {
-                                Text(stringResource(Res.string.add_exercises))
+                    item(key = "end") {
+                        Column(Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s16), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
+                            if (w.exercises.isNotEmpty()) {
+                                FilledTonalButton(onAddExercises, Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch), shape = MaterialTheme.shapes.large) {
+                                    Text(stringResource(Res.string.add_exercises))
+                                }
+                            }
+                            TextButton({ discarding = true }, Modifier.fillMaxWidth()) {
+                                Text(stringResource(Res.string.discard_workout), color = MaterialTheme.colorScheme.error)
                             }
                         }
-                        TextButton({ discarding = true }, Modifier.fillMaxWidth()) {
-                            Text(stringResource(Res.string.discard_workout), color = MaterialTheme.colorScheme.error)
-                        }
                     }
                 }
+                // Once the focus card scrolls away it folds into a strip under the bar (D).
+                val stripShown by remember { derivedStateOf { list.firstVisibleItemIndex > 1 } }
+                StripOverlay(stripShown, focus, Modifier.align(Alignment.TopCenter)) { logFocus() }
             }
         }
 
@@ -223,7 +275,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             if (open != null) shown.value = open
             val (e, i) = shown.value ?: return@AnimatedVisibility
             val set = e.sets.getOrNull(i) ?: return@AnimatedVisibility
-            Dock(e, set, i + 1, haze, onSave = { log(it); editing = null }, onClose = { editing = null })
+            Dock(e, set, i + 1, haze, onSave = { log(it); editing = null }, onClose = { editing = null }, field = editField)
         }
     }
 
@@ -248,27 +300,11 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     }
 }
 
-/** #16's empty state: what is missing, what to do, and the one filled button that does it. */
-@Composable
-private fun EmptyWorkout(onAdd: () -> Unit) = Column(
-    Modifier.fillMaxWidth().padding(horizontal = StriveTheme.spacing.s16, vertical = StriveTheme.spacing.s48),
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8),
-) {
-    Text(stringResource(Res.string.no_exercises_yet), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-    Text(stringResource(Res.string.empty_workout), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
-        textAlign = TextAlign.Center)
-    Button(onAdd, Modifier.padding(top = StriveTheme.spacing.s8).heightIn(min = StriveTheme.sizes.touch)) { Text(stringResource(Res.string.add_exercises)) }
-}
 
 /** F1: ⌄ on the left, the name with ⋯ and the progress in the middle, Avsluta on the right, filled once every set is logged. */
 @Composable
-private fun TitleBar(w: Workout, onMinimise: () -> Unit, onFinish: () -> Unit) {
-    val sessions = LocalAppGraph.current.sessions
-    val scope = rememberCoroutineScope()
-    var menu by remember { mutableStateOf(false) }
-    var prompt by remember { mutableStateOf<String?>(null) }
-    val nowMs = rememberNow()
+private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, onMinimise: () -> Unit, onFinish: () -> Unit) {
+    val alpha by animateFloatAsState(if (showTitle) 1f else 0f, Motion.fade())
     Row(
         Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
             .padding(horizontal = StriveTheme.spacing.s8, vertical = StriveTheme.spacing.s4),
@@ -277,52 +313,30 @@ private fun TitleBar(w: Workout, onMinimise: () -> Unit, onFinish: () -> Unit) {
         Box(Modifier.weight(1f)) {
             IconTarget(stringResource(Res.string.minimise), onMinimise) { Chevron(down = true, size = 20.dp) }
         }
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Box {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        w.name, Modifier.weight(1f, fill = false).clickable(onClickLabel = stringResource(Res.string.workout_options)) { menu = true },
-                        style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis,
-                    )
-                    IconTarget(stringResource(Res.string.workout_options), { menu = true }) {
-                        Text("⋯", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
-                    }
-                }
-                DropdownMenu(menu, { menu = false }) {
-                    DropdownMenuItem({ Text(stringResource(Res.string.rename)) }, onClick = { menu = false; prompt = "name" })
-                    DropdownMenuItem({ Text(stringResource(Res.string.session_note)) }, onClick = { menu = false; prompt = "note" })
-                }
+        Column(Modifier.alpha(alpha), horizontalAlignment = Alignment.CenterHorizontally) {
+            if (alpha > 0f) {
+                WorkoutMenu(w, large = false)
+                Text(progress(w, nowMs), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            Text(progress(w, nowMs), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
             val label = @Composable { Text(stringResource(Res.string.finish)) }
             if (w.sets > 0 && w.logged == w.sets) Button(onFinish, content = { label() }) else FilledTonalButton(onFinish, content = { label() })
         }
     }
-    when (prompt) {
-        "name" -> TextPrompt(stringResource(Res.string.rename), w.name, onSave = { n ->
-            prompt = null
-            if (n.isNotEmpty()) scope.launch { sessions.rename(w.id, n) }
-        }, onDismiss = { prompt = null })
-        "note" -> TextPrompt(stringResource(Res.string.session_note), w.note, singleLine = false, onSave = { n ->
-            prompt = null
-            scope.launch { sessions.setNote(w.id, n) }
-        }, onDismiss = { prompt = null })
-    }
 }
 
 /** The exercise's name with its ⋯ (#17 choice 4); today's note under it once one is opened. */
 @Composable
-private fun ExerciseHeader(e: SessionExercise, modifier: Modifier) {
+private fun ExerciseHeader(e: SessionExercise, onFold: () -> Unit, modifier: Modifier) {
     val sessions = LocalAppGraph.current.sessions
     val scope = rememberCoroutineScope()
     var menu by remember { mutableStateOf(false) }
     var noteOpen by remember { mutableStateOf(false) }
     var note by remember(e.id) { mutableStateOf(e.note) }
-    Column(modifier.padding(top = StriveTheme.spacing.s8, bottom = StriveTheme.spacing.s4)) {
+    Column(modifier.padding(top = StriveTheme.spacing.s16)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(e.name, Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+            Text(e.name, Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
             Box {
                 IconTarget(stringResource(Res.string.exercise_options), { menu = true }) {
                     Text("⋯", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
@@ -333,6 +347,7 @@ private fun ExerciseHeader(e: SessionExercise, modifier: Modifier) {
                         onClick = { menu = false; scope.launch { sessions.removeExercise(e.id) } })
                 }
             }
+            IconTarget(stringResource(Res.string.collapse, e.name), onFold) { Chevron(down = false, up = true, color = MaterialTheme.colorScheme.onSurfaceVariant, size = 14.dp) }
         }
         if (noteOpen || note.isNotEmpty()) {
             OutlinedTextField(
@@ -344,43 +359,34 @@ private fun ExerciseHeader(e: SessionExercise, modifier: Modifier) {
     }
 }
 
-/** Joined tiles (#16 rule A, M1): the group's outer corners round, the inner ones small. */
-private fun tileShape(i: Int, size: Int): RoundedCornerShape {
-    val outer = 16.dp
-    val inner = 6.dp
-    return RoundedCornerShape(
-        topStart = if (i == 0) outer else inner, topEnd = if (i == 0) outer else inner,
-        bottomStart = if (i == size - 1) outer else inner, bottomEnd = if (i == size - 1) outer else inner,
-    )
-}
 
-/** A set line (#17 S3, D3): badge, the values (grey until logged) and its own ✓. A tap on the line opens the dock. */
+/** The focus strip sliding down under the bar while the focus card is out of sight (D). */
 @Composable
-private fun SetLine(number: Int, text: String, set: WorkoutSet, shape: RoundedCornerShape, current: Boolean, onOpen: () -> Unit, onCheck: () -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    val space = StriveTheme.spacing
-    Row(
-        Modifier.fillMaxWidth().background(colors.surface, shape)
-            .border(StriveTheme.borders.focus, if (current) colors.primary else Color.Transparent, shape)
-            .clickable(onClick = onOpen).padding(start = space.s12, end = space.s4, top = space.s4, bottom = space.s4),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(space.s12),
+private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, modifier: Modifier, onLog: () -> Unit) {
+    val reduceMotion = StriveTheme.reduceMotion
+    AnimatedVisibility(
+        shown && focus != null, modifier.padding(horizontal = StriveTheme.spacing.s12, vertical = StriveTheme.spacing.s4),
+        enter = if (reduceMotion) fadeIn(Motion.fade()) else fadeIn(Motion.fade()) + slideInVertically(Motion.settle(IntOffset.VisibilityThreshold)) { -it },
+        exit = if (reduceMotion) fadeOut(Motion.fade()) else fadeOut(Motion.fade()) + slideOutVertically(Motion.settle(IntOffset.VisibilityThreshold)) { -it },
     ) {
-        Box(Modifier.size(space.s32).background(colors.surfaceContainerHighest, androidx.compose.foundation.shape.CircleShape), contentAlignment = Alignment.Center) {
-            Text("$number", style = MaterialTheme.typography.titleSmall)
-        }
-        Text(text, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge, color = if (set.done) colors.onSurface else colors.onSurfaceVariant)
-        val check = stringResource(if (set.done) Res.string.logged else Res.string.log_set, number)
-        Box(
-            Modifier.size(StriveTheme.sizes.touch)
-                .background(if (set.done) colors.primary else colors.surfaceContainerHighest, MaterialTheme.shapes.medium)
-                .clickable(onClickLabel = check, onClick = onCheck).semantics { contentDescription = check },
-            contentAlignment = Alignment.Center,
-        ) {
-            Text("✓", style = MaterialTheme.typography.titleMedium, color = if (set.done) colors.onPrimary else colors.onSurfaceVariant, textAlign = TextAlign.Center)
-        }
+        // Keeps showing the set it had while it slides away.
+        val shownFocus = remember { mutableStateOf(focus) }
+        if (focus != null) shownFocus.value = focus
+        shownFocus.value?.let { (e, i) -> e.sets.getOrNull(i)?.let { FocusStrip(e, it, i + 1, onLog) } }
     }
 }
+
+/** Quick picks for an empty workout: exercises marked Ja, else the ones done most recently, at most six (decision 40). */
+@Composable
+private fun quickPicks(): Pair<List<Pair<Long, String>>, Boolean> {
+    val graph = LocalAppGraph.current
+    val all by remember { graph.exercises.all() }.collectAsState(emptyList())
+    val history by remember { graph.sessions.history() }.collectAsState(emptyList())
+    val marked = all.filter { it.mark == se.carlsmeister.strive.data.Mark.Yes }.map { it.id to it.name }
+    if (marked.isNotEmpty()) return marked.take(6) to true
+    return history.flatMap { w -> w.exercises.map { it.exerciseId to it.name } }.distinctBy { it.first }.take(6) to false
+}
+
 /** The bar a minimised workout sits in above the tabs: its name and progress; a tap brings it back (Q19). */
 @Composable
 internal fun MiniBar(w: Workout, haze: HazeState, onClick: () -> Unit) {

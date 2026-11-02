@@ -139,4 +139,21 @@
     <string-array name="weekdays"><item>Monday</item><item>Tuesday</item><item>Wednesday</item><item>Thursday</item><item>Friday</item><item>Saturday</item><item>Sunday</item></string-array>
     <string-array name="weekdays_short"><item>Mon</item><item>Tue</item><item>Wed</item><item>Thu</item><item>Fri</item><item>Sat</item><item>Sun</item></string-array>
     <string-array name="months"><item>January</item><item>February</item><item>March</item><item>April</item><item>May</item><item>June</item><item>July</item><item>August</item><item>September</item><item>October</item><item>November</item><item>December</item></string-array>
+    <string name="now_set">Now · %1$s · set %2$d of %3$d</string>
+    <string name="edit">Edit</string>
+    <string name="col_set">Set</string>
+    <string name="col_previous">Previous</string>
+    <string name="col_kg">kg</string>
+    <string name="col_reps">Reps</string>
+    <string name="col_seconds">Time</string>
+    <string name="col_metres">m</string>
+    <string name="collapse">Collapse %1$s</string>
+    <string name="expand">Expand %1$s</string>
+    <string name="what_today">What are you training today?</string>
+    <string name="what_today_body">Pick from the library, or tap an exercise below.</string>
+    <string name="quick_picks">Quick picks</string>
+    <string name="quick_marked">Yes in My programmes</string>
+    <string name="quick_recent">Recently done</string>
+    <string name="sets_progress">%1$d of %2$d sets</string>
+    <string name="add_named">Add %1$s</string>
 </resources>
