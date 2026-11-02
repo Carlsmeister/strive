@@ -45,3 +45,10 @@ WHERE name = :name AND edited = 0;
 
 setMark:
 UPDATE exercise SET mark = ? WHERE id = ?;
+
+setNote:
+UPDATE exercise SET note = ? WHERE id = ?;
+
+-- Carl's step and bar; edited keeps a seed update from writing over them.
+setSettings:
+UPDATE exercise SET step = ?, bar = ?, edited = 1 WHERE id = ?;

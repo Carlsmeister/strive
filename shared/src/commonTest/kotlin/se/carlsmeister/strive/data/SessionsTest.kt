@@ -141,3 +141,82 @@ class SessionsTest {
         }
     }
 }
+class SessionChangesTest {
+    private fun StriveDatabase.exercise(name: String): Long {
+        exerciseQueries.insertSeed(name, "", "chest", "", "Horisontell press", "Skivstång", "weight_reps", false, 2.5, 20.0, "strength", "", "", "", "")
+        return exerciseQueries.all().executeAsList().first { it.name == name }.id
+    }
+
+    private val db = StriveDatabase(memoryDriver())
+    private val sessions = SqlSessions(db)
+
+    @Test
+    fun aSetKeepsItsRestAndANewSetCopiesItButIsAWorkingSet() = runTest {
+        val id = sessions.start("Pass", 0)
+        sessions.add(id, listOf(db.exercise("Bench Press BB")))
+        val bench = sessions.open().first()!!.exercises.single()
+        sessions.saveSet(bench.sets.single().copy(weight = 40.0, reps = 10, rest = 90, done = true))
+        sessions.setKind(bench.sets.single().id, SetKind.Warmup)
+        sessions.addSet(bench.id)
+        val sets = sessions.open().first()!!.exercises.single().sets
+        assertEquals(listOf(SetKind.Warmup, SetKind.Normal), sets.map { it.kind })
+        assertEquals(listOf(90, 90), sets.map { it.rest })
+    }
+
+    @Test
+    fun anUnloggedSetMadeAWarmUpIsStoredFirstInLine() = runTest {
+        val id = sessions.start("Pass", 0)
+        sessions.add(id, listOf(db.exercise("Bench Press BB")))
+        val e = sessions.open().first()!!.exercises.single()
+        sessions.saveSet(e.sets.single().copy(weight = 80.0, reps = 8, done = true))
+        sessions.addSet(e.id)
+        sessions.addSet(e.id)
+        val third = sessions.open().first()!!.exercises.single().sets[2].id
+        sessions.setKind(third, SetKind.Warmup)
+        val sets = sessions.open().first()!!.exercises.single().sets
+        assertEquals(third, sets[1].id)
+        assertEquals(SetKind.Warmup, sets[1].kind)
+    }
+
+    @Test
+    fun restForAllSetsStartTimeSwapOrderAndStickyNoteAreStored() = runTest {
+        val id = sessions.start("Pass", 0)
+        val incline = db.exercise("Incline Press DB")
+        sessions.add(id, listOf(db.exercise("Bench Press BB"), db.exercise("Squat BB")))
+        val (bench, squat) = sessions.open().first()!!.exercises
+        sessions.addSet(bench.id)
+        sessions.setRestAll(bench.id, 150)
+        sessions.setStart(id, 5_000)
+        sessions.reorder(listOf(squat.id, bench.id))
+        sessions.swap(bench.id, incline)
+        SqlExercises(db).setNote(incline, "Bench at 30°")
+        val w = sessions.open().first()!!
+        assertEquals(5_000, w.startedAt)
+        assertEquals(listOf("Squat BB", "Incline Press DB"), w.exercises.map { it.name })
+        assertEquals(listOf(150, 150), w.exercises[1].sets.map { it.rest })
+        assertEquals("Bench at 30°", w.exercises[1].pinned)
+    }
+
+    @Test
+    fun aSkippedExerciseLeavesTheCountAndStaysRecordedWithoutItsSets() = runTest {
+        val id = sessions.start("Pass", 0)
+        sessions.add(id, listOf(db.exercise("Bench Press BB"), db.exercise("Squat BB")))
+        val (bench, squat) = sessions.open().first()!!.exercises
+        sessions.saveSet(bench.sets.single().copy(weight = 80.0, reps = 8, done = true))
+        sessions.skip(squat.id, true)
+        assertEquals(1, sessions.open().first()!!.sets)
+        sessions.finish(id, Finish.WithoutThem, now = 1)
+        val done = sessions.history().first().single()
+        assertEquals(listOf("Bench Press BB", "Squat BB"), done.exercises.map { it.name })
+        assertTrue(done.exercises[1].skipped)
+        assertEquals(emptyList(), done.exercises[1].sets)
+    }
+
+    @Test
+    fun theExercisesStepAndBarAreCarlsOnceChanged() = runTest {
+        val bench = db.exercise("Bench Press BB")
+        SqlExercises(db).setSettings(bench, step = 1.25, bar = 15.0)
+        val e = SqlExercises(db).byId(bench).first()!!
+        assertEquals(1.25 to 15.0, e.step to e.bar)
+    }
+}

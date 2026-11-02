@@ -18,7 +18,24 @@ internal data class WorkoutSet(
     val metres: Double? = null,
     val rir: Int? = null,
     val done: Boolean = false,
+    val kind: SetKind = SetKind.Normal,
+    /** Seconds of rest after the set; null for the default in Settings (Q10). */
+    val rest: Int? = null,
 )
+
+/** A set's type (Q21): a working set, or a warm-up, drop or failure set, which show W, D or F in the badge. */
+internal enum class SetKind(val key: String, val letter: String?) {
+    Normal("normal", null), Warmup("warmup", "W"), Drop("drop", "D"), Failure("failure", "F");
+
+    companion object {
+        fun of(key: String) = entries.firstOrNull { it.key == key } ?: Normal
+    }
+}
+
+/** A rest counting down, started when a set is logged or from the title bar's timer (Q17). Kept in memory only. */
+internal data class Rest(val startedAt: Long, val seconds: Int) {
+    fun left(now: Long) = (seconds - ((now - startedAt) / 1_000).toInt()).coerceAtLeast(0)
+}
 
 internal data class SessionExercise(
     val id: Long,
@@ -28,6 +45,11 @@ internal data class SessionExercise(
     val step: Double?,
     val note: String,
     val sets: List<WorkoutSet>,
+    /** The exercise's sticky note, shown every time it is done (Q15). */
+    val pinned: String = "",
+    val bar: Double? = null,
+    /** Skipped in this workout: it stays recorded, but its sets are not counted (Q8). */
+    val skipped: Boolean = false,
 )
 
 /** A workout with its exercises and sets, open while [endedAt] is null. Times are epoch milliseconds. */
@@ -40,8 +62,8 @@ internal data class Workout(
     val rpe: Int?,
     val exercises: List<SessionExercise>,
 ) {
-    val sets get() = exercises.sumOf { it.sets.size }
-    val logged get() = exercises.sumOf { e -> e.sets.count { it.done } }
+    val sets get() = exercises.filterNot { it.skipped }.sumOf { it.sets.size }
+    val logged get() = exercises.filterNot { it.skipped }.sumOf { e -> e.sets.count { it.done } }
 }
 
 /** A set can be logged once the values its exercise's type records are there. */
@@ -50,6 +72,18 @@ internal fun WorkoutSet.loggable(type: ExerciseType) = when (type) {
     ExerciseType.BodyweightReps, ExerciseType.Reps -> reps != null
     ExerciseType.Time -> seconds != null
     ExerciseType.Distance -> metres != null
+}
+
+/**
+ * The order after a set is made a warm-up (#17 choice 4): unlogged, it moves up to be the next set to do, just before the first
+ * set not logged; logged, it stays where it is.
+ */
+internal fun warmupOrder(sets: List<WorkoutSet>, id: Long): List<Long> {
+    val set = sets.first { it.id == id }
+    if (set.done) return sets.map { it.id }
+    val rest = sets.filter { it.id != id }
+    val at = rest.indexOfFirst { !it.done }.takeIf { it >= 0 } ?: rest.size
+    return (rest.take(at) + set + rest.drop(at)).map { it.id }
 }
 
 /** Avsluta with sets not logged (Q20): log the ones that can be as they stand, or save without them. */
@@ -69,12 +103,27 @@ internal interface Sessions {
     /** Each exercise joins the end of the workout with one empty set. */
     suspend fun add(sessionId: Long, exerciseIds: List<Long>)
 
-    /** A copy of the exercise's last set, not logged and without its RIR (Q8). */
+    /** A copy of the exercise's last set and its rest, a working set, not logged and without its RIR (Q8). */
     suspend fun addSet(sessionExerciseId: Long)
 
     suspend fun saveSet(set: WorkoutSet)
 
     suspend fun deleteSet(id: Long)
+
+    /** Changes a set's type; an unlogged set made a warm-up moves up to be the next set to do (#17 choice 4). */
+    suspend fun setKind(id: Long, kind: SetKind)
+
+    suspend fun setRestAll(sessionExerciseId: Long, seconds: Int)
+
+    /** Puts the workout's exercises in this order. */
+    suspend fun reorder(sessionExerciseIds: List<Long>)
+
+    /** Swaps the exercise for another, keeping its sets (Q8). */
+    suspend fun swap(sessionExerciseId: Long, exerciseId: Long)
+
+    suspend fun skip(sessionExerciseId: Long, skipped: Boolean)
+
+    suspend fun setStart(id: Long, startedAt: Long)
 
     suspend fun removeExercise(sessionExerciseId: Long)
 
@@ -116,7 +165,7 @@ internal class SqlSessions(private val database: StriveDatabase, private val io:
         queries.transaction {
             for (exerciseId in exerciseIds) {
                 queries.insertExercise(sessionId, exerciseId)
-                queries.insertSet(queries.lastId().executeAsOne(), null, null, null, null)
+                queries.insertSet(queries.lastId().executeAsOne(), null, null, null, null, null)
             }
         }
     }
@@ -124,15 +173,37 @@ internal class SqlSessions(private val database: StriveDatabase, private val io:
     override suspend fun addSet(sessionExerciseId: Long) = write {
         queries.transaction {
             val last = queries.lastSet(sessionExerciseId).executeAsOneOrNull()
-            queries.insertSet(sessionExerciseId, last?.weight, last?.reps, last?.seconds, last?.metres)
+            queries.insertSet(sessionExerciseId, last?.weight, last?.reps, last?.seconds, last?.metres, last?.rest_seconds)
         }
     }
 
     override suspend fun saveSet(set: WorkoutSet) = write {
-        queries.updateSet(set.weight, set.reps?.toLong(), set.seconds?.toLong(), set.metres, set.rir?.toLong(), set.done, set.id)
+        queries.updateSet(set.weight, set.reps?.toLong(), set.seconds?.toLong(), set.metres, set.rir?.toLong(), set.done, set.rest?.toLong(), set.id)
     }
 
     override suspend fun deleteSet(id: Long) = write { queries.deleteSet(id) }
+
+    override suspend fun setKind(id: Long, kind: SetKind) = write {
+        queries.transaction {
+            queries.setKind(kind.key, id)
+            if (kind == SetKind.Warmup) {
+                val sets = queries.setsOf(id).executeAsList().map { WorkoutSet(it.id, done = it.done) }
+                warmupOrder(sets, id).forEachIndexed { i, set -> queries.setPosition(i.toLong(), set) }
+            }
+        }
+    }
+
+    override suspend fun setRestAll(sessionExerciseId: Long, seconds: Int) = write { queries.setRestOf(seconds.toLong(), sessionExerciseId) }
+
+    override suspend fun reorder(sessionExerciseIds: List<Long>) = write {
+        queries.transaction { sessionExerciseIds.forEachIndexed { i, id -> queries.setExercisePosition(i.toLong(), id) } }
+    }
+
+    override suspend fun swap(sessionExerciseId: Long, exerciseId: Long) = write { queries.swapExercise(exerciseId, sessionExerciseId) }
+
+    override suspend fun skip(sessionExerciseId: Long, skipped: Boolean) = write { queries.setSkipped(skipped, sessionExerciseId) }
+
+    override suspend fun setStart(id: Long, startedAt: Long) = write { queries.setStartedAt(startedAt, id) }
 
     override suspend fun removeExercise(sessionExerciseId: Long) = write {
         queries.transaction {
@@ -154,8 +225,8 @@ internal class SqlSessions(private val database: StriveDatabase, private val io:
             val workout = workouts(queries.rowsOf(id, ::Row).executeAsList()).single()
             for (exercise in workout.exercises) {
                 for (set in exercise.sets.filterNot { it.done }) {
-                    if (how == Finish.LogAsTheyStand && set.loggable(exercise.type)) {
-                        queries.updateSet(set.weight, set.reps?.toLong(), set.seconds?.toLong(), set.metres, set.rir?.toLong(), true, set.id)
+                    if (how == Finish.LogAsTheyStand && !exercise.skipped && set.loggable(exercise.type)) {
+                        queries.updateSet(set.weight, set.reps?.toLong(), set.seconds?.toLong(), set.metres, set.rir?.toLong(), true, set.rest?.toLong(), set.id)
                     } else {
                         queries.deleteSet(set.id)
                     }
@@ -179,8 +250,10 @@ internal class SqlSessions(private val database: StriveDatabase, private val io:
 @Suppress("LongParameterList")
 private class Row(
     val id: Long, val name: String, val startedAt: Long, val endedAt: Long?, val note: String, val rpe: Long?,
-    val seId: Long?, val exerciseId: Long?, val seNote: String?, val exerciseName: String?, val type: String?, val step: Double?,
+    val seId: Long?, val exerciseId: Long?, val seNote: String?, val skipped: Boolean?, val exerciseName: String?, val type: String?,
+    val step: Double?, val bar: Double?, val pinned: String?,
     val setId: Long?, val weight: Double?, val reps: Long?, val seconds: Long?, val metres: Double?, val rir: Long?, val done: Boolean?,
+    val kind: String?, val rest: Long?,
 )
 
 /** Groups the rows, already in workout, exercise and set order, back into workouts. */
@@ -191,8 +264,10 @@ private fun workouts(rows: List<Row>): List<Workout> = rows.groupBy { it.id }.va
         SessionExercise(
             e.seId!!, e.exerciseId!!, e.exerciseName!!, ExerciseType.of(e.type!!), e.step, e.seNote!!,
             exercise.filter { it.setId != null }.map {
-                WorkoutSet(it.setId!!, it.weight, it.reps?.toInt(), it.seconds?.toInt(), it.metres, it.rir?.toInt(), it.done!!)
+                WorkoutSet(it.setId!!, it.weight, it.reps?.toInt(), it.seconds?.toInt(), it.metres, it.rir?.toInt(), it.done!!, SetKind.of(it.kind!!),
+                    it.rest?.toInt())
             },
+            pinned = e.pinned.orEmpty(), bar = e.bar, skipped = e.skipped!!,
         )
     }
     Workout(w.id, w.name, w.startedAt, w.endedAt, w.note, w.rpe?.toInt(), exercises)
