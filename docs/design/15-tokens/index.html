@@ -521,7 +521,8 @@ function tokenTables(t) {
     rows.forEach(r => seen.add(r));
     return `<tr class="group"><td colspan="${schemes.length + 1}">${label}</td></tr>` + rows.map(r =>
       `<tr><td><code>--color-${r}</code></td>${schemes.map(n => `<td><span class="sw" style="background:${t.schemes[n][r]}"></span><span class="hex">${t.schemes[n][r]}</span></td>`).join("")}</tr>`).join("");
-  }).join("");
+  }).join("") + `<tr class="group"><td colspan="${schemes.length + 1}">Accents (Strive's own: what a set or a superset is)</td></tr>` + Object.keys(t.accents.light).map(k =>
+    `<tr><td><code>--accent-${k}</code></td>${schemes.map(n => `<td><span class="sw" style="background:${t.accents[n][k]}"></span><span class="hex">${t.accents[n][k]}</span></td>`).join("")}</tr>`).join("");
   document.getElementById("contrast").innerHTML = `<tr><th>Pair</th>${schemes.map(n => `<th class="num">${NAMES[n]}</th>`).join("")}</tr>` + t.pairs.map(p =>
     `<tr><td>${p.fg} on ${p.bg}${p.kind === "non-text" ? " (border)" : ""}</td>${schemes.map(n => {
       const min = p.kind === "non-text" ? 3 : n.endsWith("-hc") ? 7 : 4.5, r = p.ratio[n];
@@ -537,6 +538,7 @@ function tokenTables(t) {
     ...Object.entries(t.shape).map(([r, v]) => [`--shape-${r}`, r === "full" ? "CircleShape" : `MaterialTheme.shapes.${camel(r)}`, r === "full" ? "Material's Shapes has no full slot" : `RoundedCornerShape(${parseInt(v)}.dp)`]),
     ...t.space.map(n => [`--space-${n}`, `Spacing.s${n}`, `${n}.dp, Strive's own`]),
     ...Object.keys(t.materials.light).map(k => [`--material-${k}`, `StriveMaterials.${k}`, "Strive's own; blur through the library strive#3 picks"]),
+    ...Object.keys(t.accents.light).map(k => [`--accent-${k}`, `StriveTheme.accents.${k}`, "Strive's own; never for what you can tap"]),
     ["--material-blur", "StriveMaterials.blur", "24.dp"], ["--font-family", "FontFamily.Default", "SF Pro on iPhone, Roboto on Android"],
     ...Object.entries(t.size || {}).map(([k, v]) => [`--size-${k}`, `Sizes.${camel(k)}`, `${parseInt(v)}.dp, Strive's own (strive#16)`]),
     ["--border-hairline", "Dp.Hairline", "One device pixel, as iOS draws separators; .5px in the prototype (strive#16)"],

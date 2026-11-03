@@ -84,6 +84,16 @@ MATERIALS = {
     "dark-hc": {"regular": "rgb(28 28 30 / .92)", "thick": "rgb(28 28 30 / .97)", "edge": "rgb(255 255 255 / .4)", "shadow": "0 8px 24px rgb(0 0 0 / .5)"},
 }
 
+# What a set or a superset is (Carl, 2026-11-03), strive's own: Material has no role for them. A warm-up keeps tertiary's amber.
+# Teal stays for what you can tap. Failure is a coral of its own, not error's red; in light and light-hc the contrast rule pulls
+# both dark, so failure leans brick-orange where error is crimson.
+ACCENTS = {
+    "light": {"failure": "#a8391b", "drop": "#7a45c4", "superset": "#1f63c7"},
+    "dark": {"failure": "#ff6c47", "drop": "#c79cff", "superset": "#5aa9ff"},
+    "light-hc": {"failure": "#7d2a06", "drop": "#55278f", "superset": "#0f428f"},
+    "dark-hc": {"failure": "#ffa088", "drop": "#d9a3ff", "superset": "#7cbeff"},
+}
+
 # Apple's text styles under Material 3's names (Q4): weight, size and line height in points.
 TYPE = {
     "display-large": (600, 56, 60), "display-medium": (600, 44, 48), "display-small": (600, 34, 41),
@@ -115,6 +125,8 @@ PAIRS += [(t, s) for t in ["on-surface", "on-surface-variant"] for s in SURFACES
 PAIRS += [("on-background", "background"), ("inverse-on-surface", "inverse-surface"), ("inverse-primary", "inverse-surface")]
 PAIRS += [("primary", s) for s in ["background", "surface", "surface-container-high"]] + [("error", "surface")]
 PAIRS += [(f"on-{r}-fixed{v}", f"{r}-fixed{d}") for r in ["primary", "secondary", "tertiary"] for v in ["", "-variant"] for d in ["", "-dim"]]
+# Accents colour text and badges on rows (background, surface) and on the set badge (surface-container-high).
+ACCENT_PAIRS = [(f"accent-{a}", s) for a in ACCENTS["light"] for s in ["background", "surface", "surface-container-high"]]
 # Borders and icons need 3:1 against what they sit on (WCAG 1.4.11).
 NON_TEXT = [("outline", "surface"), ("outline", "background")]
 
@@ -130,11 +142,17 @@ def contrast(a, b):
     return (high + 0.05) / (low + 0.05)
 
 
+def colours(scheme):
+    """A scheme's roles with its accents beside them as accent-*, so a pair can name either."""
+    return {**SCHEMES[scheme], **{f"accent-{k}": v for k, v in ACCENTS[scheme].items()}}
+
+
 def failures():
     found = []
-    for name, roles in SCHEMES.items():
+    for name in SCHEMES:
+        roles = colours(name)
         text_min = 7.0 if name.endswith("-hc") else 4.5
-        for pairs, minimum in [(PAIRS, text_min), (NON_TEXT, 3.0)]:
+        for pairs, minimum in [(PAIRS + ACCENT_PAIRS, text_min), (NON_TEXT, 3.0)]:
             for fg, bg in pairs:
                 ratio = contrast(roles[fg], roles[bg])
                 if ratio < minimum:
@@ -145,6 +163,7 @@ def failures():
 def block(selector, scheme, dark):
     lines = [f"  --color-{role}: {value};" for role, value in SCHEMES[scheme].items()]
     lines += [f"  --material-{key}: {value};" for key, value in MATERIALS[scheme].items()]
+    lines += [f"  --accent-{key}: {value};" for key, value in ACCENTS[scheme].items()]
     lines.append(f"  color-scheme: {'dark' if dark else 'light'};")
     return f"{selector} {{\n" + "\n".join(lines) + "\n}\n"
 
@@ -259,6 +278,11 @@ def kotlin():
         values = ", ".join(f"{k} = Color({argb(v)})" for k, v in [("regular", m["regular"]), ("thick", m["thick"]),
                                                                   ("edge", m["edge"]), ("shadow", shadow)])
         out.append(f"internal val {camel(scheme)}Materials = StriveMaterials({values})")
+    out.append("")
+    out.append(holder("StriveAccents", "What a set or a superset is: failure, drop and superset. Never for what you can tap.",
+                      [(camel(k), "Color", "Color.Unspecified") for k in ACCENTS["light"]]) + "\n")
+    for scheme, a in ACCENTS.items():
+        out.append(f"internal val {camel(scheme)}Accents = StriveAccents(" + ", ".join(f"{camel(k)} = Color({argb(v)})" for k, v in a.items()) + ")")
     out += ["", f"internal val MaterialBlur: Dp = {dp(BLUR)}",
             f"internal val MaterialShadowOffsetY: Dp = {dp(shadow_y)}", f"internal val MaterialShadowRadius: Dp = {dp(shadow_radius)}", ""]
     out.append("// Numbers use tabular figures (strive#15, Q5); tnum changes digits only.")
@@ -284,6 +308,7 @@ def kotlin():
 if __name__ == "__main__":
     assert all(len(roles) == 48 for roles in SCHEMES.values()), {n: len(r) for n, r in SCHEMES.items()}
     assert all(roles.keys() == SCHEMES["light"].keys() for roles in SCHEMES.values()), "every scheme needs the same roles"
+    assert ACCENTS.keys() == SCHEMES.keys() and all(a.keys() == ACCENTS["light"].keys() for a in ACCENTS.values()), "every scheme needs the same accents"
     assert argb("rgb(255 255 255 / .62)") == "0x9EFFFFFF" and argb("#08736c") == "0xFF08736C"
     assert easing("cubic-bezier(.3, 1.4, .5, 1)") == "CubicBezierEasing(.3f, 1.4f, .5f, 1f)"
     problems = failures()
@@ -291,9 +316,9 @@ if __name__ == "__main__":
         raise SystemExit("Contrast fails, tokens.css not written:\n" + "\n".join(problems))
     here = Path(__file__).parent
     (here / "tokens.css").write_text(css())
-    pairs = [{"fg": fg, "bg": bg, "kind": kind, "ratio": {n: round(contrast(r[fg], r[bg]), 2) for n, r in SCHEMES.items()}}
-             for kind, group in [("text", PAIRS), ("non-text", NON_TEXT)] for fg, bg in group]
-    data = {"schemes": SCHEMES, "materials": MATERIALS, "type": TYPE, "space": SPACE, "shape": SHAPE,
+    pairs = [{"fg": fg, "bg": bg, "kind": kind, "ratio": {n: round(contrast(colours(n)[fg], colours(n)[bg]), 2) for n in SCHEMES}}
+             for kind, group in [("text", PAIRS + ACCENT_PAIRS), ("non-text", NON_TEXT)] for fg, bg in group]
+    data = {"schemes": SCHEMES, "materials": MATERIALS, "accents": ACCENTS, "type": TYPE, "space": SPACE, "shape": SHAPE,
             "size": SIZE, "border": BORDER, "state": STATE, "motion": MOTION, "pairs": pairs}
     (here / "tokens.json").write_text(json.dumps(data, indent=1) + "\n")
     KOTLIN.parent.mkdir(parents=True, exist_ok=True)

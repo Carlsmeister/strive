@@ -104,6 +104,9 @@
   --material-thick: rgb(255 255 255 / .82);
   --material-edge: rgb(255 255 255 / .7);
   --material-shadow: 0 8px 24px rgb(0 0 0 / .12);
+  --accent-failure: #a8391b;
+  --accent-drop: #7a45c4;
+  --accent-superset: #1f63c7;
   color-scheme: light;
 }
 
@@ -161,6 +164,9 @@
     --material-thick: rgb(28 28 30 / .8);
     --material-edge: rgb(255 255 255 / .1);
     --material-shadow: 0 8px 24px rgb(0 0 0 / .4);
+    --accent-failure: #ff6c47;
+    --accent-drop: #c79cff;
+    --accent-superset: #5aa9ff;
     color-scheme: dark;
   }
 }
@@ -218,6 +224,9 @@
   --material-thick: rgb(28 28 30 / .8);
   --material-edge: rgb(255 255 255 / .1);
   --material-shadow: 0 8px 24px rgb(0 0 0 / .4);
+  --accent-failure: #ff6c47;
+  --accent-drop: #c79cff;
+  --accent-superset: #5aa9ff;
   color-scheme: dark;
 }
 
@@ -276,6 +285,9 @@
     --material-thick: rgb(255 255 255 / .96);
     --material-edge: rgb(0 0 0 / .35);
     --material-shadow: 0 8px 24px rgb(0 0 0 / .2);
+    --accent-failure: #7d2a06;
+    --accent-drop: #55278f;
+    --accent-superset: #0f428f;
     color-scheme: light;
   }
 }
@@ -334,6 +346,9 @@
     --material-thick: rgb(28 28 30 / .97);
     --material-edge: rgb(255 255 255 / .4);
     --material-shadow: 0 8px 24px rgb(0 0 0 / .5);
+    --accent-failure: #ffa088;
+    --accent-drop: #d9a3ff;
+    --accent-superset: #7cbeff;
     color-scheme: dark;
   }
 }
@@ -392,6 +407,9 @@
     --material-thick: rgb(255 255 255 / .96);
     --material-edge: rgb(0 0 0 / .35);
     --material-shadow: 0 8px 24px rgb(0 0 0 / .2);
+    --accent-failure: #7d2a06;
+    --accent-drop: #55278f;
+    --accent-superset: #0f428f;
     color-scheme: light;
   }
   :root[data-theme="dark"] {
@@ -447,6 +465,9 @@
     --material-thick: rgb(28 28 30 / .97);
     --material-edge: rgb(255 255 255 / .4);
     --material-shadow: 0 8px 24px rgb(0 0 0 / .5);
+    --accent-failure: #ffa088;
+    --accent-drop: #d9a3ff;
+    --accent-superset: #7cbeff;
     color-scheme: dark;
   }
 }
@@ -504,6 +525,9 @@
   --material-thick: rgb(255 255 255 / .96);
   --material-edge: rgb(0 0 0 / .35);
   --material-shadow: 0 8px 24px rgb(0 0 0 / .2);
+  --accent-failure: #7d2a06;
+  --accent-drop: #55278f;
+  --accent-superset: #0f428f;
   color-scheme: light;
 }
 
@@ -560,5 +584,8 @@
   --material-thick: rgb(28 28 30 / .97);
   --material-edge: rgb(255 255 255 / .4);
   --material-shadow: 0 8px 24px rgb(0 0 0 / .5);
+  --accent-failure: #ffa088;
+  --accent-drop: #d9a3ff;
+  --accent-superset: #7cbeff;
   color-scheme: dark;
 }
