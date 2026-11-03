@@ -12,6 +12,7 @@ from pathlib import Path
 
 # The 48 colour roles of Material 3's ColorScheme, in kebab case, per scheme.
 # Light and dark follow direction B (calm, clear, native); -hc is Increase Contrast.
+# dark-hc's primary container stays the deep teal D draws (⋯, the rest line), with its mark at 7:1, not a bright fill (#42).
 SCHEMES = {
     "light": {
         "primary": "#08736c", "on-primary": "#ffffff", "primary-container": "#c6efea", "on-primary-container": "#00413d", "inverse-primary": "#5ed6cb",
@@ -59,7 +60,7 @@ SCHEMES = {
         "tertiary-fixed": "#5a3300", "tertiary-fixed-dim": "#432500", "on-tertiary-fixed": "#ffffff", "on-tertiary-fixed-variant": "#fff1e3",
     },
     "dark-hc": {
-        "primary": "#8aede3", "on-primary": "#000000", "primary-container": "#8aede3", "on-primary-container": "#000000", "inverse-primary": "#00504b",
+        "primary": "#8aede3", "on-primary": "#000000", "primary-container": "#00504b", "on-primary-container": "#a6f2ea", "inverse-primary": "#00504b",
         "secondary": "#dcf2ef", "on-secondary": "#000000", "secondary-container": "#dcf2ef", "on-secondary-container": "#000000",
         "tertiary": "#ffd8a8", "on-tertiary": "#000000", "tertiary-container": "#ffd8a8", "on-tertiary-container": "#000000",
         "background": "#000000", "on-background": "#ffffff", "surface": "#1c1c1e", "on-surface": "#ffffff",
