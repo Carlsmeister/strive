@@ -88,9 +88,11 @@ import se.carlsmeister.strive.theme.glass
 import se.carlsmeister.strive.theme.settle
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.add_exercises
+import strive.shared.generated.resources.add_set
 import strive.shared.generated.resources.add_set_rest
 import strive.shared.generated.resources.back_to_workout
 import strive.shared.generated.resources.bar
+import strive.shared.generated.resources.cancel
 import strive.shared.generated.resources.collapse
 import strive.shared.generated.resources.discard_body
 import strive.shared.generated.resources.discard_question
@@ -110,11 +112,14 @@ import strive.shared.generated.resources.note
 import strive.shared.generated.resources.order_skip
 import strive.shared.generated.resources.remove_exercise
 import strive.shared.generated.resources.rest_all
+import strive.shared.generated.resources.rest_change
 import strive.shared.generated.resources.rest_row
 import strive.shared.generated.resources.save_without
 import strive.shared.generated.resources.skip
 import strive.shared.generated.resources.step
 import strive.shared.generated.resources.sticky_note
+import strive.shared.generated.resources.superset_create
+import strive.shared.generated.resources.superset_leave
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.time_sets
 import strive.shared.generated.resources.unlogged
@@ -157,6 +162,9 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     var editing by remember { mutableStateOf<Long?>(null) }
     val nowMs = rememberNow()
     var editField by remember { mutableStateOf<Int?>(null) }
+    // Opened from a rest line, the dock changes the rest without logging the set.
+    var editRest by remember { mutableStateOf(false) }
+    fun edit(id: Long?, field: Int? = null, rest: Boolean = false) { editing = id; editField = field; editRest = rest }
     val list = rememberLazyListState()
     val history by remember { sessions.history() }.collectAsState(emptyList())
     val restSetting by remember { graph.settings.get(REST_KEY) }.collectAsState(null)
@@ -168,8 +176,12 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     var finishing by remember { mutableStateOf(false) }
     var discarding by remember { mutableStateOf(false) }
     val active = w.exercises.filterNot { it.skipped }
-    // The next set to do is outlined (#17 S3): the first one not logged, in the order the list is lifted.
-    val focus = active.firstNotNullOfOrNull { e -> e.sets.indexOfFirst { !it.done }.takeIf { it >= 0 }?.let { e to it } }
+    val tags = tags(active)
+    // The next set to do is outlined (#17 S3): the first one not logged, in the order the list is lifted, a superset round by round (G2).
+    val focusRound = blocks(active).flatMap(::rounds).firstOrNull { r -> r.any { (e, i) -> !e.sets[i].done } }
+    val focus = focusRound?.first { (e, i) -> !e.sets[i].done }
+    // The rest after the focus's round: its own for a set alone, the round's for a superset.
+    val focusRest = focusRound?.last()?.let { (e, i) -> restOf(e.sets[i], defaultRest) } ?: defaultRest
     val current = focus?.let { (e, i) -> e.sets[i].id }
     var focusRir by remember(current) { mutableStateOf<Int?>(null) }
     var focusMore by remember(current) { mutableStateOf(false) }
@@ -179,14 +191,21 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     fun log(set: WorkoutSet) {
         haptics.performHapticFeedback(HapticFeedbackType.Confirm) // Q23: a short haptic confirms ✓
         scope.launch { sessions.saveSet(set) }
-        // The rest starts when a set is logged (Q10, Q17).
-        graph.rest.value = Rest(now(), restOf(set, defaultRest))
+        // The rest starts when a set is logged (Q10, Q17); in a superset, once every set in its round is, in either order (choice 6).
+        val after = active.map { e -> e.copy(sets = e.sets.map { if (it.id == set.id) set else it }) }
+        restAfterLogging(after, set.id)?.let { graph.rest.value = Rest(now(), restOf(it, defaultRest), it.id) }
+    }
+
+    /** A rest changed from its line; the T5 card, if it counts down this rest, follows the new length from when it started. */
+    fun saveRest(set: WorkoutSet) {
+        scope.launch { sessions.saveSet(set) }
+        rest?.takeIf { it.setId == set.id }?.let { graph.rest.value = it.copy(seconds = restOf(set, defaultRest)) }
     }
 
     fun logFocus() {
         val (e, i) = focus ?: return
         val set = e.sets[i]
-        if (set.loggable(e.type)) log(set.copy(rir = focusRir, done = true)) else { editing = set.id; editField = null }
+        if (set.loggable(e.type)) log(set.copy(rir = focusRir, done = true)) else edit(set.id)
     }
 
     fun finish() {
@@ -221,66 +240,100 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                         focus?.let { (e, i) ->
                             item(key = "focus") {
                                 Box(Modifier.padding(top = 14.dp)) {
-                                    FocusCard(e, e.sets[i], badges(e.sets)[i], previous[e.exerciseId]?.getOrNull(i), restOf(e.sets[i], defaultRest),
+                                    FocusCard(e, e.sets[i], badges(e.sets)[i], previous[e.exerciseId]?.getOrNull(i), focusRest,
                                         focusRir, focusMore, { focusRir = it }, { focusMore = it },
-                                        onEdit = { editing = e.sets[i].id; editField = null }, onLog = { logFocus() })
+                                        onEdit = { edit(e.sets[i].id) }, onLog = { logFocus() }, tag = tags[e.id])
                                 }
                             }
                         }
                     }
-                    w.exercises.forEachIndexed { index, e ->
-                        val folded = e.skipped || (folds[e.id] ?: (focus != null && e.id != focus.first.id))
-                        if (folded) {
-                            val before = w.exercises.getOrNull(index - 1)
-                            val after = w.exercises.getOrNull(index + 1)
-                            fun isFolded(x: SessionExercise?) = x != null && (x.skipped || (folds[x.id] ?: (focus != null && x.id != focus.first.id)))
-                            val first = !isFolded(before)
-                            item(key = "o${e.id}") {
-                                Box(Modifier.padding(top = if (first) 14.dp else 0.dp).animateItem(placementSpec = place)) {
-                                    ExerciseOverview(e, first, last = !isFolded(after)) { folds[e.id] = false; if (e.skipped) scope.launch { sessions.skip(e.id, false) } }
+                    // Each exercise alone, or a superset's together in one list in the order you lift (#17 choice 6, G2 with G1's edge line).
+                    val shown = blocks(w.exercises)
+                    fun folded(b: List<SessionExercise>) = b.all { it.skipped } || (folds[b.first().id] ?: (focus != null && b.none { it.id == focus.first.id }))
+                    shown.forEachIndexed { index, b ->
+                        if (folded(b)) {
+                            // Folded, a superset's exercises are rows in the card the folded exercises share.
+                            val first = shown.getOrNull(index - 1)?.let(::folded) != true
+                            val last = shown.getOrNull(index + 1)?.let(::folded) != true
+                            b.forEachIndexed { n, e ->
+                                item(key = "o${e.id}") {
+                                    Box(Modifier.padding(top = if (first && n == 0) 14.dp else 0.dp).animateItem(placementSpec = place)) {
+                                        ExerciseOverview(e, first && n == 0, last && n == b.lastIndex, tags[e.id]) {
+                                            folds[b.first().id] = false
+                                            if (e.skipped) scope.launch { sessions.skip(e.id, false) }
+                                        }
+                                    }
                                 }
                             }
                             return@forEachIndexed
                         }
-                        val prev = previous[e.exerciseId].orEmpty()
-                        val badges = badges(e.sets)
-                        item(key = "h${e.id}") {
-                            ExerciseHeader(w, e, defaultRest, onFold = { folds[e.id] = true }, onSwap = { onSwap(e) },
-                                Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place))
+                        val members = b.filterNot { it.skipped }
+                        val superset = members.size > 1
+                        val rows = rounds(members)
+                        val badges = members.associate { it.id to badges(it.sets) }
+                        if (superset) {
+                            item(key = "g${b.first().id}") {
+                                val roundRest = rows.firstOrNull()?.last()?.let { (e, i) -> restOf(e.sets[i], defaultRest) } ?: defaultRest
+                                SupersetLabel(roundRest, Modifier.animateItem(placementSpec = place).padding(top = StriveTheme.spacing.s16).edge())
+                            }
                         }
-                        item(key = "c${e.id}") { ColumnLabels(e.type) }
-                        e.sets.forEachIndexed { i, s ->
-                            item(key = s.id) {
-                                Box(Modifier.bleed(6.dp).padding(vertical = 1.5.dp).animateItem(placementSpec = place)) {
-                                    SwipeToDelete(RowShape, onDelete = { scope.launch { sessions.deleteSet(s.id) } }) {
-                                        SetRow(
-                                            "set ${e.name} ${i + 1}", badges[i], s, e.type, current = s.id == current, prev = prev.getOrNull(i),
-                                            onKind = { kind -> scope.launch { sessions.setKind(s.id, kind) } },
-                                            onOpen = { f -> tap { editing = s.id; editField = f } },
-                                            onCheck = {
-                                                tap {
-                                                    when {
-                                                        s.done -> scope.launch { sessions.saveSet(s.copy(done = false)) }
-                                                        s.loggable(e.type) -> log(s.copy(done = true))
-                                                        else -> { editing = s.id; editField = null }
+                        for (e in members) {
+                            item(key = "h${e.id}") {
+                                ExerciseHeader(w, e, defaultRest, tags[e.id], onFold = { folds[b.first().id] = true }, onSwap = { onSwap(e) },
+                                    Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place).edge(superset))
+                            }
+                        }
+                        // One row of column labels over a superset whose exercises record the same values.
+                        if (members.map { it.type }.distinct().size == 1) item(key = "c${b.first().id}") { Box(Modifier.edge(superset)) { ColumnLabels(members[0].type) } }
+                        rows.forEachIndexed { r, round ->
+                            for ((e, i) in round) {
+                                val s = e.sets[i]
+                                val badge = badges.getValue(e.id)[i]
+                                item(key = s.id) {
+                                    Box(Modifier.edge(superset).bleed(6.dp).padding(vertical = 1.5.dp).animateItem(placementSpec = place)) {
+                                        SwipeToDelete(RowShape, onDelete = { scope.launch { sessions.deleteSet(s.id) } }) {
+                                            SetRow(
+                                                "set ${e.name} ${i + 1}", badge, s, e.type, current = s.id == current, prev = previous[e.exerciseId]?.getOrNull(i),
+                                                onKind = { kind -> scope.launch { sessions.setKind(s.id, kind) } },
+                                                onOpen = { f -> tap { edit(s.id, f) } },
+                                                onCheck = {
+                                                    tap {
+                                                        when {
+                                                            s.done -> scope.launch { sessions.saveSet(s.copy(done = false)) }
+                                                            s.loggable(e.type) -> log(s.copy(done = true))
+                                                            else -> edit(s.id)
+                                                        }
                                                     }
-                                                }
-                                            },
-                                            guard = { tap(it) },
-                                        )
+                                                },
+                                                guard = { tap(it) },
+                                                letter = tags[e.id],
+                                            )
+                                        }
                                     }
                                 }
                             }
-                            if (i < e.sets.lastIndex) {
-                                item(key = "r${s.id}") {
-                                    Box(Modifier.animateItem(placementSpec = place)) { RestLine(restOf(s, defaultRest), now = s.done && !e.sets[i + 1].done) }
+                            // The rest after a round is its last set's (Q3); a tap changes it in the dock, as T4's rest line does.
+                            if (r < rows.lastIndex) {
+                                val (le, li) = round.last()
+                                val after = le.sets[li]
+                                val now = round.all { (x, j) -> x.sets[j].done } && !rows[r + 1].all { (x, j) -> x.sets[j].done }
+                                item(key = "r${after.id}") {
+                                    val label = stringResource(Res.string.rest_change, tags[le.id].orEmpty() + badges.getValue(le.id)[li])
+                                    Box(Modifier.edge(superset).animateItem(placementSpec = place)) {
+                                        RestLine(restOf(after, defaultRest), now, label) { edit(after.id, restField(le.type), rest = true) }
+                                    }
                                 }
                             }
                         }
-                        item(key = "a${e.id}") {
-                            val restAfter = e.sets.lastOrNull()?.let { restOf(it, defaultRest) } ?: defaultRest
-                            AddButton(stringResource(Res.string.add_set_rest, clock(restAfter.toLong())), 40.dp, RoundedCornerShape(12.dp),
-                                Modifier.padding(top = 6.dp).animateItem(placementSpec = place)) { scope.launch { sessions.addSet(e.id) } }
+                        members.forEachIndexed { n, e ->
+                            item(key = "a${e.id}") {
+                                val restAfter = e.sets.lastOrNull()?.let { restOf(it, defaultRest) } ?: defaultRest
+                                // In a superset only the last exercise's button names the rest, as T4 draws it.
+                                val text = if (superset && n < members.lastIndex) stringResource(Res.string.add_set)
+                                    else stringResource(Res.string.add_set_rest, clock(restAfter.toLong()))
+                                AddButton(text, 40.dp, RoundedCornerShape(12.dp), Modifier.edge(superset).padding(top = 6.dp).animateItem(placementSpec = place),
+                                    letter = tags[e.id]) { scope.launch { sessions.addSet(e.id) } }
+                            }
                         }
                     }
                     item(key = "end") {
@@ -292,7 +345,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                         }
                     }
                 }
-                StripOverlay(strip, focus, focusRir, Modifier.align(Alignment.TopCenter)) {
+                StripOverlay(strip, focus, focusRir, focus?.let { tags[it.first.id] }, Modifier.align(Alignment.TopCenter)) {
                     scope.launch { if (reduceMotion) list.scrollToItem(0) else list.animateScrollToItem(0) }
                 }
             }
@@ -306,7 +359,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
         }
         if (open != null) {
             // A tap anywhere outside the dock closes it (#17 D3).
-            Box(Modifier.fillMaxSize().clickable(remember { MutableInteractionSource() }, indication = null) { editing = null })
+            Box(Modifier.fillMaxSize().clickable(remember { MutableInteractionSource() }, indication = null) { edit(null) })
         }
         AnimatedVisibility(
             open != null, Modifier.align(Alignment.BottomCenter),
@@ -318,7 +371,8 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             if (open != null) shown.value = open
             val (e, i) = shown.value ?: return@AnimatedVisibility
             val set = e.sets.getOrNull(i) ?: return@AnimatedVisibility
-            Dock(e, set, badges(e.sets)[i], defaultRest, haze, onSave = { log(it); editing = null }, onClose = { editing = null }, field = editField)
+            Dock(e, set, badges(e.sets)[i], defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
+                field = editField, logs = !editRest)
         }
     }
 
@@ -343,12 +397,14 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     }
 }
 
-/** D's add button: a dark surface with a teal +, for "Lägg till set (2:00)" and "Lägg till övningar". */
+/** D's add button: a dark surface with a teal +, for "Lägg till set (2:00)" and "Lägg till övningar"; in a superset, with its letter. */
 @Composable
-private fun AddButton(text: String, height: androidx.compose.ui.unit.Dp, shape: androidx.compose.ui.graphics.Shape, modifier: Modifier = Modifier, onClick: () -> Unit) =
+private fun AddButton(text: String, height: androidx.compose.ui.unit.Dp, shape: androidx.compose.ui.graphics.Shape, modifier: Modifier = Modifier,
+                      letter: String? = null, onClick: () -> Unit) =
     Btn(onClick, modifier.fillMaxWidth().heightIn(min = height), container = MaterialTheme.colorScheme.surface, shape = shape) {
         Text("+", Modifier.padding(end = 6.dp), style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp, fontWeight = FontWeight.Normal),
             color = MaterialTheme.colorScheme.primary)
+        letter?.let { Tag(it, Modifier.padding(end = 6.dp)) }
         Text(text, style = MaterialTheme.typography.titleSmall)
     }
 
@@ -396,7 +452,7 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
  * note in grey and today's note once one is opened (choice 6).
  */
 @Composable
-private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, onFold: () -> Unit, onSwap: () -> Unit, modifier: Modifier) {
+private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, letter: String?, onFold: () -> Unit, onSwap: () -> Unit, modifier: Modifier) {
     val graph = LocalAppGraph.current
     val sessions = graph.sessions
     val scope = rememberCoroutineScope()
@@ -409,6 +465,7 @@ private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, onF
     val fold = stringResource(Res.string.collapse, e.name)
     Column(modifier.padding(top = StriveTheme.spacing.s16), verticalArrangement = Arrangement.spacedBy(3.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
+            letter?.let { Tag(it) }
             Text(e.name, Modifier.weight(1f).clickable(onClickLabel = fold, onClick = onFold).padding(vertical = 6.dp),
                 style = MaterialTheme.typography.titleMedium, color = colors.primary)
             Box {
@@ -428,6 +485,12 @@ private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, onF
                             trailingIcon = { Glyph(Glyph.Pin, 18.dp, color = colors.onSurface) })
                         DropdownMenuItem({ Text(stringResource(Res.string.rest_all)) }, onClick = { restMenu = true },
                             trailingIcon = { Text("›", style = MaterialTheme.typography.titleMedium) })
+                        // Choice 4's Skapa superset; in a superset, the way out of it.
+                        if (letter != null) {
+                            DropdownMenuItem({ Text(stringResource(Res.string.superset_leave)) }, onClick = { menu = false; scope.launch { sessions.leaveSuperset(e.id) } })
+                        } else if (w.exercises.size > 1) {
+                            DropdownMenuItem({ Text(stringResource(Res.string.superset_create)) }, onClick = { menu = false; dialog = "superset" })
+                        }
                         DropdownMenuItem({ Text(stringResource(Res.string.order_skip)) }, onClick = { menu = false; dialog = "order" })
                         if (e.type == ExerciseType.WeightReps) {
                             DropdownMenuItem({ Text(stringResource(Res.string.exercise_settings)) }, onClick = { menu = false; dialog = "settings" })
@@ -472,6 +535,7 @@ private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, onF
             scope.launch { graph.exercises.setNote(e.exerciseId, n) }
         }, onDismiss = { dialog = null })
         "order" -> OrderDialog(w) { dialog = null }
+        "superset" -> SupersetDialog(w, e) { dialog = null }
         "settings" -> SettingsDialog(e) { dialog = null }
     }
 }
@@ -524,6 +588,29 @@ private fun OrderDialog(w: Workout, onDone: () -> Unit) {
     }
 }
 
+/** Skapa superset: the workout's other exercises; the one tapped joins this one in a superset, right after it. */
+@Composable
+private fun SupersetDialog(w: Workout, e: SessionExercise, onDone: () -> Unit) {
+    val sessions = LocalAppGraph.current.sessions
+    val scope = rememberCoroutineScope()
+    Dialog(onDismissRequest = onDone) {
+        Column(
+            Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.extraLarge).padding(StriveTheme.spacing.s16),
+            verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4),
+        ) {
+            Text(stringResource(Res.string.superset_create), Modifier.fillMaxWidth().padding(bottom = StriveTheme.spacing.s8),
+                style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+            for (other in w.exercises.filter { it.id != e.id && !it.skipped }) {
+                Text(other.name, Modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium)
+                    .clickable { scope.launch { sessions.superset(e.id, other.id) }; onDone() }
+                    .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = StriveTheme.spacing.s8, vertical = 12.dp),
+                    style = MaterialTheme.typography.bodyLarge)
+            }
+            TextButton(onDone, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.cancel)) }
+        }
+    }
+}
+
 /** Övningens inställningar (Q15, Q7, Q22): the step − and + use, and the bar. */
 @Composable
 private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
@@ -554,7 +641,7 @@ private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
 
 /** The focus strip under the bar while the focus card is out of sight (D-scroll), on the bar's glass. */
 @Composable
-private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, rir: Int?, modifier: Modifier, onBack: () -> Unit) {
+private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, rir: Int?, tag: String?, modifier: Modifier, onBack: () -> Unit) {
     val reduceMotion = StriveTheme.reduceMotion
     AnimatedVisibility(
         shown, modifier,
@@ -567,7 +654,7 @@ private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, rir
         Column(Modifier.fillMaxWidth().background(StriveTheme.glass.thick)) {
             shownFocus.value?.let { (e, i) ->
                 e.sets.getOrNull(i)?.let {
-                    Box(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 10.dp)) { FocusStrip(e, it, badges(e.sets)[i], rir, onBack) }
+                    Box(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 10.dp)) { FocusStrip(e, it, badges(e.sets)[i], rir, onBack, tag) }
                 }
             }
             HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)

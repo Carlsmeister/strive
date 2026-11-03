@@ -46,6 +46,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -323,9 +324,11 @@ internal fun Btn(
     content: Color = MaterialTheme.colorScheme.onSurface,
     shape: Shape = MaterialTheme.shapes.medium,
     label: String? = null,
+    enabled: Boolean = true,
     body: @Composable RowScope.() -> Unit,
 ) = Row(
-    modifier.clip(shape).background(container).clickable(onClickLabel = label, role = Role.Button, onClick = onClick),
+    modifier.alpha(if (enabled) 1f else 0.38f).clip(shape).background(container)
+        .clickable(enabled = enabled, onClickLabel = label, role = Role.Button, onClick = onClick),
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
 ) { CompositionLocalProvider(LocalContentColor provides content) { body() } }

@@ -193,4 +193,9 @@
     <string name="custom_time">Custom time…</string>
     <string name="start_time">Start time</string>
     <string name="rest_hint">Minutes and seconds, such as 1:30</string>
+    <string name="rest_change">Change rest after set %1$s</string>
+    <string name="superset_count">Superset (%1$d)</string>
+    <string name="superset_rest">Superset · rest %1$s after each round</string>
+    <string name="superset_create">Create superset</string>
+    <string name="superset_leave">Remove from superset</string>
 </resources>

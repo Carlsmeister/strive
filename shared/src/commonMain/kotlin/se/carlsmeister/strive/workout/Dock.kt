@@ -73,6 +73,7 @@ import strive.shared.generated.resources.log_next
 import strive.shared.generated.resources.next
 import strive.shared.generated.resources.rir
 import strive.shared.generated.resources.rest
+import strive.shared.generated.resources.save
 import strive.shared.generated.resources.save_change
 import strive.shared.generated.resources.set_number
 
@@ -90,6 +91,9 @@ private fun values(type: ExerciseType) = when (type) {
     ExerciseType.Time -> listOf(Value.Seconds)
     ExerciseType.Distance -> listOf(Value.Metres)
 } + Value.Rest
+
+/** The rest field's place in the dock, last after the values (Q16, Q17). */
+internal fun restField(type: ExerciseType) = values(type).lastIndex
 
 internal fun ExerciseType.hasRir() = this == ExerciseType.WeightReps || this == ExerciseType.BodyweightReps || this == ExerciseType.Reps
 
@@ -113,11 +117,12 @@ private fun Value.parse(f: Field) = if (this == Value.Rest) restSeconds(f.text)?
 
 /**
  * The logging dock (#17 S3, D3, K3): closed until a set is tapped, closed again by its grabber or a tap outside. The fields show
- * − and + until one is tapped; then the keypad takes over and Nästa walks the fields, becoming Logga › on the last (Q16).
+ * − and + until one is tapped; then the keypad takes over and Nästa walks the fields, becoming Logga › on the last (Q16). Opened
+ * from a rest line it changes without logging: [logs] false, and its button says Spara.
  */
 @Composable
 internal fun Dock(exercise: SessionExercise, set: WorkoutSet, badge: String, defaultRest: Int, haze: HazeState, onSave: (WorkoutSet) -> Unit, onClose: () -> Unit,
-                  field: Int? = null) {
+                  field: Int? = null, logs: Boolean = true) {
     val space = StriveTheme.spacing
     val swedish = Locale.current.language == "sv"
     val separator = if (swedish) ',' else '.'
@@ -154,7 +159,7 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, badge: String, def
             .let { if (texts.last().text == restShown.text) it.copy(rest = set.rest) else it }
             .copy(rir = rir, done = true)
         // Something missing: go to the first empty field instead of logging half a set.
-        if (filled.loggable(exercise.type)) onSave(filled) else focus = fields.indices.first { fields[it] != Value.Rest && texts[it].value == null }
+        if (!logs) onSave(filled.copy(done = set.done)) else if (filled.loggable(exercise.type)) onSave(filled) else focus = fields.indices.first { fields[it] != Value.Rest && texts[it].value == null }
     }
 
     @Composable
@@ -222,7 +227,7 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, badge: String, def
             }
             if (more) RirMore(rir, onRir = { rir = it }, onMore = { more = it })
             Button(::log, Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch), shape = MaterialTheme.shapes.large) {
-                Text(stringResource(if (set.done) Res.string.save_change else Res.string.log))
+                Text(stringResource(if (!logs) Res.string.save else if (set.done) Res.string.save_change else Res.string.log))
             }
         } else {
             val v = fields[f]
@@ -236,7 +241,7 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, badge: String, def
             Button(
                 { if (last) log() else focus = f + 1 }, Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch),
                 shape = MaterialTheme.shapes.large,
-            ) { Text(stringResource(if (last) Res.string.log_next else Res.string.next)) }
+            ) { Text(stringResource(if (!last) Res.string.next else if (logs) Res.string.log_next else Res.string.save)) }
         }
     }
 }

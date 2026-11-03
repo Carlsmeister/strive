@@ -193,4 +193,9 @@
     <string name="custom_time">Egen tid…</string>
     <string name="start_time">Starttid</string>
     <string name="rest_hint">Minuter och sekunder, till exempel 1:30</string>
+    <string name="rest_change">Ändra vila efter set %1$s</string>
+    <string name="superset_count">Superset (%1$d)</string>
+    <string name="superset_rest">Superset · vila %1$s efter varvet</string>
+    <string name="superset_create">Skapa superset</string>
+    <string name="superset_leave">Ta bort ur superset</string>
 </resources>

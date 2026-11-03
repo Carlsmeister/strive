@@ -41,6 +41,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -101,6 +104,7 @@ import strive.shared.generated.resources.session_note
 import strive.shared.generated.resources.set_type
 import strive.shared.generated.resources.sets_progress
 import strive.shared.generated.resources.skipped
+import strive.shared.generated.resources.superset_rest
 import strive.shared.generated.resources.up_by
 import strive.shared.generated.resources.weekdays_short
 import strive.shared.generated.resources.what_today
@@ -129,6 +133,31 @@ internal val SetKind.label get() = when (this) {
     SetKind.Drop -> Res.string.kind_drop
     SetKind.Failure -> Res.string.kind_failure
 }
+
+/** The colour of a set's type: amber for W, D and F in the badge and for its word in the focus label, so the two cannot drift. */
+internal val SetKind.tint: Color @Composable get() = if (this == SetKind.Normal) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.tertiary
+
+/** A superset's letter (choice 6's tag): A or B in a small grey square, before the exercise's name and on each of its sets. */
+@Composable
+internal fun Tag(letter: String, modifier: Modifier = Modifier) = Box(
+    modifier.size(20.dp).background(MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.shapes.extraSmall),
+    contentAlignment = Alignment.Center,
+) { Text(letter, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+
+/** G1's line down the superset's left edge (choice 6), drawn on each of its rows so they join into one; nothing unless [on]. */
+@Composable
+internal fun Modifier.edge(on: Boolean = true): Modifier {
+    if (!on) return this
+    val color = MaterialTheme.colorScheme.outlineVariant
+    val width = StriveTheme.borders.focus
+    return drawBehind { drawRect(color, size = Size(width.toPx(), size.height)) }.padding(start = width + 12.dp)
+}
+
+/** "Superset · vila 1:30 efter varvet" over the superset's headers (choice 6). */
+@Composable
+internal fun SupersetLabel(rest: Int, modifier: Modifier = Modifier) =
+    Text(stringResource(Res.string.superset_rest, clock(rest.toLong())), modifier, style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant)
 
 private val SetColumn = 36.dp
 private val CheckColumn = 44.dp
@@ -233,15 +262,24 @@ internal fun LargeHeader(w: Workout, now: Long) {
     }
 }
 
-/** The label over the next set: "NU · BENCH PRESS BB · SET 2 AV 4", or the set's type for a warm-up, drop or failure set. */
+/**
+ * The label over the next set: "NU · BENCH PRESS BB · SET 2 AV 4", or the set's type for a warm-up, drop or failure set, that word in
+ * the type's colour. In a superset the exercise's letter comes first: "NU · A · INCLINE PRESS DB · SET 1 AV 3".
+ */
 @Composable
-private fun nowLabel(e: SessionExercise, set: WorkoutSet, badge: String, strip: Boolean): String {
-    val working = e.sets.count { it.kind == SetKind.Normal }
-    return when {
-        set.kind != SetKind.Normal -> stringResource(Res.string.now_kind, e.name, stringResource(set.kind.label))
-        strip -> stringResource(Res.string.now_strip, e.name, badge)
-        else -> stringResource(Res.string.now_set, e.name, badge, working)
+private fun nowLabel(e: SessionExercise, set: WorkoutSet, badge: String, strip: Boolean, tag: String?): AnnotatedString {
+    val name = tag?.let { "$it · ${e.name}" } ?: e.name
+    val kind = stringResource(set.kind.label).uppercase()
+    val text = when {
+        set.kind != SetKind.Normal -> stringResource(Res.string.now_kind, name, kind)
+        strip -> stringResource(Res.string.now_strip, name, badge)
+        else -> stringResource(Res.string.now_set, name, badge, working(e.sets))
     }.uppercase()
+    val tint = set.kind.tint
+    return buildAnnotatedString {
+        append(text)
+        if (set.kind != SetKind.Normal) text.lastIndexOf(kind).takeIf { it >= 0 }?.let { addStyle(SpanStyle(color = tint), it, it + kind.length) }
+    }
 }
 
 /** "upp 2,5 kg" against last time, or nothing (Q21's ↑, until #45's rule). */
@@ -256,7 +294,7 @@ internal fun changeText(set: WorkoutSet, prev: WorkoutSet?, swedish: Boolean): S
  */
 @Composable
 internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev: WorkoutSet?, rest: Int, rir: Int?, more: Boolean,
-                       onRir: (Int?) -> Unit, onMore: (Boolean) -> Unit, onEdit: () -> Unit, onLog: () -> Unit) {
+                       onRir: (Int?) -> Unit, onMore: (Boolean) -> Unit, onEdit: () -> Unit, onLog: () -> Unit, tag: String? = null) {
     val colors = MaterialTheme.colorScheme
     val type = MaterialTheme.typography
     val sv = swedish
@@ -264,7 +302,7 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
         Modifier.fillMaxWidth().background(colors.surface, RoundedCornerShape(22.dp)).padding(StriveTheme.spacing.s16).testTag("focus"),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text(nowLabel(e, set, badge, strip = false), style = type.bodySmall.copy(letterSpacing = 0.3.sp), fontWeight = FontWeight.SemiBold,
+        Text(nowLabel(e, set, badge, strip = false, tag), style = type.bodySmall.copy(letterSpacing = 0.3.sp), fontWeight = FontWeight.SemiBold,
             color = colors.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Column {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -308,7 +346,7 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
  * stays on the card and the rows, so a tap meant for the bar never logs a set (Carl, point 7).
  */
 @Composable
-internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, badge: String, rir: Int?, onBack: () -> Unit) {
+internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, badge: String, rir: Int?, onBack: () -> Unit, tag: String? = null) {
     val colors = MaterialTheme.colorScheme
     val sv = swedish
     val main = when (e.type) {
@@ -321,7 +359,7 @@ internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, badge: String, rir:
             .padding(horizontal = 14.dp, vertical = 8.dp).testTag("focus-strip"),
         verticalArrangement = Arrangement.spacedBy(1.dp),
     ) {
-        Text(nowLabel(e, set, badge, strip = true), style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 0.3.sp),
+        Text(nowLabel(e, set, badge, strip = true, tag), style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 0.3.sp),
             fontWeight = FontWeight.SemiBold, color = colors.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Text(
             buildAnnotatedString {
@@ -355,7 +393,7 @@ internal fun ColumnLabels(type: ExerciseType) {
 @Composable
 internal fun SetRow(
     tag: String, badge: String, set: WorkoutSet, type: ExerciseType, current: Boolean, prev: WorkoutSet?,
-    onKind: (SetKind) -> Unit, onOpen: (Int?) -> Unit, onCheck: () -> Unit, guard: (() -> Unit) -> Unit = { it() },
+    onKind: (SetKind) -> Unit, onOpen: (Int?) -> Unit, onCheck: () -> Unit, guard: (() -> Unit) -> Unit = { it() }, letter: String? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     val sv = swedish
@@ -377,7 +415,7 @@ internal fun SetRow(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(badge, style = MaterialTheme.typography.bodyMedium, fontWeight = if (current) FontWeight.Bold else FontWeight.SemiBold,
-                    color = when { current -> colors.onPrimary; set.kind != SetKind.Normal -> colors.tertiary; else -> colors.onSurface })
+                    color = if (current) colors.onPrimary else set.kind.tint)
             }
             DropdownMenu(menu, { menu = false }, containerColor = colors.surfaceContainerHigh) {
                 for (kind in SetKind.entries) {
@@ -389,8 +427,11 @@ internal fun SetRow(
                 }
             }
         }
-        Text(prev?.let { setText(it, type, sv) } ?: "–", Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium,
-            color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+            letter?.let { Tag(it, Modifier.padding(end = 8.dp)) }
+            Text(prev?.let { setText(it, type, sv) } ?: "–", style = MaterialTheme.typography.bodyMedium,
+                color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
         values.forEachIndexed { i, v ->
             Box(
                 Modifier.width(cellWidth(values.size, i)).height(34.dp).clip(RoundedCornerShape(10.dp))
@@ -424,11 +465,18 @@ internal fun SetRow(
     }
 }
 
-/** The rest between two sets (Q17), "Vila 2:00" between two lines; teal after the last set logged, where the rest is now. */
+/**
+ * The rest between two sets (Q17), "Vila 2:00" between two lines; teal after the last set logged, where the rest is now. It never counts
+ * down, the T5 card does (Carl, 2026-11-03). A tap changes it, as a rest line does in T4: D's 20 pt line inside a 44 pt target.
+ */
 @Composable
-internal fun RestLine(seconds: Int, now: Boolean) {
+internal fun RestLine(seconds: Int, now: Boolean, label: String, onClick: () -> Unit) {
     val line = if (now) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh
-    Row(Modifier.fillMaxWidth().height(20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch).clickable(onClickLabel = label, onClick = onClick)
+            .semantics { contentDescription = label },
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
         Box(Modifier.weight(1f).height(2.dp).background(line, RoundedCornerShape(1.dp)))
         Text(stringResource(Res.string.rest_row, clock(seconds.toLong())), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold,
             color = if (now) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
@@ -441,7 +489,7 @@ internal fun RestLine(seconds: Int, now: Boolean) {
  * card, joined by hairlines; [first] and [last] round its ends.
  */
 @Composable
-internal fun ExerciseOverview(e: SessionExercise, first: Boolean, last: Boolean, onExpand: () -> Unit) {
+internal fun ExerciseOverview(e: SessionExercise, first: Boolean, last: Boolean, letter: String? = null, onExpand: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     val logged = e.sets.count { it.done }
     val label = stringResource(Res.string.expand, e.name)
@@ -455,7 +503,10 @@ internal fun ExerciseOverview(e: SessionExercise, first: Boolean, last: Boolean,
             horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s12),
         ) {
             Column(Modifier.weight(1f).padding(vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4)) {
-                Text(e.name, style = MaterialTheme.typography.titleSmall.copy(fontSize = 16.sp), color = if (e.skipped) colors.onSurfaceVariant else colors.onSurface)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    letter?.let { Tag(it, Modifier.padding(end = 8.dp)) }
+                    Text(e.name, style = MaterialTheme.typography.titleSmall.copy(fontSize = 16.sp), color = if (e.skipped) colors.onSurfaceVariant else colors.onSurface)
+                }
                 if (!e.skipped) Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                     for (s in e.sets) {
                         val dot = if (s.kind == SetKind.Warmup) colors.tertiary else colors.primary

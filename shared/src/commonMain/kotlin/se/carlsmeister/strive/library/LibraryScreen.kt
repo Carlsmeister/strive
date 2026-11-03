@@ -4,6 +4,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -40,12 +42,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import se.carlsmeister.strive.data.Category
 import se.carlsmeister.strive.data.Exercise
 import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.data.Mark
+import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.StriveTheme
+import se.carlsmeister.strive.workout.Btn
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.add_count
 import strive.shared.generated.resources.add_exercises
@@ -62,16 +67,18 @@ import strive.shared.generated.resources.no_match
 import strive.shared.generated.resources.search
 import strive.shared.generated.resources.swap_exercise
 import strive.shared.generated.resources.alternatives
+import strive.shared.generated.resources.superset_count
 
 /**
  * The exercise library (#17 L1): one list with a sticky heading per muscle, search, pattern chips and a filter sheet. Given [pick] it
- * is the add-exercise picker (Q19): rows tick in the order tapped, and Lägg till hands them over. Given [swapFor] as well it swaps that
- * exercise (Q8): one tap picks, and the exercises marked Byt (SUB) with the same movement pattern come first.
+ * is the add-exercise picker (Q19): rows tick in the order tapped, and the bar at the bottom hands them over with Lägg till, or as one
+ * superset with Superset given [onSuperset] (queue item 7). Given [swapFor] as well it swaps that exercise (Q8): one tap picks, and
+ * the exercises marked Byt (SUB) with the same movement pattern come first.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBack: () -> Unit, pick: ((List<Long>) -> Unit)? = null,
-                           swapFor: Long? = null) {
+                           swapFor: Long? = null, onSuperset: ((List<Long>) -> Unit)? = null) {
     var picked by rememberSaveable { mutableStateOf(listOf<Long>()) }
     // Null until the first read, so the saved scroll position is not spent on an empty list.
     val all by LocalAppGraph.current.exercises.all().collectAsState(null)
@@ -88,53 +95,72 @@ internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBac
     val direction = LocalLayoutDirection.current
     val sides = Modifier.padding(start = padding.calculateStartPadding(direction), end = padding.calculateEndPadding(direction))
 
-    Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()).then(sides)) {
-        if (pick == null) {
-            TextButton(onBack, Modifier.padding(start = space.s8)) { Text(stringResource(Res.string.back)) }
-            Text(stringResource(Res.string.library), Modifier.padding(horizontal = space.s16), style = MaterialTheme.typography.headlineMedium)
-        } else {
-            Row(Modifier.fillMaxWidth().padding(horizontal = space.s8), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onBack) { Text(stringResource(Res.string.cancel)) }
-                Text(stringResource(if (swapFor != null) Res.string.swap_exercise else Res.string.add_exercises), Modifier.weight(1f),
-                    style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-                if (swapFor == null) Button({ pick(picked) }, enabled = picked.isNotEmpty()) { Text(stringResource(Res.string.add_count, picked.size)) }
+    val picking = pick != null && swapFor == null && picked.isNotEmpty()
+    Box(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()).then(sides)) {
+            if (pick == null) {
+                TextButton(onBack, Modifier.padding(start = space.s8)) { Text(stringResource(Res.string.back)) }
+                Text(stringResource(Res.string.library), Modifier.padding(horizontal = space.s16), style = MaterialTheme.typography.headlineMedium)
+            } else {
+                // Avbryt and the title, as queue item 7 draws the picker; Lägg till lives in the bar at the bottom.
+                Box(Modifier.fillMaxWidth().padding(horizontal = space.s8), contentAlignment = Alignment.Center) {
+                    TextButton(onBack, Modifier.align(Alignment.CenterStart)) { Text(stringResource(Res.string.cancel)) }
+                    Text(stringResource(if (swapFor != null) Res.string.swap_exercise else Res.string.add_exercises),
+                        style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+                }
+            }
+            Row(Modifier.padding(horizontal = space.s16, vertical = space.s8), verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(space.s8)) {
+                OutlinedTextField(filter.query, { change(filter.copy(query = it)) }, Modifier.weight(1f), singleLine = true,
+                    placeholder = { Text(stringResource(Res.string.search)) })
+                // The button fills while a filter is on (#17 R1).
+                if (filter.filtering) FilledTonalButton({ sheet = true }) { Text(stringResource(Res.string.filter)) }
+                else TextButton({ sheet = true }) { Text(stringResource(Res.string.filter)) }
+            }
+            Chips(filter.chip) { change(filter.copy(chip = if (filter.chip == it) null else it)) }
+            if (sections == null) return@Column
+            if (sections.isEmpty()) {
+                Text(stringResource(Res.string.no_match), Modifier.padding(space.s16), style = MaterialTheme.typography.bodyLarge)
+            }
+            val swapped = all?.firstOrNull { it.id == swapFor }
+            val alternatives = swapped?.let { x -> all.orEmpty().filter { it.mark == Mark.Sub && it.pattern == x.pattern && it.id != x.id } }.orEmpty()
+            LazyColumn(Modifier.fillMaxSize(), list,
+                contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + if (picking) StriveTheme.sizes.touch + space.s32 else 0.dp)) {
+                if (alternatives.isNotEmpty() && pick != null) {
+                    stickyHeader(key = "alternatives") {
+                        Text(stringResource(Res.string.alternatives),
+                            Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(horizontal = space.s16, vertical = space.s8),
+                            style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+                    }
+                    items(alternatives, key = { "a${it.id}" }) { e -> ExerciseRow(e, picked = null) { pick(listOf(e.id)) } }
+                }
+                for ((muscle, exercises) in sections) {
+                    stickyHeader(key = muscle) {
+                        Text(stringResource(muscle.label),
+                            Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(horizontal = space.s16, vertical = space.s8),
+                            style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+                    }
+                    items(exercises, key = { it.id }) { e ->
+                        if (pick == null) ExerciseRow(e, picked = null) { onOpen(e.id) }
+                        else if (swapFor != null) ExerciseRow(e, picked = null) { pick(listOf(e.id)) }
+                        else ExerciseRow(e, picked = e.id in picked) { picked = if (e.id in picked) picked - e.id else picked + e.id }
+                    }
+                }
             }
         }
-        Row(Modifier.padding(horizontal = space.s16, vertical = space.s8), verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(space.s8)) {
-            OutlinedTextField(filter.query, { change(filter.copy(query = it)) }, Modifier.weight(1f), singleLine = true,
-                placeholder = { Text(stringResource(Res.string.search)) })
-            // The button fills while a filter is on (#17 R1).
-            if (filter.filtering) FilledTonalButton({ sheet = true }) { Text(stringResource(Res.string.filter)) }
-            else TextButton({ sheet = true }) { Text(stringResource(Res.string.filter)) }
-        }
-        Chips(filter.chip) { change(filter.copy(chip = if (filter.chip == it) null else it)) }
-        if (sections == null) return@Column
-        if (sections.isEmpty()) {
-            Text(stringResource(Res.string.no_match), Modifier.padding(space.s16), style = MaterialTheme.typography.bodyLarge)
-        }
-        val swapped = all?.firstOrNull { it.id == swapFor }
-        val alternatives = swapped?.let { x -> all.orEmpty().filter { it.mark == Mark.Sub && it.pattern == x.pattern && it.id != x.id } }.orEmpty()
-        LazyColumn(Modifier.fillMaxSize(), list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding())) {
-            if (alternatives.isNotEmpty() && pick != null) {
-                stickyHeader(key = "alternatives") {
-                    Text(stringResource(Res.string.alternatives),
-                        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(horizontal = space.s16, vertical = space.s8),
-                        style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
-                }
-                items(alternatives, key = { "a${it.id}" }) { e -> ExerciseRow(e, picked = null) { pick(listOf(e.id)) } }
+        // Queue item 7's bar: Superset (n) beside Lägg till (n) once something is ticked; a superset takes two.
+        if (picking) Row(
+            Modifier.align(Alignment.BottomCenter).padding(bottom = padding.calculateBottomPadding()).then(sides).padding(space.s16).fillMaxWidth()
+                .background(StriveTheme.glass.thick, ShapeFull).padding(space.s8),
+            horizontalArrangement = Arrangement.spacedBy(space.s8),
+        ) {
+            val colors = MaterialTheme.colorScheme
+            Btn({ onSuperset?.invoke(picked) }, Modifier.weight(1f).height(StriveTheme.sizes.touch), container = colors.surfaceContainerHighest,
+                content = colors.primary, shape = ShapeFull, enabled = picked.size > 1 && onSuperset != null) {
+                Text(stringResource(Res.string.superset_count, picked.size), style = MaterialTheme.typography.titleSmall)
             }
-            for ((muscle, exercises) in sections) {
-                stickyHeader(key = muscle) {
-                    Text(stringResource(muscle.label),
-                        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(horizontal = space.s16, vertical = space.s8),
-                        style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
-                }
-                items(exercises, key = { it.id }) { e ->
-                    if (pick == null) ExerciseRow(e, picked = null) { onOpen(e.id) }
-                    else if (swapFor != null) ExerciseRow(e, picked = null) { pick(listOf(e.id)) }
-                    else ExerciseRow(e, picked = e.id in picked) { picked = if (e.id in picked) picked - e.id else picked + e.id }
-                }
+            Btn({ pick?.invoke(picked) }, Modifier.weight(1f).height(StriveTheme.sizes.touch), container = colors.primary, content = colors.onPrimary, shape = ShapeFull) {
+                Text(stringResource(Res.string.add_count, picked.size), style = MaterialTheme.typography.titleSmall)
             }
         }
     }

@@ -176,12 +176,11 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
                     }
                     PickExercises -> NavEntry(route, metadata = rise(reduceMotion)) {
                         Page {
-                            LibraryScreen(safe, onOpen = {}, onBack = { root.pop() }, pick = { ids ->
-                                scope.launch {
-                                    open?.let { sessions.add(it.id, ids) }
-                                    root.pop()
-                                }
-                            })
+                            fun add(ids: List<Long>, superset: Boolean) = scope.launch {
+                                open?.let { sessions.add(it.id, ids, superset) }
+                                root.pop()
+                            }
+                            LibraryScreen(safe, onOpen = {}, onBack = { root.pop() }, pick = { add(it, false) }, onSuperset = { add(it, true) })
                         }
                     }
                     is SwapExercise -> NavEntry(route, metadata = rise(reduceMotion)) {
