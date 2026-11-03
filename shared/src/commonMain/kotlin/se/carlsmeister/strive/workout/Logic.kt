@@ -79,10 +79,38 @@ internal fun previous(history: List<Workout>, exerciseId: Long): List<WorkoutSet
 internal fun change(planned: Double?, before: Double?): Double? =
     if (planned == null || before == null || planned == before) null else ((planned - before) * 100).roundToLong() / 100.0
 
-/** Each set's badge (Q21): W, D or F, else its number among the working sets. */
+/** Each set's badge (Q21): W, D or F, else its number among the working sets, which count failure sets (Q31). */
 internal fun badges(sets: List<WorkoutSet>): List<String> {
     var n = 0
-    return sets.map { it.kind.letter ?: "${++n}" }
+    return sets.map { if (it.kind.numbered) n++; it.kind.letter ?: "$n" }
+}
+
+/** How many working sets, failure sets among them: the "of 4" in "set 2 of 4". */
+internal fun working(sets: List<WorkoutSet>) = sets.count { it.kind.numbered }
+
+/** The exercises in blocks, in order: a superset's exercises together (#17 choice 6), every other exercise alone. */
+internal fun blocks(exercises: List<SessionExercise>): List<List<SessionExercise>> {
+    val out = mutableListOf<MutableList<SessionExercise>>()
+    for (e in exercises) if (e.superset != null && out.lastOrNull()?.last()?.superset == e.superset) out.last() += e else out += mutableListOf(e)
+    return out
+}
+
+/** A block's rounds in the order you lift (G2): each set alone for one exercise; set n of each exercise in turn for a superset. */
+internal fun rounds(block: List<SessionExercise>): List<List<Pair<SessionExercise, Int>>> =
+    if (block.size == 1) block[0].sets.indices.map { listOf(block[0] to it) }
+    else (0 until block.maxOf { it.sets.size }).map { r -> block.filter { r < it.sets.size }.map { it to r } }
+
+/** A superset's letters, A, B, … by exercise id (G2); an exercise alone has none. */
+internal fun tags(exercises: List<SessionExercise>): Map<Long, String> =
+    blocks(exercises).filter { it.size > 1 }.flatMap { b -> b.mapIndexed { n, e -> e.id to "${'A' + n}" } }.toMap()
+
+/**
+ * The set whose rest starts once set [id] is logged: the last of its round, once every set in the round is logged, in either order;
+ * else none (choice 6). Alone, a set is its own round.
+ */
+internal fun restAfterLogging(exercises: List<SessionExercise>, id: Long): WorkoutSet? {
+    val round = blocks(exercises).flatMap(::rounds).firstOrNull { r -> r.any { (e, i) -> e.sets[i].id == id } } ?: return null
+    return if (round.all { (e, i) -> e.sets[i].done || e.sets[i].id == id }) round.last().let { (e, i) -> e.sets[i] } else null
 }
 
 /** The Settings key for the default rest in seconds (Q10). */

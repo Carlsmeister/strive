@@ -23,17 +23,23 @@ internal data class WorkoutSet(
     val rest: Int? = null,
 )
 
-/** A set's type (Q21): a working set, or a warm-up, drop or failure set, which show W, D or F in the badge. */
-internal enum class SetKind(val key: String, val letter: String?) {
-    Normal("normal", null), Warmup("warmup", "W"), Drop("drop", "D"), Failure("failure", "F");
+/**
+ * A set's type (Q21): a working set, or a warm-up, drop or failure set, which show W, D or F in the badge. A failure set is a working
+ * set (Q31), so it is [numbered] among them.
+ */
+internal enum class SetKind(val key: String, val letter: String?, val numbered: Boolean) {
+    Normal("normal", null, true), Warmup("warmup", "W", false), Drop("drop", "D", false), Failure("failure", "F", true);
 
     companion object {
         fun of(key: String) = entries.firstOrNull { it.key == key } ?: Normal
     }
 }
 
-/** A rest counting down, started when a set is logged or from the title bar's timer (Q17). Kept in memory only. */
-internal data class Rest(val startedAt: Long, val seconds: Int) {
+/**
+ * A rest counting down, started when a set is logged or from the title bar's timer (Q17), after [setId] or null for a free rest.
+ * Kept in memory only.
+ */
+internal data class Rest(val startedAt: Long, val seconds: Int, val setId: Long? = null) {
     // The screen's clock ticks on the second, so it can read a moment before the rest began: never show more than the rest.
     fun left(now: Long) = (seconds - ((now - startedAt) / 1_000).toInt()).coerceIn(0, seconds)
 }
@@ -51,6 +57,8 @@ internal data class SessionExercise(
     val bar: Double? = null,
     /** Skipped in this workout: it stays recorded, but its sets are not counted (Q8). */
     val skipped: Boolean = false,
+    /** The superset it is done in with the exercises next to it that share it (#17 choice 6); null for none. */
+    val superset: Long? = null,
 )
 
 /** A workout with its exercises and sets, open while [endedAt] is null. Times are epoch milliseconds. */
@@ -87,6 +95,37 @@ internal fun warmupOrder(sets: List<WorkoutSet>, id: Long): List<Long> {
     return (rest.take(at) + set + rest.drop(at)).map { it.id }
 }
 
+/** An exercise's place in a workout: its id and its superset, null for none. */
+internal data class Slot(val id: Long, val group: Long?)
+
+/** Clears the superset of an exercise with no neighbour in it, so no superset of one is left (#17 choice 6). */
+internal fun tidy(slots: List<Slot>): List<Slot> = slots.mapIndexed { i, s ->
+    if (s.group != null && slots.getOrNull(i - 1)?.group != s.group && slots.getOrNull(i + 1)?.group != s.group) s.copy(group = null) else s
+}
+
+/** [partner] joins [id]'s superset, or starts a new one with it, and moves to just after the superset's last exercise. */
+internal fun join(slots: List<Slot>, id: Long, partner: Long): List<Slot> {
+    val out = slots.filter { it.id != partner }.toMutableList()
+    val i = out.indexOfFirst { it.id == id }
+    val group = out[i].group ?: ((slots.mapNotNull { it.group }.maxOrNull() ?: 0) + 1)
+    var end = i
+    if (out[i].group != null) while (out.getOrNull(end + 1)?.group == group) end++
+    out[i] = out[i].copy(group = group)
+    out.add(end + 1, Slot(partner, group))
+    return tidy(out)
+}
+
+/** [id] leaves its superset and moves to just after it; a superset left with one exercise is dissolved. */
+internal fun leave(slots: List<Slot>, id: Long): List<Slot> {
+    val i = slots.indexOfFirst { it.id == id }
+    val group = slots[i].group ?: return slots
+    var end = i
+    while (slots.getOrNull(end + 1)?.group == group) end++
+    val out = slots.toMutableList()
+    out.add(end, out.removeAt(i).copy(group = null))
+    return tidy(out)
+}
+
 /** Avsluta with sets not logged (Q20): log the ones that can be as they stand, or save without them. */
 internal enum class Finish { LogAsTheyStand, WithoutThem }
 
@@ -101,8 +140,14 @@ internal interface Sessions {
 
     suspend fun start(name: String, now: Long): Long
 
-    /** Each exercise joins the end of the workout with one empty set. */
-    suspend fun add(sessionId: Long, exerciseIds: List<Long>)
+    /** Each exercise joins the end of the workout with one empty set; as one superset if [superset] (#17 queue item 7). */
+    suspend fun add(sessionId: Long, exerciseIds: List<Long>, superset: Boolean = false)
+
+    /** [partnerId] joins the exercise's superset, or starts one with it, right after it (choice 4's Skapa superset). */
+    suspend fun superset(sessionExerciseId: Long, partnerId: Long)
+
+    /** Takes the exercise out of its superset; one left alone is no superset. */
+    suspend fun leaveSuperset(sessionExerciseId: Long)
 
     /** A copy of the exercise's last set and its rest, a working set, not logged and without its RIR (Q8). */
     suspend fun addSet(sessionExerciseId: Long)
@@ -116,7 +161,7 @@ internal interface Sessions {
 
     suspend fun setRestAll(sessionExerciseId: Long, seconds: Int)
 
-    /** Puts the workout's exercises in this order. */
+    /** Puts the workout's exercises in this order; a superset moved apart is dissolved. */
     suspend fun reorder(sessionExerciseIds: List<Long>)
 
     /** Swaps the exercise for another, keeping its sets (Q8). */
@@ -162,14 +207,34 @@ internal class SqlSessions(private val database: StriveDatabase, private val io:
         }
     }
 
-    override suspend fun add(sessionId: Long, exerciseIds: List<Long>) = write {
+    override suspend fun add(sessionId: Long, exerciseIds: List<Long>, superset: Boolean) = write {
         queries.transaction {
-            for (exerciseId in exerciseIds) {
+            val added = exerciseIds.map { exerciseId ->
                 queries.insertExercise(sessionId, exerciseId)
-                queries.insertSet(queries.lastId().executeAsOne(), null, null, null, null, null)
+                queries.lastId().executeAsOne().also { queries.insertSet(it, null, null, null, null, null) }
+            }
+            if (superset && added.size > 1) {
+                val slots = slots(sessionId)
+                val group = (slots.mapNotNull { it.group }.maxOrNull() ?: 0) + 1
+                place(slots.map { if (it.id in added) it.copy(group = group) else it })
             }
         }
     }
+
+    override suspend fun superset(sessionExerciseId: Long, partnerId: Long) = write {
+        queries.transaction { place(join(slots(sessionOf(sessionExerciseId)), sessionExerciseId, partnerId)) }
+    }
+
+    override suspend fun leaveSuperset(sessionExerciseId: Long) = write {
+        queries.transaction { place(leave(slots(sessionOf(sessionExerciseId)), sessionExerciseId)) }
+    }
+
+    private fun sessionOf(sessionExerciseId: Long) = queries.sessionOf(sessionExerciseId).executeAsOne()
+
+    private fun slots(sessionId: Long) = queries.slotsOf(sessionId).executeAsList().map { Slot(it.id, it.superset) }
+
+    /** Writes the exercises' order and supersets as [slots] has them. */
+    private fun place(slots: List<Slot>) = slots.forEachIndexed { i, s -> queries.place(i.toLong(), s.group, s.id) }
 
     override suspend fun addSet(sessionExerciseId: Long) = write {
         queries.transaction {
@@ -197,7 +262,10 @@ internal class SqlSessions(private val database: StriveDatabase, private val io:
     override suspend fun setRestAll(sessionExerciseId: Long, seconds: Int) = write { queries.setRestOf(seconds.toLong(), sessionExerciseId) }
 
     override suspend fun reorder(sessionExerciseIds: List<Long>) = write {
-        queries.transaction { sessionExerciseIds.forEachIndexed { i, id -> queries.setExercisePosition(i.toLong(), id) } }
+        queries.transaction {
+            sessionExerciseIds.forEachIndexed { i, id -> queries.setExercisePosition(i.toLong(), id) }
+            sessionExerciseIds.firstOrNull()?.let { place(tidy(slots(sessionOf(it)))) }
+        }
     }
 
     override suspend fun swap(sessionExerciseId: Long, exerciseId: Long) = write { queries.swapExercise(exerciseId, sessionExerciseId) }
@@ -208,8 +276,10 @@ internal class SqlSessions(private val database: StriveDatabase, private val io:
 
     override suspend fun removeExercise(sessionExerciseId: Long) = write {
         queries.transaction {
+            val sessionId = sessionOf(sessionExerciseId)
             queries.deleteSetsOf(sessionExerciseId)
             queries.deleteExercise(sessionExerciseId)
+            place(tidy(slots(sessionId)))
         }
     }
 
@@ -234,6 +304,7 @@ internal class SqlSessions(private val database: StriveDatabase, private val io:
                 }
             }
             queries.deleteEmptyExercises(id)
+            place(tidy(slots(id)))
             queries.finish(now, id)
         }
     }
@@ -251,7 +322,7 @@ internal class SqlSessions(private val database: StriveDatabase, private val io:
 @Suppress("LongParameterList")
 private class Row(
     val id: Long, val name: String, val startedAt: Long, val endedAt: Long?, val note: String, val rpe: Long?,
-    val seId: Long?, val exerciseId: Long?, val seNote: String?, val skipped: Boolean?, val exerciseName: String?, val type: String?,
+    val seId: Long?, val exerciseId: Long?, val seNote: String?, val skipped: Boolean?, val superset: Long?, val exerciseName: String?, val type: String?,
     val step: Double?, val bar: Double?, val pinned: String?,
     val setId: Long?, val weight: Double?, val reps: Long?, val seconds: Long?, val metres: Double?, val rir: Long?, val done: Boolean?,
     val kind: String?, val rest: Long?,
@@ -268,7 +339,7 @@ private fun workouts(rows: List<Row>): List<Workout> = rows.groupBy { it.id }.va
                 WorkoutSet(it.setId!!, it.weight, it.reps?.toInt(), it.seconds?.toInt(), it.metres, it.rir?.toInt(), it.done!!, SetKind.of(it.kind!!),
                     it.rest?.toInt())
             },
-            pinned = e.pinned.orEmpty(), bar = e.bar, skipped = e.skipped!!,
+            pinned = e.pinned.orEmpty(), bar = e.bar, skipped = e.skipped!!, superset = e.superset,
         )
     }
     Workout(w.id, w.name, w.startedAt, w.endedAt, w.note, w.rpe?.toInt(), exercises)

@@ -212,6 +212,50 @@ class SessionChangesTest {
         assertEquals(emptyList(), done.exercises[1].sets)
     }
 
+    private suspend fun exercises() = sessions.open().first()!!.exercises
+
+    @Test
+    fun supersetGroupsThePickedExercisesAndRemovingOneLeavesNoSupersetOfOne() = runTest {
+        val id = sessions.start("Pass", 0)
+        sessions.add(id, listOf(db.exercise("Squat BB")))
+        sessions.add(id, listOf(db.exercise("Incline Press DB"), db.exercise("Lateral Raise DB")), superset = true)
+        val (squat, incline, lateral) = exercises()
+        assertEquals(null, squat.superset)
+        assertTrue(incline.superset != null && incline.superset == lateral.superset)
+        sessions.removeExercise(incline.id)
+        assertEquals(listOf(null, null), exercises().map { it.superset })
+    }
+
+    @Test
+    fun theMenuJoinsAnExerciseToASupersetAndLeavingDissolvesIt() = runTest {
+        val id = sessions.start("Pass", 0)
+        sessions.add(id, listOf(db.exercise("Bench Press BB"), db.exercise("Squat BB"), db.exercise("Incline Press DB")))
+        val (bench, squat, incline) = exercises()
+        sessions.superset(bench.id, incline.id)
+        // Incline Press moves up to follow Bench Press, the superset's last exercise.
+        assertEquals(listOf(bench.id, incline.id, squat.id), exercises().map { it.id })
+        assertTrue(exercises()[0].superset != null && exercises()[0].superset == exercises()[1].superset)
+        sessions.leaveSuperset(incline.id)
+        assertEquals(listOf(null, null, null), exercises().map { it.superset })
+    }
+
+    @Test
+    fun movingASupersetApartOrFinishingWithoutOneOfItsExercisesDissolvesIt() = runTest {
+        val id = sessions.start("Pass", 0)
+        sessions.add(id, listOf(db.exercise("Bench Press BB")))
+        sessions.add(id, listOf(db.exercise("Incline Press DB"), db.exercise("Lateral Raise DB")), superset = true)
+        val (bench, incline, lateral) = exercises()
+        sessions.reorder(listOf(incline.id, bench.id, lateral.id))
+        assertEquals(listOf(null, null, null), exercises().map { it.superset })
+
+        sessions.reorder(listOf(bench.id, incline.id, lateral.id))
+        sessions.superset(incline.id, lateral.id)
+        sessions.saveSet(exercises()[1].sets.single().copy(weight = 26.0, reps = 10, done = true))
+        // Lateral Raise has nothing logged, so finishing drops it; Incline Press is left alone, not a superset of one.
+        sessions.finish(id, Finish.WithoutThem, now = 1)
+        assertEquals(listOf(null), sessions.history().first().single().exercises.filter { it.name == "Incline Press DB" }.map { it.superset })
+    }
+
     @Test
     fun theExercisesStepAndBarAreCarlsOnceChanged() = runTest {
         val bench = db.exercise("Bench Press BB")

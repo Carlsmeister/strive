@@ -10,14 +10,16 @@ CREATE TABLE session (
     rpe INTEGER
 );
 
--- An exercise in a workout, in the order it is done.
+-- An exercise in a workout, in the order it is done. Exercises next to each other with the same superset are done as one (#17
+-- choice 6); null for none.
 CREATE TABLE session_exercise (
     id INTEGER NOT NULL PRIMARY KEY,
     session_id INTEGER NOT NULL REFERENCES session(id),
     exercise_id INTEGER NOT NULL REFERENCES exercise(id),
     position INTEGER NOT NULL,
     note TEXT NOT NULL DEFAULT '',
-    skipped INTEGER AS Boolean NOT NULL DEFAULT 0
+    skipped INTEGER AS Boolean NOT NULL DEFAULT 0,
+    superset INTEGER
 );
 
 -- One set. The values the exercise's type uses are filled. kind is normal, warmup, drop or failure (Q21); rest_seconds is the
@@ -42,7 +44,7 @@ CREATE INDEX workout_set_exercise ON workout_set(session_exercise_id);
 -- Every row of the workouts asked for, flat: one per set, or per exercise or workout without one. Ordered for grouping.
 openRows:
 SELECT s.id, s.name, s.started_at, s.ended_at, s.note, s.rpe,
-    se.id AS se_id, se.exercise_id, se.note AS se_note, se.skipped, e.name AS exercise_name, e.type, e.step, e.bar, e.note AS pinned,
+    se.id AS se_id, se.exercise_id, se.note AS se_note, se.skipped, se.superset, e.name AS exercise_name, e.type, e.step, e.bar, e.note AS pinned,
     ws.id AS set_id, ws.weight, ws.reps, ws.seconds, ws.metres, ws.rir, ws.done, ws.kind, ws.rest_seconds
 FROM session s
 LEFT JOIN session_exercise se ON se.session_id = s.id
@@ -53,7 +55,7 @@ ORDER BY s.started_at DESC, s.id, se.position, ws.position;
 
 rowsOf:
 SELECT s.id, s.name, s.started_at, s.ended_at, s.note, s.rpe,
-    se.id AS se_id, se.exercise_id, se.note AS se_note, se.skipped, e.name AS exercise_name, e.type, e.step, e.bar, e.note AS pinned,
+    se.id AS se_id, se.exercise_id, se.note AS se_note, se.skipped, se.superset, e.name AS exercise_name, e.type, e.step, e.bar, e.note AS pinned,
     ws.id AS set_id, ws.weight, ws.reps, ws.seconds, ws.metres, ws.rir, ws.done, ws.kind, ws.rest_seconds
 FROM session s
 LEFT JOIN session_exercise se ON se.session_id = s.id
@@ -64,7 +66,7 @@ ORDER BY se.position, ws.position;
 
 finishedRows:
 SELECT s.id, s.name, s.started_at, s.ended_at, s.note, s.rpe,
-    se.id AS se_id, se.exercise_id, se.note AS se_note, se.skipped, e.name AS exercise_name, e.type, e.step, e.bar, e.note AS pinned,
+    se.id AS se_id, se.exercise_id, se.note AS se_note, se.skipped, se.superset, e.name AS exercise_name, e.type, e.step, e.bar, e.note AS pinned,
     ws.id AS set_id, ws.weight, ws.reps, ws.seconds, ws.metres, ws.rir, ws.done, ws.kind, ws.rest_seconds
 FROM session s
 LEFT JOIN session_exercise se ON se.session_id = s.id
@@ -109,6 +111,15 @@ UPDATE session_exercise SET skipped = ? WHERE id = ?;
 
 setExerciseNote:
 UPDATE session_exercise SET note = ? WHERE id = ?;
+
+slotsOf:
+SELECT id, superset FROM session_exercise WHERE session_id = ? ORDER BY position;
+
+sessionOf:
+SELECT session_id FROM session_exercise WHERE id = ?;
+
+place:
+UPDATE session_exercise SET position = ?, superset = ? WHERE id = ?;
 
 insertSet:
 INSERT INTO workout_set(session_exercise_id, position, weight, reps, seconds, metres, rest_seconds)

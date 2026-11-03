@@ -1,0 +1,2 @@
+-- Version 4 to 5: supersets (#17 choice 6). Exercises next to each other with the same superset are done as one; null for none.
+ALTER TABLE session_exercise ADD COLUMN superset INTEGER;

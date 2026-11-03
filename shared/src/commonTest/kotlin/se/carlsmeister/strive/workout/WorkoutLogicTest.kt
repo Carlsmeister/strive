@@ -9,6 +9,10 @@ import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.data.WorkoutSet
 import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.Rest
+import se.carlsmeister.strive.data.Slot
+import se.carlsmeister.strive.data.join
+import se.carlsmeister.strive.data.leave
+import se.carlsmeister.strive.data.tidy
 import se.carlsmeister.strive.data.warmupOrder
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -194,9 +198,24 @@ class SetKindTest {
     private fun s(id: Long, kind: SetKind = SetKind.Normal, done: Boolean = false) = WorkoutSet(id, kind = kind, done = done)
 
     @Test
-    fun workingSetsAreNumberedAmongThemselvesAndTheOthersShowTheirLetter() =
-        assertEquals(listOf("W", "1", "2", "D", "3", "F"),
-            badges(listOf(s(1, SetKind.Warmup), s(2), s(3), s(4, SetKind.Drop), s(5), s(6, SetKind.Failure))))
+    fun failureSetsAreNumberedWithTheWorkingSetsAndWarmUpsAndDropSetsAreNot() {
+        val sets = listOf(s(1, SetKind.Warmup), s(2), s(3), s(4, SetKind.Drop), s(5, SetKind.Failure), s(6))
+        // A failure set is a working set (Q31): it shows F but takes its number, so the set after it is the fourth.
+        assertEquals(listOf("W", "1", "2", "D", "F", "4"), badges(sets))
+        assertEquals(4, working(sets))
+    }
+
+    @Test
+    fun failureSetsCountForSnittRirAndVolume() {
+        val w = Workout(1, "Pass", 0, 1, "", null, listOf(SessionExercise(1, 1, "E", ExerciseType.WeightReps, 2.5, "", listOf(
+            WorkoutSet(1, weight = 80.0, reps = 8, rir = 2, done = true),
+            WorkoutSet(2, weight = 80.0, reps = 6, rir = 0, kind = SetKind.Failure, done = true),
+        ))))
+        val s = summary(w, now = 0)
+        assertEquals(1.0, s.rir)
+        assertEquals(2, s.rirSets)
+        assertEquals(1120.0, s.volume)
+    }
 
     @Test
     fun anUnloggedSetMadeAWarmUpMovesUpToBeTheNextSetToDo() {
@@ -284,4 +303,59 @@ class StartTimeTest {
 
     @Test
     fun aStartTimeIsNeverInTheFuture() = assertEquals(at(18, 30), withTime(at(17, 40), 19, 0, zone, now = at(18, 30)))
+}
+
+class SupersetTest {
+    /** Exercise [id] in superset [group], a set per entry of [done], with set ids id*10, id*10+1, … */
+    private fun e(id: Long, group: Long?, vararg done: Boolean) = SessionExercise(
+        id, id, "E$id", ExerciseType.WeightReps, 2.5, "", done.mapIndexed { i, d -> WorkoutSet(id * 10 + i, done = d) }, superset = group,
+    )
+
+    private fun order(vararg exercises: SessionExercise) = blocks(exercises.toList()).flatMap(::rounds).flatten().map { (x, i) -> x.sets[i].id }
+
+    @Test
+    fun aSupersetIsLiftedRoundByRoundAndTheShorterExerciseDropsOut() =
+        assertEquals(listOf(10L, 11L, 20L, 30L, 21L, 31L, 22L, 40L),
+            order(e(1, null, false, false), e(2, 7, false, false, false), e(3, 7, false, false), e(4, null, false)))
+
+    @Test
+    fun aRoundsRestStartsOnlyOnceEverySetInItIsLoggedInEitherOrder() {
+        // B 1 logged first: A 1 is still to do, so no rest.
+        assertNull(restAfterLogging(listOf(e(2, 7, false, false), e(3, 7, true, false)), id = 30))
+        // Then A 1: the round is done, and the rest is the one after its last set, B 1.
+        assertEquals(30L, restAfterLogging(listOf(e(2, 7, true, false), e(3, 7, true, false)), id = 20)?.id)
+    }
+
+    @Test
+    fun aSingleExercisesRestStartsAfterEverySet() = assertEquals(10L, restAfterLogging(listOf(e(1, null, true, false)), id = 10)?.id)
+
+    @Test
+    fun lettersNameASupersetsExercisesInOrder() =
+        assertEquals(mapOf(2L to "A", 3L to "B"), tags(listOf(e(1, null), e(2, 7), e(3, 7), e(4, null))))
+
+    private fun slots(vararg s: Pair<Long, Long?>) = s.map { (id, g) -> Slot(id, g) }
+
+    @Test
+    fun aPartnerJoinsRightAfterTheSupersetsLastExercise() {
+        // 1 and 3 start a superset; 3 moves up to follow 1.
+        assertEquals(slots(1L to 1L, 3L to 1L, 2L to null), join(slots(1L to null, 2L to null, 3L to null), id = 1, partner = 3))
+        // 4 joins 1's superset of two, after 2.
+        assertEquals(slots(1L to 5L, 2L to 5L, 4L to 5L, 3L to null), join(slots(1L to 5L, 2L to 5L, 3L to null, 4L to null), id = 1, partner = 4))
+    }
+
+    @Test
+    fun aNewSupersetNeverReusesAnotherOnesNumber() =
+        assertEquals(slots(1L to 3L, 2L to 3L, 3L to null, 4L to 4L, 5L to 4L),
+            join(slots(1L to 3L, 2L to 3L, 3L to null, 4L to null, 5L to null), id = 4, partner = 5))
+
+    @Test
+    fun leavingMovesTheExerciseAfterItsSupersetAndLeavesNoSupersetOfOne() {
+        assertEquals(slots(2L to 1L, 3L to 1L, 1L to null), leave(slots(1L to 1L, 2L to 1L, 3L to 1L), id = 1))
+        assertEquals(slots(1L to null, 2L to null, 3L to null), leave(slots(1L to 1L, 2L to 1L, 3L to null), id = 2))
+    }
+
+    @Test
+    fun anExerciseLeftWithoutANeighbourInItsSupersetLeavesIt() =
+        assertEquals(slots(1L to null, 2L to null, 3L to 4L, 4L to 4L, 5L to null, 6L to null),
+            tidy(slots(1L to 4L, 2L to null, 3L to 4L, 4L to 4L, 5L to null, 6L to 4L)))
 }
