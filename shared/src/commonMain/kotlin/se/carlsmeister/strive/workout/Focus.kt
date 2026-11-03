@@ -92,7 +92,9 @@ import strive.shared.generated.resources.logged
 import strive.shared.generated.resources.months_short
 import strive.shared.generated.resources.now_kind
 import strive.shared.generated.resources.now_set
+import strive.shared.generated.resources.now_set_kind
 import strive.shared.generated.resources.now_strip
+import strive.shared.generated.resources.now_strip_kind
 import strive.shared.generated.resources.quick_marked
 import strive.shared.generated.resources.quick_picks
 import strive.shared.generated.resources.quick_recent
@@ -101,6 +103,7 @@ import strive.shared.generated.resources.rest_after
 import strive.shared.generated.resources.rest_row
 import strive.shared.generated.resources.save
 import strive.shared.generated.resources.session_note
+import strive.shared.generated.resources.set_failure
 import strive.shared.generated.resources.set_type
 import strive.shared.generated.resources.sets_progress
 import strive.shared.generated.resources.skipped
@@ -134,30 +137,41 @@ internal val SetKind.label get() = when (this) {
     SetKind.Failure -> Res.string.kind_failure
 }
 
-/** The colour of a set's type: amber for W, D and F in the badge and for its word in the focus label, so the two cannot drift. */
-internal val SetKind.tint: Color @Composable get() = if (this == SetKind.Normal) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.tertiary
+/**
+ * The colour of a set's type, in its badge, its word in the focus label and its dot, so they cannot drift: warm-up amber, failure coral,
+ * drop violet (Carl, 2026-11-03).
+ */
+internal val SetKind.tint: Color @Composable get() = when (this) {
+    SetKind.Normal -> MaterialTheme.colorScheme.onSurface
+    SetKind.Warmup -> MaterialTheme.colorScheme.tertiary
+    SetKind.Drop -> StriveTheme.accents.drop
+    SetKind.Failure -> StriveTheme.accents.failure
+}
 
-/** A superset's letter (choice 6's tag): A or B in a small grey square, before the exercise's name and on each of its sets. */
+/** A superset's letter (choice 6's tag): A or B in the superset's blue, before the exercise's name and on each of its sets. */
 @Composable
 internal fun Tag(letter: String, modifier: Modifier = Modifier) = Box(
-    modifier.size(20.dp).background(MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.shapes.extraSmall),
+    modifier.size(20.dp).background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.extraSmall),
     contentAlignment = Alignment.Center,
-) { Text(letter, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+) { Text(letter, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold, color = StriveTheme.accents.superset) }
 
 /** G1's line down the superset's left edge (choice 6), drawn on each of its rows so they join into one; nothing unless [on]. */
 @Composable
 internal fun Modifier.edge(on: Boolean = true): Modifier {
     if (!on) return this
-    val color = MaterialTheme.colorScheme.outlineVariant
+    val color = StriveTheme.accents.superset
     val width = StriveTheme.borders.focus
     return drawBehind { drawRect(color, size = Size(width.toPx(), size.height)) }.padding(start = width + 12.dp)
 }
 
-/** "Superset · vila 1:30 efter varvet" over the superset's headers (choice 6). */
+/** "Superset · vila 1:30 efter varvet" over the superset's headers (choice 6), "Superset" in the superset's blue. */
 @Composable
-internal fun SupersetLabel(rest: Int, modifier: Modifier = Modifier) =
-    Text(stringResource(Res.string.superset_rest, clock(rest.toLong())), modifier, style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant)
+internal fun SupersetLabel(rest: Int, modifier: Modifier = Modifier) {
+    val text = stringResource(Res.string.superset_rest, clock(rest.toLong()))
+    val accent = StriveTheme.accents.superset
+    Text(buildAnnotatedString { append(text); addStyle(SpanStyle(color = accent), 0, text.indexOf(" · ").coerceAtLeast(0)) }, modifier,
+        style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+}
 
 private val SetColumn = 36.dp
 private val CheckColumn = 44.dp
@@ -263,16 +277,20 @@ internal fun LargeHeader(w: Workout, now: Long) {
 }
 
 /**
- * The label over the next set: "NU · BENCH PRESS BB · SET 2 AV 4", or the set's type for a warm-up, drop or failure set, that word in
- * the type's colour. In a superset the exercise's letter comes first: "NU · A · INCLINE PRESS DB · SET 1 AV 3".
+ * The label over the next set: "NU · BENCH PRESS BB · SET 2 AV 4"; the type for a warm-up or drop set, which has no number; the number
+ * and then "TILL FAILURE" for a failure set. The type word takes the type's colour. In a superset the exercise's letter comes first:
+ * "NU · A · INCLINE PRESS DB · SET 1 AV 3".
  */
 @Composable
 private fun nowLabel(e: SessionExercise, set: WorkoutSet, badge: String, strip: Boolean, tag: String?): AnnotatedString {
     val name = tag?.let { "$it · ${e.name}" } ?: e.name
     val kind = stringResource(set.kind.label).uppercase()
+    val failure = set.kind == SetKind.Failure
     val text = when {
-        set.kind != SetKind.Normal -> stringResource(Res.string.now_kind, name, kind)
+        !set.kind.numbered -> stringResource(Res.string.now_kind, name, kind)
+        strip && failure -> stringResource(Res.string.now_strip_kind, name, badge, kind)
         strip -> stringResource(Res.string.now_strip, name, badge)
+        failure -> stringResource(Res.string.now_set_kind, name, badge, working(e.sets), kind)
         else -> stringResource(Res.string.now_set, name, badge, working(e.sets))
     }.uppercase()
     val tint = set.kind.tint
@@ -409,9 +427,11 @@ internal fun SetRow(
     ) {
         Box {
             val label = stringResource(Res.string.set_type, badge)
+            // VoiceOver reads a failure set's number with its type, since the colour alone says nothing: "Set 2, till failure".
+            val desc = if (set.kind == SetKind.Failure) stringResource(Res.string.set_failure, badge) else label
             Box(
                 Modifier.width(SetColumn).height(28.dp).clip(RoundedCornerShape(8.dp)).background(if (current) colors.primary else colors.surfaceContainerHigh)
-                    .clickable(onClickLabel = label) { guard { menu = true } }.semantics { contentDescription = label },
+                    .clickable(onClickLabel = label) { guard { menu = true } }.semantics { contentDescription = desc },
                 contentAlignment = Alignment.Center,
             ) {
                 Text(badge, style = MaterialTheme.typography.bodyMedium, fontWeight = if (current) FontWeight.Bold else FontWeight.SemiBold,
@@ -422,7 +442,7 @@ internal fun SetRow(
                     DropdownMenuItem(
                         { Text(stringResource(kind.label)) }, onClick = { menu = false; onKind(kind) },
                         leadingIcon = { Box(Modifier.size(18.dp)) { if (kind == set.kind) Glyph(Glyph.Check, 18.dp, color = colors.primary) } },
-                        trailingIcon = { Text(kind.letter ?: "1", color = colors.onSurfaceVariant) },
+                        trailingIcon = { Text(kind.letter ?: "1", color = if (kind == SetKind.Normal) colors.onSurfaceVariant else kind.tint) },
                     )
                 }
             }
@@ -509,7 +529,7 @@ internal fun ExerciseOverview(e: SessionExercise, first: Boolean, last: Boolean,
                 }
                 if (!e.skipped) Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                     for (s in e.sets) {
-                        val dot = if (s.kind == SetKind.Warmup) colors.tertiary else colors.primary
+                        val dot = if (s.kind == SetKind.Normal) colors.primary else s.kind.tint
                         Box(Modifier.size(8.dp).then(
                             if (s.done) Modifier.background(dot, CircleShape) else Modifier.border(1.5.dp, colors.surfaceContainerHighest, CircleShape),
                         ))

@@ -200,8 +200,8 @@ class SetKindTest {
     @Test
     fun failureSetsAreNumberedWithTheWorkingSetsAndWarmUpsAndDropSetsAreNot() {
         val sets = listOf(s(1, SetKind.Warmup), s(2), s(3), s(4, SetKind.Drop), s(5, SetKind.Failure), s(6))
-        // A failure set is a working set (Q31): it shows F but takes its number, so the set after it is the fourth.
-        assertEquals(listOf("W", "1", "2", "D", "F", "4"), badges(sets))
+        // A failure set is a working set (Q31): it shows its own number, in its colour, not F (Carl, 2026-11-03).
+        assertEquals(listOf("W", "1", "2", "D", "3", "4"), badges(sets))
         assertEquals(4, working(sets))
     }
 

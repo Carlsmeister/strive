@@ -79,7 +79,7 @@ internal fun previous(history: List<Workout>, exerciseId: Long): List<WorkoutSet
 internal fun change(planned: Double?, before: Double?): Double? =
     if (planned == null || before == null || planned == before) null else ((planned - before) * 100).roundToLong() / 100.0
 
-/** Each set's badge (Q21): W, D or F, else its number among the working sets, which count failure sets (Q31). */
+/** Each set's badge (Q21): W or D, else its number among the working sets, failure sets among them (Q31). */
 internal fun badges(sets: List<WorkoutSet>): List<String> {
     var n = 0
     return sets.map { if (it.kind.numbered) n++; it.kind.letter ?: "$n" }
