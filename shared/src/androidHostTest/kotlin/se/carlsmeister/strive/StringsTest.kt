@@ -34,4 +34,13 @@ class StringsTest {
         val xml = """<resources><plurals name="sets"><item quantity="one">set</item></plurals><string-array name="days"><item>Mon</item></string-array></resources>"""
         assertEquals(setOf("sets", "days"), keys(xml))
     }
+
+    // Compose Resources fills only positional placeholders; a bare %d reaches the screen as "%d".
+    @Test
+    fun placeholdersArePositional() {
+        for (folder in listOf("values", "values-sv")) {
+            val text = File("src/commonMain/composeResources/$folder/strings.xml").readText()
+            assertEquals(emptyList(), Regex("%[ds]").findAll(text).map { it.value }.toList(), folder)
+        }
+    }
 }

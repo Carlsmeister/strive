@@ -284,8 +284,8 @@
   :root:not([data-theme="light"]) {
     --color-primary: #8aede3;
     --color-on-primary: #000000;
-    --color-primary-container: #8aede3;
-    --color-on-primary-container: #000000;
+    --color-primary-container: #00504b;
+    --color-on-primary-container: #a6f2ea;
     --color-inverse-primary: #00504b;
     --color-secondary: #dcf2ef;
     --color-on-secondary: #000000;
@@ -397,8 +397,8 @@
   :root[data-theme="dark"] {
     --color-primary: #8aede3;
     --color-on-primary: #000000;
-    --color-primary-container: #8aede3;
-    --color-on-primary-container: #000000;
+    --color-primary-container: #00504b;
+    --color-on-primary-container: #a6f2ea;
     --color-inverse-primary: #00504b;
     --color-secondary: #dcf2ef;
     --color-on-secondary: #000000;
@@ -510,8 +510,8 @@
 .scheme-dark-hc {
   --color-primary: #8aede3;
   --color-on-primary: #000000;
-  --color-primary-container: #8aede3;
-  --color-on-primary-container: #000000;
+  --color-primary-container: #00504b;
+  --color-on-primary-container: #a6f2ea;
   --color-inverse-primary: #00504b;
   --color-secondary: #dcf2ef;
   --color-on-secondary: #000000;

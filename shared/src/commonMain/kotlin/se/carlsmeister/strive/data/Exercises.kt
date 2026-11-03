@@ -73,6 +73,11 @@ internal interface Exercises {
     fun byId(id: Long): Flow<Exercise?>
 
     suspend fun setMark(id: Long, mark: Mark?)
+
+    /** The sticky note, shown every time the exercise is done (Q15). */
+    suspend fun setNote(id: Long, note: String)
+
+    suspend fun setSettings(id: Long, step: Double?, bar: Double?)
 }
 
 /** One row of `files/exercises.json`; keys the app does not use (the image prompt, review state) are ignored. */
@@ -104,6 +109,14 @@ internal class SqlExercises(private val database: StriveDatabase, private val io
 
     override suspend fun setMark(id: Long, mark: Mark?) {
         withContext(io) { queries.setMark(mark?.name, id) }
+    }
+
+    override suspend fun setNote(id: Long, note: String) {
+        withContext(io) { queries.setNote(note.ifEmpty { null }, id) }
+    }
+
+    override suspend fun setSettings(id: Long, step: Double?, bar: Double?) {
+        withContext(io) { queries.setSettings(step, bar, id) }
     }
 
     suspend fun seed(rows: List<SeedExercise>) = withContext(io) {

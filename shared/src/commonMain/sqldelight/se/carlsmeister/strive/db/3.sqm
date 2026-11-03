@@ -1,0 +1,4 @@
+-- Version 3 to 4: a rest per set (#17 Q3, Q10), null for the default rest in Settings, and an exercise skipped in a workout (Q8),
+-- which stays recorded.
+ALTER TABLE workout_set ADD COLUMN rest_seconds INTEGER;
+ALTER TABLE session_exercise ADD COLUMN skipped INTEGER NOT NULL DEFAULT 0;

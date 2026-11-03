@@ -3,12 +3,14 @@
 A personal training app for iPhone and Android from one Kotlin codebase: strength
 sessions, GPS runs, and export of everything to Carl's own training log.
 
-**No features yet.** The empty app runs on Carl's iPhone: four tabs around a Start
-button, every screen a placeholder, text in Swedish and English (#31), themed from the design
-tokens and following the phone's dark mode, contrast, transparency and text size (#30), with
-a local database holding one settings table (#33). CI checks every pull request (#32). The
-design is prototyped
-in `docs/design/`. Beside those, this repository holds the plan: issue templates, the
+**Strength logging, early.** The app runs on Carl's iPhone: four tabs around a Start button,
+text in Swedish and English (#31), themed from the design tokens and following the phone's dark
+mode, contrast, transparency and text size (#30), on a local database (#33). Built so far: the
+exercise library with 553 exercises (#41), and logging a workout from Start, with its summary
+and History (#42). Not yet: the rest timer, templates, hints, records, plates, programmes, runs
+and export. Home and Food are placeholders; Plan and Du only lead to the library and History.
+CI checks every pull request (#32). The design is prototyped in `docs/design/`.
+Beside those, this repository holds the plan: issue templates, the
 Definition of Done and the architecture decision records.
 
 | | |

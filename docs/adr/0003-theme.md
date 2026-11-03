@@ -54,9 +54,10 @@ put to him in #30's pull request).
   `hazeSource` on what passes behind it.
 - **Harder:** every screen applies the scaffold's padding itself, or its last row hides under
   the bar. Upgrading Compose Multiplatform waits on Haze.
-- **Android's glass is unverified.** The emulator renders in software at about 5 s a frame
-  under blur, and a hardware-GPU emulator did not fit on the disk. Haze uses `RenderEffect`
-  on Android 12 and later; check on a real Android phone before Android is a release target.
+- **Android's glass is seen on the emulator only.** The library under the tab bar blurred on
+  the Android 17 emulator in software rendering (#41). Haze uses `RenderEffect` on Android 12
+  and later; check on a real Android phone, and on Android 11 and earlier, before Android is a
+  release target.
 - **Revisit when** Haze supports Compose Multiplatform 1.13 or later: move up, delete
   `TextScale.ios.kt`'s provider (its `shortcut:` comment says so), and check the tab bar
   labels still hold at the largest text size.
