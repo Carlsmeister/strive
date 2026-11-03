@@ -16,6 +16,9 @@ class AppGraph internal constructor(driver: SqlDriver) {
     internal val exercises: Exercises = sqlExercises
     internal val sessions: Sessions = SqlSessions(database)
 
+    /** The rest counting down, in memory: it outlives the workout screen when the workout is minimised (Q19). */
+    internal val rest = kotlinx.coroutines.flow.MutableStateFlow<Rest?>(null)
+
     /** Brings the exercise library up to the seed shipped with this build; cheap when it already is. */
     internal suspend fun prepare() =
         seedExercises(Res.readBytes("files/exercises.json").decodeToString(), EXERCISE_SEED, sqlExercises, settings)

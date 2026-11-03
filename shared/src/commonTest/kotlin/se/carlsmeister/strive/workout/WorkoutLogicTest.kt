@@ -267,3 +267,14 @@ class RestTest {
         assertEquals(0, Rest(startedAt = 0, seconds = 120).left(now = 200_000))
     }
 }
+
+class StartTimeTest {
+    private val zone = TimeZone.of("Europe/Stockholm")
+    private fun at(h: Int, m: Int) = LocalDateTime(2026, 11, 2, h, m).toInstant(zone).toEpochMilliseconds()
+
+    @Test
+    fun aNewStartTimeKeepsTheDay() = assertEquals(at(17, 5), withTime(at(17, 40), 17, 5, zone, now = at(18, 30)))
+
+    @Test
+    fun aStartTimeIsNeverInTheFuture() = assertEquals(at(18, 30), withTime(at(17, 40), 19, 0, zone, now = at(18, 30)))
+}

@@ -103,6 +103,7 @@ private data object Tabs : Route
 private data class Session(val title: StringResource) : Route
 private data object ActiveWorkout : Route
 private data object PickExercises : Route
+private data class SwapExercise(val sessionExerciseId: Long, val exerciseId: Long) : Route
 private data class Finished(val id: Long) : Route
 private sealed interface Screen
 private data class Stub(val tab: Tab, val depth: Int) : Screen
@@ -168,6 +169,7 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
                             WorkoutScreen(
                                 onMinimise = { root.pop() },
                                 onAddExercises = { root += PickExercises },
+                                onSwap = { e -> root += SwapExercise(e.id, e.exerciseId) },
                                 onFinished = { id -> root[root.lastIndex] = Finished(id) },
                             )
                         }
@@ -177,6 +179,16 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
                             LibraryScreen(safe, onOpen = {}, onBack = { root.pop() }, pick = { ids ->
                                 scope.launch {
                                     open?.let { sessions.add(it.id, ids) }
+                                    root.pop()
+                                }
+                            })
+                        }
+                    }
+                    is SwapExercise -> NavEntry(route, metadata = rise(reduceMotion)) {
+                        Page {
+                            LibraryScreen(safe, onOpen = {}, onBack = { root.pop() }, swapFor = route.exerciseId, pick = { ids ->
+                                scope.launch {
+                                    sessions.swap(route.sessionExerciseId, ids.single())
                                     root.pop()
                                 }
                             })

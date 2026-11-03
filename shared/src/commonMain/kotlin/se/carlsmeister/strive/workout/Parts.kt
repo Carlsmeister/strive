@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -59,6 +61,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
@@ -96,27 +107,36 @@ internal fun IconTarget(label: String, onClick: () -> Unit, content: @Composable
         contentAlignment = Alignment.Center,
     ) { content() }
 
-/** Segments in a grey track, the iOS segmented control; tapping the chosen one again clears it when [clearable]. */
+/**
+ * Segments in a grey track, the iOS segmented control; tapping the chosen one again clears it when [clearable]. [compact] is D's focus
+ * card: a darker track, 34 pt segments.
+ */
 @Composable
-internal fun Segments(options: List<String>, selected: Int?, onSelect: (Int?) -> Unit, modifier: Modifier = Modifier, clearable: Boolean = true) {
+internal fun Segments(options: List<String>, selected: Int?, onSelect: (Int?) -> Unit, modifier: Modifier = Modifier, clearable: Boolean = true,
+                      compact: Boolean = false) {
     val space = StriveTheme.spacing
+    val gap = if (compact) 3.dp else 2.dp
     Row(
-        modifier.background(MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.shapes.medium).padding(2.dp),
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        modifier.background(
+            if (compact) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surfaceContainerHighest,
+            if (compact) RoundedCornerShape(12.dp) else MaterialTheme.shapes.medium,
+        ).padding(gap),
+        horizontalArrangement = Arrangement.spacedBy(gap),
     ) {
         options.forEachIndexed { i, label ->
             val on = i == selected
             Box(
-                Modifier.weight(1f).heightIn(min = StriveTheme.sizes.touch - 4.dp)
+                Modifier.weight(1f).then(if (compact) Modifier.height(34.dp) else Modifier.heightIn(min = StriveTheme.sizes.touch - 4.dp))
                     // Teal, what the tokens keep for chosen: the catalogue's surface is darker than the track in dark mode.
-                    .background(if (on) MaterialTheme.colorScheme.primary else Color.Transparent, MaterialTheme.shapes.small)
+                    .background(if (on) MaterialTheme.colorScheme.primary else Color.Transparent, if (compact) RoundedCornerShape(9.dp) else MaterialTheme.shapes.small)
                     .clickable { onSelect(if (on && clearable) null else i) }
                     // A tab that says whether it is chosen, as VoiceOver reads iOS's segmented control.
                     .semantics { role = Role.Tab; this.selected = on }
-                    .padding(vertical = space.s4),
+                    .padding(vertical = if (compact) 0.dp else space.s4),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(label, style = MaterialTheme.typography.titleSmall, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal, maxLines = 1,
+                Text(label, style = if (compact) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.titleSmall,
+                    fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal, maxLines = 1,
                     color = if (on) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface)
             }
         }
@@ -259,3 +279,53 @@ internal fun SwipeToDelete(shape: Shape, onDelete: () -> Unit, content: @Composa
         ) { row.content() }
     }
 }
+
+/** The glyphs design D draws, in its 24-unit viewBox, since the app carries no icon font. */
+internal enum class Glyph { Check, Calendar, Clock, Timer, Pin, Note, Swap, Down, Up, Back }
+
+@Composable
+internal fun Glyph(glyph: Glyph, size: Dp, modifier: Modifier = Modifier, color: Color = LocalContentColor.current, stroke: Float = 2f) =
+    Canvas(modifier.size(size)) {
+        val k = this.size.width / 24f
+        val style = Stroke(stroke * k, cap = StrokeCap.Round, join = StrokeJoin.Round)
+        fun p(x: Float, y: Float) = Offset(x * k, y * k)
+        fun line(vararg xy: Float) = drawPath(Path().apply { moveTo(xy[0] * k, xy[1] * k); for (i in 2 until xy.size step 2) lineTo(xy[i] * k, xy[i + 1] * k) }, color, style = style)
+        when (glyph) {
+            Glyph.Check -> line(5f, 12.5f, 9.5f, 17f, 19f, 7.5f)
+            Glyph.Calendar -> {
+                drawRoundRect(color, p(3.5f, 5f), Size(17 * k, 15 * k), CornerRadius(3 * k), style = style)
+                line(3.5f, 10f, 20.5f, 10f); line(8f, 3f, 8f, 7f); line(16f, 3f, 16f, 7f)
+            }
+            Glyph.Clock -> { drawCircle(color, 8.5f * k, p(12f, 12f), style = style); line(12f, 7.5f, 12f, 12f, 15f, 14f) }
+            Glyph.Timer -> { drawCircle(color, 8 * k, p(12f, 13f), style = style); line(12f, 9f, 12f, 13f, 14.5f, 15.5f); line(9.5f, 2.5f, 14.5f, 2.5f) }
+            Glyph.Pin -> { line(12f, 16f, 12f, 21f); line(8f, 3f, 16f, 3f, 15f, 9f, 18f, 12f, 6f, 12f, 9f, 9f, 8f, 3f) }
+            Glyph.Note -> { drawRoundRect(color, p(5f, 3f), Size(14 * k, 18 * k), CornerRadius(2 * k), style = style); line(9f, 8f, 15f, 8f); line(9f, 12f, 15f, 12f); line(9f, 16f, 13f, 16f) }
+            Glyph.Swap -> { line(7f, 4f, 3f, 8f, 7f, 12f); line(3f, 8f, 17f, 8f); line(17f, 20f, 21f, 16f, 17f, 12f); line(21f, 16f, 7f, 16f) }
+            Glyph.Down -> line(6f, 9f, 12f, 15f, 18f, 9f)
+            Glyph.Up -> line(6f, 15f, 12f, 9f, 18f, 15f)
+            Glyph.Back -> line(15f, 6f, 9f, 12f, 15f, 18f)
+        }
+    }
+
+/** D's rows reach [by] past the columns on each side (margin 0 -6px; padding 0 6px), so a tint or a swipe has room round its content. */
+internal fun Modifier.bleed(by: Dp) = layout { measurable, constraints ->
+    val px = by.roundToPx()
+    val placeable = measurable.measure(constraints.copy(minWidth = constraints.minWidth + 2 * px, maxWidth = constraints.maxWidth + 2 * px))
+    layout(placeable.width - 2 * px, placeable.height) { placeable.place(-px, 0) }
+}
+
+/** A drawn button: a filled shape with its content centred, in the colours D gives it instead of Material's tonal roles. */
+@Composable
+internal fun Btn(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    container: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    content: Color = MaterialTheme.colorScheme.onSurface,
+    shape: Shape = MaterialTheme.shapes.medium,
+    label: String? = null,
+    body: @Composable RowScope.() -> Unit,
+) = Row(
+    modifier.clip(shape).background(container).clickable(onClickLabel = label, role = Role.Button, onClick = onClick),
+    horizontalArrangement = Arrangement.Center,
+    verticalAlignment = Alignment.CenterVertically,
+) { CompositionLocalProvider(LocalContentColor provides content) { body() } }

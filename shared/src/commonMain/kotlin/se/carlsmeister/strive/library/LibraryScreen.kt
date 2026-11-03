@@ -60,14 +60,18 @@ import strive.shared.generated.resources.in_my_programmes
 import strive.shared.generated.resources.library
 import strive.shared.generated.resources.no_match
 import strive.shared.generated.resources.search
+import strive.shared.generated.resources.swap_exercise
+import strive.shared.generated.resources.alternatives
 
 /**
  * The exercise library (#17 L1): one list with a sticky heading per muscle, search, pattern chips and a filter sheet. Given [pick] it
- * is the add-exercise picker (Q19): rows tick in the order tapped, and Lägg till hands them over.
+ * is the add-exercise picker (Q19): rows tick in the order tapped, and Lägg till hands them over. Given [swapFor] as well it swaps that
+ * exercise (Q8): one tap picks, and the exercises marked Byt (SUB) with the same movement pattern come first.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBack: () -> Unit, pick: ((List<Long>) -> Unit)? = null) {
+internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBack: () -> Unit, pick: ((List<Long>) -> Unit)? = null,
+                           swapFor: Long? = null) {
     var picked by rememberSaveable { mutableStateOf(listOf<Long>()) }
     // Null until the first read, so the saved scroll position is not spent on an empty list.
     val all by LocalAppGraph.current.exercises.all().collectAsState(null)
@@ -91,8 +95,9 @@ internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBac
         } else {
             Row(Modifier.fillMaxWidth().padding(horizontal = space.s8), verticalAlignment = Alignment.CenterVertically) {
                 TextButton(onBack) { Text(stringResource(Res.string.cancel)) }
-                Text(stringResource(Res.string.add_exercises), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-                Button({ pick(picked) }, enabled = picked.isNotEmpty()) { Text(stringResource(Res.string.add_count, picked.size)) }
+                Text(stringResource(if (swapFor != null) Res.string.swap_exercise else Res.string.add_exercises), Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+                if (swapFor == null) Button({ pick(picked) }, enabled = picked.isNotEmpty()) { Text(stringResource(Res.string.add_count, picked.size)) }
             }
         }
         Row(Modifier.padding(horizontal = space.s16, vertical = space.s8), verticalAlignment = Alignment.CenterVertically,
@@ -108,7 +113,17 @@ internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBac
         if (sections.isEmpty()) {
             Text(stringResource(Res.string.no_match), Modifier.padding(space.s16), style = MaterialTheme.typography.bodyLarge)
         }
+        val swapped = all?.firstOrNull { it.id == swapFor }
+        val alternatives = swapped?.let { x -> all.orEmpty().filter { it.mark == Mark.Sub && it.pattern == x.pattern && it.id != x.id } }.orEmpty()
         LazyColumn(Modifier.fillMaxSize(), list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding())) {
+            if (alternatives.isNotEmpty() && pick != null) {
+                stickyHeader(key = "alternatives") {
+                    Text(stringResource(Res.string.alternatives),
+                        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(horizontal = space.s16, vertical = space.s8),
+                        style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+                }
+                items(alternatives, key = { "a${it.id}" }) { e -> ExerciseRow(e, picked = null) { pick(listOf(e.id)) } }
+            }
             for ((muscle, exercises) in sections) {
                 stickyHeader(key = muscle) {
                     Text(stringResource(muscle.label),
@@ -117,6 +132,7 @@ internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBac
                 }
                 items(exercises, key = { it.id }) { e ->
                     if (pick == null) ExerciseRow(e, picked = null) { onOpen(e.id) }
+                    else if (swapFor != null) ExerciseRow(e, picked = null) { pick(listOf(e.id)) }
                     else ExerciseRow(e, picked = e.id in picked) { picked = if (e.id in picked) picked - e.id else picked + e.id }
                 }
             }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,9 +21,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,15 +36,22 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.number
 import org.jetbrains.compose.resources.StringResource
@@ -48,6 +60,7 @@ import org.jetbrains.compose.resources.stringResource
 import se.carlsmeister.strive.data.ExerciseType
 import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.data.SessionExercise
+import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.data.WorkoutSet
 import se.carlsmeister.strive.library.kilos
@@ -55,24 +68,40 @@ import se.carlsmeister.strive.theme.StriveTheme
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.add_exercises
 import strive.shared.generated.resources.add_named
+import strive.shared.generated.resources.back_to_focus
+import strive.shared.generated.resources.cancel
+import strive.shared.generated.resources.change_start
 import strive.shared.generated.resources.col_kg
 import strive.shared.generated.resources.col_metres
 import strive.shared.generated.resources.col_previous
 import strive.shared.generated.resources.col_reps
 import strive.shared.generated.resources.col_seconds
 import strive.shared.generated.resources.col_set
+import strive.shared.generated.resources.down_by
 import strive.shared.generated.resources.edit
 import strive.shared.generated.resources.expand
+import strive.shared.generated.resources.kind_drop
+import strive.shared.generated.resources.kind_failure
+import strive.shared.generated.resources.kind_normal
+import strive.shared.generated.resources.kind_warmup
 import strive.shared.generated.resources.log_set
 import strive.shared.generated.resources.logged
 import strive.shared.generated.resources.months
+import strive.shared.generated.resources.now_kind
 import strive.shared.generated.resources.now_set
+import strive.shared.generated.resources.now_strip
 import strive.shared.generated.resources.quick_marked
 import strive.shared.generated.resources.quick_picks
 import strive.shared.generated.resources.quick_recent
 import strive.shared.generated.resources.rename
+import strive.shared.generated.resources.rest_after
+import strive.shared.generated.resources.rest_row
+import strive.shared.generated.resources.save
 import strive.shared.generated.resources.session_note
+import strive.shared.generated.resources.set_type
 import strive.shared.generated.resources.sets_progress
+import strive.shared.generated.resources.skipped
+import strive.shared.generated.resources.up_by
 import strive.shared.generated.resources.weekdays_short
 import strive.shared.generated.resources.what_today
 import strive.shared.generated.resources.what_today_body
@@ -94,34 +123,52 @@ internal fun cells(s: WorkoutSet, type: ExerciseType, swedish: Boolean): List<St
     ExerciseType.Distance -> listOf(s.metres?.let { kilos(it, swedish) })
 }
 
+internal val SetKind.label get() = when (this) {
+    SetKind.Normal -> Res.string.kind_normal
+    SetKind.Warmup -> Res.string.kind_warmup
+    SetKind.Drop -> Res.string.kind_drop
+    SetKind.Failure -> Res.string.kind_failure
+}
+
 private val SetColumn = 36.dp
 private val CheckColumn = 44.dp
+internal val RowShape = RoundedCornerShape(12.dp)
 
-/** A cell's width: weight a little wider than reps, a single value wider still. */
-private fun cellWidth(count: Int, i: Int) = if (count == 1) 88.dp else if (i == 0) 72.dp else 60.dp
+/** D's grid: weight 64 pt, reps 56; a single value gets the two together. */
+private fun cellWidth(count: Int, i: Int) = if (count == 1) 88.dp else if (i == 0) 64.dp else 56.dp
 
-/** The workout's name with ⋯: rename and the workout note (Q19). */
+private val swedish @Composable get() = androidx.compose.ui.text.intl.Locale.current.language == "sv"
+
+/** The ⋯ pill D draws beside a name: teal container, the glyph bold. */
 @Composable
-internal fun WorkoutMenu(w: Workout, large: Boolean) {
+internal fun MorePill(label: String, large: Boolean, onClick: () -> Unit) = Box(
+    Modifier.height(if (large) 30.dp else 28.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer)
+        .clickable(onClickLabel = label, onClick = onClick).semantics { contentDescription = label }.padding(horizontal = if (large) 12.dp else 10.dp),
+    contentAlignment = Alignment.Center,
+) {
+    Text("⋯", style = MaterialTheme.typography.titleMedium.copy(fontSize = if (large) 18.sp else 17.sp, lineHeight = 18.sp),
+        fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
+}
+
+/** The workout's name with ⋯: Byt namn, Passanteckning and Ändra starttid (Q19). */
+@Composable
+internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
     val sessions = LocalAppGraph.current.sessions
     val scope = rememberCoroutineScope()
     var menu by remember { mutableStateOf(false) }
     var prompt by remember { mutableStateOf<String?>(null) }
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(if (large) 10.dp else 6.dp)) {
         Text(
             w.name, Modifier.weight(1f, fill = false).clickable(onClickLabel = stringResource(Res.string.workout_options)) { menu = true },
-            style = if (large) MaterialTheme.typography.headlineLarge else MaterialTheme.typography.titleMedium,
-            maxLines = 1, overflow = TextOverflow.Ellipsis,
+            style = if (large) MaterialTheme.typography.headlineMedium.copy(letterSpacing = (-0.4).sp) else MaterialTheme.typography.titleMedium,
+            fontWeight = if (large) FontWeight.Bold else FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis,
         )
         Box {
-            IconTarget(stringResource(Res.string.workout_options), { menu = true }) {
-                Box(Modifier.background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(50)).padding(horizontal = 10.dp)) {
-                    Text("⋯", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                }
-            }
-            DropdownMenu(menu, { menu = false }) {
+            MorePill(stringResource(Res.string.workout_options), large) { menu = true }
+            DropdownMenu(menu, { menu = false }, containerColor = MaterialTheme.colorScheme.surfaceContainerHigh) {
                 DropdownMenuItem({ Text(stringResource(Res.string.rename)) }, onClick = { menu = false; prompt = "name" })
                 DropdownMenuItem({ Text(stringResource(Res.string.session_note)) }, onClick = { menu = false; prompt = "note" })
+                DropdownMenuItem({ Text(stringResource(Res.string.change_start)) }, onClick = { menu = false; prompt = "start" })
             }
         }
     }
@@ -134,74 +181,155 @@ internal fun WorkoutMenu(w: Workout, large: Boolean) {
             prompt = null
             scope.launch { sessions.setNote(w.id, n) }
         }, onDismiss = { prompt = null })
+        "start" -> StartPrompt(w.startedAt, onSave = { h, m ->
+            prompt = null
+            scope.launch { sessions.setStart(w.id, withTime(w.startedAt, h, m, TimeZone.currentSystemDefault(), nowMs)) }
+        }, onDismiss = { prompt = null })
     }
 }
 
-/** B's large title (decision 40): the name with ⋯, then the day, the time and the sets done. Shown once the workout has an exercise. */
+/** Ändra starttid: the hour and minute on the day the workout started. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun StartPrompt(startedAt: Long, onSave: (Int, Int) -> Unit, onDismiss: () -> Unit) {
+    val start = local(startedAt)
+    val state = rememberTimePickerState(start.hour, start.minute, is24Hour = true)
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.extraLarge).padding(StriveTheme.spacing.s20),
+            verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s12), horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(stringResource(Res.string.change_start), style = MaterialTheme.typography.titleMedium)
+            TimeInput(state)
+            Row {
+                TextButton(onDismiss, Modifier.weight(1f)) { Text(stringResource(Res.string.cancel)) }
+                TextButton({ onSave(state.hour, state.minute) }, Modifier.weight(1f)) { Text(stringResource(Res.string.save)) }
+            }
+        }
+    }
+}
+
+/** B's large title (decision 40), as D draws it: the name with ⋯, then the day, the time and the sets done, each with its glyph. */
 @Composable
 internal fun LargeHeader(w: Workout, now: Long) {
     val start = local(w.startedAt)
     val day = "${stringArrayResource(Res.array.weekdays_short)[start.dayOfWeek.isoDayNumber - 1]} ${start.day} ${
         stringArrayResource(Res.array.months)[start.month.number - 1]}"
-    Column(Modifier.padding(top = StriveTheme.spacing.s4, bottom = StriveTheme.spacing.s12), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4)) {
-        WorkoutMenu(w, large = true)
-        Row(horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s16)) {
-            val grey = MaterialTheme.colorScheme.onSurfaceVariant
-            Text(day, style = MaterialTheme.typography.bodyMedium, color = grey)
-            Text(clock((now - w.startedAt) / 1_000), style = MaterialTheme.typography.bodyMedium)
-            Text(stringResource(Res.string.sets_progress, w.logged, w.sets), style = MaterialTheme.typography.bodyMedium, color = grey)
+    val grey = MaterialTheme.colorScheme.onSurfaceVariant
+    val style = MaterialTheme.typography.bodyMedium
+    Column(Modifier.padding(top = StriveTheme.spacing.s4), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4)) {
+        WorkoutMenu(w, large = true, nowMs = now)
+        Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
+                Glyph(Glyph.Calendar, 16.dp, color = grey, stroke = 1.8f)
+                Text(day, style = style, color = grey)
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
+                Glyph(Glyph.Clock, 16.dp, color = grey, stroke = 1.8f)
+                Text(clock((now - w.startedAt) / 1_000), style = style)
+            }
+            Text(stringResource(Res.string.sets_progress, w.logged, w.sets), style = style, color = grey)
         }
     }
 }
 
-/** C's focus card (decision 39, D): the next set large, RIR, Ändra for the dock, and one tap to log it. */
+/** The label over the next set: "NU · BENCH PRESS BB · SET 2 AV 4", or the set's type for a warm-up, drop or failure set. */
 @Composable
-internal fun FocusCard(e: SessionExercise, set: WorkoutSet, number: Int, rir: Int?, more: Boolean, onRir: (Int?) -> Unit, onMore: (Boolean) -> Unit,
-                       onEdit: () -> Unit, onLog: () -> Unit) {
-    val space = StriveTheme.spacing
-    val swedish = androidx.compose.ui.text.intl.Locale.current.language == "sv"
+private fun nowLabel(e: SessionExercise, set: WorkoutSet, badge: String, strip: Boolean): String {
+    val working = e.sets.count { it.kind == SetKind.Normal }
+    return when {
+        set.kind != SetKind.Normal -> stringResource(Res.string.now_kind, e.name, stringResource(set.kind.label))
+        strip -> stringResource(Res.string.now_strip, e.name, badge)
+        else -> stringResource(Res.string.now_set, e.name, badge, working)
+    }.uppercase()
+}
+
+/** "upp 2,5 kg" against last time, or nothing (Q21's ↑, until #45's rule). */
+@Composable
+internal fun changeText(set: WorkoutSet, prev: WorkoutSet?, swedish: Boolean): String? = change(set.weight, prev?.weight)?.let {
+    stringResource(if (it > 0) Res.string.up_by else Res.string.down_by, kilos(kotlin.math.abs(it), swedish))
+}
+
+/**
+ * C's focus card as Carl drew it in D: the label, the next set large with "upp 2,5 kg" under it, the rest after it and last time's
+ * set, RIR, Ändra for the dock, and one tap to log it.
+ */
+@Composable
+internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev: WorkoutSet?, rest: Int, rir: Int?, more: Boolean,
+                       onRir: (Int?) -> Unit, onMore: (Boolean) -> Unit, onEdit: () -> Unit, onLog: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val type = MaterialTheme.typography
+    val sv = swedish
     Column(
-        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface, RoundedCornerShape(22.dp)).padding(space.s16).testTag("focus"),
-        verticalArrangement = Arrangement.spacedBy(space.s12),
+        Modifier.fillMaxWidth().background(colors.surface, RoundedCornerShape(22.dp)).padding(StriveTheme.spacing.s16).testTag("focus"),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text(stringResource(Res.string.now_set, e.name, number, e.sets.size).uppercase(), style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(space.s8)) {
-            val values = cells(set, e.type, swedish)
-            val units = columns(e.type)
-            values.forEachIndexed { i, v ->
-                if (i > 0) Text("×", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(v ?: "–", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
-                Text(stringResource(units[i]).lowercase(), Modifier.padding(bottom = 6.dp), style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(nowLabel(e, set, badge, strip = false), style = type.bodySmall.copy(letterSpacing = 0.3.sp), fontWeight = FontWeight.SemiBold,
+            color = colors.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Column {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                val big = type.displaySmall.copy(fontSize = 38.sp, lineHeight = 44.sp, letterSpacing = (-1).sp, fontWeight = FontWeight.Bold)
+                val units = columns(e.type)
+                cells(set, e.type, sv).forEachIndexed { i, v ->
+                    if (i > 0) Text("×", Modifier.alignByBaseline(), style = type.headlineMedium.copy(fontSize = 26.sp), color = colors.onSurfaceVariant)
+                    Text(v ?: "–", Modifier.alignByBaseline(), style = big)
+                    Text(stringResource(units[i]).lowercase(), Modifier.alignByBaseline(), style = type.bodyMedium, color = colors.onSurfaceVariant)
+                }
+            }
+            changeText(set, prev, sv)?.let {
+                Text(it, Modifier.offset(y = (-2).dp), style = type.bodySmall, fontWeight = FontWeight.SemiBold, color = colors.primary)
+            }
+            Row(Modifier.fillMaxWidth().padding(top = 14.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(stringResource(Res.string.rest_after, clock(rest.toLong())), Modifier.alignByBaseline(), style = type.bodySmall, color = colors.onSurfaceVariant)
+                Text(
+                    buildAnnotatedString {
+                        withStyle(SpanStyle(color = colors.onSurfaceVariant)) { append(stringResource(Res.string.col_previous) + " ") }
+                        withStyle(SpanStyle(color = colors.onSurface, fontSize = 15.sp)) { append(prev?.let { setText(it, e.type, sv) } ?: "–") }
+                    },
+                    Modifier.alignByBaseline(), style = type.bodySmall,
+                )
             }
         }
-        if (e.type.hasRir()) RirRow(rir, more, onRir, onMore)
-        Row(horizontalArrangement = Arrangement.spacedBy(space.s8)) {
-            FilledTonalButton(onEdit, Modifier.weight(1f).heightIn(min = 50.dp), shape = MaterialTheme.shapes.medium) { Text(stringResource(Res.string.edit)) }
-            Button(onLog, Modifier.weight(2f).heightIn(min = 50.dp), shape = MaterialTheme.shapes.medium) {
-                Text("✓  " + stringResource(Res.string.log_set, number), fontWeight = FontWeight.Bold)
+        if (e.type.hasRir()) RirRow(rir, more, onRir, onMore, label = false, compact = true)
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Btn(onEdit, Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp)) {
+                Text(stringResource(Res.string.edit), style = type.titleMedium)
+            }
+            Btn(onLog, Modifier.weight(2f).height(50.dp), container = colors.primary, content = colors.onPrimary, shape = RoundedCornerShape(14.dp)) {
+                Glyph(Glyph.Check, 20.dp, stroke = 2.8f)
+                Text(stringResource(Res.string.log_set, badge), Modifier.padding(start = 8.dp), style = type.titleMedium, fontWeight = FontWeight.Bold)
             }
         }
     }
 }
 
-/** The focus card folded into a strip under the bar once it scrolls away, so the next set is one tap from anywhere (D). */
+/**
+ * The focus card folded into a strip under the bar once it scrolls away (D). The whole strip is one button back to the card; logging
+ * stays on the card and the rows, so a tap meant for the bar never logs a set (Carl, point 7).
+ */
 @Composable
-internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, number: Int, onLog: () -> Unit) {
-    val space = StriveTheme.spacing
-    val swedish = androidx.compose.ui.text.intl.Locale.current.language == "sv"
-    Row(
-        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.large)
-            .padding(start = space.s16, end = space.s8, top = space.s8, bottom = space.s8).testTag("focus-strip"),
-        verticalAlignment = Alignment.CenterVertically,
+internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, badge: String, rir: Int?, onBack: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val sv = swedish
+    val main = when (e.type) {
+        ExerciseType.WeightReps -> "${set.weight?.let { kilos(it, sv) } ?: "–"} kg × ${set.reps ?: "–"}"
+        else -> setText(set.copy(rir = null), e.type, sv)
+    }
+    Column(
+        Modifier.fillMaxWidth().clip(MaterialTheme.shapes.large).background(colors.surfaceContainerHigh)
+            .clickable(onClickLabel = stringResource(Res.string.back_to_focus), onClick = onBack)
+            .padding(horizontal = 14.dp, vertical = 8.dp).testTag("focus-strip"),
+        verticalArrangement = Arrangement.spacedBy(1.dp),
     ) {
-        Column(Modifier.weight(1f)) {
-            Text(stringResource(Res.string.now_set, e.name, number, e.sets.size).uppercase(), style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(setText(set, e.type, swedish), style = MaterialTheme.typography.titleMedium)
-        }
-        Button(onLog, Modifier.heightIn(min = StriveTheme.sizes.touch)) { Text("✓  " + stringResource(Res.string.log_set, number)) }
+        Text(nowLabel(e, set, badge, strip = true), style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 0.3.sp),
+            fontWeight = FontWeight.SemiBold, color = colors.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(
+            buildAnnotatedString {
+                append(main)
+                rir?.let { withStyle(SpanStyle(fontSize = 13.sp, fontWeight = FontWeight.Normal, color = colors.onSurfaceVariant)) { append(" RIR $it") } }
+            },
+            style = MaterialTheme.typography.titleMedium,
+        )
     }
 }
 
@@ -209,9 +337,9 @@ internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, number: Int, onLog:
 @Composable
 internal fun ColumnLabels(type: ExerciseType) {
     val cols = columns(type)
-    val style = MaterialTheme.typography.labelMedium
+    val style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold)
     val grey = MaterialTheme.colorScheme.onSurfaceVariant
-    Row(Modifier.fillMaxWidth().padding(vertical = StriveTheme.spacing.s4), horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
+    Row(Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 2.dp), horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
         Text(stringResource(Res.string.col_set), Modifier.width(SetColumn), style = style, color = grey, textAlign = TextAlign.Center)
         Text(stringResource(Res.string.col_previous), Modifier.weight(1f), style = style, color = grey)
         cols.forEachIndexed { i, c -> Text(stringResource(c), Modifier.width(cellWidth(cols.size, i)), style = style, color = grey, textAlign = TextAlign.Center) }
@@ -220,80 +348,133 @@ internal fun ColumnLabels(type: ExerciseType) {
 }
 
 /**
- * A's set row (decision 39, D): badge, Förra (filled by #45), the values in grey fields that open the dock on that field, and the
- * set's own ✓. The next set is tinted.
+ * A's set row as D draws it: the badge (a tap changes the set's type, Q21), Förra, the values in fields that open the dock on that
+ * field, and the set's own ✓. The next set is tinted. Its background is opaque under the tint, so the red of a swipe never shows
+ * through before the row moves.
  */
 @Composable
-internal fun SetRow(tag: String, number: Int, set: WorkoutSet, type: ExerciseType, current: Boolean, onOpen: (Int?) -> Unit, onCheck: () -> Unit) {
+internal fun SetRow(
+    tag: String, badge: String, set: WorkoutSet, type: ExerciseType, current: Boolean, prev: WorkoutSet?,
+    onKind: (SetKind) -> Unit, onOpen: (Int?) -> Unit, onCheck: () -> Unit, guard: (() -> Unit) -> Unit = { it() },
+) {
     val colors = MaterialTheme.colorScheme
-    val space = StriveTheme.spacing
-    val swedish = androidx.compose.ui.text.intl.Locale.current.language == "sv"
-    val values = cells(set, type, swedish)
+    val sv = swedish
+    val values = cells(set, type, sv)
+    var menu by remember { mutableStateOf(false) }
     Row(
-        Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch)
-            .background(if (current) colors.primary.copy(alpha = 0.12f) else colors.background, MaterialTheme.shapes.medium)
-            .clickable { onOpen(null) }.testTag(tag).padding(vertical = 3.dp),
+        Modifier.fillMaxWidth().heightIn(min = if (current) 42.dp else 38.dp)
+            .background(colors.background, RowShape)
+            .then(if (current) Modifier.background(colors.primary.copy(alpha = 0.12f), RowShape) else Modifier)
+            .clickable { onOpen(null) }.testTag(tag).padding(horizontal = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(space.s8),
+        horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8),
     ) {
-        Box(
-            Modifier.width(SetColumn).height(28.dp).background(if (current) colors.primary else colors.surfaceContainerHigh, MaterialTheme.shapes.small),
-            contentAlignment = Alignment.Center,
-        ) { Text("$number", style = MaterialTheme.typography.titleSmall, color = if (current) colors.onPrimary else colors.onSurface) }
-        Text("–", Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+        Box {
+            val label = stringResource(Res.string.set_type, badge)
+            Box(
+                Modifier.width(SetColumn).height(28.dp).clip(RoundedCornerShape(8.dp)).background(if (current) colors.primary else colors.surfaceContainerHigh)
+                    .clickable(onClickLabel = label) { guard { menu = true } }.semantics { contentDescription = label },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(badge, style = MaterialTheme.typography.bodyMedium, fontWeight = if (current) FontWeight.Bold else FontWeight.SemiBold,
+                    color = when { current -> colors.onPrimary; set.kind != SetKind.Normal -> colors.tertiary; else -> colors.onSurface })
+            }
+            DropdownMenu(menu, { menu = false }, containerColor = colors.surfaceContainerHigh) {
+                for (kind in SetKind.entries) {
+                    DropdownMenuItem(
+                        { Text(stringResource(kind.label)) }, onClick = { menu = false; onKind(kind) },
+                        leadingIcon = { Box(Modifier.size(18.dp)) { if (kind == set.kind) Glyph(Glyph.Check, 18.dp, color = colors.primary) } },
+                        trailingIcon = { Text(kind.letter ?: "1", color = colors.onSurfaceVariant) },
+                    )
+                }
+            }
+        }
+        Text(prev?.let { setText(it, type, sv) } ?: "–", Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium,
+            color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         values.forEachIndexed { i, v ->
             Box(
-                Modifier.width(cellWidth(values.size, i)).height(36.dp)
-                    .background(if (set.done) Color.Transparent else colors.surfaceContainerHigh, MaterialTheme.shapes.medium)
+                Modifier.width(cellWidth(values.size, i)).height(34.dp).clip(RoundedCornerShape(10.dp))
+                    .background(when { set.done -> Color.Transparent; current -> colors.surfaceContainerHigh; else -> colors.surface })
                     .clickable { onOpen(i) }.testTag("$tag cell $i"),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(v ?: "–", style = MaterialTheme.typography.bodyLarge,
-                    color = if (set.done || current) colors.onSurface else colors.onSurfaceVariant)
+                val reps = type.hasRir() && i == values.lastIndex
+                Text(
+                    buildAnnotatedString {
+                        append(v ?: "–")
+                        if (reps) set.rir?.let { withStyle(SpanStyle(fontSize = 12.sp, color = colors.onSurfaceVariant)) { append(" @$it") } }
+                    },
+                    style = MaterialTheme.typography.bodyLarge, maxLines = 1,
+                    color = if (set.done || current) colors.onSurface else colors.onSurfaceVariant,
+                )
             }
         }
-        val check = stringResource(if (set.done) Res.string.logged else Res.string.log_set, number)
+        val check = if (set.done) stringResource(Res.string.logged) else stringResource(Res.string.log_set, badge)
         Box(
-            Modifier.width(CheckColumn).height(36.dp)
-                .background(if (set.done) colors.primary else if (current) Color.Transparent else colors.surfaceContainerHigh, MaterialTheme.shapes.medium)
-                .border(if (current && !set.done) 2.dp else 0.dp, if (current && !set.done) colors.primary else Color.Transparent, MaterialTheme.shapes.medium)
+            Modifier.width(CheckColumn).height(34.dp).clip(RoundedCornerShape(10.dp))
+                .background(if (set.done) colors.primary else if (current) Color.Transparent else colors.surfaceContainerHigh)
+                .then(if (current && !set.done) Modifier.border(2.dp, colors.primary, RoundedCornerShape(10.dp)) else Modifier)
                 .clickable(onClickLabel = check, onClick = onCheck)
                 .semantics { contentDescription = check },
             contentAlignment = Alignment.Center,
         ) {
-            Text("✓", style = MaterialTheme.typography.titleMedium,
+            Glyph(Glyph.Check, 17.dp, stroke = 2.6f,
                 color = if (set.done) colors.onPrimary else if (current) colors.primary else colors.onSurfaceVariant)
         }
     }
 }
 
-/** C's overview row for a folded exercise: its name, a dot per set, and how many are logged (D). */
+/** The rest between two sets (Q17), "Vila 2:00" between two lines; teal after the last set logged, where the rest is now. */
 @Composable
-internal fun ExerciseOverview(e: SessionExercise, onExpand: () -> Unit) {
+internal fun RestLine(seconds: Int, now: Boolean) {
+    val line = if (now) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh
+    Row(Modifier.fillMaxWidth().height(20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Box(Modifier.weight(1f).height(2.dp).background(line, RoundedCornerShape(1.dp)))
+        Text(stringResource(Res.string.rest_row, clock(seconds.toLong())), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold,
+            color = if (now) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
+        Box(Modifier.weight(1f).height(2.dp).background(line, RoundedCornerShape(1.dp)))
+    }
+}
+
+/**
+ * C's overview row for a folded exercise: its name, a dot per set, and how many are logged (D). Folded exercises in a row share one
+ * card, joined by hairlines; [first] and [last] round its ends.
+ */
+@Composable
+internal fun ExerciseOverview(e: SessionExercise, first: Boolean, last: Boolean, onExpand: () -> Unit) {
     val colors = MaterialTheme.colorScheme
-    val space = StriveTheme.spacing
     val logged = e.sets.count { it.done }
     val label = stringResource(Res.string.expand, e.name)
-    Row(
-        Modifier.fillMaxWidth().padding(vertical = space.s4).background(colors.surface, MaterialTheme.shapes.large)
-            .clickable(onClickLabel = label, onClick = onExpand).padding(start = space.s16, end = space.s4, top = space.s8, bottom = space.s8),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(space.s8),
-    ) {
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(space.s4)) {
-            Text(e.name, style = MaterialTheme.typography.titleSmall)
-            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                for (s in e.sets) {
-                    Box(Modifier.size(8.dp).then(
-                        if (s.done) Modifier.background(colors.primary, CircleShape) else Modifier.border(1.5.dp, colors.surfaceContainerHighest, CircleShape),
-                    ))
+    val top = if (first) 18.dp else 0.dp
+    val bottom = if (last) 18.dp else 0.dp
+    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(top, top, bottom, bottom)).background(colors.surface)) {
+        if (!first) HorizontalDivider(thickness = 0.5.dp, color = colors.outlineVariant)
+        Row(
+            Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(onClickLabel = label, onClick = onExpand).padding(start = 14.dp, end = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s12),
+        ) {
+            Column(Modifier.weight(1f).padding(vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4)) {
+                Text(e.name, style = MaterialTheme.typography.titleSmall.copy(fontSize = 16.sp), color = if (e.skipped) colors.onSurfaceVariant else colors.onSurface)
+                if (!e.skipped) Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                    for (s in e.sets) {
+                        val dot = if (s.kind == SetKind.Warmup) colors.tertiary else colors.primary
+                        Box(Modifier.size(8.dp).then(
+                            if (s.done) Modifier.background(dot, CircleShape) else Modifier.border(1.5.dp, colors.surfaceContainerHighest, CircleShape),
+                        ))
+                    }
                 }
             }
+            val all = logged == e.sets.size && logged > 0
+            Text(if (e.skipped) stringResource(Res.string.skipped) else "$logged/${e.sets.size}" + if (all) " ✓" else "",
+                style = MaterialTheme.typography.bodyMedium, color = if (all && !e.skipped) colors.primary else colors.onSurfaceVariant,
+                fontWeight = if (all && !e.skipped) FontWeight.SemiBold else FontWeight.Normal)
+            Box(
+                Modifier.size(36.dp).clip(CircleShape).background(colors.surfaceContainerHigh).clickable(onClickLabel = label, onClick = onExpand)
+                    .semantics { contentDescription = label },
+                contentAlignment = Alignment.Center,
+            ) { Glyph(Glyph.Down, 14.dp, color = colors.onSurface, stroke = 2.6f) }
         }
-        val all = logged == e.sets.size && logged > 0
-        Text("$logged/${e.sets.size}" + if (all) " ✓" else "", style = MaterialTheme.typography.bodyMedium,
-            color = if (all) colors.primary else colors.onSurfaceVariant, fontWeight = if (all) FontWeight.SemiBold else FontWeight.Normal)
-        IconTarget(label, onExpand) { Chevron(down = true, color = colors.onSurfaceVariant, size = 14.dp) }
     }
 }
 

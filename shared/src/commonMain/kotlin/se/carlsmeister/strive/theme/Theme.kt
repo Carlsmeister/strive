@@ -59,10 +59,13 @@ private val LocalGlass = staticCompositionLocalOf { lightMaterials }
 internal val LocalDarkTheme = staticCompositionLocalOf<Boolean?> { null }
 private val LocalReduceMotion = staticCompositionLocalOf { false }
 
+/** Increase Contrast on or off regardless of the phone, for the tests that shoot the high-contrast palette; null follows the phone. */
+internal val LocalHighContrast = staticCompositionLocalOf<Boolean?> { null }
+
 @Composable
 internal fun StriveTheme(content: @Composable () -> Unit) {
     val settings = accessibility()
-    val scheme = scheme(LocalDarkTheme.current ?: isSystemInDarkTheme(), settings.highContrast)
+    val scheme = scheme(LocalDarkTheme.current ?: isSystemInDarkTheme(), LocalHighContrast.current ?: settings.highContrast)
     CompositionLocalProvider(
         LocalGlass provides glass(scheme, settings.reduceTransparency),
         LocalReduceMotion provides settings.reduceMotion,

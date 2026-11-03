@@ -46,6 +46,8 @@ import platform.Foundation.writeToFile
 import androidx.compose.runtime.CompositionLocalProvider
 import se.carlsmeister.strive.App
 import se.carlsmeister.strive.theme.LocalDarkTheme
+import se.carlsmeister.strive.theme.LocalHighContrast
+import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.AppGraph
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.data.deleteFileDatabase
@@ -109,6 +111,21 @@ import strive.shared.generated.resources.now_set
 import strive.shared.generated.resources.quick_picks
 import strive.shared.generated.resources.sets_progress
 import strive.shared.generated.resources.what_today
+import strive.shared.generated.resources.back_to_focus
+import strive.shared.generated.resources.change_start
+import strive.shared.generated.resources.free_rest
+import strive.shared.generated.resources.kind_warmup
+import strive.shared.generated.resources.order_skip
+import strive.shared.generated.resources.rest
+import strive.shared.generated.resources.rest_all
+import strive.shared.generated.resources.rest_row
+import strive.shared.generated.resources.set_type
+import strive.shared.generated.resources.skip
+import strive.shared.generated.resources.skipped
+import strive.shared.generated.resources.sticky_note
+import strive.shared.generated.resources.swap
+import strive.shared.generated.resources.up_by
+import strive.shared.generated.resources.rest_after
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -120,9 +137,9 @@ import kotlin.test.assertTrue
  */
 @OptIn(ExperimentalTestApi::class)
 class FlowTest {
-    private fun flow(graph: AppGraph = AppGraph(memoryDriver()), dark: Boolean? = null, block: suspend Flow.() -> Unit) =
+    private fun flow(graph: AppGraph = AppGraph(memoryDriver()), dark: Boolean? = null, highContrast: Boolean? = null, block: suspend Flow.() -> Unit) =
         runSkikoComposeUiTest(Size(1284f, 2778f), Density(3f)) {
-            setContent { CompositionLocalProvider(LocalDarkTheme provides dark) { App(graph) } }
+            setContent { CompositionLocalProvider(LocalDarkTheme provides dark, LocalHighContrast provides highContrast) { App(graph) } }
             Flow(this, graph).block()
         }
 
@@ -145,8 +162,9 @@ class FlowTest {
         keys("80")
         tap(s(Res.string.next))
         keys("8")
+        tap(s(Res.string.next))
         tap(s(Res.string.log_next))
-        tap(s(Res.string.add_set))
+        tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         shot("dark-05-sets")
         tap(s(Res.string.finish))
@@ -199,6 +217,8 @@ class FlowTest {
         keys("80")
         tap(s(Res.string.next))
         keys("8")
+        tap(s(Res.string.next))
+        shot("03b-rest-field")
         tap(s(Res.string.log_next))
         see(s(Res.string.sets_progress, 1, 1))
         seeDesc(s(Res.string.logged, 1))
@@ -263,8 +283,9 @@ class FlowTest {
         openSet(0)
         tapDesc("${s(Res.string.field_weight)} +")
         tap(s(Res.string.log))
-        // Reps is empty, so Logga opens the keypad on it rather than logging half a set.
-        see(s(Res.string.log_next))
+        // Reps is empty, so Logga opens the keypad on it rather than logging half a set; rest comes after it.
+        see(s(Res.string.next))
+        test.onNodeWithTag("key-1").assertExists()
         assertEquals(false, open().exercises.single().sets.single().done)
     }
 
@@ -273,7 +294,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
-        tap(s(Res.string.add_set))
+        tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().exercises.single().sets.size == 2 }
         tapDesc(s(Res.string.log_set, 2))
         waitUntilTrue { open().logged == 2 }
@@ -327,7 +348,7 @@ class FlowTest {
     fun aFullSwipeLeftDeletesASet() = flow {
         startWorkout()
         addExercises("Bench Press BB")
-        tap(s(Res.string.add_set))
+        tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().exercises.single().sets.size == 2 }
         setRows()[1].performTouchInput { swipeLeft(startX = right - 10f, endX = left + 10f) }
         waitUntilTrue { open().exercises.single().sets.size == 1 }
@@ -339,6 +360,8 @@ class FlowTest {
         addExercises("Bench Press BB")
         setRows()[0].performTouchInput { swipeLeft(startX = right - 10f, endX = right - 400f) }
         see(s(Res.string.delete))
+        // Only the part the row uncovers is red; the row itself stays opaque (point 4).
+        shot("13-swipe-open")
         // The swipe began on the set's ✓ and ended over the row: neither may count as a tap.
         gone(hasContentDescription(s(Res.string.field_weight)))
         tap(s(Res.string.delete))
@@ -408,7 +431,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
-        tap(s(Res.string.add_set))
+        tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         tap(s(Res.string.finish))
         see(getPluralString(Res.plurals.unlogged, 1, 1))
@@ -423,7 +446,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
-        tap(s(Res.string.add_set))
+        tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         tap(s(Res.string.finish))
         tap(s(Res.string.save_without))
@@ -489,7 +512,7 @@ class FlowTest {
         // Two workouts cannot run at once: the sheet only continues this one.
         gone(hasText(s(Res.string.start_workout)))
         tapContaining(s(Res.string.workout))
-        see(s(Res.string.add_set))
+        see(s(Res.string.add_set), substring = true)
     }
 
     @Test
@@ -547,6 +570,7 @@ class FlowTest {
         gone(hasText(s(Res.string.rir)))
         tapDesc(s(Res.string.field_seconds))
         keys("45")
+        tap(s(Res.string.next))
         tap(s(Res.string.log_next))
         waitUntilTrue { open().exercises.single().sets.single().let { it.done && it.seconds == 45 } }
     }
@@ -560,7 +584,7 @@ class FlowTest {
         see(s(Res.string.now_set, "Chest Dips", 1, 1).uppercase())
         // Bench Press folded once the card moved on; opened, a new set there comes first, so the card goes back to it.
         tapDesc(s(Res.string.expand, "Bench Press BB"))
-        test.onAllNodes(hasText(s(Res.string.add_set)) and hasClickAction())[0].performClick()
+        test.onAllNodes(hasText(s(Res.string.add_set), substring = true) and hasClickAction())[0].performClick()
         see(s(Res.string.now_set, "Bench Press BB", 2, 2).uppercase())
         tapContaining(s(Res.string.log_set, 2))
         waitUntilTrue { open().exercises.first().sets.all { it.done } }
@@ -580,8 +604,8 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         test.onNodeWithTag("set Bench Press BB 1 cell 1").performClick()
-        // Reps is the last field, so the keypad's button already says Logga ›.
-        see(s(Res.string.log_next))
+        // Reps is followed by the rest, so the keypad's button says Nästa.
+        see(s(Res.string.next))
         keys("8")
         see("8")
     }
@@ -598,16 +622,178 @@ class FlowTest {
     }
 
     @Test
-    fun theStripLogsTheNextSetOnceTheFocusCardIsScrolledAway() = flow {
+    fun theStripIsOneButtonBackToTheFocusCard() = flow {
         startWorkout()
         addExercises("Bench Press BB", "Chest Dips", "Squat BB", "Pull Up", "Incline Press DB")
         logFirstSet("80", "8")
+        tap(s(Res.string.skip)) // the rest card
+        // Folded exercises are short; open three so the list is long enough to scroll the card away.
+        for (name in listOf("Squat BB", "Pull Up", "Incline Press DB")) tapDesc(s(Res.string.expand, name))
+        test.onNode(hasScrollToIndexAction()).performScrollToKey("end")
+        wait("the strip") { test.onAllNodes(hasTestTag("focus-strip")).fetchSemanticsNodes().isNotEmpty() }
+        shot("11-strip")
+        // No Logga on the strip (point 7): the whole strip scrolls back up to the card.
+        gone(hasText(s(Res.string.log_set, 1), substring = true) and hasClickAction() and !hasContentDescription(s(Res.string.log_set, 1)))
+        test.onNode(clickLabel(s(Res.string.back_to_focus))).performClick()
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("focus")).fetchSemanticsNodes().isNotEmpty() }
+        gone(hasTestTag("focus-strip"))
+    }
+
+    @Test
+    fun theFocusCardShowsLastTimeTheChangeAndTheRest() = flow {
+        designD()
+        see(s(Res.string.up_by, "5"))
+        see(s(Res.string.rest_after, "2:00"))
+        see("80 × 8 @3", substring = true)
+        // A logged set shows its RIR after the reps (point 2), and a rest line sits between the sets (point 8).
+        see("8 @2")
+        see(s(Res.string.rest_row, "2:00"))
+        shot("14-d-pass")
+    }
+
+    @Test
+    fun tappingTheExerciseNameFoldsIt() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        test.onNode(clickLabel(s(Res.string.collapse, "Bench Press BB")) and hasText("Bench Press BB")).performClick()
+        test.waitUntil(timeoutMillis = TIMEOUT) { setRows().fetchSemanticsNodes().isEmpty() }
+        seeDesc(s(Res.string.expand, "Bench Press BB"))
+    }
+
+    @Test
+    fun theBadgeMakesAWarmUpThatMovesUpToBeNext() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8")
+        tap(s(Res.string.skip))
+        repeat(2) { tapContaining(s(Res.string.add_set)) }
+        waitUntilTrue { open().sets == 3 }
+        tapDesc(s(Res.string.set_type, "3"))
+        shot("15-badge-menu")
+        tap(s(Res.string.kind_warmup))
+        waitUntilTrue { open().exercises.single().sets[1].kind == SetKind.Warmup }
+        // Working sets are numbered among themselves: 1, W, 2.
+        seeDesc(s(Res.string.set_type, "W"))
+        seeDesc(s(Res.string.set_type, "2"))
+    }
+
+    @Test
+    fun theExerciseMenuSetsTheRestForAllSetsAndAStickyNote() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        tapContaining(s(Res.string.add_set))
+        waitUntilTrue { open().sets == 2 }
+        tapDesc(s(Res.string.exercise_options))
+        shot("16-exercise-menu")
+        tap(s(Res.string.rest_all))
+        tap("1:30")
+        waitUntilTrue { open().exercises.single().sets.all { it.rest == 90 } }
+        see(s(Res.string.rest_row, "1:30"))
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.sticky_note))
+        type("Bench at 30°")
+        tap(s(Res.string.save))
+        see("Bench at 30°")
+    }
+
+    @Test
+    fun theExerciseMenuSkipsAndSwaps() = flow {
+        startWorkout()
+        addExercises("Bench Press BB", "Squat BB")
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.order_skip))
+        tapLastText(s(Res.string.skip)) // Squat's, the last row
+        waitUntilTrue { open().exercises[1].skipped && open().sets == 1 }
+        tap(s(Res.string.done))
+        see(s(Res.string.skipped))
+        // Swap Bench Press, the one still open, for another exercise.
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.swap))
+        search("Incline Press DB")
+        tap("Incline Press DB")
+        waitUntilTrue { open().exercises.first().name == "Incline Press DB" }
+    }
+
+    @Test
+    fun theWorkoutMenuChangesTheStartTime() = flow {
+        startWorkout()
+        tap(s(Res.string.workout))
+        tap(s(Res.string.change_start))
+        shot("17-start-time")
+        val before = open().startedAt
+        tap(s(Res.string.save))
+        // Saved as it stood: the same minute, never later than now.
+        waitUntilTrue { open().startedAt / 60_000 == before / 60_000 }
+    }
+
+    @Test
+    fun theDockStepsTheRestAndLoggingStartsTheRestCard() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        openSet(0)
+        tapDesc("${s(Res.string.field_weight)} +")
+        tapDesc("${s(Res.string.field_reps)} +")
+        tapDesc("${s(Res.string.rest)} +")
+        see("2:15")
+        tap(s(Res.string.log))
+        waitUntilTrue { open().exercises.single().sets.single().rest == 135 }
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
+        shot("18-rest-card")
+        tap(s(Res.string.skip))
+        gone(hasTestTag("rest-card"))
+        // The title bar's timer starts a free rest.
+        tapDesc(s(Res.string.free_rest))
+        tap("1:00")
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    /** D's three states, for a person to compare with the artboards, in dark and in Increase Contrast's dark. */
+    @Test
+    fun designDInDark() = flow(dark = true) { designDShots("dark") }
+
+    @Test
+    fun designDInDarkHighContrast() = flow(dark = true, highContrast = true) { designDShots("darkhc") }
+
+    private suspend fun Flow.designDShots(palette: String) {
+        designD()
+        shot("D-pass-$palette")
+        tapDesc(s(Res.string.expand, "Incline Press DB"))
+        tapDesc(s(Res.string.expand, "Lateral Raise DB"))
         test.onNode(hasScrollToIndexAction()).performScrollToKey("end")
         test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("focus-strip")).fetchSemanticsNodes().isNotEmpty() }
-        shot("11-strip")
-        // Chest Dips' first set has no reps yet, so the strip's Logga opens the dock, as the card's does.
-        tapContaining(s(Res.string.log_set, 1))
-        seeDesc(s(Res.string.field_reps))
+        shot("D-scroll-$palette")
+        test.onNode(clickLabel(s(Res.string.back_to_focus))).performClick()
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("focus")).fetchSemanticsNodes().isNotEmpty() }
+        tapDesc(s(Res.string.collapse, "Lateral Raise DB"))
+        tapContaining(s(Res.string.log_set, 2))
+        waitUntilTrue { open().exercises.first().sets.all { it.done } }
+        tap(s(Res.string.skip))
+        see(s(Res.string.now_set, "Incline Press DB", 1, 1).uppercase())
+        shot("D-next-$palette")
+    }
+
+    /** Last time's Bench Press (80 × 8 @3, twice), then today's: set 1 logged at 85 × 8 @2, set 2 next, two exercises folded below. */
+    private suspend fun Flow.designD() {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8", rir = "3")
+        tapContaining(s(Res.string.add_set))
+        waitUntilTrue { open().sets == 2 }
+        openSet(1)
+        tapSegment("3")
+        tap(s(Res.string.log))
+        waitUntilTrue { open().logged == 2 }
+        tap(s(Res.string.finish))
+        tap(s(Res.string.done))
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("85", "8", rir = "2")
+        // Added while Bench Press is the only exercise, so the new set copies 85 × 8 there.
+        tapContaining(s(Res.string.add_set))
+        waitUntilTrue { open().exercises.first().sets.size == 2 }
+        addExercises("Incline Press DB", "Lateral Raise DB")
+        tap(s(Res.string.skip)) // the rest card; D draws the top of the workout without it
+        gone(hasTestTag("rest-card"))
     }
 
     @Test
@@ -707,6 +893,9 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
 
     fun tapDesc(desc: String) = tapLast(hasContentDescription(desc))
 
+    /** The last clickable node with exactly this text, such as a button in a dialog drawn over a row with the same word. */
+    fun tapLastText(text: String) = tapLast(hasText(text) and hasClickAction())
+
     fun tapSegment(label: String) = tapLast(hasText(label) and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab))
 
     fun keys(typed: String) = typed.forEach {
@@ -755,12 +944,14 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
         waitUntilTrue { open().exercises.size == before + names.size }
     }
 
-    suspend fun logFirstSet(weight: String, reps: String) {
+    suspend fun logFirstSet(weight: String, reps: String, rir: String? = null) {
         openSet(0)
+        rir?.let { tapSegment(it) }
         tapDesc(s(Res.string.field_weight))
         keys(weight)
         tap(s(Res.string.next))
         keys(reps)
+        tap(s(Res.string.next)) // to the rest
         val before = open().logged
         tap(s(Res.string.log_next))
         waitUntilTrue { open().logged > before }

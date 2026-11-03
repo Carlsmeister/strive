@@ -72,6 +72,7 @@ import strive.shared.generated.resources.log
 import strive.shared.generated.resources.log_next
 import strive.shared.generated.resources.next
 import strive.shared.generated.resources.rir
+import strive.shared.generated.resources.rest
 import strive.shared.generated.resources.save_change
 import strive.shared.generated.resources.set_number
 
@@ -79,6 +80,8 @@ import strive.shared.generated.resources.set_number
 private enum class Value(val label: StringResource, val decimals: Boolean) {
     Weight(Res.string.field_weight, true), Reps(Res.string.field_reps, false),
     Seconds(Res.string.field_seconds, false), Metres(Res.string.field_metres, true),
+    /** The rest after the set, last in Nästa's order (Q16, Q17). */
+    Rest(Res.string.rest, false),
 }
 
 private fun values(type: ExerciseType) = when (type) {
@@ -86,7 +89,7 @@ private fun values(type: ExerciseType) = when (type) {
     ExerciseType.BodyweightReps, ExerciseType.Reps -> listOf(Value.Reps)
     ExerciseType.Time -> listOf(Value.Seconds)
     ExerciseType.Distance -> listOf(Value.Metres)
-}
+} + Value.Rest
 
 internal fun ExerciseType.hasRir() = this == ExerciseType.WeightReps || this == ExerciseType.BodyweightReps || this == ExerciseType.Reps
 
@@ -95,6 +98,7 @@ private fun WorkoutSet.read(v: Value) = when (v) {
     Value.Reps -> reps?.toDouble()
     Value.Seconds -> seconds?.toDouble()
     Value.Metres -> metres
+    Value.Rest -> rest?.toDouble()
 }
 
 private fun WorkoutSet.write(v: Value, d: Double?) = when (v) {
@@ -102,20 +106,27 @@ private fun WorkoutSet.write(v: Value, d: Double?) = when (v) {
     Value.Reps -> copy(reps = d?.toInt())
     Value.Seconds -> copy(seconds = d?.toInt())
     Value.Metres -> copy(metres = d)
+    Value.Rest -> copy(rest = d?.toInt())
 }
+
+private fun Value.parse(f: Field) = if (this == Value.Rest) restSeconds(f.text)?.toDouble() else f.value
 
 /**
  * The logging dock (#17 S3, D3, K3): closed until a set is tapped, closed again by its grabber or a tap outside. The fields show
  * − and + until one is tapped; then the keypad takes over and Nästa walks the fields, becoming Logga › on the last (Q16).
  */
 @Composable
-internal fun Dock(exercise: SessionExercise, set: WorkoutSet, number: Int, haze: HazeState, onSave: (WorkoutSet) -> Unit, onClose: () -> Unit, field: Int? = null) {
+internal fun Dock(exercise: SessionExercise, set: WorkoutSet, badge: String, defaultRest: Int, haze: HazeState, onSave: (WorkoutSet) -> Unit, onClose: () -> Unit,
+                  field: Int? = null) {
     val space = StriveTheme.spacing
     val swedish = Locale.current.language == "sv"
     val separator = if (swedish) ',' else '.'
     val fields = values(exercise.type)
     val close = stringResource(Res.string.close)
-    var texts by remember(set.id) { mutableStateOf(fields.map { v -> Field(set.read(v)?.let { kilos(it, swedish) } ?: "") }) }
+    val restShown = Field(clock(restOf(set, defaultRest).toLong()))
+    var texts by remember(set.id) {
+        mutableStateOf(fields.map { v -> if (v == Value.Rest) restShown else Field(set.read(v)?.let { kilos(it, swedish) } ?: "") })
+    }
     var focus by remember(set.id) { mutableStateOf(field) }
     var rir by remember(set.id) { mutableStateOf(set.rir) }
     var more by remember(set.id) { mutableStateOf((set.rir ?: 0) >= 4) }
@@ -125,16 +136,36 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, number: Int, haze:
         Value.Reps -> 1.0
         Value.Seconds -> 5.0
         Value.Metres -> 50.0
+        Value.Rest -> 15.0
     }
 
     fun edit(i: Int, f: Field) {
         texts = texts.toMutableList().also { it[i] = f }
     }
 
+    fun step(i: Int, by: Int) {
+        val v = fields[i]
+        edit(i, if (v == Value.Rest) restStep(texts[i], by * 15) else texts[i].step(by * stepOf(v), separator))
+    }
+
     fun log() {
-        val filled = fields.foldIndexed(set) { i, s, v -> s.write(v, texts[i].value) }.copy(rir = rir, done = true)
+        val filled = fields.foldIndexed(set) { i, s, v -> s.write(v, v.parse(texts[i])) }
+            // An untouched rest stays the default, so a new default in Settings still reaches it.
+            .let { if (texts.last().text == restShown.text) it.copy(rest = set.rest) else it }
+            .copy(rir = rir, done = true)
         // Something missing: go to the first empty field instead of logging half a set.
-        if (filled.loggable(exercise.type)) onSave(filled) else focus = fields.indices.first { texts[it].value == null }
+        if (filled.loggable(exercise.type)) onSave(filled) else focus = fields.indices.first { fields[it] != Value.Rest && texts[it].value == null }
+    }
+
+    @Composable
+    fun field(i: Int, modifier: Modifier, steppers: Boolean) = Column(modifier, verticalArrangement = Arrangement.spacedBy(space.s4)) {
+        val v = fields[i]
+        Text(stringResource(v.label), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        NumberField(
+            stringResource(v.label), texts[i].text, focused = focus == i, steppers = steppers,
+            onTap = { focus = i; edit(i, texts[i].copy(fresh = true)) },
+            onStep = { by -> step(i, by) },
+        )
     }
 
     // The grabber drags the dock down; let go past a third of the way, or flick, and it closes.
@@ -168,26 +199,28 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, number: Int, haze:
         ) { Box(Modifier.size(36.dp, 5.dp).background(MaterialTheme.colorScheme.outline, ShapeFull)) }
 
         Text(
-            "${exercise.name} · ${stringResource(Res.string.set_number, number)}", Modifier.fillMaxWidth(),
+            "${exercise.name} · ${stringResource(Res.string.set_number, badge)}", Modifier.fillMaxWidth(),
             style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
         )
 
+        val f = focus
+        val rest = fields.lastIndex
+        // The keypad open: rest is the third field, where Nästa goes. Closed: RIR and rest share a row (#17, addition to choice 2).
         Row(horizontalArrangement = Arrangement.spacedBy(space.s12)) {
-            fields.forEachIndexed { i, v ->
-                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(space.s4)) {
-                    Text(stringResource(v.label), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    NumberField(
-                        stringResource(v.label), texts[i].text, focused = focus == i, steppers = focus == null,
-                        onTap = { focus = i; edit(i, texts[i].copy(fresh = true)) },
-                        onStep = { by -> edit(i, texts[i].step(by * stepOf(v), separator)) },
-                    )
-                }
-            }
+            for (i in fields.indices) if (f != null || i != rest) field(i, Modifier.weight(1f), steppers = f == null)
         }
 
-        val f = focus
         if (f == null) {
-            if (exercise.type.hasRir()) RirRow(rir, more, onRir = { rir = it }, onMore = { more = it })
+            Row(horizontalArrangement = Arrangement.spacedBy(space.s8), verticalAlignment = Alignment.Bottom) {
+                if (exercise.type.hasRir()) {
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(space.s4)) {
+                        Text(stringResource(Res.string.rir), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        RirSegments(rir, more, onRir = { rir = it }, onMore = { more = it })
+                    }
+                }
+                field(rest, Modifier.weight(1f), steppers = true)
+            }
+            if (more) RirMore(rir, onRir = { rir = it }, onMore = { more = it })
             Button(::log, Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch), shape = MaterialTheme.shapes.large) {
                 Text(stringResource(if (set.done) Res.string.save_change else Res.string.log))
             }
@@ -195,8 +228,8 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, number: Int, haze:
             val v = fields[f]
             Keypad(
                 separator = separator.takeIf { v.decimals },
-                onKey = { k -> edit(f, texts[f].key(k, v.decimals, separator)) },
-                onStep = { by -> edit(f, texts[f].step(by * stepOf(v), separator)) },
+                onKey = { k -> edit(f, if (v == Value.Rest) restKey(texts[f], k) else texts[f].key(k, v.decimals, separator)) },
+                onStep = { by -> step(f, by) },
                 onHide = { focus = null },
             )
             val last = f == fields.lastIndex
@@ -239,29 +272,37 @@ private fun StepKey(label: String, description: String, onClick: () -> Unit) = B
 
 /** RIR 0 · 1 · 2 · 3 · 4+; 4+ opens 4 to 10, and then shows the value picked (#17, change to Q13.3). */
 @Composable
-internal fun RirRow(rir: Int?, more: Boolean, onRir: (Int?) -> Unit, onMore: (Boolean) -> Unit) {
+internal fun RirRow(rir: Int?, more: Boolean, onRir: (Int?) -> Unit, onMore: (Boolean) -> Unit, label: Boolean = true, compact: Boolean = false) {
     val space = StriveTheme.spacing
     Column(verticalArrangement = Arrangement.spacedBy(space.s4)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(space.s8)) {
-            Text(stringResource(Res.string.rir), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            val high = rir != null && rir >= 4
-            Segments(
-                listOf("0", "1", "2", "3", if (high) "$rir" else "4+"), selected = if (high) 4 else rir,
-                onSelect = { i ->
-                    when {
-                        i == 4 -> onMore(!more)
-                        i == null && high -> { onRir(null); onMore(false) }
-                        else -> { onRir(i); onMore(false) }
-                    }
-                },
-                modifier = Modifier.weight(1f),
-            )
+            if (label) Text(stringResource(Res.string.rir), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            RirSegments(rir, more, onRir, onMore, Modifier.weight(1f), compact)
         }
-        if (more) {
-            Segments((4..10).map { "$it" }, selected = rir?.minus(4)?.takeIf { it >= 0 }, onSelect = { i -> onRir(i?.plus(4)); onMore(false) })
-        }
+        if (more) RirMore(rir, onRir, onMore, compact)
     }
 }
+
+@Composable
+internal fun RirSegments(rir: Int?, more: Boolean, onRir: (Int?) -> Unit, onMore: (Boolean) -> Unit, modifier: Modifier = Modifier, compact: Boolean = false) {
+    val high = rir != null && rir >= 4
+    Segments(
+        listOf("0", "1", "2", "3", if (high) "$rir" else "4+"), selected = if (high) 4 else rir,
+        onSelect = { i ->
+            when {
+                i == 4 -> onMore(!more)
+                i == null && high -> { onRir(null); onMore(false) }
+                else -> { onRir(i); onMore(false) }
+            }
+        },
+        modifier = modifier, compact = compact,
+    )
+}
+
+@Composable
+internal fun RirMore(rir: Int?, onRir: (Int?) -> Unit, onMore: (Boolean) -> Unit, compact: Boolean = false) =
+    Segments((4..10).map { "$it" }, selected = rir?.minus(4)?.takeIf { it >= 0 }, onSelect = { i -> onRir(i?.plus(4)); onMore(false) },
+        modifier = Modifier.fillMaxWidth(), compact = compact)
 
 /** K3 (#17 choice 2): small actions on top, digits on glass keys. Skivor joins with the plates (#48). */
 @Composable

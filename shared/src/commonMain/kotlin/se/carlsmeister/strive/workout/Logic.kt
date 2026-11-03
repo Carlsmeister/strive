@@ -6,6 +6,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.toInstant
 import se.carlsmeister.strive.data.ExerciseType
 import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.SessionExercise
@@ -149,3 +150,9 @@ internal fun grouped(n: Long, swedish: Boolean): String =
     n.toString().reversed().chunked(3).joinToString(if (swedish) " " else ",").reversed()
 
 internal fun now() = kotlin.time.Clock.System.now().toEpochMilliseconds()
+
+/** Ändra starttid: the same day at [hour]:[minute], never later than [now]. */
+internal fun withTime(at: Long, hour: Int, minute: Int, zone: TimeZone, now: Long): Long {
+    val day = Instant.fromEpochMilliseconds(at).toLocalDateTime(zone).date
+    return minOf(kotlinx.datetime.LocalDateTime(day, kotlinx.datetime.LocalTime(hour, minute)).toInstant(zone).toEpochMilliseconds(), now)
+}
