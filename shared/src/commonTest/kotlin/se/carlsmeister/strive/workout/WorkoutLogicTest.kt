@@ -225,6 +225,13 @@ class SetKindTest {
 
 class RestTest {
     @Test
+    fun aRestNeverShowsMoreThanItsLengthOrLessThanNothing() {
+        assertEquals(135, Rest(startedAt = 10_000, seconds = 135).left(now = 8_500))
+        assertEquals(75, Rest(startedAt = 0, seconds = 135).left(now = 60_000))
+        assertEquals(0, Rest(startedAt = 0, seconds = 60).left(now = 61_000))
+    }
+
+    @Test
     fun aSetsOwnRestWinsOverTheDefault() {
         assertEquals(90, restOf(WorkoutSet(1, rest = 90), default = 120))
         assertEquals(120, restOf(WorkoutSet(1), default = 120))

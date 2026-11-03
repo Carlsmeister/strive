@@ -86,7 +86,7 @@ import strive.shared.generated.resources.kind_normal
 import strive.shared.generated.resources.kind_warmup
 import strive.shared.generated.resources.log_set
 import strive.shared.generated.resources.logged
-import strive.shared.generated.resources.months
+import strive.shared.generated.resources.months_short
 import strive.shared.generated.resources.now_kind
 import strive.shared.generated.resources.now_set
 import strive.shared.generated.resources.now_strip
@@ -214,7 +214,7 @@ private fun StartPrompt(startedAt: Long, onSave: (Int, Int) -> Unit, onDismiss: 
 internal fun LargeHeader(w: Workout, now: Long) {
     val start = local(w.startedAt)
     val day = "${stringArrayResource(Res.array.weekdays_short)[start.dayOfWeek.isoDayNumber - 1]} ${start.day} ${
-        stringArrayResource(Res.array.months)[start.month.number - 1]}"
+        stringArrayResource(Res.array.months_short)[start.month.number - 1]}" // "Mån 2 nov", as D draws it
     val grey = MaterialTheme.colorScheme.onSurfaceVariant
     val style = MaterialTheme.typography.bodyMedium
     Column(Modifier.padding(top = StriveTheme.spacing.s4), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4)) {

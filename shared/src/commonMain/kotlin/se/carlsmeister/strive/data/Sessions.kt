@@ -34,7 +34,8 @@ internal enum class SetKind(val key: String, val letter: String?) {
 
 /** A rest counting down, started when a set is logged or from the title bar's timer (Q17). Kept in memory only. */
 internal data class Rest(val startedAt: Long, val seconds: Int) {
-    fun left(now: Long) = (seconds - ((now - startedAt) / 1_000).toInt()).coerceAtLeast(0)
+    // The screen's clock ticks on the second, so it can read a moment before the rest began: never show more than the rest.
+    fun left(now: Long) = (seconds - ((now - startedAt) / 1_000).toInt()).coerceIn(0, seconds)
 }
 
 internal data class SessionExercise(

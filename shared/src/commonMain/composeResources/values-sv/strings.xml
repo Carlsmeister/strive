@@ -139,6 +139,7 @@
     <string-array name="weekdays"><item>Måndag</item><item>Tisdag</item><item>Onsdag</item><item>Torsdag</item><item>Fredag</item><item>Lördag</item><item>Söndag</item></string-array>
     <string-array name="weekdays_short"><item>Mån</item><item>Tis</item><item>Ons</item><item>Tor</item><item>Fre</item><item>Lör</item><item>Sön</item></string-array>
     <string-array name="months"><item>januari</item><item>februari</item><item>mars</item><item>april</item><item>maj</item><item>juni</item><item>juli</item><item>augusti</item><item>september</item><item>oktober</item><item>november</item><item>december</item></string-array>
+    <string-array name="months_short"><item>jan</item><item>feb</item><item>mars</item><item>apr</item><item>maj</item><item>juni</item><item>juli</item><item>aug</item><item>sep</item><item>okt</item><item>nov</item><item>dec</item></string-array>
     <string name="now_set">Nu · %1$s · set %2$s av %3$d</string>
     <string name="edit">Ändra</string>
     <string name="col_set">Set</string>
