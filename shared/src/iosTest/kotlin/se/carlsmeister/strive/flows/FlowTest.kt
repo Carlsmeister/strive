@@ -126,6 +126,14 @@ import strive.shared.generated.resources.sticky_note
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.up_by
 import strive.shared.generated.resources.rest_after
+import strive.shared.generated.resources.kind_failure
+import strive.shared.generated.resources.now_kind
+import strive.shared.generated.resources.rest_change
+import strive.shared.generated.resources.superset_count
+import strive.shared.generated.resources.superset_create
+import strive.shared.generated.resources.superset_leave
+import strive.shared.generated.resources.superset_rest
+import androidx.compose.ui.graphics.Color
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -796,6 +804,159 @@ class FlowTest {
         gone(hasTestTag("rest-card"))
     }
 
+    /** Carl's four answers (2026-11-03), each shot in dark and in Increase Contrast's dark for a person to compare with the sketches. */
+    @Test
+    fun aWarmUpsTypeWordTakesItsBadgesColourInDark() = flow(dark = true) { warmUpShots("dark") }
+
+    @Test
+    fun aWarmUpsTypeWordTakesItsBadgesColourInDarkHighContrast() = flow(dark = true, highContrast = true) { warmUpShots("darkhc") }
+
+    /** A logged warm-up with its amber W, and a second warm-up next in the focus card, "UPPVÄRMNING" in the same amber. */
+    private suspend fun Flow.warmUpShots(palette: String) {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("40", "10")
+        tap(s(Res.string.skip)) // the rest card
+        tapDesc(s(Res.string.set_type, "1"))
+        tap(s(Res.string.kind_warmup))
+        waitUntilTrue { open().exercises.single().sets[0].kind == SetKind.Warmup }
+        tapContaining(s(Res.string.add_set))
+        waitUntilTrue { open().sets == 2 }
+        tapDesc(s(Res.string.set_type, "1"))
+        tap(s(Res.string.kind_warmup))
+        waitUntilTrue { open().exercises.single().sets.all { it.kind == SetKind.Warmup } }
+        val word = s(Res.string.kind_warmup).uppercase()
+        val label = s(Res.string.now_kind, "Bench Press BB", word).uppercase()
+        see(label)
+        // Only the type word is coloured; the rest of the label keeps the card's teal.
+        val text = test.onAllNodes(hasText(label))[0].fetchSemanticsNode().config[SemanticsProperties.Text].first()
+        assertTrue(text.spanStyles.any { it.start == text.text.lastIndexOf(word) && it.end == text.text.length && it.item.color != Color.Unspecified })
+        shot("warmup-focus-$palette")
+    }
+
+    @Test
+    fun failureSetsAreNumberedWithTheWorkingSetsInDark() = flow(dark = true) { failureShots("dark") }
+
+    @Test
+    fun failureSetsAreNumberedWithTheWorkingSetsInDarkHighContrast() = flow(dark = true, highContrast = true) { failureShots("darkhc") }
+
+    private suspend fun Flow.failureShots(palette: String) {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8")
+        tap(s(Res.string.skip))
+        repeat(2) { tapContaining(s(Res.string.add_set)) }
+        waitUntilTrue { open().sets == 3 }
+        tapDesc(s(Res.string.set_type, "2"))
+        tap(s(Res.string.kind_failure))
+        waitUntilTrue { open().exercises.single().sets[1].kind == SetKind.Failure }
+        // A failure set is a working set (Q31): 1, F, then 3, not 2.
+        seeDesc(s(Res.string.set_type, "F"))
+        seeDesc(s(Res.string.set_type, "3"))
+        see(s(Res.string.now_kind, "Bench Press BB", s(Res.string.kind_failure)).uppercase())
+        shot("numbered-failure-$palette")
+    }
+
+    @Test
+    fun aRestLineChangesItsRestAndTheRestCardFollowsInDark() = flow(dark = true) { restLineShots("dark") }
+
+    @Test
+    fun aRestLineChangesItsRestAndTheRestCardFollowsInDarkHighContrast() = flow(dark = true, highContrast = true) { restLineShots("darkhc") }
+
+    /** Set 1 logged, its rest counting down in the T5 card; its line between the sets stays still and opens the dock on the rest. */
+    private suspend fun Flow.restLineShots(palette: String) {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8")
+        tapContaining(s(Res.string.add_set))
+        waitUntilTrue { open().sets == 2 }
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
+        // The card counts in real time; stretched, it cannot run out before the edit on a slow machine.
+        graph.rest.value = graph.rest.value!!.copy(seconds = 3_600)
+        tapDesc(s(Res.string.rest_change, "1"))
+        keys("2000")
+        see("20:00")
+        shot("rest-edit-$palette")
+        tap(s(Res.string.save))
+        // Changed, not logged again: set 2 is still to do.
+        waitUntilTrue { open().exercises.single().sets.let { it[0].rest == 1_200 && it[0].done && !it[1].done } }
+        see(s(Res.string.rest_row, "20:00"))
+        // The card was counting down that very rest, so it follows the new length.
+        assertEquals(1_200, graph.rest.value?.seconds)
+    }
+
+    @Test
+    fun aSupersetStandsOpenInFocusAndFoldsIntoOneCardInDark() = flow(dark = true) { supersetShots("dark") }
+
+    @Test
+    fun aSupersetStandsOpenInFocusAndFoldsIntoOneCardInDarkHighContrast() = flow(dark = true, highContrast = true) { supersetShots("darkhc") }
+
+    /** Queue item 7's picker with Superset (2), then G2 with the edge line: two rounds in the order you lift, Bench Press folded below. */
+    private suspend fun Flow.supersetShots(palette: String) {
+        startWorkout()
+        tap(s(Res.string.add_exercises))
+        for (name in listOf("Incline Press DB", "Lateral Raise DB")) {
+            search(name)
+            tap(name)
+        }
+        see(s(Res.string.superset_count, 2))
+        shot("picker-superset-$palette")
+        tap(s(Res.string.superset_count, 2))
+        waitUntilTrue { open().exercises.let { it.size == 2 && it[0].superset != null && it[0].superset == it[1].superset } }
+        addExercises("Bench Press BB")
+        addSetTo(0) // A's
+        addSetTo(1) // B's
+        waitUntilTrue { open().exercises.take(2).all { it.sets.size == 2 } }
+        see(s(Res.string.superset_rest, "2:00"))
+        see(s(Res.string.now_set, "A · Incline Press DB", 1, 2).uppercase())
+        shot("superset-open-$palette")
+        tapDesc(s(Res.string.collapse, "Incline Press DB"))
+        seeDesc(s(Res.string.expand, "Lateral Raise DB"))
+        seeDesc(s(Res.string.expand, "Bench Press BB"))
+        shot("superset-folded-$palette")
+    }
+
+    @Test
+    fun aSupersetRoundsRestStartsOnlyOnceBothSetsAreLoggedInEitherOrder() = flow {
+        startWorkout()
+        addSuperset("Incline Press DB", "Lateral Raise DB")
+        addSetTo(0)
+        addSetTo(1)
+        waitUntilTrue { open().exercises.all { it.sets.size == 2 } }
+        // One list in the order you lift: A 1, B 1, the rest, A 2, B 2.
+        assertEquals(listOf("set Incline Press DB 1", "set Lateral Raise DB 1", "set Incline Press DB 2", "set Lateral Raise DB 2"),
+            setRows().fetchSemanticsNodes().map { it.config[SemanticsProperties.TestTag] })
+        // B 1 first: A 1 is still to do, so no rest, and the focus stays on A 1.
+        logSet("set Lateral Raise DB 1", "10", "12")
+        waitUntilTrue { open().exercises[1].sets[0].done }
+        assertNull(graph.rest.value)
+        gone(hasTestTag("rest-card"))
+        see(s(Res.string.now_set, "A · Incline Press DB", 1, 2).uppercase())
+        // Then A 1: the round is done, its rest starts, and the focus moves on to A 2.
+        logSet("set Incline Press DB 1", "26", "10")
+        waitUntilTrue { open().exercises[0].sets[0].done }
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
+        assertEquals(open().exercises[1].sets[0].id, graph.rest.value?.setId)
+        see(s(Res.string.now_set, "A · Incline Press DB", 2, 2).uppercase())
+    }
+
+    @Test
+    fun theExerciseMenuMakesASupersetAndTakesAnExerciseOut() = flow {
+        startWorkout()
+        addExercises("Bench Press BB", "Squat BB", "Incline Press DB")
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.superset_create))
+        tapLastText("Incline Press DB")
+        // Incline Press moves up to follow Bench Press, and the two are one superset.
+        waitUntilTrue {
+            open().exercises.let { e -> e.map { it.name } == listOf("Bench Press BB", "Incline Press DB", "Squat BB") && e[0].superset != null && e[0].superset == e[1].superset }
+        }
+        // Both stand open; B's ⋯, the last, takes Incline Press out, and a superset of one is none.
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.superset_leave))
+        waitUntilTrue { open().exercises.all { it.superset == null } }
+    }
+
     @Test
     fun anEmptyWorkoutOffersQuickPicksMarkedJa() = flow {
         val bench = graph.exercises.all().first { it.isNotEmpty() }.first { it.name == "Bench Press BB" }
@@ -942,6 +1103,37 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
         tap(s(Res.string.add_count, names.size))
         // The database, not the screen: an exercise far down the list is not drawn until scrolled to.
         waitUntilTrue { open().exercises.size == before + names.size }
+    }
+
+    suspend fun addSuperset(vararg names: String) {
+        tap(s(Res.string.add_exercises))
+        for (name in names) {
+            search(name)
+            tap(name)
+        }
+        val before = open().exercises.size
+        tap(s(Res.string.superset_count, names.size))
+        waitUntilTrue { open().exercises.size == before + names.size }
+    }
+
+    /** Taps the [index]th open exercise's Lägg till set. */
+    suspend fun addSetTo(index: Int) {
+        val add = hasText(s(Res.string.add_set), substring = true) and hasClickAction()
+        wait("add set $index") { test.onAllNodes(add).fetchSemanticsNodes().size > index }
+        test.onAllNodes(add)[index].performClick()
+        test.waitForIdle()
+    }
+
+    /** Opens the set row tagged [tag] and logs it through the dock. */
+    suspend fun logSet(tag: String, weight: String, reps: String) {
+        test.onNodeWithTag(tag).performClick()
+        test.waitForIdle()
+        tapDesc(s(Res.string.field_weight))
+        keys(weight)
+        tap(s(Res.string.next))
+        keys(reps)
+        tap(s(Res.string.next))
+        tap(s(Res.string.log_next))
     }
 
     suspend fun logFirstSet(weight: String, reps: String, rir: String? = null) {
