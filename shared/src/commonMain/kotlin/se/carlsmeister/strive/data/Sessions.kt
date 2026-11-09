@@ -24,11 +24,11 @@ internal data class WorkoutSet(
 )
 
 /**
- * A set's type (Q21): a working set, or a warm-up, drop or failure set, which show W, D or F in the badge. A failure set is a working
- * set (Q31), so it is [numbered] among them.
+ * A set's type (Q21): a working set, or a warm-up, drop or failure set. Warm-ups and drop sets show W or D in the badge; a failure set is
+ * a working set (Q31), so it is [numbered] among them and shows its number in its own colour (Carl, 2026-11-03).
  */
 internal enum class SetKind(val key: String, val letter: String?, val numbered: Boolean) {
-    Normal("normal", null, true), Warmup("warmup", "W", false), Drop("drop", "D", false), Failure("failure", "F", true);
+    Normal("normal", null, true), Warmup("warmup", "W", false), Drop("drop", "D", false), Failure("failure", null, true);
 
     companion object {
         fun of(key: String) = entries.firstOrNull { it.key == key } ?: Normal

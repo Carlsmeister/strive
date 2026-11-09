@@ -48,6 +48,7 @@ import se.carlsmeister.strive.App
 import se.carlsmeister.strive.theme.LocalDarkTheme
 import se.carlsmeister.strive.theme.LocalHighContrast
 import se.carlsmeister.strive.data.SetKind
+import se.carlsmeister.strive.theme.Scheme
 import se.carlsmeister.strive.data.AppGraph
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.data.deleteFileDatabase
@@ -108,6 +109,7 @@ import strive.shared.generated.resources.collapse
 import strive.shared.generated.resources.edit
 import strive.shared.generated.resources.expand
 import strive.shared.generated.resources.now_set
+import strive.shared.generated.resources.now_set_kind
 import strive.shared.generated.resources.quick_picks
 import strive.shared.generated.resources.sets_progress
 import strive.shared.generated.resources.what_today
@@ -115,11 +117,13 @@ import strive.shared.generated.resources.back_to_focus
 import strive.shared.generated.resources.change_start
 import strive.shared.generated.resources.free_rest
 import strive.shared.generated.resources.kind_warmup
+import strive.shared.generated.resources.kind_drop
 import strive.shared.generated.resources.order_skip
 import strive.shared.generated.resources.rest
 import strive.shared.generated.resources.rest_all
 import strive.shared.generated.resources.rest_row
 import strive.shared.generated.resources.set_type
+import strive.shared.generated.resources.set_failure
 import strive.shared.generated.resources.skip
 import strive.shared.generated.resources.skipped
 import strive.shared.generated.resources.sticky_note
@@ -828,11 +832,19 @@ class FlowTest {
         val word = s(Res.string.kind_warmup).uppercase()
         val label = s(Res.string.now_kind, "Bench Press BB", word).uppercase()
         see(label)
-        // Only the type word is coloured; the rest of the label keeps the card's teal.
-        val text = test.onAllNodes(hasText(label))[0].fetchSemanticsNode().config[SemanticsProperties.Text].first()
-        assertTrue(text.spanStyles.any { it.start == text.text.lastIndexOf(word) && it.end == text.text.length && it.item.color != Color.Unspecified })
+        assertEquals(Scheme.Dark.colors.tertiary.takeIf { palette == "dark" } ?: Scheme.DarkHc.colors.tertiary, typeWordColour(label, word))
         shot("warmup-focus-$palette")
     }
+
+    /** The colour on the last [word] of the label reading [label], null if it has none: only the type word is coloured. */
+    private fun Flow.typeWordColour(label: String, word: String): Color? {
+        val text = test.onAllNodes(hasText(label))[0].fetchSemanticsNode().config[SemanticsProperties.Text].first()
+        val start = text.text.lastIndexOf(word)
+        assertTrue(text.spanStyles.none { it.start < start }, "only the type word is coloured")
+        return text.spanStyles.firstOrNull { it.start == start && it.end == start + word.length }?.item?.color
+    }
+
+    private fun accents(palette: String) = if (palette == "dark") Scheme.Dark.accents else Scheme.DarkHc.accents
 
     @Test
     fun failureSetsAreNumberedWithTheWorkingSetsInDark() = flow(dark = true) { failureShots("dark") }
@@ -850,11 +862,49 @@ class FlowTest {
         tapDesc(s(Res.string.set_type, "2"))
         tap(s(Res.string.kind_failure))
         waitUntilTrue { open().exercises.single().sets[1].kind == SetKind.Failure }
-        // A failure set is a working set (Q31): 1, F, then 3, not 2.
-        seeDesc(s(Res.string.set_type, "F"))
+        // A failure set is a working set (Q31) and shows its number, 1, 2, 3, the 2 in coral; VoiceOver adds the type (Carl, 2026-11-03).
+        seeDesc(s(Res.string.set_failure, "2"))
         seeDesc(s(Res.string.set_type, "3"))
-        see(s(Res.string.now_kind, "Bench Press BB", s(Res.string.kind_failure)).uppercase())
+        val word = s(Res.string.kind_failure).uppercase()
+        val label = s(Res.string.now_set_kind, "Bench Press BB", "2", 3, word).uppercase()
+        see(label)
+        assertEquals(accents(palette).failure, typeWordColour(label, word))
+        // The current set's badge is teal whatever its type; set 3 to failure too shows a coral number beside it.
+        tapDesc(s(Res.string.set_type, "3"))
+        tap(s(Res.string.kind_failure))
+        waitUntilTrue { open().exercises.single().sets[2].kind == SetKind.Failure }
+        seeDesc(s(Res.string.set_failure, "3"))
         shot("numbered-failure-$palette")
+    }
+
+    @Test
+    fun aDropSetKeepsItsDAndTakesItsOwnColourInDark() = flow(dark = true) { dropShots("dark") }
+
+    @Test
+    fun aDropSetKeepsItsDAndTakesItsOwnColourInDarkHighContrast() = flow(dark = true, highContrast = true) { dropShots("darkhc") }
+
+    /** Set 1 logged, set 2 a drop set next: D in violet, unnumbered, so set 3 is the second working set; "DROPSET" in the same violet. */
+    private suspend fun Flow.dropShots(palette: String) {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8")
+        tap(s(Res.string.skip))
+        repeat(2) { tapContaining(s(Res.string.add_set)) }
+        waitUntilTrue { open().sets == 3 }
+        tapDesc(s(Res.string.set_type, "2"))
+        tap(s(Res.string.kind_drop))
+        waitUntilTrue { open().exercises.single().sets[1].kind == SetKind.Drop }
+        seeDesc(s(Res.string.set_type, "D"))
+        seeDesc(s(Res.string.set_type, "2"))
+        val word = s(Res.string.kind_drop).uppercase()
+        val label = s(Res.string.now_kind, "Bench Press BB", word).uppercase()
+        see(label)
+        assertEquals(accents(palette).drop, typeWordColour(label, word))
+        // A second drop after it, so a violet D shows beside the current set's teal badge.
+        tapDesc(s(Res.string.set_type, "2"))
+        tap(s(Res.string.kind_drop))
+        waitUntilTrue { open().exercises.single().sets[2].kind == SetKind.Drop }
+        shot("drop-set-$palette")
     }
 
     @Test

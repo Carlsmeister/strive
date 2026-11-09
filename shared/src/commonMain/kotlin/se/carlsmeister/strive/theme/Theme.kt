@@ -12,11 +12,11 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 
-internal enum class Scheme(val colors: ColorScheme, val materials: StriveMaterials) {
-    Light(lightColors, lightMaterials),
-    Dark(darkColors, darkMaterials),
-    LightHc(lightHcColors, lightHcMaterials),
-    DarkHc(darkHcColors, darkHcMaterials),
+internal enum class Scheme(val colors: ColorScheme, val materials: StriveMaterials, val accents: StriveAccents) {
+    Light(lightColors, lightMaterials, lightAccents),
+    Dark(darkColors, darkMaterials, darkAccents),
+    LightHc(lightHcColors, lightHcMaterials, lightHcAccents),
+    DarkHc(darkHcColors, darkHcMaterials, darkHcAccents),
 }
 
 internal fun scheme(dark: Boolean, highContrast: Boolean) = when {
@@ -54,6 +54,7 @@ internal fun FixedTextSize(content: @Composable () -> Unit) =
     CompositionLocalProvider(LocalDensity provides Density(LocalDensity.current.density), content = content)
 
 private val LocalGlass = staticCompositionLocalOf { lightMaterials }
+private val LocalAccents = staticCompositionLocalOf { lightAccents }
 
 /** Light or dark regardless of the phone, for the tests that look at both; null follows the phone. */
 internal val LocalDarkTheme = staticCompositionLocalOf<Boolean?> { null }
@@ -68,6 +69,7 @@ internal fun StriveTheme(content: @Composable () -> Unit) {
     val scheme = scheme(LocalDarkTheme.current ?: isSystemInDarkTheme(), LocalHighContrast.current ?: settings.highContrast)
     CompositionLocalProvider(
         LocalGlass provides glass(scheme, settings.reduceTransparency),
+        LocalAccents provides scheme.accents,
         LocalReduceMotion provides settings.reduceMotion,
     ) {
         MaterialTheme(colorScheme = scheme.colors, shapes = StriveShapes, typography = StriveTypography) {
@@ -85,6 +87,7 @@ internal object StriveTheme {
     val borders = Borders()
     val states = States()
     val glass: StriveMaterials @Composable get() = LocalGlass.current
+    val accents: StriveAccents @Composable get() = LocalAccents.current
     /** Reduce Motion is on: what an animation does instead is the animating component's call. */
     val reduceMotion: Boolean @Composable get() = LocalReduceMotion.current
 }

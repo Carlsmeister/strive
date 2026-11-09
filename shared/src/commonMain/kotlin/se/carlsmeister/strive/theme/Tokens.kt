@@ -240,6 +240,19 @@ internal val darkMaterials = StriveMaterials(regular = Color(0x941C1C1E), thick 
 internal val lightHcMaterials = StriveMaterials(regular = Color(0xE6FFFFFF), thick = Color(0xF5FFFFFF), edge = Color(0x59000000), shadow = Color(0x33000000))
 internal val darkHcMaterials = StriveMaterials(regular = Color(0xEB1C1C1E), thick = Color(0xF71C1C1E), edge = Color(0x66FFFFFF), shadow = Color(0x80000000))
 
+/** What a set or a superset is: failure, drop and superset. Never for what you can tap. */
+@Immutable
+internal class StriveAccents(
+    val failure: Color = Color.Unspecified,
+    val drop: Color = Color.Unspecified,
+    val superset: Color = Color.Unspecified,
+)
+
+internal val lightAccents = StriveAccents(failure = Color(0xFFA8391B), drop = Color(0xFF7A45C4), superset = Color(0xFF1F63C7))
+internal val darkAccents = StriveAccents(failure = Color(0xFFFF6C47), drop = Color(0xFFC79CFF), superset = Color(0xFF5AA9FF))
+internal val lightHcAccents = StriveAccents(failure = Color(0xFF7D2A06), drop = Color(0xFF55278F), superset = Color(0xFF0F428F))
+internal val darkHcAccents = StriveAccents(failure = Color(0xFFFFA088), drop = Color(0xFFD9A3FF), superset = Color(0xFF7CBEFF))
+
 internal val MaterialBlur: Dp = 24.dp
 internal val MaterialShadowOffsetY: Dp = 8.dp
 internal val MaterialShadowRadius: Dp = 24.dp
