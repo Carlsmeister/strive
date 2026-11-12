@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Route map, satellite</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="map" style="position:absolute;inset:0"><img src="/_blob/d3af194229a445a27e388bbb7a34b15a" alt=""><img src="/_blob/49cb24d17f0497975f2b8a64713d9ee8" alt="Route"></div>
+<div class="mapctl glass" style="top:62px;left:16px"><a class="mapbtn" href="RU-05-done.dc.html" aria-label="Close map"><span class="ic ic-x s22"></span></a></div>
+<div class="mapctl glass" style="top:62px;right:16px"><span class="mapbtn" aria-label="Map type"><span class="ic ic-layers s22"></span></span><a class="mapbtn" href="RU-07-3d.dc.html" aria-label="3D"><span style="font:var(--type-title-small)">3D</span></a><span class="mapbtn" aria-label="Map data"><span class="ic ic-info s22"></span></span></div>
+<div class="menu glass" style="top:62px;right:68px;width:220px" role="menu" aria-label="Map type">
+<p class="mtitle">Map type</p>
+<a class="mrow" href="RU-07-std.dc.html" role="menuitemradio">Standard<span></span></a>
+<span class="mrow" role="menuitemradio" aria-checked="true">Satellite<span class="check"><span class="ic ic-check s20"></span></span></span>
+<span class="mrow" role="menuitemradio">Hybrid<span></span></span>
+</div>
+<span class="btn small" style="position:absolute;z-index:2;bottom:44px;left:50%;transform:translateX(-50%);width:auto;min-height:44px;background:var(--material-regular);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:var(--border-hairline) solid var(--material-edge);box-shadow:var(--material-shadow)"><span class="ic ic-route s20"></span>Save route</span>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

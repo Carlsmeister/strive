@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Run summary, charts</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<header class="nav glassed" style="position:absolute;top:0;left:0;right:0;padding-top:54px;padding-bottom:6px;z-index:4">
+<div class="l"></div>
+<h1>Morning Run</h1>
+<div class="r"><a class="btn small filled" href="Main.dc.html" style="min-height:44px;margin-right:8px">Done</a></div>
+</header>
+<main class="body" style="padding-top:112px;padding-bottom:40px;display:grid;align-content:start;grid-auto-rows:max-content">
+<a class="chart" href="RU-06-sel.dc.html"><div class="head"><span>Elevation</span><b>Gain 38 m · Max 41 m</b></div><svg viewBox="0 0 326 80" aria-hidden="true"><line class="grid" x1="30" x2="326" y1="37.1" y2="37.1"></line><text class="tick" x="0" y="41.1">20</text><line class="grid" x1="30" x2="326" y1="12.2" y2="12.2"></line><text class="tick" x="0" y="16.2">40</text><path class="area" d="M 30.0,62 L 30.0,58.3 L 66.8,54.5 L 103.6,49.6 L 140.4,43.3 L 177.3,34.6 L 214.1,30.9 L 250.9,20.9 L 273.0,11.0 L 287.7,24.7 L 324.5,58.3 L 326.0,58.3 L 326.0,62 Z"></path><polyline class="line ink" points="30.0,58.3 66.8,54.5 103.6,49.6 140.4,43.3 177.3,34.6 214.1,30.9 250.9,20.9 273.0,11.0 287.7,24.7 324.5,58.3 326.0,58.3"></polyline><text class="tick mid" x="30.0" y="78">0</text><text class="tick mid" x="103.6" y="78">2</text><text class="tick mid" x="177.3" y="78">4</text><text class="tick mid" x="250.9" y="78">6</text><text class="tick end" x="326" y="78">8 km</text></svg></a>
+<a class="chart" href="RU-06-sel.dc.html"><div class="head"><span>Pace</span><b>per km · avg dashed</b></div><svg viewBox="0 0 326 80" aria-hidden="true"><line class="grid" x1="30" x2="326" y1="20.9" y2="20.9"></line><text class="tick" x="0" y="24.9">5:40</text><line class="grid" x1="30" x2="326" y1="58.3" y2="58.3"></line><text class="tick" x="0" y="62.3">6:00</text><line class="avg" x1="30" x2="326" y1="32.1" y2="32.1"></line><polyline class="line ink" points="48.4,54.5 85.2,37.7 122.0,28.4 158.9,34.0 195.7,22.8 232.5,30.3 269.3,28.4 306.1,19.1"></polyline><circle class="pt" cx="48.4" cy="54.5" r="3.5"></circle><circle class="pt" cx="85.2" cy="37.7" r="3.5"></circle><circle class="pt" cx="122.0" cy="28.4" r="3.5"></circle><circle class="pt" cx="158.9" cy="34.0" r="3.5"></circle><circle class="pt" cx="195.7" cy="22.8" r="3.5"></circle><circle class="pt" cx="232.5" cy="30.3" r="3.5"></circle><circle class="pt" cx="269.3" cy="28.4" r="3.5"></circle><circle class="pt" cx="306.1" cy="19.1" r="3.5"></circle><text class="tick mid" x="30.0" y="78">0</text><text class="tick mid" x="103.6" y="78">2</text><text class="tick mid" x="177.3" y="78">4</text><text class="tick mid" x="250.9" y="78">6</text><text class="tick end" x="326" y="78">8 km</text></svg><div class="grid2"><div><small>Avg pace</small><b>5:46 <small>/km</small></b></div><div><small>Moving time</small><b>46:20</b></div><div><small>Avg over total time</small><b>5:51 <small>/km</small></b></div><div><small>Total time</small><b>47:05</b></div><div><small>Fastest split</small><b>5:39 <small>/km</small></b></div></div></a>
+<a class="chart" href="RU-06-sel.dc.html"><div class="head"><span>Heart rate</span><b>Avg 146 · Max 163 bpm</b></div><svg viewBox="0 0 326 80" aria-hidden="true"><line class="grid" x1="30" x2="326" y1="52.7" y2="52.7"></line><text class="tick" x="0" y="56.7">120</text><line class="grid" x1="30" x2="326" y1="15.3" y2="15.3"></line><text class="tick" x="0" y="19.3">160</text><line class="avg" x1="30" x2="326" y1="28.4" y2="28.4"></line><polyline class="line ink" points="30.0,54.5 48.4,42.4 85.2,34.0 122.0,29.3 158.9,27.5 195.7,26.5 232.5,25.6 269.3,23.7 306.1,17.2 320.8,12.5 326.0,15.3"></polyline><text class="tick mid" x="30.0" y="78">0</text><text class="tick mid" x="103.6" y="78">2</text><text class="tick mid" x="177.3" y="78">4</text><text class="tick mid" x="250.9" y="78">6</text><text class="tick end" x="326" y="78">8 km</text></svg></a>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

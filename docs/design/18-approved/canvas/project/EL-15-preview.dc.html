@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Import, preview</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"><span class="back"><span class="ic ic-chev-l s20"></span>Import</span></div>
+<h1></h1>
+<div class="r"></div>
+</header>
+<main class="body">
+<header class="lt"><h1>From Strong</h1></header>
+<p class="lt-sub">strong_workouts.csv · 1.8 MB</p>
+
+<section class="stats" aria-label="What comes in">
+<div class="stat"><span class="k">Workouts</span><span class="v">212</span><span class="sub">March 2024 – October 2026</span></div>
+<div class="stat"><span class="k">Exercises</span><span class="v">41</span><span class="sub">38 matched, 3 to map</span></div>
+</section>
+
+<section class="group" aria-label="To map"><h4>3 to map</h4><div class="list">
+<div class="row"><span>Arnold Press (Dumbbell)<small>No match yet</small></span><span class="val teal">Choose<span class="ic ic-chev-r s16"></span></span></div>
+<div class="row"><span>Face Pull (Cable)<small>No match yet</small></span><span class="val teal">Choose<span class="ic ic-chev-r s16"></span></span></div>
+<div class="row"><span>Hip Thrust (Barbell)<small>No match yet</small></span><span class="val teal">Choose<span class="ic ic-chev-r s16"></span></span></div>
+</div><p class="foot">Left unmapped, they come in as your own exercises.</p></section>
+
+<section class="group" aria-label="Matched"><h4>38 matched</h4><div class="list">
+<div class="row"><span>Bench Press (Barbell)<small>Bench Press BB</small></span><span class="val"><span class="ic ic-check s16"></span></span></div>
+<div class="row"><span>Squat (Barbell)<small>Squat BB</small></span><span class="val"><span class="ic ic-check s16"></span></span></div>
+<div class="row"><span>Lat Pulldown (Cable)<small>Lat Pulldown Cable</small></span><span class="val"><span class="ic ic-check s16"></span></span></div>
+<div class="row act"><span>Show all 38</span><span class="chev ic ic-chev-r s16"></span></div>
+</div></section>
+
+<a class="btn filled" href="EL-15-importing.dc.html">Import 212 workouts</a>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

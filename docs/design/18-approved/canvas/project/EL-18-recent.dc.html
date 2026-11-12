@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Log food, recent</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<main class="body">
+<header class="lt"><h1>Food</h1></header>
+
+<div class="between" style="margin: -12px -12px 0 -12px"><span class="ibtn plain" aria-label="Previous day"><span class="ic ic-chev-l s20"></span></span><span style="font: var(--type-title-small)">Today, Monday 9 November</span><span class="ibtn plain dis" aria-label="Next day"><span class="ic ic-chev-r s20"></span></span></div>
+
+<section class="card" aria-label="Calories">
+<p class="eyebrow">Calories</p>
+<div class="between" style="align-items: baseline"><span class="hstack" style="align-items: baseline; gap: 6px"><span style="font: var(--type-display-small)">2 150</span><span class="muted">of 2 600 kcal</span></span><span class="cap">450 kcal left</span></div>
+<div style="padding: 8px 0 4px"><div style="height: 8px; border-radius: var(--shape-full); background: var(--color-surface-container-highest); overflow: hidden"><i style="display: block; height: 100%; width: 83%; border-radius: var(--shape-full); background: var(--color-on-surface)"></i></div></div>
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); padding-top: 12px">
+<div style="display: grid; justify-items: center; gap: 6px; text-align: center">
+<svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" style="transform: rotate(-90deg)"><circle cx="32" cy="32" r="23.5" fill="none" stroke-width="6.4" style="stroke: var(--color-surface-container-highest)"></circle><circle cx="32" cy="32" r="23.5" fill="none" style="stroke: var(--color-on-surface)" stroke-width="6.4" stroke-linecap="round" stroke-dasharray="147.65" stroke-dashoffset="15.21"></circle></svg>
+<span style="font: var(--type-title-small)">148 g</span>
+<span class="cap">Protein · of 165</span>
+</div><div style="display: grid; justify-items: center; gap: 6px; text-align: center">
+<svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" style="transform: rotate(-90deg)"><circle cx="32" cy="32" r="23.5" fill="none" stroke-width="6.4" style="stroke: var(--color-surface-container-highest)"></circle><circle cx="32" cy="32" r="23.5" fill="none" style="stroke: var(--color-on-surface)" stroke-width="6.4" stroke-linecap="round" stroke-dasharray="147.65" stroke-dashoffset="24.61"></circle></svg>
+<span style="font: var(--type-title-small)">250 g</span>
+<span class="cap">Carbs · of 300</span>
+</div><div style="display: grid; justify-items: center; gap: 6px; text-align: center">
+<svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" style="transform: rotate(-90deg)"><circle cx="32" cy="32" r="23.5" fill="none" stroke-width="6.4" style="stroke: var(--color-surface-container-highest)"></circle><circle cx="32" cy="32" r="23.5" fill="none" style="stroke: var(--color-on-surface)" stroke-width="6.4" stroke-linecap="round" stroke-dasharray="147.65" stroke-dashoffset="33.22"></circle></svg>
+<span style="font: var(--type-title-small)">62 g</span>
+<span class="cap">Fat · of 80</span>
+</div>
+</div>
+<a class="btn filled" href="EL-18-recent.dc.html"><span class="ic ic-plus s20"></span>Log food</a>
+</section>
+
+<section class="group" aria-label="Meals"><h4>Meals</h4><div class="list">
+<div class="row"><span>Breakfast <span class="muted" style="font: var(--type-body-small)">07:30</span><small>Havregryn, mjölk, banan, jordnötssmör</small></span><span class="val">612 kcal</span></div>
+<div class="row"><span>Lunch <span class="muted" style="font: var(--type-body-small)">12:15</span><small>Kycklingfilé, jasminris, broccoli</small></span><span class="val">650 kcal</span></div>
+<div class="row"><span>Snack <span class="muted" style="font: var(--type-body-small)">15:30</span><small>Kvarg naturell</small></span><span class="val">158 kcal</span></div>
+<div class="row"><span>Dinner <span class="muted" style="font: var(--type-body-small)">19:00</span><small>Lax, potatis, sallad</small></span><span class="val">730 kcal</span></div>
+</div></section>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html" aria-current="page"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html"><span class="ic ic-you"></span>You</a>
+</nav>
+<div class="scrim"></div>
+<section class="sheet glass thick full" aria-label="Log food">
+<div class="grabber"></div>
+<div class="sheet-head"><span class="navtext" style="justify-self: start; padding-left: 0">Cancel</span><h2>Log food</h2><span></span></div>
+<div class="srch"><div class="field"><span class="ic ic-search s18"></span><span class="in ph">Search food</span></div><span class="ibtn" role="button" aria-label="Scan a barcode"><span class="ic ic-barcode s20"></span></span></div>
+<div class="chips" role="group" aria-label="Meal" style="margin-inline: -16px"><span class="chip">Breakfast</span><span class="chip">Lunch</span><span class="chip">Snack</span><span class="chip on">Dinner</span></div>
+<div class="group"><h4>Recent</h4><div class="list">
+<a class="row" href="EL-18-portion.dc.html"><span>Kvarg naturell<small>250 g · Snack, today</small></span><span class="val">158 kcal</span></a>
+<a class="row" href="EL-18-portion.dc.html"><span>Havregryn<small>80 g · Breakfast, today</small></span><span class="val">298 kcal</span></a>
+<a class="row" href="EL-18-portion.dc.html"><span>Kycklingfilé<small>150 g · Lunch, today</small></span><span class="val">165 kcal</span></a>
+<a class="row" href="EL-18-portion.dc.html"><span>Banan<small>1 medium · Breakfast, today</small></span><span class="val">105 kcal</span></a>
+<a class="row" href="EL-18-portion.dc.html"><span>Jasminris, kokt<small>200 g · Lunch, today</small></span><span class="val">260 kcal</span></a>
+<a class="row" href="EL-18-portion.dc.html"><span>Ägg<small>2 · Breakfast, yesterday</small></span><span class="val">156 kcal</span></a>
+<a class="row" href="EL-18-portion.dc.html"><span>Mjölk 3 %<small>2 dl · Breakfast, today</small></span><span class="val">120 kcal</span></a>
+</div></div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

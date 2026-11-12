@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Minimised over Plan</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<main class="body">
+<header class="lt"><h1>Plan</h1><span class="hstack"><span class="ibtn" aria-label="Plan options"><span style="font: 700 17px/1 var(--font-family); letter-spacing: 1px">⋯</span></span><span class="ibtn" aria-label="New template"><span class="ic ic-plus s22"></span></span></span></header>
+<section class="card wk" aria-label="This week">
+<div class="pname"><span>Hypertrofi, block 1 ›</span></div>
+<div class="wkhead"><span class="ibtn plain teal" aria-label="Previous week"><span class="ic ic-chev-l s20"></span></span><span><b>Week 6 of 8</b><small>Week 46 · 9–15 Nov</small></span><span class="ibtn plain teal" aria-label="Next week"><span class="ic ic-chev-r s20"></span></span></div>
+<div class="wbars"><i class="past">1 K</i><i class="past">2 K</i><i class="past">3</i><i class="past">4</i><i class="past">5</i><i class="now">6</i><i>7</i><i>8</i></div>
+<div class="wkdays">
+<span class="wkday today sel"><span>Mon</span><b>9</b><span class="pl">Push A</span></span>
+<span class="wkday"><span>Tue</span><b>10</b><span class="pl">Ben A</span></span>
+<span class="wkday"><span>Wed</span><b>11</b><span class="pl">Rest</span></span>
+<span class="wkday"><span>Thu</span><b>12</b><span class="pl">Pull A</span></span>
+<span class="wkday"><span>Fri</span><b>13</b><span class="ic ic-run s14"></span><span class="pl">8 km</span></span>
+<span class="wkday"><span>Sat</span><b>14</b><span class="pl">Push B</span></span>
+<span class="wkday"><span>Sun</span><b>15</b><span class="ic ic-run s14"></span><span class="pl">14 km</span></span>
+</div>
+<p class="cap">6 weeks without a deload</p>
+</section>
+<section class="card" aria-label="Monday">
+<p class="eyebrow">Monday 9 November · in progress</p>
+<div class="between"><h2 class="title" style="font-weight: 600">Push A</h2><span class="cap">24:13 · 1 of 14 sets</span></div>
+<ul class="tex">
+<li><span>Bench Press BB</span><span>W + 3 × 6–8</span></li>
+<li><span>Incline Press DB</span><span>3 × 8–10</span></li>
+<li><span>Lateral Raise DB</span><span>3 × 12–15</span></li>
+<li><span>Tricep Dips</span><span>2 × 8–12</span></li>
+<li><span>Tricep Pushdown</span><span>2 × 10–12 + D</span></li>
+</ul>
+<a class="btn filled" href="WO-02-s2.dc.html">Continue Push A</a>
+</section>
+</main>
+<div class="bottomstack">
+<a class="minibar glass" href="WO-02-s2.dc.html" aria-label="Back to the workout"><span><b>Push A</b><small>24:13 · 1/14 sets</small></span></a>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="SH-02-inprog.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html" aria-current="page"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

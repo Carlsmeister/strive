@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Incline Press · Records</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"><a class="back" href="EX-01-filter.dc.html"><span class="ic ic-chev-l s22"></span>Library</a></div>
+<h1></h1>
+<div class="r"><span class="ibtn plain teal" aria-label="Exercise options"><span class="ic ic-more"></span></span></div>
+</header>
+<main class="body">
+<header class="lt"><h1 style="font-size: 30px">Incline Press DB</h1></header>
+<div class="segc" role="group" aria-label="Part"><a href="EX-05-incline.dc.html">About</a><a href="EX-06-incline.dc.html">History</a><a href="EX-07-incline.dc.html">Chart</a><span class="on" aria-pressed="true">Records</span></div>
+<section class="group"><h4>Records</h4><div class="list"><div class="row"><span>Heaviest weight<small>Mon 21 Sep · 26 × 9</small></span><span class="val" style="color: var(--color-on-surface); font-weight: 600"><span class="star" style="margin: 0"><span class="ic ic-star s14"></span></span>26 kg</span></div><div class="row"><span>Best estimated 1RM<small>Mon 9 Nov · 26 × 10 @2</small></span><span class="val" style="color: var(--color-on-surface); font-weight: 600"><span class="star" style="margin: 0"><span class="ic ic-star s14"></span></span>36.4 kg</span></div><div class="row"><span>Most volume in a set<small>Mon 9 Nov · 26 × 10</small></span><span class="val" style="color: var(--color-on-surface); font-weight: 600"><span class="star" style="margin: 0"><span class="ic ic-star s14"></span></span>260 kg</span></div></div><p class="foot">Estimated 1RM by Epley with reps and RIR. Weights per dumbbell. Warm-up and drop sets are left out.</p></section>
+<section class="group"><h4>Best weight for 1–12 reps</h4><div class="rm"><span><small>1 rep</small>26</span><span><small>2 reps</small>26</span><span><small>3 reps</small>26</span><span><small>4 reps</small>26</span><span><small>5 reps</small>26</span><span><small>6 reps</small>26</span><span><small>7 reps</small>26</span><span><small>8 reps</small>26</span><span><small>9 reps</small>26</span><span><small>10 reps</small>26</span><span><small>11 reps</small>–</span><span><small>12 reps</small>–</span></div><p class="foot">The heaviest weight lifted for at least that many reps, in kg.</p></section>
+<section class="group"><h4>Records history</h4><div class="list"><span class="row"><span>Best e1RM 36.4 kg</span><span class="val">Mon 9 Nov</span></span><span class="row"><span>Most volume in a set 260 kg</span><span class="val">Mon 9 Nov</span></span><span class="row"><span>Best e1RM 35.5 kg</span><span class="val">Mon 21 Sep</span></span><span class="row"><span>Heaviest weight 26 kg</span><span class="val">Mon 21 Sep</span></span><span class="row"><span>Most volume in a set 234 kg</span><span class="val">Mon 21 Sep</span></span></div></section>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html" aria-current="page"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

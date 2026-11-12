@@ -1,0 +1,633 @@
+{
+ "copy": [
+  {
+   "board_text": "Shown first in quick picks and in the picker.",
+   "built": "The coach may programme it.",
+   "strings_name": "mark_yes_line",
+   "boards": [
+    "EX-05-mark",
+    "EX-05-sheet",
+    "EX-05"
+   ]
+  },
+  {
+   "board_text": "Its alternative is suggested first.",
+   "built": "The coach prefers its alternative.",
+   "strings_name": "mark_sub_line",
+   "boards": [
+    "EX-05-mark"
+   ]
+  },
+  {
+   "board_text": "Never suggested, and hidden in the library.",
+   "built": "Never programmed, and hidden in the library.",
+   "strings_name": "mark_no_line",
+   "boards": [
+    "EX-05-mark"
+   ]
+  },
+  {
+   "board_text": "Marked Yes in your programmes",
+   "built": "Yes in My programmes",
+   "strings_name": "quick_marked",
+   "boards": [
+    "WO-01-marks"
+   ]
+  },
+  {
+   "board_text": "Search 553 exercises",
+   "built": "Search",
+   "strings_name": "search (placeholder; the count is data)",
+   "boards": [
+    "EX-01-chip",
+    "EX-01-filter",
+    "EX-01-mobility",
+    "EX-01-sort",
+    "EX-01",
+    "EX-02-db",
+    "EX-02-no",
+    "EX-02-none",
+    "EX-03-none",
+    "EX-03-one",
+    "EX-03-tmpl",
+    "EX-03-two",
+    "EX-04-none",
+    "EX-04"
+   ]
+  },
+  {
+   "board_text": "Swap Bench Press BB",
+   "built": "Swap exercise",
+   "strings_name": "swap_exercise (picker title; the board names the exercise)",
+   "boards": [
+    "EX-04"
+   ]
+  },
+  {
+   "board_text": "Swap Lateral Raise DB",
+   "built": "Swap exercise",
+   "strings_name": "swap_exercise (picker title; the board names the exercise)",
+   "boards": [
+    "EX-04-none"
+   ]
+  },
+  {
+   "board_text": "Sticky note",
+   "built": "Note",
+   "strings_name": "note (About section heading for the exercise note; the board heading is 'Sticky note')",
+   "boards": [
+    "EX-05-mark",
+    "EX-05-sheet",
+    "EX-05",
+    "WO-09-menu",
+    "WO-09-noweight",
+    "WO-09-superset",
+    "WO-10-one"
+   ]
+  },
+  {
+   "board_text": "No, both sides",
+   "built": "No",
+   "strings_name": "no (Per side value)",
+   "boards": [
+    "EX-05-mark",
+    "EX-05-noillo",
+    "EX-05-sheet",
+    "EX-05"
+   ]
+  },
+  {
+   "board_text": "Olympic, 20 kg",
+   "built": "20 kg",
+   "strings_name": "kg (Bar value; built prints only the weight)",
+   "boards": [
+    "EX-05-mark",
+    "EX-05-sheet",
+    "EX-05"
+   ]
+  },
+  {
+   "board_text": "Log a workout to see your history.",
+   "built": "No workouts yet",
+   "strings_name": "no_workouts (History tab placeholder)",
+   "boards": [
+    "EX-06-empty"
+   ]
+  },
+  {
+   "board_text": "Log a workout to see your chart",
+   "built": "No workouts yet",
+   "strings_name": "no_workouts (Chart tab placeholder)",
+   "boards": [
+    "EX-07-empty"
+   ]
+  },
+  {
+   "board_text": "No records yet",
+   "built": "No workouts yet",
+   "strings_name": "no_workouts (Records tab placeholder)",
+   "boards": [
+    "EX-08-empty"
+   ]
+  },
+  {
+   "board_text": "Log a workout to see records.",
+   "built": "No workouts yet",
+   "strings_name": "no_workouts (Records tab placeholder, second line)",
+   "boards": [
+    "EX-08-empty"
+   ]
+  },
+  {
+   "board_text": "Rename workout",
+   "built": "Rename",
+   "strings_name": "rename (prompt title; the menu item keeps 'Rename')",
+   "boards": [
+    "WO-08-rename"
+   ]
+  },
+  {
+   "board_text": "Started at",
+   "built": "Change start time",
+   "strings_name": "change_start (prompt title; the menu item keeps 'Change start time')",
+   "boards": [
+    "WO-08-time"
+   ]
+  },
+  {
+   "board_text": "Superset with…",
+   "built": "Create superset",
+   "strings_name": "superset_create (dialog title; the menu item keeps 'Create superset')",
+   "boards": [
+    "WO-10"
+   ]
+  },
+  {
+   "board_text": "Custom time",
+   "built": "Custom time…",
+   "strings_name": "custom_time (prompt title; the menu item keeps 'Custom time…')",
+   "boards": [
+    "WO-07-custom"
+   ]
+  },
+  {
+   "board_text": "Log warm-up",
+   "built": "Log set W",
+   "strings_name": "log_set (button on the focus card for a warm-up; badge is W)",
+   "boards": [
+    "WO-01-picked",
+    "WO-10-one",
+    "WO-13-moved"
+   ]
+  },
+  {
+   "board_text": "Log drop set",
+   "built": "Log set D",
+   "strings_name": "log_set (button on the focus card for a drop set; badge is D)",
+   "boards": [
+    "WO-15-one"
+   ]
+  },
+  {
+   "board_text": "rest 1:30 after the round",
+   "built": "rest 1:30 after",
+   "strings_name": "rest_after (focus card in a superset)",
+   "boards": [
+    "WO-06-round",
+    "WO-09-superset"
+   ]
+  },
+  {
+   "board_text": "Log it as it is and save",
+   "built": "Log them as they are and save",
+   "strings_name": "log_and_save (built has no singular form)",
+   "boards": [
+    "WO-15-one"
+   ]
+  },
+  {
+   "board_text": "Save without it",
+   "built": "Save without them",
+   "strings_name": "save_without (built has no singular form)",
+   "boards": [
+    "WO-15-one"
+   ]
+  },
+  {
+   "board_text": "Discard",
+   "built": "Discard workout",
+   "strings_name": "discard_workout (confirm button of the 'Discard the workout?' alert)",
+   "boards": [
+    "WO-16-discard",
+    "WO-16-empty"
+   ]
+  },
+  {
+   "board_text": "Bench Press BB · Rest after set 2",
+   "built": "Bench Press BB · Set 2",
+   "strings_name": "set_number (dock title when the dock edits a rest from a rest line)",
+   "boards": [
+    "WO-04-rest"
+   ]
+  },
+  {
+   "board_text": "Workout note: energy, sleep, pain",
+   "built": "Workout note",
+   "strings_name": "session_note (placeholder of the note field on the summary)",
+   "boards": [
+    "WO-21-empty",
+    "WO-21-plain"
+   ]
+  }
+ ],
+ "structure": [
+  {
+   "screen": "EX-01",
+   "built": "Back is a text button 'Back'; title; no nav icons",
+   "board": "Back reads the parent ('Plan'); nav has Sort (⋯ → menu 'Sort by A–Z / Most used / Last used') and New exercise (+) icon buttons",
+   "kotlin": "LibraryScreen.kt:102",
+   "boards": [
+    "EX-01",
+    "EX-01-sort"
+   ]
+  },
+  {
+   "screen": "EX-01",
+   "built": "Search field and a text button 'Filter' (tonal while a filter is on)",
+   "board": "Search field with a leading search glyph and a sliders icon button; no 'Filter' word",
+   "kotlin": "LibraryScreen.kt:112-118",
+   "boards": [
+    "EX-01",
+    "EX-02-none"
+   ]
+  },
+  {
+   "screen": "EX-01",
+   "built": "Row: name, 'pattern · equipment', mark badge, no thumbnail, no last set",
+   "board": "Row has a leading thumbnail (illustration or muscle icon) and, at the end, the last set ('82.5 × 8') before the mark badge",
+   "kotlin": "LibraryScreen.kt:185-203",
+   "boards": [
+    "EX-01"
+   ]
+  },
+  {
+   "screen": "EX-01",
+   "built": "No match: 'No exercises match' only",
+   "board": "'No exercises match' plus a caption 'Nothing in the library is called “zercher”, by name or alias.' and a button 'Create “zercher”'",
+   "kotlin": "LibraryScreen.kt:122-124",
+   "boards": [
+    "EX-01-nomatch"
+   ]
+  },
+  {
+   "screen": "EX-02",
+   "built": "Filter is a plain ModalBottomSheet: Equipment chips, In my programmes chips, a Done button at the bottom, no title",
+   "board": "Sheet header 'Clear | Filter | Done'; same two chip groups; footnote 'No is hidden until you tick it.'",
+   "kotlin": "LibraryScreen.kt:205-230",
+   "boards": [
+    "EX-02-none",
+    "EX-02-db",
+    "EX-02-no"
+   ]
+  },
+  {
+   "screen": "EX-03",
+   "built": "Picker: Cancel and a centred title only",
+   "board": "Picker has a 'New' button at the right of the title bar",
+   "kotlin": "LibraryScreen.kt:105-110",
+   "boards": [
+    "EX-03-none",
+    "EX-03-one",
+    "EX-03-two",
+    "EX-03-tmpl"
+   ]
+  },
+  {
+   "screen": "EX-04",
+   "built": "Swap picker: sticky 'Alternatives' header over the exercises marked Swap with the same pattern; nothing when there are none",
+   "board": "'Alternatives' lists the Swap alternative first, then every other exercise of the same pattern, with the caption 'Its Swap alternative first, then the same pattern. The sets stay.'; with none, the empty line 'No alternatives set. Mark an exercise Swap with Lateral Raise DB as its alternative to see it here.'",
+   "kotlin": "LibraryScreen.kt:125-136",
+   "boards": [
+    "EX-04",
+    "EX-04-none"
+   ]
+  },
+  {
+   "screen": "EX-05",
+   "built": "Mark row: title and a text button with the current mark, caption below",
+   "board": "The row sits in a grouped list with a ↕ glyph after the value; the caption is a footnote under the group",
+   "kotlin": "ExerciseScreen.kt:119-140",
+   "boards": [
+    "EX-05"
+   ]
+  },
+  {
+   "screen": "EX-05",
+   "built": "Mark pull-down: five bare items (Yes, Swap, Test, No, Not set)",
+   "board": "Each item carries its own one-line caption under it, and the current one is checked",
+   "kotlin": "ExerciseScreen.kt:128-134",
+   "boards": [
+    "EX-05-mark"
+   ]
+  },
+  {
+   "screen": "EX-05",
+   "built": "Sections: image, mark, Instructions, Tips, Muscles (one comma list), Equipment, Type/Per side/Weight step/Bar rows without a heading, Note last",
+   "board": "Order: image, mark, Instructions, Tips, 'Muscles and equipment' (Primary, Secondary, Equipment as rows), 'Sticky note', 'Settings' (Type, Per side, Weight step, Bar, Unit) with footnote 'Change them with ⋯ › Edit.'; instructions are a numbered list in a card",
+   "kotlin": "ExerciseScreen.kt:100-114",
+   "boards": [
+    "EX-05",
+    "EX-05-mark",
+    "EX-05-sheet"
+   ]
+  },
+  {
+   "screen": "EX-05",
+   "built": "Back is a text button 'Back'; no nav actions",
+   "board": "Back reads 'Library'; nav has a ⋯ 'Exercise options' button; Unit row (kg/lb) in Settings is new",
+   "kotlin": "ExerciseScreen.kt:74",
+   "boards": [
+    "EX-05"
+   ]
+  },
+  {
+   "screen": "EX-05",
+   "built": "Without an illustration the page starts with the text",
+   "board": "Fallback line 'No illustration yet. Strive draws the worked muscles until one arrives.'; Swap-marked exercises show an 'Alternative' row ('Swap: the alternative, Single Row DB, is suggested first.')",
+   "kotlin": "ExerciseScreen.kt:101",
+   "boards": [
+    "EX-05-noillo"
+   ]
+  },
+  {
+   "screen": "EX-06",
+   "built": "History, Chart and Records tabs all show the centred line 'No workouts yet'",
+   "board": "Each tab has its own filled layout and empty state (History list with e1RM caption; Chart with range tabs 3 mo / 1 yr / All and metric picker; Records with a rep-range table)",
+   "kotlin": "ExerciseScreen.kt:84-88",
+   "boards": [
+    "EX-06",
+    "EX-07",
+    "EX-08",
+    "EX-06-empty",
+    "EX-07-empty",
+    "EX-08-empty"
+   ]
+  },
+  {
+   "screen": "WO-01",
+   "built": "Empty workout bar: name with ⋯ and the progress line '0:12 · 0/0 sets'",
+   "board": "Bar shows '0:12' only, no set count",
+   "kotlin": "WorkoutScreen.kt:433",
+   "boards": [
+    "WO-01-marks",
+    "WO-01-none",
+    "WO-16-empty"
+   ]
+  },
+  {
+   "screen": "WO-03",
+   "built": "Focus card shows 'rest 2:00 after' on every set, the last one included",
+   "board": "On an exercise's last set the line reads 'last set' (no rest after), and 'hold · last set' while a rest is running",
+   "kotlin": "Focus.kt:339",
+   "boards": [
+    "WO-15-one",
+    "WO-06-last"
+   ]
+  },
+  {
+   "screen": "WO-04",
+   "built": "Dock has no plate readout and no plates key",
+   "board": "Dock shows a plate line under the fields ('25 + 5 + 1.25 per side · Bar 20'); the weight keypad has a 'Plates' key that opens a plate picker (keys 25 20 15 10 5 2.5 1.25 ⌫ Empty, 'Next')",
+   "kotlin": "Dock.kt:314",
+   "boards": [
+    "WO-04-new",
+    "WO-04-rest",
+    "WO-05-weight",
+    "WO-05-plates"
+   ]
+  },
+  {
+   "screen": "WO-04",
+   "built": "Set rows show only badge, previous, values and the check",
+   "board": "Rows show the plate line ('25 + 5 + 1.25 per side', '10 per side') under the focus set and logged barbell sets",
+   "kotlin": "Focus.kt:412",
+   "boards": [
+    "WO-03-strip",
+    "WO-03-end",
+    "WO-06-last",
+    "WO-01-picked"
+   ]
+  },
+  {
+   "screen": "WO-03",
+   "built": "Exercise header: pinned note with a pin glyph, today's note field with placeholder 'Note'",
+   "board": "Two labelled note rows, 'Plan' (today's plan note) and 'Previous' (the last session's note), under the pinned note",
+   "kotlin": "WorkoutScreen.kt:518-531",
+   "boards": [
+    "WO-03-rest",
+    "WO-01-picked",
+    "WO-10-one"
+   ]
+  },
+  {
+   "screen": "WO-06",
+   "built": "Rest card titled 'Rest' for every rest, including a free rest",
+   "board": "A free rest's card is titled 'Free rest'; the free-rest menu has a bold title row 'Free rest' and, while a rest runs, the line 'Replaces the rest running now'",
+   "kotlin": "Rest.kt:86",
+   "boards": [
+    "WO-06-free",
+    "WO-07-menu",
+    "WO-07-replace"
+   ]
+  },
+  {
+   "screen": "WO-07",
+   "built": "Custom time is a TextPrompt dialog: title, text field, Cancel / Save",
+   "board": "Custom time dialog has the hint 'Minutes and seconds, such as 1:30' and the buttons Cancel / Start",
+   "kotlin": "Rest.kt:127",
+   "boards": [
+    "WO-07-custom"
+   ]
+  },
+  {
+   "screen": "WO-08",
+   "built": "Workout note and Rename are TextPrompt dialogs (title, field, Cancel / Save)",
+   "board": "Note dialog adds the placeholder 'Energy, sleep, pain…' and the hint 'Shown in the summary and in History.'",
+   "kotlin": "Parts.kt:168",
+   "boards": [
+    "WO-08-note-empty",
+    "WO-08-note",
+    "WO-08-rename"
+   ]
+  },
+  {
+   "screen": "WO-08",
+   "built": "Start time: centred Dialog with Material TimeInput (two text boxes) and Cancel / Save",
+   "board": "Bottom sheet 'Started at' with Cancel / Save in its header, the line 'Monday 9 November · the clock counts from here' and a two-column wheel picker (hour, minute)",
+   "kotlin": "Focus.kt:237-258",
+   "boards": [
+    "WO-08-time"
+   ]
+  },
+  {
+   "screen": "WO-09",
+   "built": "Exercise menu: Note and Swap tiles, Sticky note, Rest for all sets, Create superset, Order and skip, Exercise settings, divider, Remove exercise",
+   "board": "Same items plus 'Exercise details' (before Remove exercise)",
+   "kotlin": "WorkoutScreen.kt:478-506",
+   "boards": [
+    "WO-09-menu",
+    "WO-09-superset",
+    "WO-09-noweight",
+    "WO-10-one"
+   ]
+  },
+  {
+   "screen": "WO-10",
+   "built": "Create superset: centred Dialog titled 'Create superset' listing the other exercises, Cancel",
+   "board": "Alert-style dialog 'Superset with…' with the line 'The one you pick moves next to Bench Press BB.'",
+   "kotlin": "WorkoutScreen.kt:593-614",
+   "boards": [
+    "WO-10"
+   ]
+  },
+  {
+   "screen": "WO-11",
+   "built": "Order and skip: centred Dialog, flat list of exercises each with ↑ ↓ and Skip, Done at the bottom",
+   "board": "Bottom sheet with 'Done' in its header; a superset is one row (A and B under a left edge line, 'Superset · moves as one'), disabled ↑ on the first and ↓ on the last, and the footnote 'Skipped exercises stay in the log; their sets are dropped at Finish.'",
+   "kotlin": "WorkoutScreen.kt:556-591",
+   "boards": [
+    "WO-11",
+    "WO-11-skip"
+   ]
+  },
+  {
+   "screen": "WO-12",
+   "built": "Exercise settings: centred Dialog titled 'Exercise settings', Step and Bar as segmented rows, Done at the bottom",
+   "board": "Bottom sheet titled with the exercise name, Done in the header, Step and Bar as pull-down rows (Bar value 'Olympic 20 kg'), a Unit segmented control kg | lb, and the footnote 'Saved for Bench Press BB in every workout and template.'",
+   "kotlin": "WorkoutScreen.kt:616-640",
+   "boards": [
+    "WO-12-bb",
+    "WO-12-db"
+   ]
+  },
+  {
+   "screen": "WO-13",
+   "built": "Set-type menu order: Working set, Warm-up, Drop set, To failure; the trailing label is a fixed '1' for working and failure",
+   "board": "Order: Warm-up, Working set, Drop set, To failure; the trailing label is the set's own number ('4'); a logged set adds the caption 'The set stays where it is.'",
+   "kotlin": "Focus.kt:441-446",
+   "boards": [
+    "WO-13-menu",
+    "WO-13-logged"
+   ]
+  },
+  {
+   "screen": "WO-15",
+   "built": "Finish with sets left: one action sheet for any count, wording 'them'",
+   "board": "Singular wording when one set is left ('1 set not logged', 'Log it as it is and save', 'Save without it'); plural unchanged",
+   "kotlin": "WorkoutScreen.kt:381-391",
+   "boards": [
+    "WO-15-one",
+    "WO-15-several"
+   ]
+  },
+  {
+   "screen": "WO-16",
+   "built": "Discard alert confirm button reads 'Discard workout' in red",
+   "board": "Confirm button reads 'Discard'",
+   "kotlin": "WorkoutScreen.kt:393-396",
+   "boards": [
+    "WO-16-discard",
+    "WO-16-empty"
+   ]
+  },
+  {
+   "screen": "WO-21",
+   "built": "Summary header: Done on the right, no Back after a workout; no template action",
+   "board": "'Save as template' button under the Time block on a plain workout",
+   "kotlin": "SummaryScreen.kt:99-104",
+   "boards": [
+    "WO-21-empty"
+   ]
+  },
+  {
+   "screen": "WO-21",
+   "built": "Exercise row shows the best set only ('80 × 8')",
+   "board": "Row reads 'Best 80 × 8 · same as last' / 'Best 82.5 × 8 · ↑ +2.5 kg vs last' (prefix 'Best' and a comparison against the last time)",
+   "kotlin": "SummaryScreen.kt:209",
+   "boards": [
+    "WO-21-empty",
+    "WO-21-expanded",
+    "WO-24"
+   ]
+  },
+  {
+   "screen": "WO-21",
+   "built": "Opened exercise numbers every set 1, 2, 3… including warm-ups",
+   "board": "Warm-up shows 'W' and working sets count from 1",
+   "kotlin": "SummaryScreen.kt:220",
+   "boards": [
+    "WO-21-expanded"
+   ]
+  },
+  {
+   "screen": "WO-21",
+   "built": "Times block: Started, Ended",
+   "board": "Adds a 'Week' row (week number, with the plan block when there is one)",
+   "kotlin": "SummaryScreen.kt:161",
+   "boards": [
+    "WO-21-empty",
+    "WO-21-expanded",
+    "WO-24"
+   ]
+  },
+  {
+   "screen": "WO-24",
+   "built": "Session detail: text button 'Back', no Edit",
+   "board": "Back reads 'All activities'; an 'Edit' button on the right",
+   "kotlin": "SummaryScreen.kt:99",
+   "boards": [
+    "WO-24"
+   ]
+  },
+  {
+   "screen": "WO-26",
+   "built": "History: 'Back' text button; no view switch",
+   "board": "Back reads 'You'; segmented switch All | Strength | Running under the title",
+   "kotlin": "HistoryScreen.kt:55",
+   "boards": [
+    "WO-26-all",
+    "WO-26-strength",
+    "WO-26-running"
+   ]
+  },
+  {
+   "screen": "WO-26",
+   "built": "Week header is one line 'Week 45 · 4 workouts' (plural string)",
+   "board": "Week header 'Week 45' with a right-aligned summary ('4 workouts · 22.3 km'; '4 workouts · 22.9 t' in Strength)",
+   "kotlin": "HistoryScreen.kt:75-79",
+   "boards": [
+    "WO-26-all",
+    "WO-26-strength"
+   ]
+  },
+  {
+   "screen": "WO-26",
+   "built": "Row: weekday over day number; name with start time; right column 'N min' over 'N sets · V kg'",
+   "board": "Row: day number over weekday, a kind icon (lift/run), name with 'time · N min · N sets' beneath, the volume at the right and a chevron",
+   "kotlin": "HistoryScreen.kt:94-120",
+   "boards": [
+    "WO-26-all",
+    "WO-26-strength"
+   ]
+  },
+  {
+   "screen": "WO-26",
+   "built": "First use: 'No workouts yet' and a 'Start a workout' button",
+   "board": "Adds the line 'Your workouts and runs land here, week by week.'",
+   "kotlin": "HistoryScreen.kt:58-66",
+   "boards": [
+    "WO-26-empty"
+   ]
+  }
+ ]
+}

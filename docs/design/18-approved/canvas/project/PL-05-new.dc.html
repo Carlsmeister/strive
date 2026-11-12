@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New template, empty</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"><a class="navtext" href="PL-01-week.dc.html">Cancel</a></div>
+<h1>New template</h1>
+<div class="r"><span class="navtext b dim" aria-disabled="true">Done</span></div>
+</header>
+<main class="body">
+<div class="field focus"><span class="in ph">Template name</span></div>
+<section class="qs" aria-label="No exercises yet">
+<span class="mark"><span class="ic ic-lift s32"></span></span>
+<h2>Add the exercises you train</h2>
+<p>Pick them from the library. Each one starts with three sets you can change here.</p>
+<a class="btn filled" href="EX-03-tmpl.dc.html">Add exercises</a>
+</section>
+<p class="cap" style="text-align: center">Done saves the template once it has a name and an exercise.</p>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

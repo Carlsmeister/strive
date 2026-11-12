@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home · run day</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<main class="body">
+<header class="lt"><h1>Home</h1><a class="ibtn plain" href="EL-01.dc.html" aria-label="You"><span class="ic ic-you"></span></a></header>
+<p class="lt-sub">Friday 13 November · week 46</p>
+<section class="card" aria-label="Planned today">
+<p class="eyebrow">Planned today · Week 6 of 8</p>
+<div class="between"><h2 class="title" style="font-weight: 600">Easy run</h2><span class="cap">8 km</span></div>
+<p class="meta">Easy pace, about 5:50 /km · about 47 min</p>
+<p class="meta hstack" style="gap: 6px"><span class="ic ic-shoe s16"></span>ASICS Novablast 4 · 412 km</p>
+<a class="btn filled" href="RU-01-ready.dc.html"><span class="ic ic-run s20"></span>Start run</a>
+</section>
+
+<section class="vstack" aria-label="This week">
+<h2 class="sec-h"><span>This week</span><a class="teal" href="PL-01-week.dc.html" style="font-weight: 400">Plan</a></h2>
+<div class="stats">
+<div class="stat"><span class="k">Workouts</span><span class="v">3<small>of 4</small></span><span class="sub">Next: Push B tomorrow</span></div>
+<div class="stat"><span class="k">Running</span><span class="v">0<small>of 22 km</small></span><span class="sub">Easy run today</span></div>
+</div>
+<p class="cap" style="padding: 0 4px">Last week: 4 workouts and 22.3 km, every planned session done.</p>
+</section>
+
+<section class="vstack" aria-label="Latest activity">
+<h2 class="sec-h"><span>Latest</span><a class="teal" href="WO-26-all.dc.html" style="font-weight: 400">All activities</a></h2>
+<div class="list">
+<div class="drow">
+<span class="dnum"><b>12</b>Thu</span>
+<span class="kind"><span class="ic ic-lift s20"></span></span>
+<span><b>Pull A</b><small>18:10 · 57 min · 13 sets</small></span>
+<span class="end"><span class="ic ic-chev-r s16"></span></span>
+</div>
+</div>
+</section>
+
+<section class="card off" aria-label="Food">
+<div class="between"><span class="title" style="font-size: 17px; font-weight: 600">Food today</span><span class="cap">comes with nutrition</span></div>
+<p class="meta">Calories and protein against a daily target.</p>
+<span class="btn mid dis" style="margin-top: 8px">Set a target</span>
+</section>
+</main>
+
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html" aria-current="page"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-run.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

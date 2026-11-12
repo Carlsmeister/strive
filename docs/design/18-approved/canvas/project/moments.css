@@ -1,0 +1,75 @@
+/* Strive 1+2 · the moment layer. Design 1's tokens stay as they are; this adds design 2's warm accents, its win spring and
+   one celebration face, used only where something is won (a record, a streak, a full week, a finished workout or run,
+   the rest ending). Load it after ds/strive1/components/bundle.css.
+   The rule: an accent marks an edge, an icon or a number on design 1's surface roles. It never fills a card.
+   dark and light may add a faint wash under the edge; the -hc modes never do. Set kinds keep design 1's colours. */
+
+/* --m-*       edge and icon, at least 3:1 on every surface role
+   --m-*-text  numbers and words, at least 4.5:1, 7:1 in the -hc modes
+   --m-*-wash  the bright hue a tint is mixed from (dark and light only) */
+:root, [data-theme="dark"] {
+  --m-sun: #ffd23f;   --m-sun-text: #ffd23f;   --m-sun-wash: #ffd23f;
+  --m-flame: #ff6a2b; --m-flame-text: #ff8a57; --m-flame-wash: #ff6a2b;
+  --m-lime: #b8f23d;  --m-lime-text: #c4f55c;  --m-lime-wash: #b8f23d;
+  --m-tint: 12%; --m-edge: 1.5px;
+}
+[data-theme="dark-hc"] {
+  --m-sun: #ffe07a;   --m-sun-text: #ffe38a;   --m-sun-wash: #ffe07a;
+  --m-flame: #ff8a57; --m-flame-text: #ffc4a6; --m-flame-wash: #ff8a57;
+  --m-lime: #ccff70;  --m-lime-text: #d6ff8a;  --m-lime-wash: #ccff70;
+  --m-tint: 0%; --m-edge: 2px;
+}
+[data-theme="light"] {
+  --m-sun: #7f5a00;   --m-sun-text: #7f5a00;   --m-sun-wash: #ffc933;
+  --m-flame: #b83c0a; --m-flame-text: #b83c0a; --m-flame-wash: #ff5a1f;
+  --m-lime: #3d6b00;  --m-lime-text: #3d6b00;  --m-lime-wash: #8ed400;
+  --m-tint: 14%; --m-edge: 1.5px;
+}
+[data-theme="light-hc"] {
+  --m-sun: #5e4200;   --m-sun-text: #5e4200;   --m-sun-wash: #ffd23f;
+  --m-flame: #7a2500; --m-flame-text: #7a2500; --m-flame-wash: #ff7a45;
+  --m-lime: #2c4f00;  --m-lime-text: #2c4f00;  --m-lime-wash: #8ed400;
+  --m-tint: 0%; --m-edge: 2px;
+}
+
+/* The win spring (design 2's, one convention). Compose: spring(dampingRatio = 0.45f, stiffness = 420f), about 20 % overshoot,
+   settled in about 430 ms. SwiftUI: .spring(response: 0.31, dampingFraction: 0.45). The bézier is the web fallback only.
+   Calm transitions keep design 1's release spring: spring(dampingRatio = 0.6f, stiffness = 400f), fallback 350 ms. */
+:root {
+  --spring-win-damping-ratio: 0.45; --spring-win-stiffness: 420;
+  --spring-calm-damping-ratio: 0.6; --spring-calm-stiffness: 400;
+  --ease-win: cubic-bezier(0.34, 1.56, 0.64, 1); --duration-win: 520ms;
+  --duration-celebrate: 900ms; --stagger-win: 50ms;
+  --font-celebrate: "Unbounded", var(--font-sans);
+}
+
+/* An accent scope. Put one on the element that marks the moment. */
+.m-sun   { --m: var(--m-sun);   --m-txt: var(--m-sun-text);   --m-w: var(--m-sun-wash); }
+.m-flame { --m: var(--m-flame); --m-txt: var(--m-flame-text); --m-w: var(--m-flame-wash); }
+.m-lime  { --m: var(--m-lime);  --m-txt: var(--m-lime-text);  --m-w: var(--m-lime-wash); }
+
+/* A card, stat, tile or toast that marks a moment: an inset edge (no size change) and a faint wash outside -hc. */
+.moment { box-shadow: inset 0 0 0 var(--m-edge) var(--m); background: color-mix(in srgb, var(--m-w) var(--m-tint), var(--color-surface)); }
+.moment.on-high { background: color-mix(in srgb, var(--m-w) var(--m-tint), var(--color-surface-container-high)); }
+.m-ic, .m-ic .ic { color: var(--m); }
+.m-num { color: var(--m-txt); }
+/* A capsule label in a moment: design 1's .chip box, an accent edge and accent text, never a fill. */
+.m-tag { display: inline-flex; align-items: center; gap: 4px; min-height: 24px; padding: 0 10px; border-radius: var(--shape-full);
+  box-shadow: inset 0 0 0 1px var(--m); color: var(--m-txt); font: 600 12px/16px var(--font-sans); white-space: nowrap; }
+.m-tag .ic { color: var(--m); }
+
+/* The one borrowed typeface, for a celebration number only (a record, the total lifted). It is wider than the system face,
+   so it sets at .88 of the size the element already has: the number takes no more room than design 1's. */
+.celebrate { font-family: var(--font-celebrate); font-weight: 700; font-size: .88em; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+/* Unbounded's taller ascent would push an inline number's line box up by ~3 px; inline it takes no leading of its own. */
+:is(small, .val) .celebrate { line-height: 1; }
+
+/* Live loops for the motion boards (the timed key frames beside them are the spec). Each loop is 2.4 s: the win plays in
+   the first ~520 ms (the spring's 20 % overshoot drawn as keyframes), then holds, so the board keeps showing it happen. */
+@keyframes m-pop { 0% { transform: scale(.6); opacity: 0 } 12% { transform: scale(1.14); opacity: 1 } 18% { transform: scale(.97) } 22%, 100% { transform: scale(1) } }
+@keyframes m-drop { 0% { transform: translateY(-24px); opacity: 0 } 13% { transform: translateY(4px); opacity: 1 } 22%, 100% { transform: translateY(0) } }
+@keyframes m-glow { 0%, 100% { box-shadow: inset 0 0 0 var(--m-edge) var(--m) } 50% { box-shadow: inset 0 0 0 calc(var(--m-edge) + 1.5px) var(--m) } }
+.loop-pop { animation: m-pop 2.4s linear infinite both; }
+.loop-drop { animation: m-drop 2.4s linear infinite both; }
+.loop-glow { animation: m-glow 1.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .loop-pop, .loop-drop, .loop-glow { animation: none; } }

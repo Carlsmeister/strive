@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 1688" preserveAspectRatio="xMidYMid slice">
+<rect width="780" height="1688" fill="#f2efe9"/>
+<rect y="1000" width="780" height="1688" fill="#a7d0ee"/>
+<rect x="40" y="40" width="140" height="120" rx="6" fill="#e5dfd4"/>
+<rect x="230" y="60" width="160" height="110" rx="6" fill="#e5dfd4"/>
+<rect x="450" y="30" width="140" height="150" rx="6" fill="#e5dfd4"/>
+<rect x="620" y="90" width="130" height="120" rx="6" fill="#e5dfd4"/>
+<rect x="60" y="230" width="120" height="110" rx="6" fill="#e5dfd4"/>
+<rect x="250" y="240" width="150" height="90" rx="6" fill="#e5dfd4"/>
+<rect x="470" y="250" width="110" height="100" rx="6" fill="#e5dfd4"/>
+<path d="M -20 200 C 200 190 500 220 800 200" fill="none" stroke="#d6d0c4" stroke-width="24" stroke-linecap="round"/><path d="M -20 200 C 200 190 500 220 800 200" fill="none" stroke="#ffffff" stroke-width="17" stroke-linecap="round"/>
+<path d="M 210 -20 L 220 430" fill="none" stroke="#d6d0c4" stroke-width="24" stroke-linecap="round"/><path d="M 210 -20 L 220 430" fill="none" stroke="#ffffff" stroke-width="17" stroke-linecap="round"/>
+<path d="M 420 -20 C 430 150 410 300 420 430" fill="none" stroke="#d6d0c4" stroke-width="24" stroke-linecap="round"/><path d="M 420 -20 C 430 150 410 300 420 430" fill="none" stroke="#ffffff" stroke-width="17" stroke-linecap="round"/>
+<path d="M 600 -20 L 590 430" fill="none" stroke="#d6d0c4" stroke-width="24" stroke-linecap="round"/><path d="M 600 -20 L 590 430" fill="none" stroke="#ffffff" stroke-width="17" stroke-linecap="round"/>
+<g transform="translate(0 422)">
+<rect x="40" y="330" width="90" height="110" rx="6" fill="#e5dfd4"/>
+<rect x="180" y="360" width="90" height="80" rx="6" fill="#e5dfd4"/>
+<rect x="60" y="120" width="120" height="120" rx="6" fill="#e5dfd4"/>
+<rect x="220" y="90" width="120" height="110" rx="6" fill="#e5dfd4"/>
+<rect x="430" y="40" width="160" height="120" rx="6" fill="#e5dfd4"/>
+<rect x="690" y="410" width="90" height="130" rx="6" fill="#e5dfd4"/>
+<rect x="240" y="490" width="140" height="50" rx="6" fill="#e5dfd4"/>
+<rect x="450" y="490" width="120" height="50" rx="6" fill="#e5dfd4"/>
+<path d="M 360 300 C 380 220 470 200 560 215 C 640 230 660 300 640 370 C 610 430 470 440 400 410 C 350 390 345 345 360 300 Z" fill="#cde6c0"/>
+<ellipse cx="90" cy="560" rx="60" ry="40" fill="#cde6c0"/>
+<path d="M -20 590 C 120 570 260 585 400 575 C 540 565 640 590 800 560 L 800 700 L -20 700 Z" fill="#a7d0ee"/>
+<path d="M 700 -20 C 690 60 720 100 800 120 L 800 -20 Z" fill="#a7d0ee"/>
+<path d="M-20 300 C 120 290 220 250 300 230 S 520 190 800 170" fill="none" stroke="#d6d0c4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-20 470 L 150 470 L 300 330" fill="none" stroke="#d6d0c4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 150 470 L 170 640" fill="none" stroke="#d6d0c4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 640 420 C 700 380 760 360 800 350" fill="none" stroke="#d6d0c4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 300 330 C 360 250 440 220 520 230" fill="none" stroke="#d6d0c4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 600 600 L 640 420 L 660 240 L 700 -20" fill="none" stroke="#d6d0c4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 60 -20 L 90 300" fill="none" stroke="#d6d0c4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 380 -20 L 400 220" fill="none" stroke="#d6d0c4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 230 470 L 600 470" fill="none" stroke="#d6d0c4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 420 470 L 410 560" fill="none" stroke="#d6d0c4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-20 300 C 120 290 220 250 300 230 S 520 190 800 170" fill="none" stroke="#ffffff" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-20 470 L 150 470 L 300 330" fill="none" stroke="#ffffff" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 150 470 L 170 640" fill="none" stroke="#ffffff" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 640 420 C 700 380 760 360 800 350" fill="none" stroke="#ffffff" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 300 330 C 360 250 440 220 520 230" fill="none" stroke="#ffffff" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 600 600 L 640 420 L 660 240 L 700 -20" fill="none" stroke="#ffffff" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 60 -20 L 90 300" fill="none" stroke="#ffffff" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 380 -20 L 400 220" fill="none" stroke="#ffffff" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 230 470 L 600 470" fill="none" stroke="#ffffff" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 420 470 L 410 560" fill="none" stroke="#ffffff" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 30 600 C 200 580 330 592 470 582" fill="none" stroke="#ffffff" stroke-width="4" stroke-dasharray="1 7" stroke-linecap="round" opacity=".7"/>
+<text x="500" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="600" fill="#4f6b43" text-anchor="middle">Djurgården</text>
+<text x="420" y="700" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-style="italic" fill="#3d6f99" text-anchor="middle">Saltsjön</text>
+</g></svg>

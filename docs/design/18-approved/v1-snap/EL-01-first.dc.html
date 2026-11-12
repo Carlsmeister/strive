@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>You · first use</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div><main class="body"><div class="vstack" style="gap: 16px; flex: none"><header class="lt"><h1>You</h1></header><a class="row" href="EL-05-empty.dc.html" style="grid-template-columns: auto 1fr auto; padding-left: 0; padding-right: 0"><span style="width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--color-surface-container-high); font: var(--type-title-medium)"><span class="ic ic-you s28 muted"></span></span><span><span class="teal">Add your name</span><small>Profile and body data</small></span><span class="ic ic-chev-r s16 chev"></span></a><div class="list"><a class="row lead" href="EL-02-first.dc.html"><span class="lic"><span class="ic ic-chart s18"></span></span><span>Progress<small>Starts with your first workout</small></span><span class="val"><span class="ic ic-chev-r s16 chev"></span></span></a></div><section class="vstack" aria-label="Activities"><h2 class="sec-h"><span>Activities</span></h2>
+<div class="empty card" style="padding: 24px 16px"><span class="ic ic-lift"></span><h3>No workouts yet</h3><p>Your workouts and runs show here, newest first.</p>
+<a class="btn filled" href="SH-03-today.dc.html">Start a workout</a></div></section><div class="list"><a class="row lead" href="EL-10-none.dc.html"><span class="lic"><span class="ic ic-shoe s18"></span></span><span>Gear</span><span class="val">None yet<span class="ic ic-chev-r s16 chev"></span></span></a></div><section class="group"><h4><span>Account</span></h4><div class="list"><a class="row lead" href="EL-05-empty.dc.html"><span class="lic"><span class="ic ic-you s18"></span></span><span>Profile</span><span class="val"><span class="ic ic-chev-r s16 chev"></span></span></a><a class="row lead" href="EL-06.dc.html"><span class="lic"><span class="ic ic-gear s18"></span></span><span>Settings</span><span class="val"><span class="ic ic-chev-r s16 chev"></span></span></a><span class="row lead"><span class="lic"><span class="ic ic-share s18"></span></span><span>Export</span><span class="val"><span class="ic ic-chev-r s16 chev"></span></span></span></div></section><div class="list"><span style="color: var(--color-on-surface-variant)" class="row lead dis"><span class="lic"><span class="ic ic-cloud s18"></span></span><span>Import and sync<small>From Strong or Strava, and a backup</small></span><span class="val">Later</span></span></div></div></main><nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

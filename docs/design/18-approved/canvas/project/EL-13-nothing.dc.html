@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Export · nothing</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div><header class="nav glassed"><div class="l"><a class="back" href="EL-01.dc.html"><span class="ic ic-chev-l s22"></span>You</a></div><h1>Export</h1><div class="r"></div></header><main class="body"><div class="vstack" style="gap: 16px; flex: none; margin-top: -230px"><section class="group"><h4><span>What</span></h4><div class="seg" role="group" aria-label="What"><span class="on">Workouts</span><span>Runs</span><span>All</span></div></section><section class="group"><h4><span>Period</span></h4><div class="list"><span class="row"><span>Since last export<small>since 2 Nov</small></span><span class="ic ic-check s20 check"></span></span><span class="row"><span>This week</span><span></span></span><span class="row"><span>This month</span><span></span></span><span class="row"><span>All<small>Since March 2024</small></span><span></span></span><a class="row" href="EL-13-custom.dc.html"><span>Custom</span><span class="val"><span class="ic ic-chev-r s16 chev"></span></span></a></div></section><section class="group"><h4><span>Format</span></h4><div class="list"><span class="row"><span>Strive JSON<small>For the training log</small></span><span class="ic ic-check s20 check"></span></span><span class="row"><span>CSV<small>A row per set, for spreadsheets</small></span><span></span></span><span class="row dis"><span>GPX<small>Runs only, with the route</small></span><span></span></span></div><p class="foot">GPX needs Runs or All.</p></section><div class="card warn"><span class="ic ic-info"></span><div class="vstack" style="gap: 2px"><b style="font: var(--type-title-small)">Nothing to export since 2 Nov</b><p class="meta">Pick another period, or All.</p></div></div><span class="btn filled dis">Share…</span></div></main><nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

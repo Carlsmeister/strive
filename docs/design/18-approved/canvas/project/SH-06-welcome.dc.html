@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Welcome · page 1</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"></div>
+<h1></h1>
+<div class="r"><a class="navtext" href="SH-02-first.dc.html">Skip</a></div>
+</header>
+<main class="body" style="padding-bottom: 160px; gap: 20px">
+<header class="vstack" style="gap: 4px; padding-top: 4px">
+<h1 style="font: var(--type-headline-large)">Strive</h1>
+<p style="font: var(--type-body-large); color: var(--color-on-surface-variant)">Carl built this to lift with.</p>
+</header>
+<div class="ob-art" aria-hidden="true" style="height: 268px">
+<svg viewBox="0 0 200 150" style="position: absolute; right: 0; top: 28px; width: 200px; height: 150px"><path d="M30 128 C 70 136, 96 112, 124 116 S 184 110, 186 72 S 160 18, 124 26 S 70 58, 52 34" style="fill: none; stroke: var(--color-outline); stroke-width: 5; stroke-linecap: round"></path><circle cx="30" cy="128" r="7" style="fill: var(--color-on-surface)"></circle><circle cx="52" cy="34" r="5" style="fill: none; stroke: var(--color-on-surface); stroke-width: 3"></circle></svg>
+<div style="position: absolute; left: 16px; top: 16px; width: 210px; padding: 12px 14px; border-radius: 16px; background: var(--color-background); display: grid; gap: 4px">
+<span class="now" style="font-size: 11px; line-height: 14px">Now · Bench Press BB</span>
+<div class="fvals" style="gap: 6px"><span class="fv" style="font-size: 28px; line-height: 34px">82.5</span><span class="fu">kg</span><span class="fx" style="font-size: 20px; line-height: 24px">×</span><span class="fv" style="font-size: 28px; line-height: 34px">8</span></div>
+<span class="fbtn log" style="height: 36px; border-radius: 10px; font-size: 15px; margin-top: 4px"><span class="ic ic-check s16"></span>Log set 2</span>
+</div>
+<div style="position: absolute; left: 16px; right: 16px; bottom: 16px; padding: 8px; border-radius: 16px; background: var(--color-background)">
+<div class="wkdays">
+<span class="wkday today" style="min-height: 0">Mon<b>9</b><span class="pl">Push A</span></span>
+<span class="wkday" style="min-height: 0">Tue<b>10</b><span class="pl">Ben A</span></span>
+<span class="wkday" style="min-height: 0">Wed<b>11</b><span class="pl" style="color: var(--color-on-surface-variant); font-weight: 400">Rest</span></span>
+<span class="wkday" style="min-height: 0">Thu<b>12</b><span class="pl">Pull A</span></span>
+<span class="wkday" style="min-height: 0">Fri<b>13</b><span class="pl">8 km</span></span>
+<span class="wkday" style="min-height: 0">Sat<b>14</b><span class="pl">Push B</span></span>
+<span class="wkday" style="min-height: 0">Sun<b>15</b><span class="pl">14 km</span></span>
+</div>
+</div>
+</div>
+<div class="list">
+<div class="row lead"><span class="lic"><span class="ic ic-check s18"></span></span><span>Log a set in one tap</span><span></span></div>
+<div class="row lead"><span class="lic"><span class="ic ic-plan s18"></span></span><span>See the week in Plan</span><span></span></div>
+<div class="row lead"><span class="lic"><span class="ic ic-run s18"></span></span><span>Record runs with GPS</span><span></span></div>
+</div>
+</main>
+<div style="position: absolute; left: 16px; right: 16px; bottom: 34px; display: grid; gap: 12px; z-index: 3">
+<div class="dotsnav" role="img" aria-label="Page 1 of 3"><i class="on"></i><i></i><i></i></div>
+<a class="btn filled" href="SH-06-units.dc.html">Next</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

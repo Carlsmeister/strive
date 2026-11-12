@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Live Activity, no rest</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen lock" data-theme="{{mode}}">
+<div class="safe"></div>
+<p class="lockdate" style="margin-top: 12px">Monday 9 November</p>
+<p class="lockclock">17:26</p>
+<div style="flex: 1"></div>
+<div class="vstack" style="padding: 0 10px 64px; gap: 8px">
+<a class="la glass" href="WO-02-s2.dc.html" aria-label="Strive Live Activity">
+<div class="between"><span class="hstack"><span class="appicon" style="width: 24px; height: 24px; border-radius: 6px" aria-hidden="true"><span class="ic ic-lift s14"></span></span><b style="font: var(--type-title-small)">Push A</b></span><span style="font: var(--type-body-small); color: var(--color-on-surface-variant)">started 17:02</span></div>
+<div class="hstack" style="gap: 12px; align-items: baseline"><span style="font: var(--type-display-small)">24:13</span><span style="font: var(--type-body-medium); color: var(--color-on-surface-variant)">1 of 14 sets</span></div>
+<p style="font: var(--type-body-medium)"><span style="color: var(--color-on-surface-variant)">Next:</span> Bench Press BB · 82.5 × 8</p>
+</a>
+</div>
+<span style="position: absolute; left: 50%; bottom: 8px; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: rgb(255 255 255 / .85)"></span>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

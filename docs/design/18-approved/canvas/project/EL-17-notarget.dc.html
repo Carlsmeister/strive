@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Food, no target</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<main class="body">
+<header class="lt"><h1>Food</h1></header>
+
+<div class="between" style="margin: -12px -12px 0 -12px"><span class="ibtn plain" aria-label="Previous day"><span class="ic ic-chev-l s20"></span></span><span style="font: var(--type-title-small)">Today, Monday 9 November</span><span class="ibtn plain dis" aria-label="Next day"><span class="ic ic-chev-r s20"></span></span></div>
+
+<section class="card" aria-label="Today">
+<p class="eyebrow">Eaten today</p>
+<div class="hstack" style="align-items: baseline; gap: 6px"><span style="font: var(--type-display-small)">1 420</span><span class="muted">kcal</span></div>
+<p class="meta">Protein 96 g · carbs 153 g · fat 47 g</p>
+<p class="meta" style="padding-top: 8px">No daily target yet. Set one to see how the day adds up.</p>
+<div class="btnrow" style="margin-top: 4px">
+<a class="btn" href="EL-19-unset.dc.html">Set a target</a>
+<a class="btn filled" href="EL-18-search.dc.html"><span class="ic ic-plus s20"></span>Log food</a>
+</div>
+</section>
+
+<section class="group" aria-label="Meals"><h4>Meals</h4><div class="list">
+<div class="row"><span>Breakfast <span class="muted" style="font: var(--type-body-small)">07:30</span><small>Havregryn, mjölk, banan, jordnötssmör</small></span><span class="val">612 kcal</span></div>
+<div class="row"><span>Lunch <span class="muted" style="font: var(--type-body-small)">12:15</span><small>Kycklingfilé, jasminris, broccoli</small></span><span class="val">650 kcal</span></div>
+<div class="row"><span>Snack <span class="muted" style="font: var(--type-body-small)">15:30</span><small>Kvarg naturell</small></span><span class="val">158 kcal</span></div>
+</div></section>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html" aria-current="page"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

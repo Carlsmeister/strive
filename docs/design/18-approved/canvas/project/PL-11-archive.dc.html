@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Archive programme alert</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"><a class="back" href="PL-01-week.dc.html"><span class="ic ic-chev-l s22"></span>Plan</a></div>
+<h1></h1>
+<div class="r"><span class="ibtn" role="button" aria-label="Rename, duplicate or archive"><span class="ic ic-more"></span></span></div>
+</header>
+<main class="body">
+<header class="lt"><h1 style="font-size: 30px; line-height: 36px">Hypertrofi, block 1</h1></header>
+<p class="lt-sub">Start 5 Oct 2026 · 8 weeks · now week 6</p>
+<div class="segc" role="group" aria-label="Programme"><a href="PL-08-week6.dc.html" aria-pressed="false">Weeks</a><a href="PL-09.dc.html" aria-pressed="false">Weights</a><a href="PL-10.dc.html" aria-pressed="false">Log</a><span class="on" aria-pressed="true">Settings</span></div>
+<div class="group">
+<div class="list">
+<a class="row" href="PL-11-date.dc.html"><span>Start date</span><span class="val">5 Oct 2026 <span class="ic ic-chev-r s16" aria-hidden="true"></span></span></a>
+<a class="row" href="PL-11-nofixed.dc.html" aria-haspopup="menu"><span>Length</span><span class="val">8 weeks <span class="ic ic-updown s16" aria-hidden="true"></span></span></a>
+<div class="row"><span>Calibration weeks</span><span class="val">2 <span class="ic ic-updown s16" aria-hidden="true"></span></span></div>
+</div>
+</div>
+<div class="group">
+<div class="list">
+<div class="row"><span>Deload<small>Recommended after 4–6 weeks, earliest week 8</small></span><span class="ic ic-chev-r s16" aria-hidden="true" style="color: var(--color-on-surface-variant)"></span></div>
+<div class="row"><span>Short week order<small>Push B, Easy run, Ben A …</small></span><span class="ic ic-chev-r s16" aria-hidden="true" style="color: var(--color-on-surface-variant)"></span></div>
+</div>
+<p class="foot">Short week drops the days in this order and moves nothing.</p>
+</div>
+<div class="list"><a class="row dang" href="PL-11-archive.dc.html"><span>Archive programme</span></a></div>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html" aria-current="page"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html"><span class="ic ic-you"></span>You</a>
+</nav>
+<div class="scrim"></div>
+<div class="center">
+<div class="alert" role="alertdialog" aria-label="Archive Hypertrofi, block 1?">
+<h2>Archive Hypertrofi, block 1?</h2>
+<p>It keeps its weeks and log. Plan goes back to calendar weeks.</p>
+<div class="acts"><a class="btn" href="PL-11.dc.html">Cancel</a><a class="btn danger" href="PL-01-noprog.dc.html">Archive</a></div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>1 vs 1+2 · WO-21 · empty workout, Save as template</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&amp;display=swap">
+</helmet>
+<div class="strive" data-theme="{{mode}}" style="width: 868px; height: 938px; box-sizing: border-box; padding: 24px; background: var(--color-surface-container-low); color: var(--color-on-surface); display: flex; gap: 40px">
+<figure style="margin: 0; display: grid; gap: 10px; align-content: start; width: 390px"><figcaption class="cap" style="font-weight: 600; height: 36px; line-height: 18px; overflow: hidden">Strive 1 · WO-21 · empty workout, Save as template</figcaption><div style="width: 390px; height: 844px; position: relative; overflow: hidden">
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"></div>
+<h1>Workout</h1>
+<div class="r"><a class="finish all" href="Main.dc.html">Done</a></div>
+</header>
+<main class="body">
+<section class="whead">
+<h2 class="name">Monday 9 November</h2>
+<div class="meta">
+<span><span class="ic ic-clock s16"></span>17:02–17:38</span>
+<span><span class="ic ic-calendar s16"></span>Week 46</span>
+</div>
+</section>
+
+<section class="stats four" aria-label="Totals" style="grid-template-columns: 1fr 1.3fr .8fr 1fr">
+<div class="stat"><span class="k">Time</span><span class="v">36<small style="font: var(--type-body-small); margin-left: 2px">min</small></span></div>
+<div class="stat"><span class="k">Avg RIR</span><span class="v none">–</span></div>
+<div class="stat"><span class="k">Sets</span><span class="v">4</span></div>
+<div class="stat"><span class="k">Records</span><span class="v none">–</span></div>
+</section>
+
+<section class="group" aria-label="How it felt">
+<h4>How hard was it? RPE</h4>
+<div class="seg" role="group" aria-label="RPE"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
+<div class="field area" style="min-height: 64px"><span class="in ph">Workout note</span></div>
+</section>
+
+<section class="group" aria-label="Exercises">
+<h4>Exercises</h4>
+<div class="list">
+<span class="row" aria-expanded="false"><span><span class="hstack" style="gap: 0">Bench Press BB</span><small>Best 80 × 8 · same as last</small></span><span class="val"><span class="ic ic-chev-r s16"></span></span></span>
+</div>
+</section>
+
+<section class="group" aria-label="Time">
+<h4>Time</h4>
+<div class="list">
+<div class="row"><span>Started</span><span class="chip">17:02</span></div>
+<div class="row"><span>Ended</span><span class="chip">17:38</span></div>
+<div class="row"><span>Week</span><span class="val">46</span></div>
+</div>
+</section>
+
+<a class="btn" href="WO-23-summary.dc.html"><span class="ic ic-copy s20"></span>Save as template</a>
+</main>
+</div>
+</div></figure>
+<figure style="margin: 0; display: grid; gap: 10px; align-content: start; width: 390px"><figcaption class="cap" style="height: 36px; line-height: 18px; overflow: hidden" title="&quot;Off-script, Carl.&quot;; the date moves into the meta line; no accent"><b>Strive 1+2</b> · &quot;Off-script, Carl.&quot;; the date moves into the meta line; no accent</figcaption><dc-import name="WO-21-empty" mode="{{mode}}" hint-size="390px,844px"></dc-import></figure>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":868,"height":938}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

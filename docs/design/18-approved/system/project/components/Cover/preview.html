@@ -1,0 +1,54 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Strive 1 system — cover</title>
+<style>
+body{margin:0;background:var(--color-background)}
+.cv{position:relative;width:960px;height:288px;background:var(--color-background);overflow:hidden;font-family:var(--font-sans)}
+.cv svg{position:absolute;left:0;top:0}
+.teal{fill:var(--color-primary)}
+.deep{fill:var(--color-primary-container)}
+.amber{fill:var(--color-tertiary)}
+.ink{fill:var(--color-surface)}
+.raise{fill:var(--color-surface-container-high)}
+.dot-on{fill:var(--color-primary)}
+.dot-w{fill:var(--color-tertiary)}
+.dot-ring{fill:none;stroke:var(--color-surface-container-highest);stroke-width:2}
+.dot-ring-deep{fill:none;stroke:var(--color-on-primary-container);stroke-width:2}
+.name{position:absolute;left:40px;bottom:52px;max-width:440px;margin:0;font:700 72px/1 var(--font-sans);letter-spacing:-1.5px;color:var(--color-on-surface)}
+.tag{position:absolute;left:40px;bottom:20px;max-width:440px;margin:0;font:400 13px/18px var(--font-sans);color:var(--color-on-surface-variant)}
+</style></head>
+<body>
+<div class="cv">
+<!--
+  blocks: color-primary 200×200 (radius 20 = shape-large-increased), color-primary-container 200×88, color-tertiary 88×88, color-surface 248×120, color-surface-container-high 120×88
+  arrangement: a modular grid right of x 480, 16 px gutters (space-16), the teal slab tallest, bleeding off the top edge as the workout's cards do
+  pattern: the overview card's set dots (8 px discs, 5 px apart, scaled ×2) — logged dots filled teal and amber, coming sets as rings; Strive's own motif for "done"
+  scales: gutters space-16; radii shape-large-increased 20 and shape-large 16; dots 16 px at a 26 px pitch
+-->
+<svg width="960" height="288" viewBox="0 0 960 288" aria-hidden="true">
+<rect class="teal" x="496" y="-20" width="200" height="200" rx="20"></rect>
+<rect class="deep" x="712" y="-20" width="200" height="104" rx="20"></rect>
+<rect class="amber" x="712" y="100" width="88" height="88" rx="16"></rect>
+<rect class="raise" x="816" y="100" width="128" height="88" rx="16"></rect>
+<rect class="ink" x="496" y="196" width="448" height="120" rx="20"></rect>
+<circle class="dot-w" cx="528" cy="240" r="8"></circle>
+<circle class="dot-on" cx="554" cy="240" r="8"></circle>
+<circle class="dot-on" cx="580" cy="240" r="8"></circle>
+<circle class="dot-on" cx="606" cy="240" r="8"></circle>
+<circle class="dot-ring" cx="632" cy="240" r="7"></circle>
+<circle class="dot-ring" cx="658" cy="240" r="7"></circle>
+<circle class="dot-on" cx="528" cy="266" r="8"></circle>
+<circle class="dot-on" cx="554" cy="266" r="8"></circle>
+<circle class="dot-ring" cx="580" cy="266" r="7"></circle>
+<circle class="dot-ring" cx="606" cy="266" r="7"></circle>
+<circle class="dot-ring-deep" cx="740" cy="40" r="7"></circle>
+<circle class="dot-ring-deep" cx="766" cy="40" r="7"></circle>
+<circle class="dot-ring-deep" cx="792" cy="40" r="7"></circle>
+</svg>
+<p class="name">Strive 1 system</p>
+<p class="tag">Strive as built: dark-first teal, one tap to log a set.</p>
+</div>
+<script></script>
+</body>
+</html>

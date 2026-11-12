@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Running · no runs</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div><header class="nav"><div class="l"><a class="back" href="EL-01.dc.html"><span class="ic ic-chev-l s22"></span>You</a></div><h1>Progress</h1><div class="r"></div></header><main class="body"><div class="vstack" style="gap: 16px; flex: none"><div class="segc" role="group" aria-label="Show"><a href="EL-02-8wk.dc.html">Strength</a><span class="on" aria-pressed="true">Running</span></div><div class="empty card"><span class="ic ic-run"></span><h3>No runs yet</h3><p>Km per week, your long runs and your run records show here after your first run.</p>
+<a class="btn filled" href="RU-01-ready.dc.html">Start a run</a></div><section class="chart"><div class="head"><span>Km per week</span></div><div class="nodata" style="min-height: 132px">Bars for each week show here</div></section><section class="chart"><div class="head"><span>Run records</span></div><div class="nodata" style="min-height: 96px">Longest, fastest 1, 5 and 10 km, most climb</div></section></div></main><nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

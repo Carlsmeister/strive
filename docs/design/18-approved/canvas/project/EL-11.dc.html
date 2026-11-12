@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gear · detail</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div><header class="nav"><div class="l"><a class="back" href="EL-10.dc.html"><span class="ic ic-chev-l s22"></span>Gear</a></div><h1></h1><div class="r"><span class="navtext">Edit</span></div></header><main class="body"><div class="vstack" style="gap: 16px; flex: none"><section class="card"><span class="eyebrow">ASICS · Novablast 4</span><span class="title" style="font-weight: 600">ASICS Novablast 4</span><span style="font: var(--type-display-small)">412 km</span><span class="meta">of 700 km · default for runs</span><span style="display: block; height: 8px; border-radius: 4px; background: var(--color-surface-container-highest); overflow: hidden; margin-top: 8px"><i style="display: block; height: 100%; width: 59%; border-radius: 4px; background: var(--color-on-surface-variant)"></i></span></section><section class="group"><h4><span>Settings</span></h4><div class="list"><span class="row"><span>Starting distance</span><span class="val">0 km<span class="ic ic-chev-r s16 chev"></span></span></span><span class="row"><span>Warn at</span><span class="val">700 km<span class="ic ic-chev-r s16 chev"></span></span></span><span class="row"><span>Default for runs</span><span class="switch on" role="switch" aria-checked="true" aria-label="Default for runs"></span></span></div></section><section class="group"><h4><span>Latest runs</span></h4><div class="list"><span class="drow"><span class="dnum"><b>6</b>Fri</span><span class="kind"><span class="ic ic-run s20"></span></span><span><b>Morning Run</b><small>07:15 · 8.04 km · 5:46 /km</small></span><span class="end"></span></span>
+<span class="drow"><span class="dnum"><b>1</b>Sun</span><span class="kind"><span class="ic ic-run s20"></span></span><span><b>Long run</b><small>13.2 km</small></span><span class="end"></span></span>
+<span class="drow"><span class="dnum"><b>30</b>Fri</span><span class="kind"><span class="ic ic-run s20"></span></span><span><b>Easy run</b><small>8.1 km</small></span><span class="end"></span></span></div></section><a class="btn" href="EL-10-retired.dc.html">Retire these shoes</a></div></main><nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

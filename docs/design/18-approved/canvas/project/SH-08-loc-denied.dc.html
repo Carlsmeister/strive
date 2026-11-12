@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Location · denied</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="map" style="position: absolute; inset: 0; filter: grayscale(1); opacity: .45" aria-label="Map"><img class="only-dark" src="/_blob/5f81896c79487b24b7f6d5ced01a2a9a" alt=""><img class="only-light" src="/_blob/13891c6b0a0ded6ca4836d993f759c2f" alt=""></div>
+<a class="ibtn glass" href="Main.dc.html" style="position: absolute; top: 58px; left: 16px; z-index: 3" aria-label="Close"><span class="ic ic-x s20"></span></a>
+<div class="mapctl glass" style="top: 58px; right: 16px">
+<span class="mapbtn" aria-label="Map type"><span class="ic ic-layers s20"></span></span>
+<span class="mapbtn" aria-label="Centre on me"><span class="ic ic-locate s20"></span></span>
+</div>
+<section class="card" style="position: absolute; left: 12px; right: 12px; bottom: 30px; z-index: 3; gap: 12px; border-radius: var(--shape-extra-large); padding: 16px 16px 16px" aria-label="Run start">
+<div class="between"><span class="gps off" style="padding: 0"><i></i>Location off</span></div>
+<p style="font: var(--type-body-large)">Location is off for Strive. A run needs it to record distance.</p>
+<p class="cap" style="font-size: 13px; line-height: 18px">Settings › Strive › Location › While Using the App.</p>
+<span class="btn filled">Open Settings</span>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gear</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div><header class="nav"><div class="l"><a class="back" href="EL-01.dc.html"><span class="ic ic-chev-l s22"></span>You</a></div><h1>Gear</h1><div class="r"><a class="ibtn plain teal" href="EL-11-new.dc.html" aria-label="Add gear"><span class="ic ic-plus"></span></a></div></header><main class="body"><div class="vstack" style="gap: 16px; flex: none"><section class="group"><h4><span>Shoes</span></h4><div class="list"><a class="row lead" href="EL-11.dc.html"><span class="lic"><span class="ic ic-shoe s18"></span></span><span>ASICS Novablast 4<small>Default for runs</small></span><span class="val"><span style="color: var(--color-on-surface)">412 km</span><span class="ic ic-chev-r s16 chev"></span></span></a><a class="row lead" href="EL-11.dc.html"><span class="lic"><span class="ic ic-shoe s18"></span></span><span>Nike Pegasus 41<small><span class="amber"><span class="ic ic-warn s14"></span> Past 700 km</span> · Nike · Pegasus 41</small></span><span class="val"><span style="color: var(--color-on-surface)">712 km</span><span class="ic ic-chev-r s16 chev"></span></span></a></div></section><section class="group"><h4><span>Bikes</span></h4><div class="list"><span class="row lead"><span class="lic"><span class="ic ic-bike s18"></span></span><span>Bianchi Via Nirone 7<small>Starting distance</small></span><span class="val"><span style="color: var(--color-on-surface)">2 140 km</span><span class="ic ic-chev-r s16 chev"></span></span></span></div><p class="foot">Rides add to a bike once rides come.</p></section><div class="list"><a class="row lead" href="EL-10-retired.dc.html"><span class="lic"><span class="ic ic-archive s18"></span></span><span>Retired</span><span class="val">1<span class="ic ic-chev-r s16 chev"></span></span></a></div></div></main><nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

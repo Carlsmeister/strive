@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Motion · finishing</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive" data-theme="{{mode}}" style="width: 1280px; height: 800px; box-sizing: border-box; padding: 32px 48px; background: var(--color-background); color: var(--color-on-surface); display: flex; flex-direction: column; gap: 20px">
+<header style="display: flex; justify-content: space-between; align-items: baseline">
+<h1 style="font: 700 34px/41px var(--font-family)">Finishing a workout and a run</h1>
+<p class="muted" style="font: var(--type-body-medium)">Push A on Mon 9 Nov (WO-21) and the Morning Run on Fri 6 Nov (RU-05). Times from the tap, in ms.</p>
+</header>
+
+<section style="display: grid; grid-template-columns: 290px 390px minmax(0, 1fr); gap: 20px" aria-label="Key frames, workout">
+<figure style="margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-content: start">
+<figcaption class="cap">0–350 ms · Finish → the summary pushes in (calm); the headline fades and rises 8 pt</figcaption>
+<div style="padding: 14px 16px; background: var(--color-background); border: 1px solid var(--color-outline-variant); border-radius: 16px">
+<section class="whead" style="opacity: .55; transform: translateY(4px)">
+<h2 class="name">Nailed it, Carl.</h2>
+<div class="meta"><span><span class="ic ic-clock s16"></span>17:02–18:06</span><span>Mon 9 Nov</span></div>
+</section>
+</div>
+</figure>
+<figure style="margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-content: start">
+<figcaption class="cap">from 300 ms · the four tiles stagger in, 50 ms each (win); success haptic; the Records tile's sun edge glows once</figcaption>
+<div style="padding: 14px 16px; background: var(--color-background); border: 1px solid var(--color-outline-variant); border-radius: 16px">
+<section class="stats four" aria-label="Totals" style="grid-template-columns: 1fr 1.3fr .8fr 1fr">
+<div class="stat"><span class="k">Time</span><span class="v">64<small style="font: var(--type-body-small); margin-left: 2px">min</small></span></div>
+<div class="stat"><span class="k">Avg RIR</span><span class="v">1.5</span><span class="sub" style="font: var(--type-label-small)">goal 2–3</span><span class="sub" style="font: var(--type-label-small)">13 of 14 sets</span></div>
+<div class="stat"><span class="k">Sets</span><span class="v">15</span></div>
+<div class="stat moment m-sun" style="transform: scale(1.1); box-shadow: inset 0 0 0 calc(var(--m-edge) + 1.5px) var(--m)"><span class="k">Records</span><span class="v m-num">3</span></div>
+</section>
+</div>
+</figure>
+<figure style="margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-content: start">
+<figcaption class="cap">from 600 ms · the record list's stars pop in sequence, 50 ms apart (win)</figcaption>
+<div class="list">
+<div class="row lead"><span class="lic m-sun m-ic"><span class="ic ic-star s16"></span></span><span>Bench Press BB<small>Heaviest weight · 82.5 kg</small></span><span class="val"><span class="m-sun m-num">+2.5 kg</span></span></div>
+<div class="row lead"><span class="lic m-sun m-ic"><span class="ic ic-star s16"></span></span><span>Bench Press BB<small>Estimated 1RM · 110.0 kg</small></span><span class="val"><span class="m-sun m-num">+0.7 kg</span></span></div>
+<div class="row lead"><span class="lic m-sun m-ic"><span class="ic ic-star s16" style="transform: scale(1.14)"></span></span><span>Lateral Raise DB<small>Most reps at 10 kg · 10 × 14</small></span><span class="val"><span class="m-sun m-num">+1 rep</span></span></div>
+</div>
+</figure>
+</section>
+
+<section style="display: grid; grid-template-columns: 290px 390px minmax(0, 1fr); gap: 20px" aria-label="Key frames, run">
+<figure style="margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-content: start">
+<figcaption class="cap">100–800 ms · RU-05's distance rolls 0 → 8.04 km (700 ms, ease-out)</figcaption>
+<div style="padding: 12px 16px 4px; background: var(--color-background); border: 1px solid var(--color-outline-variant); border-radius: 16px; display: grid; gap: 4px">
+<h2 style="font: 700 28px/34px var(--font-family)">Morning Run</h2>
+<div class="grid2"><div><small>Distance</small><b>5.12 <small>km</small></b></div><div><small>Avg pace</small><b>5:46 <small>/km</small></b></div></div>
+</div>
+</figure>
+<figure style="margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-content: start">
+<figcaption class="cap">800 ms · the roll lands; a lime check pops beside the title (win); success haptic</figcaption>
+<div style="padding: 12px 16px 4px; background: var(--color-background); border: 1px solid var(--color-outline-variant); border-radius: 16px; display: grid; gap: 4px">
+<h2 class="m-lime" style="font: 700 28px/34px var(--font-family); display: flex; align-items: center; gap: 8px">Morning Run<span class="ic ic-check s24 m-ic" style="transform: scale(1.14)"></span></h2>
+<div class="grid2"><div><small>Distance</small><b>8.04 <small>km</small></b></div><div><small>Avg pace</small><b>5:46 <small>/km</small></b></div></div>
+</div>
+</figure>
+<div class="card" style="gap: 6px; align-content: start">
+<h2 class="title-medium">Sequence</h2>
+<p style="font: var(--type-body-small)"><b>Workout</b> · 0 Finish (WO-02, filled teal) · 0–350 push (calm) · 100–350 headline fades, rises 8 pt · 300, 350, 400, 450 tiles in (win) · ~880 Records edge glows once, 400 · 600, 650, 700 stars pop (win).</p>
+<p style="font: var(--type-body-small)"><b>Run</b> · 0 Finish on RU-04 · 0–350 the summary opens (calm) · 100–800 distance rolls · 800 lime check pops (win).</p>
+<p class="cap">Moving time 46:20 and the rest fade in with the card (250); only the distance counts.</p>
+</div>
+</section>
+
+<section aria-label="Rules" style="display: grid; grid-template-columns: 1.15fr 1.3fr 1fr; gap: 20px; flex: 1; min-height: 0">
+<div class="card" style="gap: 10px; align-content: start">
+<div class="between"><h2 class="title-medium">Live loop</h2><span class="cap">every 2.4 s</span></div>
+<section class="stats four" style="grid-template-columns: 1fr 1.3fr .8fr 1fr">
+<div class="loop-pop"><div class="stat" style="height: 100%; box-sizing: border-box"><span class="k">Time</span><span class="v">64<small style="font: var(--type-body-small); margin-left: 2px">min</small></span></div></div>
+<div class="loop-pop" style="animation-delay: 50ms"><div class="stat" style="height: 100%; box-sizing: border-box"><span class="k">Avg RIR</span><span class="v">1.5</span></div></div>
+<div class="loop-pop" style="animation-delay: 100ms"><div class="stat" style="height: 100%; box-sizing: border-box"><span class="k">Sets</span><span class="v">15</span></div></div>
+<div class="loop-pop" style="animation-delay: 150ms"><div class="stat moment m-sun loop-glow" style="height: 100%; box-sizing: border-box"><span class="k">Records</span><span class="v m-num">3</span></div></div>
+</section>
+<h2 class="m-lime" style="font: var(--type-title-medium); display: flex; align-items: center; gap: 6px">Morning Run<span class="ic ic-check s20 m-ic loop-pop" style="animation-delay: 200ms"></span><span class="muted" style="font: var(--type-body-medium); margin-left: auto">8.04 km · 5:46 /km · 46:20</span></h2>
+</div>
+<div class="card" style="gap: 6px; align-content: start">
+<h2 class="title-medium">Springs</h2>
+<p style="font: var(--type-body-small)"><b>Win</b> · Compose <code>spring(dampingRatio = 0.45f, stiffness = 420f)</code>, about 20 % overshoot, settled in about 430 ms. SwiftUI <code>.spring(response: 0.31, dampingFraction: 0.45)</code>. Web fallback only <code>cubic-bezier(0.34, 1.56, 0.64, 1)</code> 520 ms.</p>
+<p style="font: var(--type-body-small)"><b>Calm</b> · everything that is not a win: design 1's <code>spring(dampingRatio = 0.6f, stiffness = 400f)</code>, fallback 350 ms; fades 250 ms.</p>
+<p class="muted" style="font: var(--type-body-small)">Haptics: success on a win, light on a log.</p>
+</div>
+<div class="card" style="gap: 6px; align-content: start">
+<h2 class="title-medium">Reduce Motion</h2>
+<p class="muted" style="font: var(--type-body-small)">Cross-fades and colour changes only, no scale, no travel. The summary cross-fades in with its headline, tiles and stars in place, the Records edge already sun, no glow. The run's distance reads 8.04 km at once, no roll; the check fades in. The success haptic stays.</p>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

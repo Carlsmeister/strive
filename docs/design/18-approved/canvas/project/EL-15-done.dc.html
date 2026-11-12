@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Import done</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"><span class="back"><span class="ic ic-chev-l s20"></span>Import</span></div>
+<h1></h1>
+<div class="r"></div>
+</header>
+<main class="body">
+<header class="lt"><h1>From Strong</h1></header>
+
+<section class="empty card" aria-label="Done" style="margin-top: 24px">
+<span style="width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; background: var(--color-primary-container); color: var(--color-on-primary-container)"><span class="ic ic-check s32"></span></span>
+<h3 style="font: 700 22px/28px var(--font-family)">212 workouts imported</h3>
+<p>March 2024 – October 2026. 38 exercises matched, 3 added as your own.</p>
+<a class="btn filled" href="WO-26-all.dc.html">View history</a>
+</section>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

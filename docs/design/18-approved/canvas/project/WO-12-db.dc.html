@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings, dumbbells in lb</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="wtb">
+<div class="l">
+<a class="ibtn plain" href="SH-02-inprog.dc.html" aria-label="Minimise workout"><span class="ic ic-down s22"></span></a>
+<a class="ibtn" href="WO-07-menu.dc.html" aria-label="Free rest"><span class="ic ic-timer s20"></span></a>
+</div>
+<div class="mid"></div>
+<a class="finish" href="WO-15-several.dc.html">Finish</a>
+</header>
+<main class="body">
+<section class="whead">
+<div class="name">Armar <a class="pill" href="WO-08-menu.dc.html" aria-label="Workout options">⋯</a></div>
+<div class="meta">
+<span><span class="ic ic-calendar s16"></span>Mon 9 Nov</span>
+<span class="clock"><span class="ic ic-clock s16 muted"></span>6:40</span>
+<span>0 of 9 sets</span>
+</div>
+</section>
+<section class="focus" aria-label="Next set">
+<p class="now">Now · Curl DB · Set 1 of 3</p>
+<div>
+<div class="fvals"><span class="fv">25</span><span class="fu">lb</span><span class="fx">×</span><span class="fv">12</span><span class="fu">reps</span></div>
+<div class="fmeta"><span>rest 1:30 after</span><span>Previous <b>25 × 12 @2</b></span></div>
+</div>
+<div class="seg compact" role="group" aria-label="RIR">
+<span>0</span><span>1</span><span>2</span><span>3</span><span>4+</span>
+</div>
+<div class="facts">
+<span class="fbtn">Edit</span>
+<span class="fbtn log"><span class="ic ic-check s20"></span>Log set 1</span>
+</div>
+</section>
+<section aria-label="Curl DB">
+<div class="exh">
+<div class="top">
+<span class="nm">Curl DB</span>
+<span class="pill" aria-label="Exercise options">⋯</span>
+<span class="fold" aria-label="Fold Curl DB"><span class="ic ic-up s14"></span></span>
+</div>
+</div>
+<div class="cols"><span class="c-set">Set</span><span class="c-prev">Previous</span><span class="c-w">lb</span><span class="c-r">Reps</span><span class="c-ok">✓</span></div>
+<div class="srow next">
+<span class="badge">1</span>
+<span class="sprev">25 × 12 @2</span>
+<span class="cell w">25</span><span class="cell r">12</span>
+<span class="ok"><span class="ic ic-check s18"></span></span>
+</div>
+</section>
+</main>
+<div class="scrim"></div>
+<div class="sheet glass thick" role="dialog" aria-label="Curl DB settings">
+<span class="grabber"></span>
+<div class="sheet-head"><span></span><h2>Curl DB</h2><a class="navtext b" href="WO-04-lb.dc.html">Done</a></div>
+<div class="list">
+<span class="row"><span>Step</span><span class="val teal">5 lb<span class="ic ic-updown s16"></span></span></span>
+<div class="row"><span>Unit</span><span class="seg" style="width: 132px"><span>kg</span><span class="on">lb</span></span></div>
+</div>
+<p class="cap" style="padding: 0 16px">Saved for Curl DB in every workout and template.</p>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Plan · no templates</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<main class="body">
+<header class="lt"><h1>Plan</h1><span class="hstack"><a class="ibtn" href="PL-02-plan.dc.html" aria-label="Week options"><span class="ic ic-more s22"></span></a><a class="ibtn" href="PL-05-new.dc.html" aria-label="New template"><span class="ic ic-plus s22"></span></a></span></header><section class="card wk" aria-label="This week"><div class="between" style="margin-bottom: 4px"><span style="display: grid"><b style="font: var(--type-title-small)">No programme</b><small class="cap">On calendar weeks</small></span><a class="btn small" href="PL-12-empty.dc.html">Create programme</a></div><div class="wkhead"><button type="button" class="ibtn plain" aria-label="Previous week"><span class="ic ic-chev-l s20"></span></button><span><b>Week 46</b><small>9–15 Nov</small></span><button type="button" class="ibtn plain" aria-label="Next week"><span class="ic ic-chev-r s20"></span></button></div><div class="wkdays"><button type="button" class="wkday today sel" aria-label="Monday 9, nothing planned, today" aria-pressed="true">M<b>9</b><span class="pl">–</span></button><button type="button" class="wkday" aria-label="Tuesday 10, nothing planned">T<b>10</b><span class="pl" style="color: var(--color-on-surface-variant)">–</span></button><button type="button" class="wkday" aria-label="Wednesday 11, nothing planned">W<b>11</b><span class="pl" style="color: var(--color-on-surface-variant)">–</span></button><button type="button" class="wkday" aria-label="Thursday 12, nothing planned">T<b>12</b><span class="pl" style="color: var(--color-on-surface-variant)">–</span></button><button type="button" class="wkday" aria-label="Friday 13, nothing planned">F<b>13</b><span class="pl" style="color: var(--color-on-surface-variant)">–</span></button><button type="button" class="wkday" aria-label="Saturday 14, nothing planned">S<b>14</b><span class="pl" style="color: var(--color-on-surface-variant)">–</span></button><button type="button" class="wkday" aria-label="Sunday 15, nothing planned">S<b>15</b><span class="pl" style="color: var(--color-on-surface-variant)">–</span></button></div></section>
+<h2 class="sec-h"><span>Templates</span></h2><section class="card" aria-label="Templates" style="justify-items: center; text-align: center; padding: 24px 20px; gap: 8px"><span class="ic ic-lift s32 muted"></span><h2 style="font: var(--type-title-medium)">No templates yet</h2><p class="meta" style="max-width: 30ch">A template holds the exercises you train. Make one, or start empty and save it when you finish.</p><a class="btn filled" href="PL-05-new.dc.html" style="margin-top: 8px">Create template</a><a class="btn" href="WO-01-none.dc.html" style="margin-top: 0">Start empty workout</a></section><div class="list">
+<a class="row lead" href="EX-01.dc.html"><span class="lic"><span class="ic ic-list s18"></span></span><span>Exercise library<small>553 exercises</small></span><span class="chev"><span class="ic ic-chev-r s16"></span></span></a>
+<div class="row lead dis" aria-disabled="true"><span class="lic"><span class="ic ic-download s18"></span></span><span>Import from Strong<small>Comes with import</small></span><span></span></div>
+</div>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html" aria-current="page"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

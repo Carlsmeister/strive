@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Push A · all sets logged</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="wtb">
+<div class="l">
+<a class="ibtn plain" href="SH-02-inprog.dc.html" aria-label="Minimise workout"><span class="ic ic-down s22"></span></a>
+<a class="ibtn" href="WO-07-menu.dc.html" aria-label="Free rest"><span class="ic ic-timer s20"></span></a>
+</div>
+<div class="mid"></div>
+<a class="finish all" href="WO-21-records.dc.html">Finish</a>
+</header>
+<main class="body">
+<section class="whead">
+<div class="name">Push A <a class="pill" href="WO-08-menu.dc.html" aria-label="Workout options">⋯</a></div>
+<div class="meta">
+<span><span class="ic ic-calendar s16"></span>Mon 9 Nov</span>
+<span class="clock"><span class="ic ic-clock s16 muted"></span>1:02:10</span>
+<span>14 of 14 sets</span>
+</div>
+</section>
+<section class="ov" style="flex: none" aria-label="Exercises">
+<div class="ovrow">
+<div class="grow"><div class="nm">Bench Press BB</div><div class="dots"><i class="w"></i><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
+<span class="cnt all">4/4 <span class="ic ic-check s14"></span></span><span class="exp"><span class="ic ic-down s14"></span></span>
+</div>
+<div class="ovrow">
+<div class="grow"><div class="nm"><span class="tagl">A</span>Incline Press DB</div><div class="dots"><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
+<span class="cnt all">3/3 <span class="ic ic-check s14"></span></span><span class="exp"><span class="ic ic-down s14"></span></span>
+</div>
+<div class="ovrow">
+<div class="grow"><div class="nm"><span class="tagl">B</span>Lateral Raise DB</div><div class="dots"><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
+<span class="cnt all">3/3 <span class="ic ic-check s14"></span></span><span class="exp"><span class="ic ic-down s14"></span></span>
+</div>
+<div class="ovrow">
+<div class="grow"><div class="nm">Tricep Dips</div><div class="dots"><i class="on"></i><i class="f"></i></div></div>
+<span class="cnt all">2/2 <span class="ic ic-check s14"></span></span><span class="exp"><span class="ic ic-down s14"></span></span>
+</div>
+<div class="ovrow">
+<div class="grow"><div class="nm">Tricep Pushdown</div><div class="dots"><i class="on"></i><i class="on"></i><i class="d"></i></div></div>
+<span class="cnt all">3/3 <span class="ic ic-check s14"></span></span><span class="exp"><span class="ic ic-down s14"></span></span>
+</div>
+</section>
+<div class="vstack" style="padding-top: 12px">
+<a class="addbig" href="EX-03-none.dc.html"><span class="plus">+</span>Add exercises</a>
+<a class="discard" href="WO-16-discard.dc.html">Discard workout</a>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

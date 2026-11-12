@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Progress · first use</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div><header class="nav"><div class="l"><a class="back" href="EL-01-first.dc.html"><span class="ic ic-chev-l s22"></span>You</a></div><h1>Progress</h1><div class="r"></div></header><main class="body"><div class="vstack" style="gap: 16px; flex: none"><div class="segc" role="group" aria-label="Show"><span class="on" aria-pressed="true">Strength</span><a href="EL-03-empty.dc.html">Running</a></div><div class="empty card"><span class="ic ic-chart"></span><h3>No workouts yet</h3><p>Your total, your main lifts and your weekly volume start with your first workout.</p>
+<a class="btn filled" href="SH-03-today.dc.html">Start a workout</a></div><div class="segc dis" role="group" aria-label="Period"><span class="on">8 wk</span><span>6 mo</span><span>1 yr</span></div><section class="chart"><div class="head"><span>Lifted since you started</span></div><div class="nodata" style="min-height: 96px">0 t so far</div></section><section class="chart"><div class="head"><span>Volume per week</span></div><div class="nodata" style="min-height: 132px">Bars for each week show here</div></section><section class="chart"><div class="head"><span>Working sets per muscle</span></div><div class="nodata" style="min-height: 96px">Sets per muscle show here, against a 10–20 band</div></section></div></main><nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

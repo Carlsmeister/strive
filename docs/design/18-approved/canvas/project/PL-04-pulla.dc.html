@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pull A preview</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav"><span class="l"><a class="ibtn" href="PL-01-week.dc.html" aria-label="Close"><span class="ic ic-x s18"></span></a></span><span></span><span class="r"><span class="navtext" role="button">Edit</span><button type="button" class="pill" aria-label="Options for Pull A">⋯</button></span></header>
+<main class="body" style="padding-bottom: 120px">
+<header style="display: grid; gap: 2px"><h1 style="font: var(--type-headline-large)">Pull A</h1><p class="meta" style="font: var(--type-body-medium); color: var(--color-on-surface-variant)">Back · biceps</p></header><div class="stats three"><div class="stat"><span class="k">Exercises</span><span class="v">4</span></div><div class="stat"><span class="k">Sets</span><span class="v">13</span></div><div class="stat"><span class="k">Minutes</span><span class="v">35</span></div></div><section class="vstack" aria-label="Exercises"><h2 class="sec-h"><span>Exercises</span><span style="font-weight: 400">Last done Thu 5 Nov</span></h2><div class="pvrow"><span class="ord">1</span><span><b>Deadlift BB</b><small>1 warm-up + 3 × 5 @ 2</small></span><button type="button" class="ibtn plain teal" aria-label="About Deadlift BB"><span class="ic ic-info s20"></span></button></div><div class="pvrow"><span class="ord">2</span><span><b>Lat Pulldown Cable</b><small>3 × 8–10 @ 2</small></span><button type="button" class="ibtn plain teal" aria-label="About Lat Pulldown Cable"><span class="ic ic-info s20"></span></button></div><div class="pvrow"><span class="ord">3</span><span><b>Seated Row Cable</b><small>3 × 10–12 @ 2</small></span><button type="button" class="ibtn plain teal" aria-label="About Seated Row Cable"><span class="ic ic-info s20"></span></button></div><div class="pvrow"><span class="ord">4</span><span><b>Curl DB</b><small>3 × 10–12 @ 1–2</small></span><button type="button" class="ibtn plain teal" aria-label="About Curl DB"><span class="ic ic-info s20"></span></button></div></section>
+</main>
+<div style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; padding: 12px 16px 34px; background: var(--material-thick); -webkit-backdrop-filter: blur(var(--material-blur)); backdrop-filter: blur(var(--material-blur)); border-top: var(--border-hairline) solid var(--material-edge)"><a class="btn filled" href="WO-02-pulla.dc.html">Start workout</a></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

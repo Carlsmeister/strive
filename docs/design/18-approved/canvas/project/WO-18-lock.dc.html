@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rest over, locked</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen lock" data-theme="{{mode}}">
+<div class="safe"></div>
+<p class="lockdate" style="margin-top: 12px">Monday 9 November</p>
+<p class="lockclock">17:28</p>
+<div style="flex: 1"></div>
+<div class="vstack" style="padding: 0 10px 64px; gap: 8px">
+<a class="notif glass" href="WO-02-s2.dc.html" aria-label="Strive: Rest is over"><span class="appicon" style="width: 38px; height: 38px; border-radius: 9px" aria-hidden="true"><span class="ic ic-lift s22"></span></span><span><small>Strive</small><b>Rest is over</b><p>Bench Press BB · set 2 of 3 next</p></span><small>now</small></a>
+</div>
+<span style="position: absolute; left: 50%; bottom: 8px; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: rgb(255 255 255 / .85)"></span>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>
