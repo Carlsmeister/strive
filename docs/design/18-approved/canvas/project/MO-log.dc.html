@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Motion · logging a set</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive" data-theme="{{mode}}" style="width: 1280px; height: 800px; box-sizing: border-box; padding: 36px 48px; background: var(--color-background); color: var(--color-on-surface); display: flex; flex-direction: column; gap: 22px">
+<header style="display: flex; justify-content: space-between; align-items: baseline">
+<h1 style="font: 700 34px/41px var(--font-family)">Logging a set</h1>
+<p class="muted" style="font: var(--type-body-medium)">Set 2 of Bench Press BB. Times from the tap, in ms. A record adds MO-record on top.</p>
+</header>
+
+<section style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px" aria-label="Key frames">
+<figure style="margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-content: start">
+<figcaption class="cap">0 ms · the tap: ✓ presses to .96</figcaption>
+<div style="padding: 10px 18px 12px; background: var(--color-background); border: 1px solid var(--color-outline-variant); border-radius: 16px">
+<p class="muted" style="font: var(--type-body-medium); padding-bottom: 6px">1 of 14 sets</p>
+<div class="srow next"><span class="badge">2</span><span class="cell w">82.5</span><span class="cell r">8</span><span class="ok" style="transform: scale(.96); opacity: .8"><span class="ic ic-check s18"></span></span></div>
+<div class="srow"><span class="badge">3</span><span class="cell w">80</span><span class="cell r">7</span><span class="ok"><span class="ic ic-check s18"></span></span></div>
+</div>
+</figure>
+<figure style="margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-content: start">
+<figcaption class="cap">~100 ms · ✓ fills, pops to 1.14 (win), light haptic; the row's edge flashes lime; the count rolls</figcaption>
+<div style="padding: 10px 18px 12px; background: var(--color-background); border: 1px solid var(--color-outline-variant); border-radius: 16px">
+<p class="muted" style="font: var(--type-body-medium); padding-bottom: 6px"><span style="display: inline-block; height: 20px; overflow: hidden; vertical-align: bottom"><span style="display: block; transform: translateY(-13px)"><span style="display: block; opacity: .5">1</span><span style="display: block">2</span></span></span> of 14 sets</p>
+<div class="srow done m-lime" style="box-shadow: inset 0 0 0 2px var(--m)"><span class="badge">2</span><span class="cell w">82.5</span><span class="cell r">8<small>@2</small></span><span class="ok" style="transform: scale(1.14)"><span class="ic ic-check s18"></span></span></div>
+<div class="srow"><span class="badge">3</span><span class="cell w">80</span><span class="cell r">7</span><span class="ok"><span class="ic ic-check s18"></span></span></div>
+</div>
+</figure>
+<figure style="margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-content: start">
+<figcaption class="cap">~450 ms · the tint has moved to set 3 (calm); the edge has faded</figcaption>
+<div style="padding: 10px 18px 12px; background: var(--color-background); border: 1px solid var(--color-outline-variant); border-radius: 16px">
+<p class="muted" style="font: var(--type-body-medium); padding-bottom: 6px">2 of 14 sets</p>
+<div class="srow done"><span class="badge">2</span><span class="cell w">82.5</span><span class="cell r">8<small>@2</small></span><span class="ok"><span class="ic ic-check s18"></span></span></div>
+<div class="srow next"><span class="badge">3</span><span class="cell w">80</span><span class="cell r">7</span><span class="ok"><span class="ic ic-check s18"></span></span></div>
+</div>
+</figure>
+<figure style="margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-content: start">
+<figcaption class="cap">~500 ms · the rest card has risen (calm); the ring ticks each second</figcaption>
+<div class="glass thick" style="border-radius: 16px; padding: 14px; display: flex; align-items: center; gap: 14px">
+<div class="ring" style="width: 48px; height: 48px"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="track" cx="32" cy="32" r="23.5" stroke-width="6.4"></circle><circle class="prog" cx="32" cy="32" r="23.5" stroke-width="6.4" stroke-dasharray="147.65" stroke-dashoffset="1.2"></circle></svg></div>
+<div><div class="cap" style="font-weight: 600">Rest</div><div style="font: var(--type-display-small)">1:59</div></div>
+</div>
+</figure>
+</section>
+
+<section aria-label="Timeline" style="display: grid; gap: 6px">
+<div style="display: grid; grid-template-columns: 280px 1fr; align-items: end">
+<span class="cap"><span class="m-lime" style="display: inline-block; width: 18px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 2px var(--m); vertical-align: middle"></span> win spring <span style="display: inline-block; width: 18px; height: 10px; border-radius: 3px; background: var(--color-outline-variant); vertical-align: middle; margin-left: 10px"></span> calm or fade</span>
+<div style="position: relative; height: 16px; font: var(--type-label-small); color: var(--color-on-surface-variant)">
+<span style="position: absolute; left: 0">0</span><span style="position: absolute; left: 20%">200</span><span style="position: absolute; left: 40%">400</span><span style="position: absolute; left: 60%">600</span><span style="position: absolute; left: 80%">800</span><span style="position: absolute; right: 0">1000 ms</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: 280px 1fr; align-items: center; gap: 5px 0">
+<span class="title-small">✓ presses</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 0; width: 10%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-outline)"></i><span class="cap" style="position: absolute; left: 11%; top: 4px">press 100 · ease-out · to .96</span></div>
+<span class="title-small">✓ fills teal, pops 1 → 1.14 → 1</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i class="m-lime" style="position: absolute; left: 10%; width: 43%; top: 4px; bottom: 4px; border-radius: 4px; box-shadow: inset 0 0 0 2px var(--m)"></i><span class="cap" style="position: absolute; left: 54%; top: 4px">win spring, settled ~430 · light haptic at 100</span></div>
+<span class="title-small">Row edge flashes lime 2 px, fades</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 10%; width: 40%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-outline-variant)"></i><span class="cap" style="position: absolute; left: 51%; top: 4px">on at 100, fade 400</span></div>
+<span class="title-small">"1 of 14 sets" rolls to "2 of 14"</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i class="m-lime" style="position: absolute; left: 10%; width: 43%; top: 4px; bottom: 4px; border-radius: 4px; box-shadow: inset 0 0 0 2px var(--m)"></i><span class="cap" style="position: absolute; left: 54%; top: 4px">the digit slides up · win spring</span></div>
+<span class="title-small">Next-row tint moves to set 3</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 10%; width: 35%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-outline-variant)"></i><span class="cap" style="position: absolute; left: 46%; top: 4px">calm spring 350 · the focus card's values cross-fade 250</span></div>
+<span class="title-small">Rest card rises 16 pt, fades in</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 15%; width: 35%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-outline-variant)"></i><span class="cap" style="position: absolute; left: 51%; top: 4px">calm spring 350, starts at 150</span></div>
+<span class="title-small">Ring drains</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 50%; right: 0; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-tertiary); opacity: .6"></i><span class="cap" style="position: absolute; left: 18%; top: 4px">tick 1 s linear, until 0 →</span></div>
+</div>
+</section>
+
+<section aria-label="Rules" style="display: grid; grid-template-columns: 1.1fr 1.3fr 1fr; gap: 20px; flex: 1; min-height: 0">
+<div class="card" style="gap: 8px; align-content: start">
+<div class="between"><h2 class="title-medium">Live loop</h2><span class="cap">every 2.4 s</span></div>
+<p class="muted" style="font: var(--type-body-medium)"><span class="loop-pop" style="display: inline-block; color: var(--color-on-surface)">2</span> of 14 sets</p>
+<div class="srow done m-lime loop-glow"><span class="badge">2</span><span class="sprev">80 × 8 @3</span><span class="cell w">82.5</span><span class="cell r">8<small>@2</small></span><span class="ok loop-pop"><span class="ic ic-check s18"></span></span></div>
+<div class="srow next"><span class="badge">3</span><span class="sprev">80 × 7 @2</span><span class="cell w">80</span><span class="cell r">7</span><span class="ok"><span class="ic ic-check s18"></span></span></div>
+</div>
+<div class="card" style="gap: 6px; align-content: start">
+<h2 class="title-medium">Springs</h2>
+<p style="font: var(--type-body-small)"><b>Win</b> · Compose <code>spring(dampingRatio = 0.45f, stiffness = 420f)</code>, about 20 % overshoot, settled in about 430 ms. SwiftUI <code>.spring(response: 0.31, dampingFraction: 0.45)</code>. Web fallback only <code>cubic-bezier(0.34, 1.56, 0.64, 1)</code> 520 ms.</p>
+<p style="font: var(--type-body-small)"><b>Calm</b> · everything that is not a win: design 1's <code>spring(dampingRatio = 0.6f, stiffness = 400f)</code>, fallback 350 ms; fades 250 ms.</p>
+<p class="muted" style="font: var(--type-body-small)">Haptics: success on a win, light on a log.</p>
+</div>
+<div class="card" style="gap: 6px; align-content: start">
+<h2 class="title-medium">Reduce Motion</h2>
+<p class="muted" style="font: var(--type-body-small)">Cross-fades and colour changes only, no scale, no travel. The ✓ fills without the press or the pop; the lime edge fades in and out; "2 of 14" replaces "1 of 14" in place; the tint cross-fades to set 3; the rest card fades in where it sits. The light haptic stays.</p>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

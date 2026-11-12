@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Health · system sheet</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"><span class="back"><span class="ic ic-chev-l s22"></span>Devices</span></div>
+<h1>Apple Health</h1>
+<div class="r"></div>
+</header>
+<main class="body">
+<section class="card" style="justify-items: center; text-align: center; gap: 8px; padding: 24px 16px">
+<span class="lic" style="width: 56px; height: 56px; border-radius: 14px; display: grid; place-items: center; background: var(--color-surface-container-high)"><span class="ic ic-heart s28"></span></span>
+<h2 class="title" style="font-weight: 600">Link Apple Health</h2>
+<p class="meta">Your runs and workouts in one place, and the Activity rings count Strive's sessions.</p>
+</section>
+<div class="group"><h4>Strive reads</h4>
+<div class="list">
+<div class="row lead"><span class="lic"><span class="ic ic-run s18"></span></span><span>Workouts</span><span></span></div>
+<div class="row lead"><span class="lic"><span class="ic ic-heart s18"></span></span><span>Heart rate</span><span></span></div>
+</div></div>
+<div class="group"><h4>Strive writes</h4>
+<div class="list">
+<div class="row lead"><span class="lic"><span class="ic ic-lift s18"></span></span><span>Workouts<small>So the Activity rings count them</small></span><span></span></div>
+</div></div>
+<span class="btn filled">Link</span>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+<div class="scrim" aria-hidden="true"></div>
+<div class="sheet full opaque" role="dialog" aria-label="Health Access" style="top: 54px; padding-top: 8px; gap: 16px; overflow: hidden">
+<div class="sheet-head" style="grid-template-columns: 1fr auto 1fr">
+<a class="navtext" href="EL-09-before.dc.html" style="padding-left: 0">Don’t Allow</a>
+<h2>Health Access</h2>
+<a class="navtext b" href="EL-09-linked.dc.html" style="padding-right: 0">Allow</a>
+</div>
+<div style="display: grid; justify-items: center; gap: 10px; text-align: center; padding: 4px 8px 0">
+<span class="appicon" style="width: 60px; height: 60px; border-radius: 14px"><span class="ic ic-lift s32"></span></span>
+<p style="font: var(--type-title-medium)">“Strive” would like to access and update your Health data.</p>
+</div>
+<div class="list"><span class="row" style="color: var(--color-primary)">Turn On All</span></div>
+<div class="group"><h4 style="text-transform: none">Allow “Strive” to write data:</h4>
+<div class="list"><div class="row lead"><span class="lic"><span class="ic ic-run s18"></span></span><span>Workouts</span><span class="switch" role="switch" aria-checked="false" aria-label="Workouts"></span></div></div></div>
+<div class="group"><h4 style="text-transform: none">Allow “Strive” to read data:</h4>
+<div class="list"><div class="row lead"><span class="lic"><span class="ic ic-heart s18"></span></span><span>Heart Rate</span><span class="switch" role="switch" aria-checked="false" aria-label="Heart Rate"></span></div><div class="row lead"><span class="lic"><span class="ic ic-run s18"></span></span><span>Workouts</span><span class="switch" role="switch" aria-checked="false" aria-label="Workouts"></span></div></div>
+<p class="foot">App Explanation: Strive writes its workouts so the Activity rings count them, and reads workouts and heart rate.</p>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

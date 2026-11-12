@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New programme, filled</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<main class="body">
+<header class="lt"><h1>Plan</h1></header>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html" aria-current="page"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html"><span class="ic ic-you"></span>You</a>
+</nav>
+<div class="scrim"></div>
+<div class="sheet full opaque" role="dialog" aria-label="New programme" style="border-top: var(--border-hairline) solid var(--color-outline-variant)">
+<span class="grabber"></span>
+<div class="sheet-head">
+<div><span class="navtext" style="padding-left: 0">Cancel</span></div>
+<h2>New programme</h2>
+<a style="padding-right: 0" class="navtext b" href="PL-01-week.dc.html">Save</a>
+</div>
+<div style="flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; margin: 0 -16px; padding: 0 16px 24px">
+<div class="field" style="flex: none"><span class="in">Hypertrofi, block 1</span></div>
+<div class="group" style="flex: none">
+<h4>Schedule</h4>
+<div class="list">
+<div class="row" aria-haspopup="menu"><span>Start date</span><span class="val">Mon 5 Oct <span class="ic ic-updown s16" aria-hidden="true"></span></span></div>
+<div class="row" aria-haspopup="menu"><span>Length</span><span class="val">8 weeks <span class="ic ic-updown s16" aria-hidden="true"></span></span></div>
+<div class="row" aria-haspopup="menu"><span>Calibration weeks</span><span class="val">2 <span class="ic ic-updown s16" aria-hidden="true"></span></span></div>
+</div>
+<p class="foot">Calibration weeks come first and aim the top sets at RIR 1.</p>
+</div>
+<div class="group" style="flex: none">
+<h4>Standard week</h4>
+<div class="list">
+<span class="row" aria-haspopup="menu"><span>Monday</span><span class="val">Push A <span class="ic ic-updown s16" aria-hidden="true"></span></span></span>
+<span class="row" aria-haspopup="menu"><span>Tuesday</span><span class="val">Ben A <span class="ic ic-updown s16" aria-hidden="true"></span></span></span>
+<span class="row" aria-haspopup="menu"><span>Wednesday</span><span class="val">Rest <span class="ic ic-updown s16" aria-hidden="true"></span></span></span>
+<span class="row" aria-haspopup="menu"><span>Thursday</span><span class="val">Pull A <span class="ic ic-updown s16" aria-hidden="true"></span></span></span>
+<span class="row" aria-haspopup="menu"><span>Friday</span><span class="val">Easy run · 8 km <span class="ic ic-updown s16" aria-hidden="true"></span></span></span>
+<span class="row" aria-haspopup="menu"><span>Saturday</span><span class="val">Push B <span class="ic ic-updown s16" aria-hidden="true"></span></span></span>
+<span class="row" aria-haspopup="menu"><span>Sunday</span><span class="val">Long run · 14 km <span class="ic ic-updown s16" aria-hidden="true"></span></span></span>
+</div>
+<p class="foot">Every week starts as this one. Change a single week later, in Weeks.</p>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

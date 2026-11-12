@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Location · system dialog</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="map" style="position: absolute; inset: 0" aria-label="Map"><img class="only-dark" src="/_blob/5f81896c79487b24b7f6d5ced01a2a9a" alt=""><img class="only-light" src="/_blob/13891c6b0a0ded6ca4836d993f759c2f" alt=""></div>
+<a class="ibtn glass" href="Main.dc.html" style="position: absolute; top: 58px; left: 16px; z-index: 3" aria-label="Close"><span class="ic ic-x s20"></span></a>
+<div class="mapctl glass" style="top: 58px; right: 16px">
+<span class="mapbtn" aria-label="Map type"><span class="ic ic-layers s20"></span></span>
+<span class="mapbtn" aria-label="Centre on me"><span class="ic ic-locate s20"></span></span>
+</div>
+<section class="card" style="position: absolute; left: 12px; right: 12px; bottom: 30px; z-index: 3; gap: 12px; border-radius: var(--shape-extra-large); padding: 16px 16px 16px" aria-label="Run start">
+<div class="between"><span class="gps" style="padding: 0; gap: 8px"><span class="spinner" style="width: 14px; height: 14px"></span>Looking for GPS…</span><span class="cap">Djurgården</span></div>
+<div class="list tiles">
+<div class="row" style="background: var(--color-surface-container-high)"><span><span class="cap">Planned today</span><br>Easy run · 8 km</span><span class="ic ic-run s20 muted"></span></div>
+<div class="row" style="background: var(--color-surface-container-high)"><span><span class="cap">Shoes</span><br>ASICS Novablast 4</span><span class="ic ic-chev-r s16 muted"></span></div>
+</div>
+<span class="btn filled dis">Start run</span>
+</section>
+<div class="scrim" aria-hidden="true"></div>
+<div class="center">
+<div class="sysalert" role="alertdialog" aria-label="Location permission">
+<div class="tx">
+<h2>Allow “Strive” to use your location?</h2>
+<p>Strive records your route with GPS while a run is recording.</p>
+</div>
+<div class="map" style="height: 128px; margin: 0 16px 12px; border-radius: 10px"><img class="only-dark" src="/_blob/5f81896c79487b24b7f6d5ced01a2a9a" alt=""><img class="only-light" src="/_blob/13891c6b0a0ded6ca4836d993f759c2f" alt=""><span class="you" style="left: 50%; top: 50%"></span><span class="maplabel glass" style="left: 8px; top: 8px">Precise: On</span></div>
+<span class="b">Allow Once</span>
+<a class="b" href="RU-01-search.dc.html">Allow While Using App</a>
+<a class="b" href="SH-08-loc-denied.dc.html">Don’t Allow</a>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

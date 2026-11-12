@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Motion · Start bubbles</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive" data-theme="{{mode}}" style="width: 1280px; height: 800px; box-sizing: border-box; padding: 40px 48px; background: var(--color-background); color: var(--color-on-surface); display: flex; flex-direction: column; gap: 28px">
+<header style="display: flex; justify-content: space-between; align-items: baseline">
+<h1 style="font: 700 34px/41px var(--font-family)">Start: four bubbles on a spring</h1>
+<p class="muted" style="font: var(--type-body-medium)">Choice 14c (N4). The screen underneath stays in view; a tap outside closes.</p>
+</header>
+
+<section style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px" aria-label="Key frames">
+<figure style="margin: 0; display: grid; gap: 10px">
+<figcaption class="cap">0 ms · the tap: + presses (.96) and starts to turn</figcaption>
+<div style="position: relative; height: 300px; border-radius: 16px; background: var(--color-surface); overflow: hidden">
+<div class="tabbar glass" style="left: 16px; right: 16px; bottom: 16px"><span class="tab"><span class="ic ic-home"></span>Home</span><span class="tab"><span class="ic ic-food"></span>Food</span><span class="tab start"><span class="dot" style="transform: scale(.96) rotate(10deg)"><span class="ic ic-plus s28"></span></span></span><span class="tab"><span class="ic ic-plan"></span>Plan</span><span class="tab"><span class="ic ic-you"></span>You</span></div>
+</div>
+</figure>
+<figure style="margin: 0; display: grid; gap: 10px">
+<figcaption class="cap">120 ms · the panel grows from Start; bubbles 1–4 are 120, 80, 40, 0 ms into their springs</figcaption>
+<div style="position: relative; height: 300px; border-radius: 16px; background: var(--color-surface); overflow: hidden">
+<div class="bpanel" style="left: 60px; right: 60px; bottom: 56px; height: 150px; transform: scale(.85); transform-origin: 50% 100%"></div>
+<span class="bub main" style="left: 82px; top: 190px; transform: scale(.9)"><span class="ic ic-lift"></span></span>
+<span class="bub" style="left: 130px; top: 150px; transform: scale(.7)"><span class="ic ic-plus"></span></span>
+<span class="bub" style="left: 190px; top: 160px; transform: scale(.45); opacity: .6"><span class="ic ic-list"></span></span>
+<span class="bub" style="left: 230px; top: 200px; transform: scale(.25); opacity: .3"><span class="ic ic-run"></span></span>
+<div class="tabbar glass" style="left: 16px; right: 16px; bottom: 16px"><span class="tab"><span class="ic ic-home"></span>Home</span><span class="tab"><span class="ic ic-food"></span>Food</span><span class="tab start"><span class="dot" style="transform: rotate(30deg)"><span class="ic ic-plus s28"></span></span></span><span class="tab"><span class="ic ic-plan"></span>Plan</span><span class="tab"><span class="ic ic-you"></span>You</span></div>
+</div>
+</figure>
+<figure style="margin: 0; display: grid; gap: 10px">
+<figcaption class="cap">470 ms · settled: × in Start, four bubbles with labels</figcaption>
+<div style="position: relative; height: 300px; border-radius: 16px; background: var(--color-surface); overflow: hidden">
+<div class="bpanel" style="left: 26px; right: 26px; bottom: 50px; height: 190px"></div>
+<span class="bub main" style="left: 70px; top: 150px"><span class="ic ic-lift"></span><span>Push A<small>today</small></span></span>
+<span class="bub" style="left: 140px; top: 96px"><span class="ic ic-plus"></span><span>Empty</span></span>
+<span class="bub" style="left: 230px; top: 96px"><span class="ic ic-list"></span><span>From template</span></span>
+<span class="bub" style="left: 300px; top: 150px"><span class="ic ic-run"></span><span>Run</span></span>
+<div class="tabbar glass" style="left: 16px; right: 16px; bottom: 16px"><span class="tab"><span class="ic ic-home"></span>Home</span><span class="tab"><span class="ic ic-food"></span>Food</span><span class="tab start"><span class="dot" style="transform: rotate(45deg)"><span class="ic ic-plus s28"></span></span></span><span class="tab"><span class="ic ic-plan"></span>Plan</span><span class="tab"><span class="ic ic-you"></span>You</span></div>
+</div>
+</figure>
+</section>
+
+<section aria-label="Timeline" style="display: grid; gap: 8px">
+<div style="display: grid; grid-template-columns: 300px 1fr">
+<span></span>
+<div style="position: relative; height: 18px; font: var(--type-label-small); color: var(--color-on-surface-variant)"><span style="position: absolute; left: 0">0</span><span style="position: absolute; left: 20%">100</span><span style="position: absolute; left: 40%">200</span><span style="position: absolute; left: 60%">300</span><span style="position: absolute; left: 80%">400</span><span style="position: absolute; right: 0">500 ms</span></div>
+</div>
+<div style="display: grid; grid-template-columns: 300px 1fr; align-items: center; gap: 8px 0">
+<span class="title-small">+ turns 45° to ×</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 0; width: 70%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-primary)"></i></div>
+<span class="title-small">Panel scales from .6, fades in</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 0; width: 70%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-outline)"></i></div>
+<span class="title-small">Bubble 1 · today (from Start's centre)</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 0; width: 70%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-primary)"></i></div>
+<span class="title-small">Bubble 2 · Empty workout</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 8%; width: 70%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-primary)"></i></div>
+<span class="title-small">Bubble 3 · From template</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 16%; width: 70%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-primary)"></i></div>
+<span class="title-small">Bubble 4 · Run</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 24%; width: 70%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-primary)"></i></div>
+</div>
+<p class="muted" style="font: var(--type-body-small); padding-left: 300px">Each bubble: translate from Start's centre + scale .2 → 1 on the release spring (350, cubic-bezier(.3, 1.4, .5, 1)), 40 ms apart (motion-stagger); its label fades with it. Closing: everything returns to Start together in 250 ms, no stagger. Reduce Motion: the panel and bubbles fade in place.</p>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

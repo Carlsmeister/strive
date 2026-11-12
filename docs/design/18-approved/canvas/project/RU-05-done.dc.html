@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Run summary, just finished</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<a class="map" style="position:absolute;top:0;left:0;right:0;height:360px" href="RU-07-std.dc.html" aria-label="Open the map"><img class="only-dark" src="/_blob/5f81896c79487b24b7f6d5ced01a2a9a" alt="" style="object-position:50% 43%"><img class="only-light" src="/_blob/13891c6b0a0ded6ca4836d993f759c2f" alt="" style="object-position:50% 43%"><img src="/_blob/49cb24d17f0497975f2b8a64713d9ee8" alt="Route" style="object-position:50% 43%"></a>
+
+<a class="btn small filled" href="Main.dc.html" style="position:absolute;top:62px;right:16px;z-index:3;min-height:44px">Done</a>
+<div class="mapctl glass" style="top:278px;right:16px;border-radius:999px"><a class="mapbtn" style="border-radius:999px" href="RU-08-play.dc.html" aria-label="Play flyover"><span class="ic ic-play-f s20"></span></a></div>
+<main class="body" style="position:absolute;top:332px;left:0;right:0;bottom:0;z-index:2;background:var(--color-background);border-radius:28px 28px 0 0;padding:8px 16px 40px;display:grid;align-content:start;grid-auto-rows:max-content">
+<span aria-hidden="true" style="align-self:center;justify-self:center;width:36px;height:5px;border-radius:999px;background:var(--color-outline);flex:none"></span>
+<section style="display:grid;gap:4px">
+<h1 style="font:700 28px/34px var(--font-family);display:flex;align-items:center;gap:8px"><span class="ic ic-check s24 m-lime m-ic" role="img" aria-label="Done"></span>Morning Run</h1>
+<p style="font:var(--type-body-medium);color:var(--color-on-surface-variant)">Friday 6 November · 07:15 · Djurgården, Stockholm</p>
+</section>
+<div class="grid2"><div><small>Distance</small><b>8.04 <small>km</small></b></div><div><small>Avg pace</small><b>5:46 <small>/km</small></b></div><div><small>Moving time</small><b>46:20</b></div><div><small>Calories</small><b>540 <small>kcal</small></b></div><div><small>Avg heart rate</small><b>146 <small>bpm</small></b></div><div><small>Max heart rate</small><b>163 <small>bpm</small></b></div></div>
+
+<div class="list">
+<div class="row"><span>Device</span><span class="val">iPhone</span></div>
+<div class="row"><span>Shoes</span><span class="val">ASICS Novablast 4<span class="ic ic-chev-r s16"></span></span></div>
+<div class="row"><span>Note</span><span class="val"><span class="teal">Add</span><span class="ic ic-chev-r s16"></span></span></div>
+</div>
+<a class="sec-h" href="RU-06-splits.dc.html" style="min-height:44px;align-items:center"><span>Strong finish. Km 8 was the fastest.</span><span class="teal" style="font-weight:400">8 km<span class="ic ic-down s16"></span></span></a>
+</main>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

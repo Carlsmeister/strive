@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gear · add</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div><header class="nav"><div class="l"><span class="back"><span class="ic ic-chev-l s22"></span>You</span></div><h1>Gear</h1><div class="r"><a class="ibtn plain teal" href="EL-11-new.dc.html" aria-label="Add gear"><span class="ic ic-plus"></span></a></div></header><main class="body"><div class="vstack" style="gap: 16px; flex: none"><section class="group"><h4><span>Shoes</span></h4><div class="list"><a class="row lead" href="EL-11.dc.html"><span class="lic"><span class="ic ic-shoe s18"></span></span><span>ASICS Novablast 4<small>Default for runs</small></span><span class="val"><span style="color: var(--color-on-surface)">412 km</span><span class="ic ic-chev-r s16 chev"></span></span></a><a class="row lead" href="EL-11.dc.html"><span class="lic"><span class="ic ic-shoe s18"></span></span><span>Nike Pegasus 41<small><span class="amber"><span class="ic ic-warn s14"></span> Past 700 km</span> · Nike · Pegasus 41</small></span><span class="val"><span style="color: var(--color-on-surface)">712 km</span><span class="ic ic-chev-r s16 chev"></span></span></a></div></section><section class="group"><h4><span>Bikes</span></h4><div class="list"><span class="row lead"><span class="lic"><span class="ic ic-bike s18"></span></span><span>Bianchi Via Nirone 7<small>Starting distance</small></span><span class="val"><span style="color: var(--color-on-surface)">2 140 km</span><span class="ic ic-chev-r s16 chev"></span></span></span></div><p class="foot">Rides add to a bike once rides come.</p></section><div class="list"><a class="row lead" href="EL-10-retired.dc.html"><span class="lic"><span class="ic ic-archive s18"></span></span><span>Retired</span><span class="val">1<span class="ic ic-chev-r s16 chev"></span></span></a></div></div></main><nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav><a class="scrim" href="EL-10.dc.html" aria-label="Close"></a>
+<div class="sheet full opaque" role="dialog" aria-label="New gear" style="padding-bottom: 0">
+<div class="grabber"></div>
+<div class="sheet-head"><a class="navtext" href="EL-10.dc.html" style="justify-self: start; padding-left: 0">Cancel</a><h2>New gear</h2><a class="navtext b" href="EL-10.dc.html" style="padding-right: 0">Save</a></div>
+<div class="vstack" style="gap: 16px; overflow: hidden"><div class="list"><span class="row"><span>Type</span><span class="seg" style="width: 160px"><span class="on" style="min-height: 30px">Shoes</span><span style="min-height: 30px">Bike</span></span></span></div><section class="group"><h4><span>Details</span></h4><div class="list"><span class="row"><span>Name</span><span class="val"><span style="color: var(--color-on-surface)">Novablast 4</span></span></span><span class="row"><span>Brand</span><span class="val"><span style="color: var(--color-on-surface)">ASICS</span></span></span><span class="row"><span>Model</span><span class="val"><span style="color: var(--color-on-surface)">Novablast 4</span></span></span></div></section><section class="group"><h4><span>Distance</span></h4><div class="list"><span class="row"><span>Starting distance</span><span class="val"><span style="color: var(--color-on-surface)">0 km</span></span></span><span class="row"><span>Warn at</span><span class="val"><span style="color: var(--color-on-surface)">700 km</span></span></span></div><p class="foot">Shoes that have run before start at their distance so far.</p></section><section class="group"><div class="list"><span class="row"><span>Default for runs</span><span class="switch on" role="switch" aria-checked="true" aria-label="Default for runs"></span></span></div><p class="foot">New runs get these shoes without a tap. You can change them per run.</p></section></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

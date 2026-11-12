@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>1 vs 1+2 · SH-02 · today done</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&amp;display=swap">
+</helmet>
+<div class="strive" data-theme="{{mode}}" style="width: 868px; height: 938px; box-sizing: border-box; padding: 24px; background: var(--color-surface-container-low); color: var(--color-on-surface); display: flex; gap: 40px">
+<figure style="margin: 0; display: grid; gap: 10px; align-content: start; width: 390px"><figcaption class="cap" style="font-weight: 600; height: 36px; line-height: 18px; overflow: hidden">Strive 1 · SH-02 · today done</figcaption><div style="width: 390px; height: 844px; position: relative; overflow: hidden">
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<main class="body">
+<header class="lt"><h1>Home</h1><a class="ibtn plain" href="EL-01.dc.html" aria-label="You"><span class="ic ic-you"></span></a></header>
+<p class="lt-sub">Monday 9 November · week 46</p>
+<section class="card" aria-label="Done today">
+<p class="eyebrow">Done today · Week 6 of 8</p>
+<div class="between"><h2 class="title hstack" style="font-weight: 600; gap: 8px">Push A<span class="ic ic-check s20 muted"></span></h2><span class="prs"><span class="ic ic-star s12"></span>3 records</span></div>
+<p class="meta">17:02–18:06 · 64 min · 15 sets</p>
+<p class="meta">Next: Ben A tomorrow · about 40 min</p>
+<a class="btn" href="WO-24.dc.html">Show workout</a>
+</section>
+
+<section class="vstack" aria-label="This week">
+<h2 class="sec-h"><span>This week</span><a class="teal" href="PL-01-week.dc.html" style="font-weight: 400">Plan</a></h2>
+<div class="stats">
+<div class="stat"><span class="k">Workouts</span><span class="v">1<small>of 4</small></span><span class="sub">Next: Ben A tomorrow</span></div>
+<div class="stat"><span class="k">Running</span><span class="v">0<small>of 22 km</small></span><span class="sub">Easy run Friday</span></div>
+</div>
+<p class="cap" style="padding: 0 4px">Last week: 4 workouts and 22.3 km, every planned session done.</p>
+</section>
+
+<section class="vstack" aria-label="Latest activity">
+<h2 class="sec-h"><span>Latest</span><a class="teal" href="WO-26-all.dc.html" style="font-weight: 400">All activities</a></h2>
+<div class="list">
+<a class="drow" href="WO-24.dc.html">
+<span class="dnum"><b>9</b>Mon</span>
+<span class="kind"><span class="ic ic-lift s20"></span></span>
+<span><b>Push A</b><small>17:02 · 64 min · 15 sets · 4 142 kg</small></span>
+<span class="end"><span class="prs"><span class="ic ic-star s12"></span>3</span><span class="ic ic-chev-r s16"></span></span>
+</a>
+</div>
+</section>
+
+<section class="card off" aria-label="Food">
+<div class="between"><span class="title" style="font-size: 17px; font-weight: 600">Food today</span><span class="cap">comes with nutrition</span></div>
+<p class="meta">Calories and protein against a daily target.</p>
+<span class="btn mid dis" style="margin-top: 8px">Set a target</span>
+</section>
+</main>
+
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html" aria-current="page"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</div></figure>
+<figure style="margin: 0; display: grid; gap: 10px; align-content: start; width: 390px"><figcaption class="cap" style="height: 36px; line-height: 18px; overflow: hidden" title="lime edge and ✓ on the done card, records count in sun, &quot;Done. Big day.&quot;"><b>Strive 1+2</b> · lime edge and ✓ on the done card, records count in sun, &quot;Done. Big day.&quot;</figcaption><dc-import name="SH-02-done" mode="{{mode}}" hint-size="390px,844px"></dc-import></figure>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":868,"height":938}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

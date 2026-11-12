@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Library · searching row</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"><a class="back" href="PL-01-week.dc.html"><span class="ic ic-chev-l s22"></span>Plan</a></div>
+<h1></h1>
+<div class="r"><a class="ibtn plain teal" href="EX-01-sort.dc.html" aria-label="Sort"><span class="ic ic-more"></span></a><a class="ibtn plain teal" href="EX-09-empty.dc.html" aria-label="New exercise"><span class="ic ic-plus"></span></a></div>
+</header>
+<main class="body">
+<header class="lt"><h1>Library</h1></header>
+<div class="srch"><div class="field" style="border-color: var(--color-primary)"><span class="ic ic-search s20"></span><span class="in">row<span class="caret"></span></span><a class="ibtn plain sm" href="EX-01.dc.html" aria-label="Clear the search"><span class="ic ic-clear s20"></span></a></div><a class="ibtn" href="EX-02-none.dc.html" aria-label="Filter"><span class="ic ic-sliders s20"></span></a></div>
+<div class="chips" style="flex: none" aria-label="Movement patterns"><span class="chip">Horizontal press</span><span class="chip">Vertical press</span><span class="chip">Horizontal pull</span><span class="chip">Vertical pull</span><span class="chip">Knee dominant</span><span class="chip">Hip dominant</span><span class="chip">Core</span><span class="chip">Arms</span><span class="chip">Calves</span><span class="chip">Explosive and carries</span><span class="chip">Kettlebell</span><span class="chip">Mobility</span><span class="chip">Conditioning</span></div>
+<p class="cap" style="padding: 0 4px; margin-top: -8px">7 exercises match, names and aliases</p>
+<div><h3 class="lhead">Back</h3><div class="list">
+<span class="lrow"><span class="thumb"><span class="ic ic-muscle s28"></span></span><span><b>Australian Pull Up</b><small>Horizontal pull · Bodyweight · also Inverted Row</small></span><span class="end"></span></span>
+<span class="lrow"><span class="thumb"><span class="ic ic-muscle s28"></span></span><span><b>Bent Over Row BB</b><small>Horizontal pull · Barbell</small></span><span class="end"></span></span>
+<span class="lrow"><span class="thumb"><span class="ic ic-muscle s28"></span></span><span><b>Chest Supported Row DB</b><small>Horizontal pull · Dumbbells</small></span><span class="end"></span></span>
+<a class="lrow" href="EX-05-noillo.dc.html"><span class="thumb"><span class="ic ic-muscle s28"></span></span><span><b>Seated Row Cable</b><small>Horizontal pull · Cable</small></span><span class="end">55 × 12<span class="mark swap">Swap</span></span></a>
+<span class="lrow"><span class="thumb"><span class="ic ic-muscle s28"></span></span><span><b>Single Row DB</b><small>Horizontal pull · Dumbbells</small></span><span class="end"></span></span>
+<span class="lrow"><span class="thumb"><span class="ic ic-muscle s28"></span></span><span><b>T-Bar Row Machine</b><small>Horizontal pull · Machine</small></span><span class="end"></span></span>
+</div></div>
+<div><h3 class="lhead">Shoulders</h3><div class="list">
+<span class="lrow"><span class="thumb"><span class="ic ic-muscle s28"></span></span><span><b>Upright Row BB</b><small>Vertical pull · Barbell</small></span><span class="end"></span></span>
+</div></div>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html" aria-current="page"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

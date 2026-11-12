@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Delete template alert</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav glassed">
+<div class="l"><span class="navtext">Cancel</span></div>
+<h1>Edit template</h1>
+<div class="r"><span class="navtext b">Done</span></div>
+</header>
+<main class="body" style="padding-bottom: 48px; justify-content: flex-end">
+<section aria-label="Tricep Dips">
+<div class="exh">
+<div class="top">
+<span class="nm" style="display: flex; align-items: center; gap: 8px">Tricep Dips</span>
+<span class="pill" role="button" aria-label="Options for Tricep Dips">⋯</span>
+<span class="ibtn plain sm muted" role="button" aria-label="Reorder Tricep Dips"><span class="ic ic-grip s20"></span></span>
+</div>
+</div>
+<div class="egrid h"><span>Set</span><span>Previous</span><span>Reps</span><span>RIR</span></div>
+<div class="egrid" style="min-height: 38px"><span class="badge" aria-label="Set type">1</span><span class="sprev">+10 × 9 @2</span><span class="cell" aria-label="Reps for set 1">8–12</span><span class="cell" aria-label="RIR for set 1">2</span></div>
+<span class="restl tight">Rest 1:30</span>
+<div class="egrid" style="min-height: 38px"><span class="badge f" aria-label="Set type">2</span><span class="sprev">+10 × 8 @0</span><span class="cell" aria-label="Reps for set 2">8–12</span><span class="cell" aria-label="RIR for set 2">0</span></div>
+<span class="addset"><span class="plus">+</span>Add set (1:30)</span>
+<div class="list" style="margin-top: 8px"><div class="row"><span>Progression</span><span class="switch on" role="switch" aria-checked="true" aria-label="Progression"></span></div></div>
+</section>
+<section aria-label="Tricep Pushdown">
+<div class="exh">
+<div class="top">
+<span class="nm" style="display: flex; align-items: center; gap: 8px">Tricep Pushdown</span>
+<span class="pill" role="button" aria-label="Options for Tricep Pushdown">⋯</span>
+<span class="ibtn plain sm muted" role="button" aria-label="Reorder Tricep Pushdown"><span class="ic ic-grip s20"></span></span>
+</div>
+</div>
+<div class="egrid h"><span>Set</span><span>Previous</span><span>Reps</span><span>RIR</span></div>
+<div class="egrid" style="min-height: 38px"><span class="badge" aria-label="Set type">1</span><span class="sprev">30 × 11 @2</span><span class="cell" aria-label="Reps for set 1">10–12</span><span class="cell" aria-label="RIR for set 1">2</span></div>
+<span class="restl tight">Rest 1:30</span>
+<div class="egrid" style="min-height: 38px"><span class="badge" aria-label="Set type">2</span><span class="sprev">30 × 10 @1</span><span class="cell" aria-label="Reps for set 2">10–12</span><span class="cell" aria-label="RIR for set 2">2</span></div>
+<span class="restl tight">Rest 1:30</span>
+<div class="egrid" style="min-height: 38px"><span class="badge d" aria-label="Set type">D</span><span class="sprev">20 × 12</span><span class="cell" aria-label="Reps for set D">10–12</span><span class="cell" aria-label="RIR for set D">0</span></div>
+<span class="addset"><span class="plus">+</span>Add set (1:30)</span>
+<div class="list" style="margin-top: 8px"><div class="row"><span>Progression</span><span class="switch on" role="switch" aria-checked="true" aria-label="Progression"></span></div></div>
+</section>
+<div class="vstack" style="padding-top: 8px">
+<span class="addbig"><span class="plus">+</span>Add exercises</span>
+<p class="cap" style="text-align: center">5 exercises · 15 sets · about 30 min</p>
+<span class="discard">Delete template</span>
+</div>
+</main>
+<div class="scrim"></div>
+<div class="center">
+<div class="alert" role="alertdialog" aria-label="Delete Push A?">
+<h2>Delete Push A?</h2>
+<p>Your history keeps every workout done from it.</p>
+<div class="acts"><a class="btn" href="PL-05-edit.dc.html">Cancel</a><span class="btn danger">Delete</span></div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

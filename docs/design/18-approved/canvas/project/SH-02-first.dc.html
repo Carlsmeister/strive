@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home · first use</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<main class="body">
+<header class="lt"><h1>Home</h1><a class="ibtn plain" href="EL-01.dc.html" aria-label="You"><span class="ic ic-you"></span></a></header>
+<p class="lt-sub">Monday 9 November · week 46</p>
+<section class="card" aria-label="Welcome">
+<p class="eyebrow">Get started</p>
+<h2 class="title" style="font-weight: 600">Welcome, Carl.</h2>
+<p class="meta">Page one is blank. Make a template, or start empty and add exercises as you go.</p>
+<a class="btn filled" href="PL-05-new.dc.html">Create template</a>
+<a class="btn" href="WO-01-none.dc.html" style="margin-top: 0">Start empty workout</a>
+</section>
+
+<section class="vstack" aria-label="This week">
+<h2 class="sec-h"><span>This week</span><a class="teal" href="PL-01-week.dc.html" style="font-weight: 400">Plan</a></h2>
+<div class="stats">
+<div class="stat"><span class="k">Workouts</span><span class="v none">0</span><span class="sub">No workouts yet</span></div>
+<div class="stat"><span class="k">Running</span><span class="v none">0<small>km</small></span><span class="sub">No runs yet</span></div>
+</div>
+</section>
+
+<section class="vstack" aria-label="Latest activity">
+<h2 class="sec-h"><span>Latest</span></h2>
+<p class="cap" style="padding: 0 4px; font-size: 15px; line-height: 20px">Log a workout to see your history.</p>
+</section>
+
+<section class="card off" aria-label="Food">
+<div class="between"><span class="title" style="font-size: 17px; font-weight: 600">Food today</span><span class="cap">comes with nutrition</span></div>
+<p class="meta">Calories and protein against a daily target.</p>
+<span class="btn mid dis" style="margin-top: 8px">Set a target</span>
+</section>
+</main>
+
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html" aria-current="page"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-first.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

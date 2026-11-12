@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sync, server paused</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"><a class="back" href="EL-01.dc.html"><span class="ic ic-chev-l s20"></span>You</a></div>
+<h1></h1>
+<div class="r"></div>
+</header>
+<main class="body">
+<header class="lt"><h1>Backup and sync</h1></header>
+
+<section class="card" aria-label="Status">
+<div class="hstack" style="gap: 12px"><span class="ic ic-warn s20" style="color: var(--color-tertiary)"></span><span class="title" style="font: var(--type-title-medium)">Backup paused</span></div>
+<p class="meta">Last backup Monday 2 November, 21:40</p>
+</section>
+
+<section class="card warn" aria-label="Paused">
+<span class="ic ic-warn s20"></span>
+<div class="vstack" style="gap: 4px">
+<b style="font: var(--type-title-small)">The backup server is paused. Your data stays on this phone.</b>
+<p class="meta">The server sleeps after a week without use. Resume wakes it; new sets back up once it is awake.</p>
+<span class="btn mid" style="margin-top: 8px">Resume</span>
+</div>
+</section>
+
+<section class="group" aria-label="Backup"><div class="list">
+<div class="row"><span>Account</span><span class="val">Carl Lundholm</span></div>
+<div class="row"><span>Sets backed up</span><span class="val">1 284</span></div>
+</div></section>
+
+<div class="list">
+<div class="row dis"><span>Back up now</span></div>
+<div class="row dang"><span>Sign out</span></div>
+</div>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

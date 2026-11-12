@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Menu inside a superset</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="wtb">
+<div class="l">
+<a class="ibtn plain" href="SH-02-inprog.dc.html" aria-label="Minimise workout"><span class="ic ic-down s22"></span></a>
+<a class="ibtn" href="WO-07-menu.dc.html" aria-label="Free rest"><span class="ic ic-timer s20"></span></a>
+</div>
+<div class="mid"></div>
+<a class="finish" href="WO-15-several.dc.html">Finish</a>
+</header>
+<main class="body">
+<section class="whead">
+<div class="name">Push A <a class="pill" href="WO-08-menu.dc.html" aria-label="Workout options">⋯</a></div>
+<div class="meta">
+<span><span class="ic ic-calendar s16"></span>Mon 9 Nov</span>
+<span class="clock"><span class="ic ic-clock s16 muted"></span>38:40</span>
+<span>3 of 14 sets</span>
+</div>
+</section>
+<section class="ov" aria-label="Done">
+<div class="ovrow">
+<div class="grow"><div class="nm">Bench Press BB</div><div class="dots"><i class="w"></i><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
+<span class="cnt all">4/4 ✓</span><span class="exp"><span class="ic ic-down s14"></span></span>
+</div>
+</section>
+<section class="focus" aria-label="Next set">
+<p class="now">Now · <span class="k-ss">A</span> · Incline Press DB · Set 1 of 3</p>
+<div>
+<div class="fvals"><span class="fv">26</span><span class="fu">kg</span><span class="fx">×</span><span class="fv">9</span><span class="fu">reps</span></div>
+<div class="fmeta"><span>rest 1:30 after the round</span><span>Previous <b>26 × 9 @2</b></span></div>
+</div>
+<div class="seg compact" role="group" aria-label="RIR">
+<span>0</span><span>1</span><span>2</span><span>3</span><span>4+</span>
+</div>
+<div class="facts">
+<span class="fbtn">Edit</span>
+<span class="fbtn log"><span class="ic ic-check s20"></span>Log set 1</span>
+</div>
+</section>
+<section aria-label="Superset">
+<p class="sslabel"><b>Superset</b> · rest 1:30 after each round</p>
+<div class="ssgroup">
+<div class="exh">
+<div class="top">
+<span class="tagl">A</span><span class="nm">Incline Press DB</span>
+<span class="pill" aria-label="Exercise options">⋯</span>
+<span class="fold" aria-label="Fold Incline Press DB"><span class="ic ic-up s14"></span></span>
+</div>
+</div>
+<div class="exh" style="padding-top: 0px">
+<div class="top">
+<span class="tagl">B</span><span class="nm">Lateral Raise DB</span>
+<span class="pill" aria-label="Exercise options">⋯</span>
+<span class="fold" aria-label="Fold Lateral Raise DB"><span class="ic ic-up s14"></span></span>
+</div>
+</div>
+<div class="cols"><span class="c-set">Set</span><span class="c-prev">Previous</span><span class="c-w">kg</span><span class="c-r">Reps</span><span class="c-ok">✓</span></div>
+<div class="srow next">
+<span class="badge">1</span>
+<span class="sprev"><span class="tagl" style="margin-right: 6px">A</span>26 × 9 @2</span>
+<span class="cell w">26</span><span class="cell r">9</span>
+<span class="ok"><span class="ic ic-check s18"></span></span>
+</div>
+<div class="srow">
+<span class="badge">1</span>
+<span class="sprev"><span class="tagl" style="margin-right: 6px">B</span>10 × 13 @2</span>
+<span class="cell w">10</span><span class="cell r">13</span>
+<span class="ok"><span class="ic ic-check s18"></span></span>
+</div>
+<span class="restl">Rest 1:30</span>
+<div class="srow">
+<span class="badge">2</span>
+<span class="sprev"><span class="tagl" style="margin-right: 6px">A</span>26 × 9 @2</span>
+<span class="cell w">26</span><span class="cell r">9</span>
+<span class="ok"><span class="ic ic-check s18"></span></span>
+</div>
+<div class="srow">
+<span class="badge">2</span>
+<span class="sprev"><span class="tagl" style="margin-right: 6px">B</span>10 × 13 @2</span>
+<span class="cell w">10</span><span class="cell r">13</span>
+<span class="ok"><span class="ic ic-check s18"></span></span>
+</div>
+</div>
+</section>
+<div class="vstack" style="padding-top: 12px">
+<span class="addbig"><span class="plus">+</span>Add exercises</span>
+<span class="discard">Discard workout</span>
+</div>
+</main>
+<a class="scrim clear" href="WO-02-s5.dc.html" aria-label="Close the menu"></a>
+<div class="menu glass thick" role="menu" aria-label="Incline Press DB options" style="bottom: 42px; right: 16px">
+<div class="tiles">
+<span class="tile" role="menuitem"><span class="ic ic-note s20"></span>Note</span>
+<span class="tile" role="menuitem"><span class="ic ic-swap s20"></span>Swap</span>
+</div>
+<div class="msep"></div>
+<span class="mrow" role="menuitem"><span>Sticky note</span><span class="ic ic-pin s20"></span></span>
+<div class="msep"></div>
+<span class="mrow" role="menuitem"><span>Rest for all sets</span><span class="ic ic-chev-r s20"></span></span>
+<span class="mrow" role="menuitem"><span>Remove from superset</span><span class="ic ic-link s20"></span></span>
+<span class="mrow" role="menuitem"><span>Order and skip</span><span class="ic ic-reorder s20"></span></span>
+<div class="msep"></div>
+<span class="mrow" role="menuitem"><span>Exercise settings</span><span class="ic ic-sliders s20"></span></span>
+<span class="mrow" role="menuitem"><span>Exercise details</span><span class="ic ic-info s20"></span></span>
+<div class="msep"></div>
+<span class="mrow danger" role="menuitem"><span>Remove exercise</span><span class="ic ic-trash s20"></span></span>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

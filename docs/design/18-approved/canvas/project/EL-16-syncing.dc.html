@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sync, syncing</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"><span class="back"><span class="ic ic-chev-l s20"></span>You</span></div>
+<h1></h1>
+<div class="r"></div>
+</header>
+<main class="body">
+<header class="lt"><h1>Backup and sync</h1></header>
+
+<section class="card" aria-label="Status">
+<div class="hstack" style="gap: 12px"><span class="spinner" role="img" aria-label="Syncing"></span><span class="title" style="font: var(--type-title-medium)">Syncing…</span></div>
+<p class="meta">Backing up 1 284 sets</p>
+</section>
+
+<section class="group" aria-label="Backup"><div class="list">
+<div class="row"><span>Account</span><span class="val">Carl Lundholm</span></div>
+<div class="row"><span>Sets backed up</span><span class="val">–</span></div>
+</div></section>
+
+<div class="list">
+<div class="row dis"><span>Back up now</span></div>
+<div class="row dang"><span>Sign out</span></div>
+</div>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+<a href="EL-16-synced.dc.html" aria-label="Continue" style="position: absolute; inset: 0; z-index: 4"></a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

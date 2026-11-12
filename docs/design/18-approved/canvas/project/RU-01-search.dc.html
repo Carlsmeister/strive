@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Run start, finding GPS</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="map" style="position:absolute;top:0;left:0;right:0;height:580px"><img class="only-dark" src="/_blob/5f81896c79487b24b7f6d5ced01a2a9a" alt="" style="object-position:50% 58%"><img class="only-light" src="/_blob/13891c6b0a0ded6ca4836d993f759c2f" alt="" style="object-position:50% 58%"><span class="you" style="left:75px;top:280px" aria-label="You"></span></div>
+<div class="mapctl glass" style="top:62px;left:16px;z-index:5"><a class="mapbtn" href="Main.dc.html" aria-label="Close"><span class="ic ic-x s22"></span></a></div>
+<div class="mapctl glass" style="top:62px;right:16px"><span class="mapbtn" aria-label="Centre on me"><span class="ic ic-locate s22"></span></span></div>
+<span class="gps glass" style="position:absolute;z-index:2;top:66px;left:50%;transform:translateX(-50%);white-space:nowrap"><span class="spinner" style="width:14px;height:14px" aria-hidden="true"></span>Looking for GPS…</span>
+<section style="position:absolute;left:0;right:0;bottom:0;z-index:3;background:var(--color-background);border-radius:28px 28px 0 0;padding:20px 16px 40px;display:grid;gap:12px">
+<div class="between"><h1 style="font:var(--type-headline-large)">Run</h1><span class="cap">Outdoor · GPS</span></div>
+
+<div class="list tiles">
+<div class="row lead"><span class="lic"><span class="ic ic-run s18"></span></span><span>Easy run · 8 km<small>Planned today</small></span><span></span></div>
+<div class="row lead"><span class="lic"><span class="ic ic-shoe s18"></span></span><span>Shoes</span><span class="val">ASICS Novablast 4<span class="ic ic-chev-r s16"></span></span></div>
+</div>
+<span class="btn filled dis" aria-disabled="true">Start run</span>
+<p class="cap" style="text-align:center">Start run wakes up once the phone has a fix.</p>
+</section>
+<a href="RU-01-ready.dc.html" aria-label="GPS found" style="position:absolute;inset:0;z-index:4"></a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

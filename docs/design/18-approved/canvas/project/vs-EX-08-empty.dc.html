@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>1 vs 1+2 · EX-08 · Records, empty</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&amp;display=swap">
+</helmet>
+<div class="strive" data-theme="{{mode}}" style="width: 868px; height: 938px; box-sizing: border-box; padding: 24px; background: var(--color-surface-container-low); color: var(--color-on-surface); display: flex; gap: 40px">
+<figure style="margin: 0; display: grid; gap: 10px; align-content: start; width: 390px"><figcaption class="cap" style="font-weight: 600; height: 36px; line-height: 18px; overflow: hidden">Strive 1 · EX-08 · Records, empty</figcaption><div style="width: 390px; height: 844px; position: relative; overflow: hidden">
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"><a class="back" href="EX-01.dc.html"><span class="ic ic-chev-l s22"></span>Library</a></div>
+<h1></h1>
+<div class="r"><span class="ibtn plain teal" aria-label="Exercise options"><span class="ic ic-more"></span></span></div>
+</header>
+<main class="body">
+<header class="lt"><h1 style="font-size: 30px">Chest Press Machine</h1></header>
+<div class="segc" role="group" aria-label="Part"><a href="EX-05.dc.html">About</a><span>History</span><span>Chart</span><span class="on" aria-pressed="true">Records</span></div>
+<section class="empty card"><span class="ic ic-star-o s44"></span><h3>No records yet</h3><p>Log a workout to see records.</p></section>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html" aria-current="page"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</div></figure>
+<figure style="margin: 0; display: grid; gap: 10px; align-content: start; width: 390px"><figcaption class="cap" style="height: 36px; line-height: 18px; overflow: hidden" title="&quot;Your first set of Chest Press Machine sets them all.&quot;"><b>Strive 1+2</b> · &quot;Your first set of Chest Press Machine sets them all.&quot;</figcaption><dc-import name="EX-08-empty" mode="{{mode}}" hint-size="390px,844px"></dc-import></figure>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":868,"height":938}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

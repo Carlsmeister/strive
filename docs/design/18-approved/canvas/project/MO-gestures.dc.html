@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Motion · gestures</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive" data-theme="{{mode}}" style="width: 1280px; height: 800px; box-sizing: border-box; padding: 40px 48px; background: var(--color-background); color: var(--color-on-surface); display: flex; flex-direction: column; gap: 24px">
+<header style="display: flex; justify-content: space-between; align-items: baseline">
+<h1 style="font: 700 34px/41px var(--font-family)">Gestures and their thresholds</h1>
+<p class="muted" style="font: var(--type-body-medium)">Everything follows the finger 1:1, then settles on the release spring (350). O-20 is design 1's call.</p>
+</header>
+
+<section class="card" style="gap: 14px; padding: 20px" aria-label="Swipe to delete a set">
+<div class="between"><h2 class="title-medium">Swipe a set left to delete it (WO-14)</h2><span class="cap">as Mail; a swipe never counts as a tap</span></div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px">
+<div style="display: grid; gap: 8px"><div style="position: relative; overflow: hidden; border-radius: 12px; background: var(--color-error)"><div class="srow" style="margin: 0; transform: translateX(-40px)"><span class="badge">3</span><span class="sprev">80 × 7 @2</span><span class="cell w">80</span><span class="cell r">7</span><span class="ok"><span class="ic ic-check s18"></span></span></div></div><p class="cap">Under 88 pt: released, it springs back closed.</p></div>
+<div style="display: grid; gap: 8px"><div style="position: relative; overflow: hidden; border-radius: 12px; background: var(--color-error)"><div class="srow" style="margin: 0; transform: translateX(-88px)"><span class="badge">3</span><span class="sprev">80 × 7 @2</span><span class="cell w">80</span><span class="cell r">7</span><span class="ok"><span class="ic ic-check s18"></span></span></div><span style="position: absolute; right: 0; top: 0; bottom: 0; width: 88px; display: grid; place-items: center; color: var(--color-on-error); font: var(--type-label-large)">Delete</span></div><p class="cap">88 pt to half the row: rests open on Delete; a tap deletes.</p></div>
+<div style="display: grid; gap: 8px"><div style="position: relative; overflow: hidden; border-radius: 12px; background: var(--color-error); height: 42px"><span style="position: absolute; left: 16px; top: 0; bottom: 0; display: grid; place-items: center; color: var(--color-on-error); font: var(--type-label-large)">Delete</span></div><p class="cap">Past half: the red fills the row, the row slides out (250), the rows below close up (350), a medium haptic.</p></div>
+</div>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px">
+<div class="card" style="gap: 12px; padding: 20px">
+<h2 class="title-medium">The dock (WO-04)</h2>
+<div style="display: grid; grid-template-columns: 70px 1fr; gap: 6px 12px; align-items: center">
+<span class="cap">0</span><div style="height: 10px; border-radius: 5px; background: linear-gradient(90deg, var(--color-primary) 0 33%, var(--color-surface-container-highest) 33% 100%)"></div>
+<span></span><div class="between cap"><span>springs back</span><span>⅓ of its height: closes</span><span>full</span></div>
+</div>
+<p class="muted" style="font: var(--type-body-medium)">Drag the grabber: the dock follows. Released past a third of its height, or flicked down faster than 1000 pt/s, it closes (250); otherwise it springs back (350). A tap outside closes it. Opening rises on the release spring; Reduce Motion fades.</p>
+</div>
+<div class="card" style="gap: 12px; padding: 20px">
+<h2 class="title-medium">Minimise the workout (WO-17)</h2>
+<div style="display: grid; grid-template-columns: 70px 1fr; gap: 6px 12px; align-items: center">
+<span class="cap">0</span><div style="height: 10px; border-radius: 5px; background: linear-gradient(90deg, var(--color-primary) 0 33%, var(--color-surface-container-highest) 33% 100%)"></div>
+<span></span><div class="between cap"><span>springs back</span><span>⅓ of the screen: minimises</span><span>full</span></div>
+</div>
+<p class="muted" style="font: var(--type-body-medium)">Drag down on the title bar (new; built: only ⌄). The workout scales toward the bar above the tabs (to .9, corners to 28) as it follows; past a third or a flick it shrinks into the bar (350), Music's player in reverse. A tap on the bar grows it back from the bar's frame. Reduce Motion: cross-fade.</p>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Plates and bars · lb</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div><header class="nav"><div class="l"><a class="back" href="EL-06-lb.dc.html"><span class="ic ic-chev-l s22"></span>Settings</a></div><h1>Plates and bars</h1><div class="r"></div></header><main class="body"><div class="vstack" style="gap: 16px; flex: none"><section class="group"><h4><span>Plates · lb</span></h4><div class="list"><span class="row lead" style="padding-top: 4px; padding-bottom: 4px"><span style="display: grid; place-items: center; width: 30px"><svg class="sleeve" viewBox="0 0 30 40" style="width: 30px; height: 40px" aria-hidden="true"><rect class="shaft" x="0" y="18" width="30" height="4"></rect><rect class="plate" x="11.5" y="2.0" width="7" height="36" rx="1"></rect></svg></span><span>45 lb</span><span class="ic ic-check s20 check"></span></span><span class="row lead" style="padding-top: 4px; padding-bottom: 4px"><span style="display: grid; place-items: center; width: 30px"><svg class="sleeve" viewBox="0 0 30 40" style="width: 30px; height: 40px" aria-hidden="true"><rect class="shaft" x="0" y="18" width="30" height="4"></rect><rect class="plate" x="12.5" y="6.0" width="5" height="28" rx="1"></rect></svg></span><span>35 lb</span><span></span></span><span class="row lead" style="padding-top: 4px; padding-bottom: 4px"><span style="display: grid; place-items: center; width: 30px"><svg class="sleeve" viewBox="0 0 30 40" style="width: 30px; height: 40px" aria-hidden="true"><rect class="shaft" x="0" y="18" width="30" height="4"></rect><rect class="plate" x="12.5" y="8.0" width="5" height="24" rx="1"></rect></svg></span><span>25 lb</span><span class="ic ic-check s20 check"></span></span><span class="row lead" style="padding-top: 4px; padding-bottom: 4px"><span style="display: grid; place-items: center; width: 30px"><svg class="sleeve" viewBox="0 0 30 40" style="width: 30px; height: 40px" aria-hidden="true"><rect class="shaft" x="0" y="18" width="30" height="4"></rect><rect class="plate" x="13.0" y="9.0" width="4" height="22" rx="1"></rect></svg></span><span>10 lb</span><span class="ic ic-check s20 check"></span></span><span class="row lead" style="padding-top: 4px; padding-bottom: 4px"><span style="display: grid; place-items: center; width: 30px"><svg class="sleeve" viewBox="0 0 30 40" style="width: 30px; height: 40px" aria-hidden="true"><rect class="shaft" x="0" y="18" width="30" height="4"></rect><rect class="plate" x="13.5" y="12.0" width="3" height="16" rx="1"></rect></svg></span><span>5 lb</span><span class="ic ic-check s20 check"></span></span><span class="row lead" style="padding-top: 4px; padding-bottom: 4px"><span style="display: grid; place-items: center; width: 30px"><svg class="sleeve" viewBox="0 0 30 40" style="width: 30px; height: 40px" aria-hidden="true"><rect class="shaft" x="0" y="18" width="30" height="4"></rect><rect class="plate" x="13.5" y="13.0" width="3" height="14" rx="1"></rect></svg></span><span>2.5 lb</span><span class="ic ic-check s20 check"></span></span></div><p class="foot">The plates your gym has. Strive builds every weight and the plates per side from these.</p></section><section class="group"><h4><span>Bars</span></h4><div class="list"><span class="row"><span>Olympic bar</span><span class="val"><span style="color: var(--color-on-surface)">45 lb</span><span class="ic ic-pencil s16"></span></span></span><span class="row"><span>Short bar</span><span class="val"><span style="color: var(--color-on-surface)">35 lb</span><span class="ic ic-pencil s16"></span></span></span><span class="row"><span>EZ bar</span><span class="val"><span style="color: var(--color-on-surface)">15 lb</span><span class="ic ic-pencil s16"></span></span></span><span class="row"><span>Hex bar</span><span class="val"><span style="color: var(--color-on-surface)">55 lb</span><span class="ic ic-pencil s16"></span></span></span><span class="row"><span>No bar</span><span class="val"><span style="color: var(--color-on-surface)">0 lb</span><span class="ic ic-pencil s16"></span></span></span></div><p class="foot">Each barbell exercise picks its bar in its settings.</p></section></div></main><nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

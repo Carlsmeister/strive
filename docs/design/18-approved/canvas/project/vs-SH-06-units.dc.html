@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>1 vs 1+2 · SH-06 · units</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&amp;display=swap">
+</helmet>
+<div class="strive" data-theme="{{mode}}" style="width: 868px; height: 938px; box-sizing: border-box; padding: 24px; background: var(--color-surface-container-low); color: var(--color-on-surface); display: flex; gap: 40px">
+<figure style="margin: 0; display: grid; gap: 10px; align-content: start; width: 390px"><figcaption class="cap" style="font-weight: 600; height: 36px; line-height: 18px; overflow: hidden">Strive 1 · SH-06 · units</figcaption><div style="width: 390px; height: 844px; position: relative; overflow: hidden">
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"></div>
+<h1></h1>
+<div class="r"><a class="navtext" href="SH-02-first.dc.html">Skip</a></div>
+</header>
+<main class="body" style="padding-bottom: 160px; gap: 20px">
+<header class="vstack" style="gap: 4px; padding-top: 4px">
+<h1 style="font: var(--type-headline-large)">Units</h1>
+<p style="font: var(--type-body-large); color: var(--color-on-surface-variant)">Pick what your gym and your watch use. You can change it later in Settings.</p>
+</header>
+<div class="group"><h4>Weight</h4>
+<div class="seg" role="group" aria-label="Weight unit"><span class="on" aria-pressed="true">kg</span><span aria-pressed="false">lb</span></div>
+<p class="foot">Sets read like 82.5 kg × 8. Plates are counted in kg.</p>
+</div>
+<div class="group"><h4>Distance</h4>
+<div class="seg" role="group" aria-label="Distance unit"><span class="on" aria-pressed="true">km</span><span aria-pressed="false">mi</span></div>
+<p class="foot">Runs read like 8.04 km at 5:46 /km.</p>
+</div>
+</main>
+<div style="position: absolute; left: 16px; right: 16px; bottom: 34px; display: grid; gap: 12px; z-index: 3">
+<div class="dotsnav" role="img" aria-label="Page 2 of 3"><i></i><i class="on"></i><i></i></div>
+<a class="btn filled" href="SH-06-body.dc.html">Next</a>
+</div>
+</div>
+</div></figure>
+<figure style="margin: 0; display: grid; gap: 10px; align-content: start; width: 390px"><figcaption class="cap" style="height: 36px; line-height: 18px; overflow: hidden" title="&quot;Kilos or pounds, kilometres or miles? …&quot;"><b>Strive 1+2</b> · &quot;Kilos or pounds, kilometres or miles? …&quot;</figcaption><dc-import name="SH-06-units" mode="{{mode}}" hint-size="390px,844px"></dc-import></figure>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":868,"height":938}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

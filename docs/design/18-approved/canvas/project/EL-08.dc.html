@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Devices · linked, error</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div><header class="nav"><div class="l"><a class="back" href="EL-06.dc.html"><span class="ic ic-chev-l s22"></span>Settings</a></div><h1>Devices and apps</h1><div class="r"></div></header><main class="body"><div class="vstack" style="gap: 16px; flex: none"><section class="group"><h4><span>Health</span></h4><div class="list"><a class="row" href="EL-09-linked.dc.html"><span>Apple Health<small>Linked · last sync 07:02</small></span><span class="btn small" style="color: var(--color-error)">Unlink</span></a></div><p class="foot">On Android, Strive links Health Connect here.</p></section><section class="group"><h4><span>Apps</span></h4><div class="list"><span class="row"><span>Strava<small>Not linked</small></span><span class="btn small">Link</span></span><span class="row"><span>Hevy<small class="err"><span class="ic ic-warn s14"></span> Could not reach Hevy</small></span><span class="btn small">Retry</span></span><span class="row"><span>Fitbod<small>Not linked</small></span><span class="btn small">Link</span></span><span class="row"><span>Runna<small>Not linked</small></span><span class="btn small">Link</span></span></div></section><section class="group"><h4><span>Devices</span></h4><div class="list"><span class="row"><span>Apple Watch<small>Not linked</small></span><span class="btn small">Link</span></span><span class="row"><span>Suunto<small>Not linked</small></span><span class="btn small">Link</span></span><span class="row"><span>Garmin<small>Not linked</small></span><span class="btn small">Link</span></span><span class="row"><span>COROS<small>Not linked</small></span><span class="btn small">Link</span></span><span class="row"><span>Polar<small>Not linked</small></span><span class="btn small">Link</span></span><span class="row"><span>Amazfit<small>Not linked</small></span><span class="btn small">Link</span></span><span class="row"><span>Huawei<small>Not linked</small></span><span class="btn small">Link</span></span><span class="row"><span>Samsung<small>Not linked</small></span><span class="btn small">Link</span></span><span class="row"><span>Wahoo<small>Not linked</small></span><span class="btn small">Link</span></span><span class="row"><span>Whoop<small>Not linked</small></span><span class="btn small">Link</span></span><span class="row"><span>Oura<small>Not linked</small></span><span class="btn small">Link</span></span></div><p class="foot">Workouts from a linked device show in History with the device's name.</p></section></div></main><nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

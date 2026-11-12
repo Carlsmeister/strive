@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Live run, map hidden</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"><a class="ibtn plain" href="RU-02-mini.dc.html" aria-label="Minimise run"><span class="ic ic-down s22"></span></a></div>
+<h1>Easy run</h1>
+<div class="r"><span class="gps" style="padding-right:4px"><i></i>GPS</span><a class="ibtn" href="RU-02.dc.html" aria-label="Show map"><span class="ic ic-route s22"></span></a></div>
+</header>
+<div style="flex:1;display:grid;align-content:center;gap:28px;padding-bottom:180px">
+<a class="bignum" href="RU-02-time.dc.html" aria-label="Show time instead"><span class="v" style="font-size:132px;line-height:136px;letter-spacing:-4px">3.42</span><span class="u">km</span><span class="dotsnav" aria-hidden="true" style="margin-top:10px"><i class="on"></i><i></i><i></i><i></i></span></a>
+<div class="runstats" style="margin:0 16px"><div><b style="font-size:30px;line-height:36px">19:41</b><small>time</small></div><div><b style="font-size:30px;line-height:36px">5:38</b><small>pace /km</small></div><div><b style="font-size:30px;line-height:36px">5:45</b><small>avg /km</small></div></div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:56px;display:flex;justify-content:center;gap:56px">
+<a class="runbtn" href="RU-02-lap.dc.html"><span style="display:grid;justify-items:center;gap:2px"><span class="ic ic-flag s28"></span>Lap</span></a>
+<a class="runbtn main" href="RU-03.dc.html"><span style="display:grid;justify-items:center;gap:2px"><span class="ic ic-pause-f s28"></span>Pause</span></a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

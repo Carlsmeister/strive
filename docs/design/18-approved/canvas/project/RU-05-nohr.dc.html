@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Run detail, no heart rate</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="map" style="position:absolute;top:0;left:0;right:0;height:360px"><img class="only-dark" src="/_blob/5f81896c79487b24b7f6d5ced01a2a9a" alt="" style="object-position:50% 43%"><img class="only-light" src="/_blob/13891c6b0a0ded6ca4836d993f759c2f" alt="" style="object-position:50% 43%"><img src="/_blob/49cb24d17f0497975f2b8a64713d9ee8" alt="Route" style="object-position:50% 43%"></div>
+<div class="mapctl glass" style="top:62px;left:16px;z-index:3"><a class="mapbtn" href="WO-26-running.dc.html" aria-label="Back"><span class="ic ic-chev-l s24"></span></a></div>
+<div class="mapctl glass" style="top:62px;right:16px;z-index:3"><span class="mapbtn" style="width:auto;padding:0 16px;color:var(--color-primary);font:var(--type-label-large)">Edit</span></div>
+<div class="mapctl glass" style="top:278px;right:16px;border-radius:999px"><span class="mapbtn" style="border-radius:999px" aria-label="Play flyover"><span class="ic ic-play-f s20"></span></span></div>
+<main class="body" style="position:absolute;top:332px;left:0;right:0;bottom:0;z-index:2;background:var(--color-background);border-radius:28px 28px 0 0;padding:8px 16px 120px;display:grid;align-content:start;grid-auto-rows:max-content">
+<span aria-hidden="true" style="align-self:center;justify-self:center;width:36px;height:5px;border-radius:999px;background:var(--color-outline);flex:none"></span>
+<section style="display:grid;gap:4px">
+<h1 style="font:700 28px/34px var(--font-family)">Morning Run</h1>
+<p style="font:var(--type-body-medium);color:var(--color-on-surface-variant)">Friday 6 November · 07:15 · Djurgården, Stockholm</p>
+</section>
+<div class="grid2"><div><small>Distance</small><b>8.04 <small>km</small></b></div><div><small>Avg pace</small><b>5:46 <small>/km</small></b></div><div><small>Moving time</small><b>46:20</b></div><div><small>Calories</small><b>540 <small>kcal</small></b></div></div>
+
+<div class="list">
+<div class="row"><span>Device</span><span class="val">iPhone</span></div>
+<div class="row"><span>Shoes</span><span class="val">ASICS Novablast 4<span class="ic ic-chev-r s16"></span></span></div>
+</div>
+<div class="sec-h" style="min-height:44px;align-items:center"><span>Splits</span><span class="teal" style="font-weight:400">8 km<span class="ic ic-down s16"></span></span></div>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

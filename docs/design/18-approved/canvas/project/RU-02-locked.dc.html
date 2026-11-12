@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Live run, screen locked</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen lock" data-theme="{{mode}}">
+<div class="island" aria-hidden="true"></div>
+<div class="safe"></div>
+<p class="lockdate" style="margin-top:20px">Friday 6 November</p>
+<p class="lockclock">07:35</p>
+<a class="la glass thick" href="RU-02.dc.html" style="position:absolute;left:12px;right:12px;bottom:118px" aria-label="Easy run, open Strive">
+<div class="between"><span style="display:flex;align-items:center;gap:8px"><span class="appicon" style="width:26px;height:26px;border-radius:7px"><span class="ic ic-run s16"></span></span><b style="font:var(--type-title-small)">Easy run</b></span><span class="gps" style="padding:0"><i></i>GPS</span></div>
+<div style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px">
+<div style="display:grid;gap:2px"><span style="font:700 52px/56px var(--font-family);letter-spacing:-1px">3.42<span style="font:var(--type-title-medium);color:var(--color-on-surface-variant);letter-spacing:0"> km</span></span>
+<span style="font:var(--type-title-medium)">19:41<span style="color:var(--color-on-surface-variant);font-weight:400"> · </span>5:38 <span style="color:var(--color-on-surface-variant);font-weight:400">/km</span></span></div>
+<span class="ibtn on" style="width:56px;height:56px" aria-label="Pause"><span class="ic ic-pause-f s26"></span></span>
+</div>
+</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

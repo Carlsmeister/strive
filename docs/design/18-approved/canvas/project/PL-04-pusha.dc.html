@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Push A · preview</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav"><span class="l"><a class="ibtn" href="PL-01-week.dc.html" aria-label="Close"><span class="ic ic-x s18"></span></a></span><span></span><span class="r"><a class="navtext" href="PL-05-edit.dc.html">Edit</a><a class="pill" href="PL-03-menu.dc.html" aria-label="Options for Push A">⋯</a></span></header>
+<main class="body" style="padding-bottom: 120px">
+<header style="display: grid; gap: 2px"><h1 style="font: var(--type-headline-large)">Push A</h1><p class="meta" style="font: var(--type-body-medium); color: var(--color-on-surface-variant)">Chest · shoulders · triceps</p></header><div class="stats three"><div class="stat"><span class="k">Exercises</span><span class="v">5</span></div><div class="stat"><span class="k">Sets</span><span class="v">15</span></div><div class="stat"><span class="k">Minutes</span><span class="v">30</span></div></div><div class="card" style="grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: 12px 16px"><span class="ic ic-note s18 muted" style="margin-top: 1px"></span><span style="font: var(--type-body-medium)">Kontrollerad nedfirning, två sekunder.</span></div><section class="vstack" aria-label="Exercises"><h2 class="sec-h"><span>Exercises</span><span style="font-weight: 400">Last done Mon 2 Nov</span></h2><div class="pvrow"><span class="ord">1</span><span><b>Bench Press BB</b><small>1 warm-up + 3 × 6–8 @ 2–3 · rest 2:00</small></span><a class="ibtn plain teal" href="EX-05.dc.html" aria-label="About Bench Press BB"><span class="ic ic-info s20"></span></a></div><p class="sslabel" style="padding: 4px 4px 0"><b>Superset</b> · rest 1:30 after the round</p><div class="ssgroup vstack" style="gap: 8px"><div class="pvrow"><span class="ord"><i class="tagl" style="font-style: normal">A</i></span><span><b>Incline Press DB</b><small>3 × 8–10 @ 2</small></span><button type="button" class="ibtn plain teal" aria-label="About Incline Press DB"><span class="ic ic-info s20"></span></button></div><div class="pvrow"><span class="ord"><i class="tagl" style="font-style: normal">B</i></span><span><b>Lateral Raise DB</b><small>3 × 12–15 @ 1–2</small></span><button type="button" class="ibtn plain teal" aria-label="About Lateral Raise DB"><span class="ic ic-info s20"></span></button></div></div><div class="pvrow"><span class="ord">3</span><span><b>Tricep Dips</b><small>+10 kg · 2 × 8–12 @ 2 · set 2 <span class="k-fail">to failure</span></small></span><button type="button" class="ibtn plain teal" aria-label="About Tricep Dips"><span class="ic ic-info s20"></span></button></div><div class="pvrow"><span class="ord">4</span><span><b>Tricep Pushdown</b><small>2 × 10–12 @ 2 · then a <span class="k-drop">drop set</span></small></span><button type="button" class="ibtn plain teal" aria-label="About Tricep Pushdown"><span class="ic ic-info s20"></span></button></div></section>
+</main>
+<div style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; padding: 12px 16px 34px; background: var(--material-thick); -webkit-backdrop-filter: blur(var(--material-blur)); backdrop-filter: blur(var(--material-blur)); border-top: var(--border-hairline) solid var(--material-edge)"><a class="btn filled" href="WO-02-s1.dc.html">Start workout</a></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EL-06 in three modes</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive" data-theme="dark" style="width: 1298px; height: 924px; box-sizing: border-box; padding: 24px; background: var(--color-surface-container-low); display: flex; gap: 40px">
+<figure style="margin: 0; display: grid; gap: 10px; align-content: start"><figcaption class="cap" style="font-weight: 600">EL-06 · Settings · dark</figcaption><dc-import name="EL-06" mode="dark" hint-size="390px,844px"></dc-import></figure>
+<figure style="margin: 0; display: grid; gap: 10px; align-content: start"><figcaption class="cap" style="font-weight: 600">EL-06 · Settings · light</figcaption><dc-import name="EL-06" mode="light" hint-size="390px,844px"></dc-import></figure>
+<figure style="margin: 0; display: grid; gap: 10px; align-content: start"><figcaption class="cap" style="font-weight: 600">EL-06 · Settings · light-HC</figcaption><dc-import name="EL-06" mode="light-hc" hint-size="390px,844px"></dc-import></figure>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1298,"height":924}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

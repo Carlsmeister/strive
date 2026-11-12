@@ -1,0 +1,9 @@
+{
+  "A": ["SH-02-rest", "SH-02-done", "SH-02-first", "SH-06-welcome", "SH-06-units", "SH-06-body", "WO-26-empty", "EL-01-first",
+        "EL-02-first", "EL-03-empty", "EX-06-empty", "EX-07-empty", "EX-08-empty", "PL-10-empty", "EL-10-none"],
+  "B": ["WO-02-s12", "WO-02-s13", "WO-06-ended", "MO-log", "MO-rest"],
+  "B_new": ["MO-record", "MO-finish", "MO-week"],
+  "C": ["WO-21-records", "WO-21-expanded", "WO-21-plain", "WO-21-empty", "EX-08", "EL-03", "RU-05-done", "RU-05-history"],
+  "D": ["EL-01", "EL-02-8wk", "EL-02-next", "EL-02-1yr"],
+  "D_new": ["EL-02-cmp"]
+}

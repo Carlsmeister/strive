@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div><header class="nav"><div class="l"><a class="back" href="EL-01.dc.html"><span class="ic ic-chev-l s22"></span>You</a></div><h1>Settings</h1><div class="r"></div></header><main class="body"><div class="vstack" style="gap: 16px; flex: none"><section class="group"><h4><span>General</span></h4><div class="list"><a class="row lead" href="EL-06-menu.dc.html"><span class="lic"><span class="ic ic-globe s18"></span></span><span>Language</span><span class="val">Follow the phone<span class="ic ic-updown s16"></span></span></a><span class="row lead"><span class="lic"><span class="ic ic-plate s18"></span></span><span>Weight</span><span class="seg" role="group" style="width: 112px"><span class="on" style="min-height: 30px; padding: 0 12px">kg</span><a href="EL-06-lb.dc.html" style="min-height: 30px; padding: 0 12px">lb</a></span></span><span class="row lead"><span class="lic"><span class="ic ic-ruler s18"></span></span><span>Distance</span><span class="seg" role="group" style="width: 112px"><span class="on" style="min-height: 30px; padding: 0 12px">km</span><span style="min-height: 30px; padding: 0 12px">mi</span></span></span></div><p class="foot">Weight sets the default; each exercise can use its own unit.</p></section><section class="group"><h4><span>Workout</span></h4><div class="list"><span class="row lead"><span class="lic"><span class="ic ic-timer s18"></span></span><span>Default rest</span><span class="val">2:00<span class="ic ic-chev-r s16 chev"></span></span></span><a class="row lead" href="EL-07-kg.dc.html"><span class="lic"><span class="ic ic-lift s18"></span></span><span>Plates and bars</span><span class="val">6 plates<span class="ic ic-chev-r s16 chev"></span></span></a><span class="row lead"><span class="lic"><span class="ic ic-eye s18"></span></span><span>Keep the screen awake</span><span class="switch on" role="switch" aria-checked="true" aria-label="Keep the screen awake"></span></span></div><p class="foot">The screen stays on during a workout and a run.</p></section><section class="group"><h4><span>Running</span></h4><div class="list"><span class="row lead"><span class="lic"><span class="ic ic-gps s18"></span></span><span>GPS accuracy</span><span class="val">Best<span class="ic ic-updown s16"></span></span></span></div></section><section class="group"><h4><span>Connections</span></h4><div class="list"><a class="row lead" href="EL-08.dc.html"><span class="lic"><span class="ic ic-watch s18"></span></span><span>Devices and apps</span><span class="val">Apple Health<span class="ic ic-chev-r s16 chev"></span></span></a></div></section><section class="group"><div class="list"><a class="row lead" href="EL-14.dc.html"><span class="lic"><span class="ic ic-info s18"></span></span><span>About Strive</span><span class="val">0.4<span class="ic ic-chev-r s16 chev"></span></span></a></div><p class="foot">Strive follows the phone's light or dark mode.</p></section></div></main><nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html" aria-current="page"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

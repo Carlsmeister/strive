@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pull Up · Records</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"><a class="back" href="EX-01-chip.dc.html"><span class="ic ic-chev-l s22"></span>Library</a></div>
+<h1></h1>
+<div class="r"><span class="ibtn plain teal" aria-label="Exercise options"><span class="ic ic-more"></span></span></div>
+</header>
+<main class="body">
+<header class="lt"><h1 style="font-size: 30px">Pull Up</h1></header>
+<div class="segc" role="group" aria-label="Part"><span>About</span><span>History</span><span>Chart</span><span class="on" aria-pressed="true">Records</span></div>
+<section class="group"><h4>Records</h4><div class="list"><div class="row"><span>Most reps<small>Thu 3 Sep · bodyweight</small></span><span class="val" style="color: var(--color-on-surface); font-weight: 600">12</span></div><div class="row"><span>Most added weight<small>Thu 24 Sep · @1</small></span><span class="val" style="color: var(--color-on-surface); font-weight: 600">+10 kg × 5</span></div><div class="row"><span>Best estimated 1RM<small>Thu 24 Sep · +10 × 5 @1</small></span><span class="val" style="color: var(--color-on-surface); font-weight: 600">110.9 kg</span></div></div><p class="foot">Body weight 82.4 kg counts in the estimated 1RM. Change it in your profile.</p></section>
+<section class="group"><h4>Most added weight for 1–12 reps</h4><div class="rm"><span><small>1 rep</small>+10</span><span><small>2 reps</small>+10</span><span><small>3 reps</small>+10</span><span><small>4 reps</small>+10</span><span><small>5 reps</small>+10</span><span><small>6 reps</small>+5</span><span><small>7 reps</small>+2.5</span><span><small>8 reps</small>+2.5</span><span><small>9 reps</small>BW</span><span><small>10 reps</small>BW</span><span><small>11 reps</small>BW</span><span><small>12 reps</small>BW</span></div><p class="foot">In kg on top of your body weight. BW: body weight alone.</p></section>
+<section class="group"><h4>Records history</h4><div class="list"><span class="row"><span>Most added weight +10 kg</span><span class="val">Thu 24 Sep</span></span><span class="row"><span>Best e1RM 110.9 kg</span><span class="val">Thu 24 Sep</span></span><span class="row"><span>Most reps 12</span><span class="val">Thu 3 Sep</span></span></div></section>
+</main>
+<nav class="tabbar glass" aria-label="Tabs">
+<a class="tab" href="Main.dc.html"><span class="ic ic-home"></span>Home</a>
+<a class="tab" href="SH-05.dc.html"><span class="ic ic-food"></span>Food</a>
+<a class="tab start" href="SH-03-today.dc.html" aria-label="Start"><span class="dot"><span class="ic ic-plus s28"></span></span></a>
+<a class="tab" href="PL-01-week.dc.html" aria-current="page"><span class="ic ic-plan"></span>Plan</a>
+<a class="tab" href="EL-01.dc.html"><span class="ic ic-you"></span>You</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

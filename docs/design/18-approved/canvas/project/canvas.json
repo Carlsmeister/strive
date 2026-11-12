@@ -1,0 +1,6638 @@
+{
+ "v": 3,
+ "attachments": {},
+ "boards": {
+  "EL-01-first.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-01 · first use · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 260
+  },
+  "EL-01.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-01 · You · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 260
+  },
+  "EL-02-1yr.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-02 · 1 year · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 1524
+  },
+  "EL-02-6mo.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-02 · 6 months · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 1524
+  },
+  "EL-02-6mobar.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-02 · 6 months, a bar selected · dark-HC",
+   "w": 390,
+   "x": 3290,
+   "y": 1524
+  },
+  "EL-02-8wk.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-02 · Progress, 8 weeks · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 1524
+  },
+  "EL-02-bar.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-02 · a bar selected · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 1524
+  },
+  "EL-02-cmp.dc.html": {
+   "h": 800,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-02 · the 25 comparisons · dark-HC",
+   "w": 1280,
+   "x": 3760,
+   "y": 1524
+  },
+  "EL-02-fewer.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-02 · fewer than four lifts · dark-HC",
+   "w": 390,
+   "x": 2350,
+   "y": 1524
+  },
+  "EL-02-first.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-02 · first use · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 1524
+  },
+  "EL-02-next.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-02 · 8 weeks, next comparison · dark-HC",
+   "w": 390,
+   "x": 2820,
+   "y": 1524
+  },
+  "EL-03-bar.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-03 · a bar selected · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 2788
+  },
+  "EL-03-empty.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-03 · no runs yet · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 2788
+  },
+  "EL-03.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-03 · Progress, Running · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 2788
+  },
+  "EL-04-five.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-04 · main lifts, five · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 4052
+  },
+  "EL-04-three.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-04 · main lifts, three · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 4052
+  },
+  "EL-05-empty.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-05 · Profile, empty · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 5316
+  },
+  "EL-05.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-05 · Profile · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 5316
+  },
+  "EL-06-lb.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-06 · lb chosen · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 6580
+  },
+  "EL-06-menu.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-06 · a menu open · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 6580
+  },
+  "EL-06.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-06 · Settings · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 6580
+  },
+  "EL-07-edit.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-07 · editing a bar · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 7844
+  },
+  "EL-07-kg.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-07 · plates and bars, kg · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 7844
+  },
+  "EL-07-lb.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-07 · plates in lb · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 7844
+  },
+  "EL-08-linking.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-08 · linking · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 9108
+  },
+  "EL-08-none.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-08 · nothing linked · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 9108
+  },
+  "EL-08.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-08 · Health linked, an error · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 9108
+  },
+  "EL-09-before.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-09 · Apple Health, before · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 10372
+  },
+  "EL-09-linked.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-09 · Apple Health, linked · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 10372
+  },
+  "EL-09-na.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-09 · not available · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 10372
+  },
+  "EL-10-none.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-10 · no gear yet · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 11636
+  },
+  "EL-10-retired.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-10 · retired · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 11636
+  },
+  "EL-10.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-10 · gear · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 11636
+  },
+  "EL-11-new.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-11 · add gear · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 12900
+  },
+  "EL-11-retired.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-11 · retired gear · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 12900
+  },
+  "EL-11.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-11 · gear detail · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 12900
+  },
+  "EL-12-other.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-12 · another chosen · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 14164
+  },
+  "EL-12.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-12 · choose shoes · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 14164
+  },
+  "EL-13-custom.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-13 · custom period · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 15428
+  },
+  "EL-13-exporting.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-13 · exporting · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 15428
+  },
+  "EL-13-nothing.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-13 · nothing in the period · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 15428
+  },
+  "EL-13-share.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-13 · share sheet · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 15428
+  },
+  "EL-13.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-13 · export · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 15428
+  },
+  "EL-14.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "you",
+   "title": "EL-14 · About Strive · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 16692
+  },
+  "EL-15-done.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-15 · import done (later) · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 260
+  },
+  "EL-15-importing.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-15 · importing (later) · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 260
+  },
+  "EL-15-preview.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-15 · import, preview (later) · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 260
+  },
+  "EL-15-source.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-15 · import, source (later) · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 260
+  },
+  "EL-16-out.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-16 · sync, signed out (later) · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 1524
+  },
+  "EL-16-paused.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-16 · project paused (later) · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 1524
+  },
+  "EL-16-synced.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-16 · synced (later) · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 1524
+  },
+  "EL-16-syncing.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-16 · syncing (later) · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 1524
+  },
+  "EL-17-notarget.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-17 · food, no target (later) · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 2788
+  },
+  "EL-17-ontrack.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-17 · food, on track (later) · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 2788
+  },
+  "EL-17-over.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-17 · food, over (later) · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 2788
+  },
+  "EL-18-portion.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-18 · portion (later) · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 4052
+  },
+  "EL-18-recent.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-18 · log food, recent (later) · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 4052
+  },
+  "EL-18-search.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-18 · log food, search (later) · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 4052
+  },
+  "EL-19-set.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-19 · targets set (later) · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 5316
+  },
+  "EL-19-unset.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "EL-19 · targets unset (later) · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 5316
+  },
+  "EX-01-chip.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-01 · a chip on · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 260
+  },
+  "EX-01-filter.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-01 · a filter on · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 260
+  },
+  "EX-01-mobility.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-01 · Mobility · dark-HC",
+   "w": 390,
+   "x": 2350,
+   "y": 260
+  },
+  "EX-01-nomatch.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-01 · no match · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 260
+  },
+  "EX-01-search.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-01 · searching · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 260
+  },
+  "EX-01-sort.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-01 · sort menu · dark-HC",
+   "w": 390,
+   "x": 2820,
+   "y": 260
+  },
+  "EX-01.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-01 · library · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 260
+  },
+  "EX-02-db.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-02 · Dumbbells ticked · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 1524
+  },
+  "EX-02-no.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-02 · No ticked · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 1524
+  },
+  "EX-02-none.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-02 · filter, nothing ticked · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 1524
+  },
+  "EX-03-created.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-03 · a new exercise ticked · dark-HC",
+   "w": 390,
+   "x": 2350,
+   "y": 2788
+  },
+  "EX-03-none.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-03 · picker, none ticked · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 2788
+  },
+  "EX-03-one.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-03 · one ticked · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 2788
+  },
+  "EX-03-search.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-03 · searching while picking · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 2788
+  },
+  "EX-03-tmpl.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-03 · from the template editor · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 2788
+  },
+  "EX-03-two.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-03 · two ticked · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 2788
+  },
+  "EX-04-none.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-04 · swap, none · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 4052
+  },
+  "EX-04.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-04 · swap, with alternatives · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 4052
+  },
+  "EX-05-incline.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-05 · About, Incline Press DB · dark-HC",
+   "w": 390,
+   "x": 3290,
+   "y": 260
+  },
+  "EX-05-mark.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-05 · mark menu open · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 5316
+  },
+  "EX-05-noillo.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-05 · no illustration, Swap mark · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 5316
+  },
+  "EX-05-sheet.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-05 · as a sheet from the workout · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 5316
+  },
+  "EX-05.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-05 · About · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 5316
+  },
+  "EX-06-empty.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-06 · History, empty · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 6580
+  },
+  "EX-06-incline.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-06 · History, Incline Press DB · dark-HC",
+   "w": 390,
+   "x": 3760,
+   "y": 260
+  },
+  "EX-06.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-06 · History · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 6580
+  },
+  "EX-07-empty.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-07 · Chart, empty · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 7844
+  },
+  "EX-07-incline.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-07 · Chart, Incline Press DB · dark-HC",
+   "w": 390,
+   "x": 4230,
+   "y": 260
+  },
+  "EX-07-inclinept.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-07 · a point selected, Incline Press DB · dark-HC",
+   "w": 390,
+   "x": 4700,
+   "y": 260
+  },
+  "EX-07-point.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-07 · a point selected · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 7844
+  },
+  "EX-07.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-07 · Chart · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 7844
+  },
+  "EX-08-bw.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-08 · bodyweight records · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 9108
+  },
+  "EX-08-empty.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-08 · Records, empty · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 9108
+  },
+  "EX-08-incline.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-08 · Records, Incline Press DB · dark-HC",
+   "w": 390,
+   "x": 5170,
+   "y": 260
+  },
+  "EX-08.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-08 · Records · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 9108
+  },
+  "EX-09-empty.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-09 · create exercise, empty · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 10372
+  },
+  "EX-09-filled.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-09 · filled · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 10372
+  },
+  "EX-09-menu.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-09 · a menu open · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 10372
+  },
+  "EX-09-muscles.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-09 · secondary muscles · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 10372
+  },
+  "EX-09-picker.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-09 · from the picker's New, filled · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 10372
+  },
+  "EX-10-archived.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-10 · archived · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 11636
+  },
+  "EX-10-unused.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-10 · edit an unused exercise · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 11636
+  },
+  "EX-10-used.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-10 · edit a used exercise · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 11636
+  },
+  "EX-11-alert.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-11 · merge alert · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 12900
+  },
+  "EX-11-done.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-11 · done · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 12900
+  },
+  "EX-11-list.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "exercises",
+   "title": "EX-11 · merge, choose · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 12900
+  },
+  "LT-activity-list.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "O-22 · activity list (later) · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 6580
+  },
+  "LT-activity.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "later",
+   "title": "O-22 · Activity bubble (later) · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 6580
+  },
+  "MD-EL-01.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-01 · You · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 21764
+  },
+  "MD-EL-02-8wk.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-02 · Progress, 8 weeks · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 21764
+  },
+  "MD-EL-03.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-03 · Progress, Running · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 23108
+  },
+  "MD-EL-04-three.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-04 · main lifts, three · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 23108
+  },
+  "MD-EL-05.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-05 · Profile · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 23108
+  },
+  "MD-EL-06.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-06 · Settings · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 23108
+  },
+  "MD-EL-07-kg.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-07 · plates and bars, kg · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 24452
+  },
+  "MD-EL-08-none.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-08 · nothing linked · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 24452
+  },
+  "MD-EL-09-before.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-09 · Apple Health, before · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 24452
+  },
+  "MD-EL-10.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-10 · gear · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 24452
+  },
+  "MD-EL-11-new.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-11 · add gear · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 25796
+  },
+  "MD-EL-12.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-12 · choose shoes · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 25796
+  },
+  "MD-EL-13.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-13 · export · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 25796
+  },
+  "MD-EL-14.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-14 · About Strive · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 25796
+  },
+  "MD-EL-15-source.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-15 · import, source (later) · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 27140
+  },
+  "MD-EL-16-out.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-16 · sync, signed out (later) · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 27140
+  },
+  "MD-EL-17-notarget.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-17 · food, no target (later) · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 27140
+  },
+  "MD-EL-18-search.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-18 · log food, search (later) · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 27140
+  },
+  "MD-EL-19-unset.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EL-19 · targets unset (later) · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 28484
+  },
+  "MD-EX-01.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EX-01 · library · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 15044
+  },
+  "MD-EX-02-none.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EX-02 · filter, nothing ticked · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 15044
+  },
+  "MD-EX-03-none.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EX-03 · picker, none ticked · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 16388
+  },
+  "MD-EX-04.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EX-04 · swap, with alternatives · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 16388
+  },
+  "MD-EX-05.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EX-05 · About · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 16388
+  },
+  "MD-EX-06.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EX-06 · History · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 16388
+  },
+  "MD-EX-07.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EX-07 · Chart · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 17732
+  },
+  "MD-EX-08.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EX-08 · Records · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 17732
+  },
+  "MD-EX-09-empty.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EX-09 · create exercise, empty · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 17732
+  },
+  "MD-EX-10-used.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EX-10 · edit a used exercise · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 17732
+  },
+  "MD-EX-11-list.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "EX-11 · merge, choose · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 19076
+  },
+  "MD-LT-activity.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "O-22 · Activity bubble (later) · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 28484
+  },
+  "MD-Main.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "SH-02 · strength day · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 260
+  },
+  "MD-PL-01-week.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "PL-01 · this week · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 11012
+  },
+  "MD-PL-02-plan.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "PL-02 · Plan menu · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 11012
+  },
+  "MD-PL-03-menu.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "PL-03 · template card menu · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 12356
+  },
+  "MD-PL-04-pusha.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "PL-04 · template preview · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 12356
+  },
+  "MD-PL-05-new.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "PL-05 · new template · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 12356
+  },
+  "MD-PL-06-reps.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "PL-06 · range keypad, reps · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 12356
+  },
+  "MD-PL-07-list.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "PL-07 · archived templates · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 13700
+  },
+  "MD-PL-08-week6.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "PL-08 · programme, this week open · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 13700
+  },
+  "MD-PL-09.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "PL-09 · programme weights · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 13700
+  },
+  "MD-PL-10.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "PL-10 · programme log · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 13700
+  },
+  "MD-PL-11.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "PL-11 · programme settings · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 15044
+  },
+  "MD-PL-12-empty.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "PL-12 · create programme, empty · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 15044
+  },
+  "MD-RU-01-search.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "RU-01 · looking for GPS · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 19076
+  },
+  "MD-RU-02.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "RU-02 · running, distance · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 19076
+  },
+  "MD-RU-03.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "RU-03 · paused · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 19076
+  },
+  "MD-RU-04.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "RU-04 · finish run · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 20420
+  },
+  "MD-RU-05-done.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "RU-05 · just finished · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 20420
+  },
+  "MD-RU-06-splits.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "RU-06 · splits · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 20420
+  },
+  "MD-RU-07-std.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "RU-07 · map, standard · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 20420
+  },
+  "MD-RU-08-play.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "RU-08 · flyover playing · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 21764
+  },
+  "MD-RU-09.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "RU-09 · edit run · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 21764
+  },
+  "MD-SH-01-rt.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "SH-01 · Reduce Transparency · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 260
+  },
+  "MD-SH-03-today.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "SH-03 · today planned · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 260
+  },
+  "MD-SH-04-four.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "SH-04 · four templates · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 260
+  },
+  "MD-SH-05.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "SH-05 · Food (v1) · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 1604
+  },
+  "MD-SH-06-welcome.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "SH-06 · welcome · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 1604
+  },
+  "MD-SH-07-check.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "SH-07 · hint on ✓ · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 1604
+  },
+  "MD-SH-08-loc-pre.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "SH-08 · location, before asking · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 1604
+  },
+  "MD-WO-01-marks.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-01 · quick picks from marks · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 2948
+  },
+  "MD-WO-02-s1.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-02 · s1 started from template · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 2948
+  },
+  "MD-WO-03-strip.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-03 · scrolled, strip shown · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 2948
+  },
+  "MD-WO-04-new.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-04 · dock, set not logged · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 2948
+  },
+  "MD-WO-05-weight.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-05 · keypad, weight · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 4292
+  },
+  "MD-WO-06-round.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-06 · a superset round's rest · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 4292
+  },
+  "MD-WO-07-menu.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-07 · free rest menu · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 4292
+  },
+  "MD-WO-08-menu.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-08 · workout menu · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 4292
+  },
+  "MD-WO-09-menu.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-09 · exercise menu · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 5636
+  },
+  "MD-WO-10.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-10 · create superset · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 5636
+  },
+  "MD-WO-11.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-11 · order and skip · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 5636
+  },
+  "MD-WO-12-bb.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-12 · settings, barbell · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 5636
+  },
+  "MD-WO-13-menu.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-13 · set type menu · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 6980
+  },
+  "MD-WO-14-revealed.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-14 · swipe, Delete revealed · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 6980
+  },
+  "MD-WO-15-one.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-15 · one set not logged · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 6980
+  },
+  "MD-WO-16-discard.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-16 · discard alert · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 6980
+  },
+  "MD-WO-17-plan.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-17 · minimised, no rest · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 8324
+  },
+  "MD-WO-18-lock.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-18 · rest notification, locked · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 8324
+  },
+  "MD-WO-19-counting.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-19 · Live Activity, counting · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 8324
+  },
+  "MD-WO-20-compact.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-20 · Dynamic Island, compact · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 8324
+  },
+  "MD-WO-21-records.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-21 · summary with records · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 9668
+  },
+  "MD-WO-22-one.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-22 · update template, one change · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 9668
+  },
+  "MD-WO-23-summary.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-23 · save as template · dark · light · light-HC",
+   "w": 1298,
+   "x": 2756,
+   "y": 9668
+  },
+  "MD-WO-24.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-24 · session detail · dark · light · light-HC",
+   "w": 1298,
+   "x": 4134,
+   "y": 9668
+  },
+  "MD-WO-25-edit.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-25 · editing · dark · light · light-HC",
+   "w": 1298,
+   "x": 0,
+   "y": 11012
+  },
+  "MD-WO-26-all.dc.html": {
+   "h": 924,
+   "is_interactive": true,
+   "page": "modes",
+   "title": "WO-26 · History, All · dark · light · light-HC",
+   "w": 1298,
+   "x": 1378,
+   "y": 11012
+  },
+  "MO-finish.dc.html": {
+   "h": 800,
+   "is_interactive": true,
+   "page": "motion",
+   "title": "MO · finishing a workout or a run · dark-HC",
+   "w": 1280,
+   "x": 1360,
+   "y": 1180
+  },
+  "MO-gestures.dc.html": {
+   "h": 800,
+   "is_interactive": true,
+   "page": "motion",
+   "title": "MO · gestures and thresholds · dark-HC",
+   "w": 1280,
+   "x": 4080,
+   "y": 260
+  },
+  "MO-log.dc.html": {
+   "h": 800,
+   "is_interactive": true,
+   "page": "motion",
+   "title": "MO · logging a set and a record · dark-HC",
+   "w": 1280,
+   "x": 0,
+   "y": 260
+  },
+  "MO-record.dc.html": {
+   "h": 800,
+   "is_interactive": true,
+   "page": "motion",
+   "title": "MO · a new record · dark-HC",
+   "w": 1280,
+   "x": 0,
+   "y": 1180
+  },
+  "MO-rest.dc.html": {
+   "h": 800,
+   "is_interactive": true,
+   "page": "motion",
+   "title": "MO · the rest timer ending · dark-HC",
+   "w": 1280,
+   "x": 1360,
+   "y": 260
+  },
+  "MO-start.dc.html": {
+   "h": 800,
+   "is_interactive": true,
+   "page": "motion",
+   "title": "MO · Start bubbles · dark-HC",
+   "w": 1280,
+   "x": 2720,
+   "y": 260
+  },
+  "MO-week.dc.html": {
+   "h": 800,
+   "is_interactive": true,
+   "page": "motion",
+   "title": "MO · a full week · dark-HC",
+   "w": 1280,
+   "x": 2720,
+   "y": 1180
+  },
+  "Main.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-02 · strength day · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 1524
+  },
+  "PL-01-axlar.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-01 · a template created · dark-HC",
+   "w": 390,
+   "x": 6110,
+   "y": 260
+  },
+  "PL-01-calib.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-01 · a calibration week · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 260
+  },
+  "PL-01-deload.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-01 · a deload week · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 260
+  },
+  "PL-01-deloadrec.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-01 · deload recommended · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 260
+  },
+  "PL-01-done.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-01 · today done · dark-HC",
+   "w": 390,
+   "x": 3290,
+   "y": 260
+  },
+  "PL-01-missed.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-01 · a missed day and an extra · dark-HC",
+   "w": 390,
+   "x": 2820,
+   "y": 260
+  },
+  "PL-01-next.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-01 · another week · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 260
+  },
+  "PL-01-noprog.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-01 · no programme · dark-HC",
+   "w": 390,
+   "x": 4700,
+   "y": 260
+  },
+  "PL-01-notmpl.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-01 · no templates · dark-HC",
+   "w": 390,
+   "x": 5170,
+   "y": 260
+  },
+  "PL-01-rest.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-01 · today a rest day · dark-HC",
+   "w": 390,
+   "x": 3760,
+   "y": 260
+  },
+  "PL-01-run.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-01 · today a run day · dark-HC",
+   "w": 390,
+   "x": 4230,
+   "y": 260
+  },
+  "PL-01-saved.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-01 · a template just saved · dark-HC",
+   "w": 390,
+   "x": 5640,
+   "y": 260
+  },
+  "PL-01-short.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-01 · Short week on · dark-HC",
+   "w": 390,
+   "x": 2350,
+   "y": 260
+  },
+  "PL-01-week.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-01 · this week · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 260
+  },
+  "PL-02-day.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-02 · day card menu · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 1524
+  },
+  "PL-02-move.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-02 · move to · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 1524
+  },
+  "PL-02-moved.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-02 · a moved session · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 1524
+  },
+  "PL-02-plan.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-02 · Plan menu · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 1524
+  },
+  "PL-02-short.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-02 · Short week on · dark-HC",
+   "w": 390,
+   "x": 2820,
+   "y": 1524
+  },
+  "PL-02-templates.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-02 · templates menu · dark-HC",
+   "w": 390,
+   "x": 2350,
+   "y": 1524
+  },
+  "PL-02-type.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-02 · week type · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 1524
+  },
+  "PL-03-archived.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-03 · archived, the card leaves the row · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 2788
+  },
+  "PL-03-delete.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-03 · delete alert · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 2788
+  },
+  "PL-03-menu.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-03 · template card menu · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 2788
+  },
+  "PL-03-share.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-03 · share sheet · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 2788
+  },
+  "PL-04-never.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-04 · never done · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 4052
+  },
+  "PL-04-pulla.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-04 · Pull A preview · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 4052
+  },
+  "PL-04-pusha.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-04 · template preview · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 4052
+  },
+  "PL-05-added.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-05 · new template, exercises added · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 5316
+  },
+  "PL-05-delete.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-05 · delete alert · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 5316
+  },
+  "PL-05-discard.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-05 · discard changes · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 5316
+  },
+  "PL-05-edit.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-05 · editing Push A · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 5316
+  },
+  "PL-05-new.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-05 · new template · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 5316
+  },
+  "PL-06-reps.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-06 · range keypad, reps · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 6580
+  },
+  "PL-06-rir.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-06 · range keypad, RIR · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 6580
+  },
+  "PL-06-same.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-06 · after Same for the rest · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 6580
+  },
+  "PL-07-empty.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-07 · no archived templates · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 7844
+  },
+  "PL-07-list.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-07 · archived templates · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 7844
+  },
+  "PL-08-changed.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-08 · a day changed · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 9108
+  },
+  "PL-08-daymenu.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-08 · a day's menu · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 9108
+  },
+  "PL-08-runmenu.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-08 · Run… submenu open · dark-HC",
+   "w": 390,
+   "x": 2350,
+   "y": 9108
+  },
+  "PL-08-runtarget.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-08 · run target · dark-HC",
+   "w": 390,
+   "x": 2820,
+   "y": 9108
+  },
+  "PL-08-std.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-08 · standard week open · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 9108
+  },
+  "PL-08-tempo.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-08 · a run day set · dark-HC",
+   "w": 390,
+   "x": 3290,
+   "y": 9108
+  },
+  "PL-08-week6.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-08 · programme, this week open · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 9108
+  },
+  "PL-08-week8.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-08 · week 8 made a deload · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 9108
+  },
+  "PL-09-new.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-09 · new programme · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 10372
+  },
+  "PL-09.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-09 · programme weights · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 10372
+  },
+  "PL-10-empty.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-10 · no notes · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 11636
+  },
+  "PL-10-write.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-10 · writing a note · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 11636
+  },
+  "PL-10.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-10 · programme log · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 11636
+  },
+  "PL-11-archive.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-11 · archive alert · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 12900
+  },
+  "PL-11-date.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-11 · date picker · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 12900
+  },
+  "PL-11-nofixed.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-11 · no fixed length · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 12900
+  },
+  "PL-11.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-11 · programme settings · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 12900
+  },
+  "PL-12-empty.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-12 · create programme, empty · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 14164
+  },
+  "PL-12-filled.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-12 · create programme, filled · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 14164
+  },
+  "PL-12-notmpl.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "plan",
+   "title": "PL-12 · no templates yet · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 14164
+  },
+  "RU-01-ready.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-01 · GPS ready · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 260
+  },
+  "RU-01-search.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-01 · looking for GPS · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 260
+  },
+  "RU-01-weak.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-01 · weak signal · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 260
+  },
+  "RU-02-avg.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-02 · running, average pace · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 1524
+  },
+  "RU-02-gps.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-02 · GPS lost · dark-HC",
+   "w": 390,
+   "x": 2350,
+   "y": 1524
+  },
+  "RU-02-island.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-02 · Dynamic Island, a run · dark-HC",
+   "w": 390,
+   "x": 4230,
+   "y": 1524
+  },
+  "RU-02-lap.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-02 · a lap just taken · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 1524
+  },
+  "RU-02-locked.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-02 · screen locked · dark-HC",
+   "w": 390,
+   "x": 3290,
+   "y": 1524
+  },
+  "RU-02-mini.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-02 · run minimised · dark-HC",
+   "w": 390,
+   "x": 3760,
+   "y": 1524
+  },
+  "RU-02-nomap.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-02 · map swiped away · dark-HC",
+   "w": 390,
+   "x": 2820,
+   "y": 1524
+  },
+  "RU-02-pace.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-02 · running, current pace · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 1524
+  },
+  "RU-02-time.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-02 · running, time · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 1524
+  },
+  "RU-02.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-02 · running, distance · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 1524
+  },
+  "RU-03.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-03 · paused · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 2788
+  },
+  "RU-04-short.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-04 · a very short run · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 4052
+  },
+  "RU-04.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-04 · finish run · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 4052
+  },
+  "RU-05-done.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-05 · just finished · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 5316
+  },
+  "RU-05-gap.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-05 · a GPS gap · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 5316
+  },
+  "RU-05-history.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-05 · from History · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 5316
+  },
+  "RU-05-nohr.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-05 · no heart rate · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 5316
+  },
+  "RU-05-watch.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-05 · synced from a watch (later) · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 5316
+  },
+  "RU-06-charts.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-06 · elevation, pace, heart rate · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 6580
+  },
+  "RU-06-sel.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-06 · a split selected · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 6580
+  },
+  "RU-06-splits.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-06 · splits · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 6580
+  },
+  "RU-07-3d.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-07 · 3D, hybrid · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 7844
+  },
+  "RU-07-sat.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-07 · satellite · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 7844
+  },
+  "RU-07-sources.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-07 · map sources · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 7844
+  },
+  "RU-07-std.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-07 · map, standard · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 7844
+  },
+  "RU-08-paused.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-08 · paused, scrubbing · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 9108
+  },
+  "RU-08-play.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-08 · flyover playing · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 9108
+  },
+  "RU-09-delete.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-09 · delete alert · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 10372
+  },
+  "RU-09.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "running",
+   "title": "RU-09 · edit run · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 10372
+  },
+  "SH-01-rt.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-01 · Reduce Transparency · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 260
+  },
+  "SH-02-done.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-02 · today done · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 1524
+  },
+  "SH-02-first.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-02 · first use · dark-HC",
+   "w": 390,
+   "x": 2350,
+   "y": 1524
+  },
+  "SH-02-gps.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-02 · GPS-gap warning · dark-HC",
+   "w": 390,
+   "x": 2820,
+   "y": 1524
+  },
+  "SH-02-inprog.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-02 · workout in progress · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 1524
+  },
+  "SH-02-rest.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-02 · rest day · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 1524
+  },
+  "SH-02-run.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-02 · run day · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 1524
+  },
+  "SH-03-first.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-03 · first use · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 2788
+  },
+  "SH-03-inprog.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-03 · workout in progress · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 2788
+  },
+  "SH-03-rest.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-03 · rest day · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 2788
+  },
+  "SH-03-run.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-03 · run day · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 2788
+  },
+  "SH-03-today.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-03 · today planned · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 2788
+  },
+  "SH-04-four.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-04 · four templates · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 4052
+  },
+  "SH-04-many.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-04 · many templates · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 4052
+  },
+  "SH-04-none.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-04 · no templates · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 4052
+  },
+  "SH-05.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-05 · Food (v1) · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 5316
+  },
+  "SH-06-body.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-06 · body data · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 6580
+  },
+  "SH-06-units.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-06 · units · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 6580
+  },
+  "SH-06-welcome.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-06 · welcome · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 6580
+  },
+  "SH-07-check.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-07 · hint on ✓ · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 7844
+  },
+  "SH-07-dock.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-07 · hint on the dock · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 7844
+  },
+  "SH-07-start.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-07 · hint on Start · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 7844
+  },
+  "SH-07-swipe.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-07 · hint on swipe · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 7844
+  },
+  "SH-08-health-sys.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-08 · Health, system sheet · dark-HC",
+   "w": 390,
+   "x": 2820,
+   "y": 9108
+  },
+  "SH-08-loc-denied.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-08 · location denied · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 9108
+  },
+  "SH-08-loc-pre.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-08 · location, before asking · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 9108
+  },
+  "SH-08-loc-sys.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-08 · location, system dialog · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 9108
+  },
+  "SH-08-notif-denied.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-08 · notifications denied · dark-HC",
+   "w": 390,
+   "x": 2350,
+   "y": 9108
+  },
+  "SH-08-notif-pre.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-08 · notifications, before asking · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 9108
+  },
+  "SH-08-notif-sys.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "shell",
+   "title": "SH-08 · notifications, system dialog · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 9108
+  },
+  "WO-01-logged.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-01 · the empty workout, every set logged · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 260
+  },
+  "WO-01-marks.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-01 · quick picks from marks · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 260
+  },
+  "WO-01-none.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-01 · no quick picks · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 260
+  },
+  "WO-01-picked.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-01 · after the first quick pick · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 260
+  },
+  "WO-01-recent.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-01 · quick picks from history · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 260
+  },
+  "WO-02-abc.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · a giant set, A B C · dark-HC",
+   "w": 390,
+   "x": 8930,
+   "y": 1524
+  },
+  "WO-02-benA.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · Ben A started from template · dark-HC",
+   "w": 390,
+   "x": 7520,
+   "y": 1524
+  },
+  "WO-02-note.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · today's note open · dark-HC",
+   "w": 390,
+   "x": 9400,
+   "y": 1524
+  },
+  "WO-02-pulla.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · Pull A started from template · dark-HC",
+   "w": 390,
+   "x": 7990,
+   "y": 1524
+  },
+  "WO-02-removed.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · an exercise removed · dark-HC",
+   "w": 390,
+   "x": 9870,
+   "y": 1524
+  },
+  "WO-02-rir.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s2 RIR 2 picked · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 1524
+  },
+  "WO-02-s1.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s1 started from template · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 1524
+  },
+  "WO-02-s10bw.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s10 bodyweight rows · dark-HC",
+   "w": 390,
+   "x": 4230,
+   "y": 1524
+  },
+  "WO-02-s10td.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s10 time and distance rows · dark-HC",
+   "w": 390,
+   "x": 4700,
+   "y": 1524
+  },
+  "WO-02-s12.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s12 record just set · dark-HC",
+   "w": 390,
+   "x": 5170,
+   "y": 1524
+  },
+  "WO-02-s13.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s13 all sets logged · dark-HC",
+   "w": 390,
+   "x": 5640,
+   "y": 1524
+  },
+  "WO-02-s14.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s14 an exercise skipped · dark-HC",
+   "w": 390,
+   "x": 6110,
+   "y": 1524
+  },
+  "WO-02-s15.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s15 new exercise, no history · dark-HC",
+   "w": 390,
+   "x": 6580,
+   "y": 1524
+  },
+  "WO-02-s16.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s16 restored after a crash · dark-HC",
+   "w": 390,
+   "x": 7050,
+   "y": 1524
+  },
+  "WO-02-s2.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s2 sets logged · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 1524
+  },
+  "WO-02-s3.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s3 resting · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 1524
+  },
+  "WO-02-s4.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s4 exercise done, focus jumps on · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 1524
+  },
+  "WO-02-s5.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s5 superset in focus · dark-HC",
+   "w": 390,
+   "x": 2350,
+   "y": 1524
+  },
+  "WO-02-s5b.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s5 half a round logged · dark-HC",
+   "w": 390,
+   "x": 2820,
+   "y": 1524
+  },
+  "WO-02-s5c.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s5 next round, A 2 in focus · dark-HC",
+   "w": 390,
+   "x": 8460,
+   "y": 1524
+  },
+  "WO-02-s9d.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s9 drop set in focus · dark-HC",
+   "w": 390,
+   "x": 3760,
+   "y": 1524
+  },
+  "WO-02-s9f.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · s9 failure set in focus · dark-HC",
+   "w": 390,
+   "x": 3290,
+   "y": 1524
+  },
+  "WO-02-swap.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-02 · Bench swapped for Chest Press Machine · dark-HC",
+   "w": 390,
+   "x": 10340,
+   "y": 1524
+  },
+  "WO-03-end.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-03 · scrolled to the end · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 2788
+  },
+  "WO-03-rest.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-03 · strip during rest · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 2788
+  },
+  "WO-03-strip.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-03 · scrolled, strip shown · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 2788
+  },
+  "WO-04-heavy.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-04 · dock, a heavy bar · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 4052
+  },
+  "WO-04-lb.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-04 · dock, an lb exercise · dark-HC",
+   "w": 390,
+   "x": 2350,
+   "y": 4052
+  },
+  "WO-04-logged.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-04 · dock, logged set · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 4052
+  },
+  "WO-04-new.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-04 · dock, set not logged · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 4052
+  },
+  "WO-04-rest.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-04 · dock from a rest line · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 4052
+  },
+  "WO-04-rir4.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-04 · dock, RIR 4+ open · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 4052
+  },
+  "WO-05-plates.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-05 · keypad, plates · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 5316
+  },
+  "WO-05-reps.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-05 · keypad, reps · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 5316
+  },
+  "WO-05-rest.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-05 · keypad, rest · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 5316
+  },
+  "WO-05-weight.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-05 · keypad, weight · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 5316
+  },
+  "WO-06-ended.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-06 · ended · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 6580
+  },
+  "WO-06-free.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-06 · a free rest · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 6580
+  },
+  "WO-06-last.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-06 · last seconds · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 6580
+  },
+  "WO-06-round.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-06 · a superset round's rest · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 6580
+  },
+  "WO-07-custom.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-07 · custom time · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 7844
+  },
+  "WO-07-menu.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-07 · free rest menu · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 7844
+  },
+  "WO-07-replace.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout",
+   "title": "WO-07 · menu while resting · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 7844
+  },
+  "WO-08-menu.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-08 · workout menu · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 260
+  },
+  "WO-08-note-empty.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-08 · note, empty · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 260
+  },
+  "WO-08-note.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-08 · note, filled · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 260
+  },
+  "WO-08-rename.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-08 · rename · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 260
+  },
+  "WO-08-time.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-08 · start time · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 260
+  },
+  "WO-09-menu.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-09 · exercise menu · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 1524
+  },
+  "WO-09-noweight.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-09 · a non-weight exercise · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 1524
+  },
+  "WO-09-rest.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-09 · rest submenu · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 1524
+  },
+  "WO-09-sticky.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-09 · sticky note prompt · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 1524
+  },
+  "WO-09-superset.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-09 · inside a superset · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 1524
+  },
+  "WO-10-one.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-10 · one exercise left · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 2788
+  },
+  "WO-10.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-10 · create superset · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 2788
+  },
+  "WO-11-skip.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-11 · one skipped · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 4052
+  },
+  "WO-11.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-11 · order and skip · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 4052
+  },
+  "WO-12-bb.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-12 · settings, barbell · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 5316
+  },
+  "WO-12-db.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-12 · settings, dumbbells in lb · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 5316
+  },
+  "WO-13-added.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-13 · a set added · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 6580
+  },
+  "WO-13-logged.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-13 · on a logged set · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 6580
+  },
+  "WO-13-menu.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-13 · set type menu · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 6580
+  },
+  "WO-13-moved.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-13 · a warm-up moved up · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 6580
+  },
+  "WO-13-warmup.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-13 · warm-up selected · dark-HC",
+   "w": 390,
+   "x": 1880,
+   "y": 6580
+  },
+  "WO-14-full.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-14 · full swipe deleting · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 7844
+  },
+  "WO-14-revealed.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-14 · swipe, Delete revealed · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 7844
+  },
+  "WO-15-one.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-15 · one set not logged · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 9108
+  },
+  "WO-15-several.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-15 · several sets not logged · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 9108
+  },
+  "WO-16-discard.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-16 · discard alert · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 10372
+  },
+  "WO-16-empty.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-16 · finish with no sets · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 10372
+  },
+  "WO-17-killed.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-17 · after the app was killed · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 11636
+  },
+  "WO-17-plan.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-17 · minimised, no rest · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 11636
+  },
+  "WO-17-rest.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-17 · minimised, resting · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 11636
+  },
+  "WO-18-banner.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-18 · banner over another app · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 12900
+  },
+  "WO-18-lock.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-18 · rest notification, locked · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 12900
+  },
+  "WO-19-counting.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-19 · Live Activity, counting · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 14164
+  },
+  "WO-19-ended.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-19 · Live Activity, ended · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 14164
+  },
+  "WO-19-open.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-19 · Live Activity, no rest · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 14164
+  },
+  "WO-20-compact.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-20 · Dynamic Island, compact · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 15428
+  },
+  "WO-20-ended.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-20 · Dynamic Island, ended · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 15428
+  },
+  "WO-20-expanded.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-20 · Dynamic Island, expanded · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 15428
+  },
+  "WO-20-minimal.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-more",
+   "title": "WO-20 · Dynamic Island, minimal · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 15428
+  },
+  "WO-21-empty.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-21 · empty workout, Save as template · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 260
+  },
+  "WO-21-expanded.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-21 · an exercise expanded · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 260
+  },
+  "WO-21-plain.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-21 · no records, no RIR, no template · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 260
+  },
+  "WO-21-records.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-21 · summary with records · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 260
+  },
+  "WO-22-one.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-22 · update template, one change · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 1524
+  },
+  "WO-22-several.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-22 · update template, several · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 1524
+  },
+  "WO-23-edit.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-23 · save from editing · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 2788
+  },
+  "WO-23-summary.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-23 · save as template · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 2788
+  },
+  "WO-24-expanded.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-24 · sets shown · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 4052
+  },
+  "WO-24.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-24 · session detail · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 4052
+  },
+  "WO-25-delete.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-25 · delete alert · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 5316
+  },
+  "WO-25-dock.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-25 · a past set in the dock · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 5316
+  },
+  "WO-25-edit.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-25 · editing · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 5316
+  },
+  "WO-25-unsaved.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-25 · unsaved changes · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 5316
+  },
+  "WO-26-all.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-26 · History, All · dark-HC",
+   "w": 390,
+   "x": 0,
+   "y": 6580
+  },
+  "WO-26-empty.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-26 · History, first use · dark-HC",
+   "w": 390,
+   "x": 1410,
+   "y": 6580
+  },
+  "WO-26-running.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-26 · History, Running · dark-HC",
+   "w": 390,
+   "x": 940,
+   "y": 6580
+  },
+  "WO-26-strength.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "workout-after",
+   "title": "WO-26 · History, Strength · dark-HC",
+   "w": 390,
+   "x": 470,
+   "y": 6580
+  },
+  "vs-EL-01-first.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · EL-01 · first use",
+   "w": 868,
+   "x": 2844,
+   "y": 1318
+  },
+  "vs-EL-01.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · EL-01 · You",
+   "w": 868,
+   "x": 0,
+   "y": 10474
+  },
+  "vs-EL-02-1yr.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · EL-02 · 1 year",
+   "w": 868,
+   "x": 2844,
+   "y": 10474
+  },
+  "vs-EL-02-8wk.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · EL-02 · Progress, 8 weeks",
+   "w": 868,
+   "x": 948,
+   "y": 10474
+  },
+  "vs-EL-02-first.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · EL-02 · first use",
+   "w": 868,
+   "x": 0,
+   "y": 2376
+  },
+  "vs-EL-02-next.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · EL-02 · 8 weeks, next comparison",
+   "w": 868,
+   "x": 1896,
+   "y": 10474
+  },
+  "vs-EL-03-empty.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · EL-03 · no runs yet",
+   "w": 868,
+   "x": 948,
+   "y": 2376
+  },
+  "vs-EL-03.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · EL-03 · Progress, Running",
+   "w": 868,
+   "x": 948,
+   "y": 9156
+  },
+  "vs-EL-10-none.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · EL-10 · no gear yet",
+   "w": 868,
+   "x": 1896,
+   "y": 3434
+  },
+  "vs-EX-06-empty.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · EX-06 · History, empty",
+   "w": 868,
+   "x": 1896,
+   "y": 2376
+  },
+  "vs-EX-07-empty.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · EX-07 · Chart, empty",
+   "w": 868,
+   "x": 2844,
+   "y": 2376
+  },
+  "vs-EX-08-empty.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · EX-08 · Records, empty",
+   "w": 868,
+   "x": 0,
+   "y": 3434
+  },
+  "vs-EX-08.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · EX-08 · Records",
+   "w": 868,
+   "x": 0,
+   "y": 9156
+  },
+  "vs-MO-log.dc.html": {
+   "h": 894,
+   "page": "vs",
+   "title": "1 vs 1+2 · MO · logging a set and a record",
+   "w": 2648,
+   "x": 0,
+   "y": 5810
+  },
+  "vs-MO-rest.dc.html": {
+   "h": 894,
+   "page": "vs",
+   "title": "1 vs 1+2 · MO · the rest timer ending",
+   "w": 2648,
+   "x": 0,
+   "y": 6824
+  },
+  "vs-PL-10-empty.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · PL-10 · no notes",
+   "w": 868,
+   "x": 948,
+   "y": 3434
+  },
+  "vs-RU-05-done.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · RU-05 · just finished",
+   "w": 868,
+   "x": 1896,
+   "y": 9156
+  },
+  "vs-RU-05-history.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · RU-05 · from History",
+   "w": 868,
+   "x": 2844,
+   "y": 9156
+  },
+  "vs-SH-02-done.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · SH-02 · today done",
+   "w": 868,
+   "x": 948,
+   "y": 260
+  },
+  "vs-SH-02-first.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · SH-02 · first use",
+   "w": 868,
+   "x": 1896,
+   "y": 260
+  },
+  "vs-SH-02-rest.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · SH-02 · rest day",
+   "w": 868,
+   "x": 0,
+   "y": 260
+  },
+  "vs-SH-06-body.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · SH-06 · body data",
+   "w": 868,
+   "x": 948,
+   "y": 1318
+  },
+  "vs-SH-06-units.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · SH-06 · units",
+   "w": 868,
+   "x": 0,
+   "y": 1318
+  },
+  "vs-SH-06-welcome.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · SH-06 · welcome",
+   "w": 868,
+   "x": 2844,
+   "y": 260
+  },
+  "vs-WO-02-s12.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · WO-02 · s12 record just set",
+   "w": 868,
+   "x": 0,
+   "y": 4752
+  },
+  "vs-WO-02-s13.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · WO-02 · s13 all sets logged",
+   "w": 868,
+   "x": 948,
+   "y": 4752
+  },
+  "vs-WO-06-ended.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · WO-06 · ended",
+   "w": 868,
+   "x": 1896,
+   "y": 4752
+  },
+  "vs-WO-21-empty.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · WO-21 · empty workout, Save as template",
+   "w": 868,
+   "x": 2844,
+   "y": 8098
+  },
+  "vs-WO-21-expanded.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · WO-21 · an exercise expanded",
+   "w": 868,
+   "x": 948,
+   "y": 8098
+  },
+  "vs-WO-21-plain.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · WO-21 · no records, no RIR, no template",
+   "w": 868,
+   "x": 1896,
+   "y": 8098
+  },
+  "vs-WO-21-records.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · WO-21 · summary with records",
+   "w": 868,
+   "x": 0,
+   "y": 8098
+  },
+  "vs-WO-26-empty.dc.html": {
+   "h": 938,
+   "page": "vs",
+   "title": "1 vs 1+2 · WO-26 · History, first use",
+   "w": 868,
+   "x": 1896,
+   "y": 1318
+  }
+ },
+ "createdOnFiles": {
+  "at": "2026-11-10T15:05:35Z",
+  "v": 1
+ },
+ "designSystems": [
+  {
+   "artifact": "https://claude.ai/artifact/3cuFKpGnj48MxnEphtVvav",
+   "copiedAt": "2026-11-10T15:05:35Z",
+   "namespace": "strive1",
+   "title": "Strive 1 system",
+   "version": "1794298481-934d"
+  }
+ ],
+ "launch": {
+  "page": "vs",
+  "view": "canvas"
+ },
+ "noteOrder": [
+  "t-shell-SH-01",
+  "m-shell-SH-01",
+  "t-shell-SH-02",
+  "m-shell-SH-02",
+  "t-shell-SH-03",
+  "m-shell-SH-03",
+  "t-shell-SH-04",
+  "m-shell-SH-04",
+  "t-shell-SH-05",
+  "m-shell-SH-05",
+  "t-shell-SH-06",
+  "m-shell-SH-06",
+  "t-shell-SH-07",
+  "m-shell-SH-07",
+  "t-shell-SH-08",
+  "m-shell-SH-08",
+  "t-workout-WO-01",
+  "m-workout-WO-01",
+  "t-workout-WO-02",
+  "m-workout-WO-02",
+  "t-workout-WO-03",
+  "m-workout-WO-03",
+  "t-workout-WO-04",
+  "m-workout-WO-04",
+  "t-workout-WO-05",
+  "m-workout-WO-05",
+  "t-workout-WO-06",
+  "m-workout-WO-06",
+  "t-workout-WO-07",
+  "m-workout-WO-07",
+  "t-workout-more-WO-08",
+  "m-workout-more-WO-08",
+  "t-workout-more-WO-09",
+  "m-workout-more-WO-09",
+  "t-workout-more-WO-10",
+  "m-workout-more-WO-10",
+  "t-workout-more-WO-11",
+  "m-workout-more-WO-11",
+  "t-workout-more-WO-12",
+  "m-workout-more-WO-12",
+  "t-workout-more-WO-13",
+  "m-workout-more-WO-13",
+  "t-workout-more-WO-14",
+  "m-workout-more-WO-14",
+  "t-workout-more-WO-15",
+  "m-workout-more-WO-15",
+  "t-workout-more-WO-16",
+  "m-workout-more-WO-16",
+  "t-workout-more-WO-17",
+  "m-workout-more-WO-17",
+  "t-workout-more-WO-18",
+  "m-workout-more-WO-18",
+  "t-workout-more-WO-19",
+  "m-workout-more-WO-19",
+  "t-workout-more-WO-20",
+  "m-workout-more-WO-20",
+  "t-workout-after-WO-21",
+  "m-workout-after-WO-21",
+  "t-workout-after-WO-22",
+  "m-workout-after-WO-22",
+  "t-workout-after-WO-23",
+  "m-workout-after-WO-23",
+  "t-workout-after-WO-24",
+  "m-workout-after-WO-24",
+  "t-workout-after-WO-25",
+  "m-workout-after-WO-25",
+  "t-workout-after-WO-26",
+  "m-workout-after-WO-26",
+  "t-plan-PL-01",
+  "m-plan-PL-01",
+  "t-plan-PL-02",
+  "m-plan-PL-02",
+  "t-plan-PL-03",
+  "m-plan-PL-03",
+  "t-plan-PL-04",
+  "m-plan-PL-04",
+  "t-plan-PL-05",
+  "m-plan-PL-05",
+  "t-plan-PL-06",
+  "m-plan-PL-06",
+  "t-plan-PL-07",
+  "m-plan-PL-07",
+  "t-plan-PL-08",
+  "m-plan-PL-08",
+  "t-plan-PL-09",
+  "m-plan-PL-09",
+  "t-plan-PL-10",
+  "m-plan-PL-10",
+  "t-plan-PL-11",
+  "m-plan-PL-11",
+  "t-plan-PL-12",
+  "m-plan-PL-12",
+  "t-exercises-EX-01",
+  "m-exercises-EX-01",
+  "t-exercises-EX-02",
+  "m-exercises-EX-02",
+  "t-exercises-EX-03",
+  "m-exercises-EX-03",
+  "t-exercises-EX-04",
+  "m-exercises-EX-04",
+  "t-exercises-EX-05",
+  "m-exercises-EX-05",
+  "t-exercises-EX-06",
+  "m-exercises-EX-06",
+  "t-exercises-EX-07",
+  "m-exercises-EX-07",
+  "t-exercises-EX-08",
+  "m-exercises-EX-08",
+  "t-exercises-EX-09",
+  "m-exercises-EX-09",
+  "t-exercises-EX-10",
+  "m-exercises-EX-10",
+  "t-exercises-EX-11",
+  "m-exercises-EX-11",
+  "t-running-RU-01",
+  "m-running-RU-01",
+  "t-running-RU-02",
+  "m-running-RU-02",
+  "t-running-RU-03",
+  "m-running-RU-03",
+  "t-running-RU-04",
+  "m-running-RU-04",
+  "t-running-RU-05",
+  "m-running-RU-05",
+  "t-running-RU-06",
+  "m-running-RU-06",
+  "t-running-RU-07",
+  "m-running-RU-07",
+  "t-running-RU-08",
+  "m-running-RU-08",
+  "t-running-RU-09",
+  "m-running-RU-09",
+  "t-you-EL-01",
+  "m-you-EL-01",
+  "t-you-EL-02",
+  "m-you-EL-02",
+  "t-you-EL-03",
+  "m-you-EL-03",
+  "t-you-EL-04",
+  "m-you-EL-04",
+  "t-you-EL-05",
+  "m-you-EL-05",
+  "t-you-EL-06",
+  "m-you-EL-06",
+  "t-you-EL-07",
+  "m-you-EL-07",
+  "t-you-EL-08",
+  "m-you-EL-08",
+  "t-you-EL-09",
+  "m-you-EL-09",
+  "t-you-EL-10",
+  "m-you-EL-10",
+  "t-you-EL-11",
+  "m-you-EL-11",
+  "t-you-EL-12",
+  "m-you-EL-12",
+  "t-you-EL-13",
+  "m-you-EL-13",
+  "t-you-EL-14",
+  "m-you-EL-14",
+  "t-later-EL-15",
+  "m-later-EL-15",
+  "t-later-EL-16",
+  "m-later-EL-16",
+  "t-later-EL-17",
+  "m-later-EL-17",
+  "t-later-EL-18",
+  "m-later-EL-18",
+  "t-later-EL-19",
+  "m-later-EL-19",
+  "t-later-O-22",
+  "m-later-O-22",
+  "t-motion-MO",
+  "t-modes-MD00",
+  "t-modes-MD01",
+  "t-modes-MD02",
+  "t-modes-MD03",
+  "t-modes-MD04",
+  "t-modes-MD05",
+  "t-modes-MD06",
+  "t-modes-MD07",
+  "t-modes-MD08",
+  "t-modes-MD09",
+  "t-modes-MD10",
+  "t-modes-MD11",
+  "t-modes-MD12",
+  "t-modes-MD13",
+  "t-modes-MD14",
+  "t-modes-MD15",
+  "t-modes-MD16",
+  "t-modes-MD17",
+  "t-modes-MD18",
+  "t-modes-MD19",
+  "t-modes-MD20",
+  "t-modes-MD21",
+  "readme",
+  "t-vs-A",
+  "t-vs-B",
+  "t-vs-C",
+  "t-vs-D"
+ ],
+ "notes": {
+  "m-exercises-EX-01": {
+   "fill": "teal",
+   "page": "exercises",
+   "size": 24,
+   "text": "Motion · library\nSearch filters live (no animation, results replace in place). A chip fills teal (100 ms) and the list cross-fades. Muscle headings stick while their group scrolls. A row pushes exercise detail (iOS push).",
+   "w": 420,
+   "x": 5640,
+   "y": 260
+  },
+  "m-exercises-EX-02": {
+   "fill": "teal",
+   "page": "exercises",
+   "size": 24,
+   "text": "Motion · filter sheet\nRises on the release spring; the list behind updates live as chips toggle.",
+   "w": 420,
+   "x": 1410,
+   "y": 1524
+  },
+  "m-exercises-EX-03": {
+   "fill": "teal",
+   "page": "exercises",
+   "size": 24,
+   "text": "Motion · picker\nA tick fills the circle (100 ms) and the glass bar's counts update; Add drops the sheet and the new exercises slide into the workout, 40 ms apart.",
+   "w": 420,
+   "x": 2820,
+   "y": 2788
+  },
+  "m-exercises-EX-04": {
+   "fill": "teal",
+   "page": "exercises",
+   "size": 24,
+   "text": "Motion · swap\nA tap swaps the name in the workout with a cross-fade; the sets stay.",
+   "w": 420,
+   "x": 940,
+   "y": 4052
+  },
+  "m-exercises-EX-05": {
+   "fill": "teal",
+   "page": "exercises",
+   "size": 24,
+   "text": "Motion · exercise detail\nThe segmented control cross-fades the four parts (250 ms). From the workout it is a sheet with a grabber (release spring), so the workout stays under it.",
+   "w": 420,
+   "x": 1880,
+   "y": 5316
+  },
+  "m-exercises-EX-06": {
+   "fill": "teal",
+   "page": "exercises",
+   "size": 24,
+   "text": "Motion · history\nCards push the session detail.",
+   "w": 420,
+   "x": 940,
+   "y": 6580
+  },
+  "m-exercises-EX-07": {
+   "fill": "teal",
+   "page": "exercises",
+   "size": 24,
+   "text": "Motion · chart\nA tap moves the teal selection to the nearest point (150 ms) and writes its value into the title; a second tap pushes that workout. Period changes re-draw the line (300 ms).",
+   "w": 420,
+   "x": 1410,
+   "y": 7844
+  },
+  "m-exercises-EX-08": {
+   "fill": "teal",
+   "page": "exercises",
+   "size": 24,
+   "text": "Motion · records\nStatic.",
+   "w": 420,
+   "x": 1410,
+   "y": 9108
+  },
+  "m-exercises-EX-09": {
+   "fill": "teal",
+   "page": "exercises",
+   "size": 24,
+   "text": "Motion · create exercise\nA full-height opaque sheet (release spring); each row's pull-down as WO-07; Save enables (fade 150 ms) once a name and a primary muscle exist.",
+   "w": 420,
+   "x": 2350,
+   "y": 10372
+  },
+  "m-exercises-EX-10": {
+   "fill": "teal",
+   "page": "exercises",
+   "size": 24,
+   "text": "Motion · edit exercise\nAs EX-09.",
+   "w": 420,
+   "x": 1410,
+   "y": 11636
+  },
+  "m-exercises-EX-11": {
+   "fill": "teal",
+   "page": "exercises",
+   "size": 24,
+   "text": "Motion · merge\nAs WO-08.",
+   "w": 420,
+   "x": 1410,
+   "y": 12900
+  },
+  "m-later-EL-15": {
+   "fill": "teal",
+   "page": "later",
+   "size": 24,
+   "text": "Motion · import (later)\nThe progress bar fills linearly; done cross-fades to the check.",
+   "w": 420,
+   "x": 1880,
+   "y": 260
+  },
+  "m-later-EL-16": {
+   "fill": "teal",
+   "page": "later",
+   "size": 24,
+   "text": "Motion · sync (later)\nThe sync glyph turns while syncing (the one loop allowed: it ends when the work does).",
+   "w": 420,
+   "x": 1880,
+   "y": 1524
+  },
+  "m-later-EL-17": {
+   "fill": "teal",
+   "page": "later",
+   "size": 24,
+   "text": "Motion · food (later)\nRings fill once on open (600 ms).",
+   "w": 420,
+   "x": 1410,
+   "y": 2788
+  },
+  "m-later-EL-18": {
+   "fill": "teal",
+   "page": "later",
+   "size": 24,
+   "text": "Motion · log food (later)\nAs the library's search.",
+   "w": 420,
+   "x": 1410,
+   "y": 4052
+  },
+  "m-later-EL-19": {
+   "fill": "teal",
+   "page": "later",
+   "size": 24,
+   "text": "Motion · targets (later)\nStatic form.",
+   "w": 420,
+   "x": 940,
+   "y": 5316
+  },
+  "m-later-O-22": {
+   "fill": "teal",
+   "page": "later",
+   "size": 24,
+   "text": "Motion · activity (later)\nThe Activity bubble joins the arc as the fifth, same stagger.",
+   "w": 420,
+   "x": 940,
+   "y": 6580
+  },
+  "m-plan-PL-01": {
+   "fill": "teal",
+   "page": "plan",
+   "size": 24,
+   "text": "Motion · Plan\nThe week card's days swipe horizontally to the next week (paging spring); ‹ › do the same. A tapped day moves the teal selection (250 ms) and the day card below cross-fades to its plan. A template card zooms open into the full-screen preview (P1: the card's frame grows to the screen, 350 ms spring) and shrinks back on close. Deload now: the week's bar segment fills with D (250 ms).",
+   "w": 420,
+   "x": 6580,
+   "y": 260
+  },
+  "m-plan-PL-02": {
+   "fill": "teal",
+   "page": "plan",
+   "size": 24,
+   "text": "Motion · Plan menus\nAs WO-07. Short week greys the dropped days (250 ms) without moving anything. Move to: the session lifts from its day and lands on the new day (350 ms spring).",
+   "w": 420,
+   "x": 3290,
+   "y": 1524
+  },
+  "m-plan-PL-03": {
+   "fill": "teal",
+   "page": "plan",
+   "size": 24,
+   "text": "Motion · template menu\nAs WO-07. Archive: the card shrinks and fades out of the row (250 ms), the cards close the gap (350 ms).",
+   "w": 420,
+   "x": 1880,
+   "y": 2788
+  },
+  "m-plan-PL-04": {
+   "fill": "teal",
+   "page": "plan",
+   "size": 24,
+   "text": "Motion · preview\nThe zoom from the card (PL-01). Start workout: the preview turns into the workout (cross-fade of the content, 250 ms).",
+   "w": 420,
+   "x": 1410,
+   "y": 4052
+  },
+  "m-plan-PL-05": {
+   "fill": "teal",
+   "page": "plan",
+   "size": 24,
+   "text": "Motion · template editor\nAs the workout's rows. Rows reorder by drag (lift: scale 1.02 + shadow; drop: 350 ms spring). Discard changes: the sheet slides away.",
+   "w": 420,
+   "x": 2350,
+   "y": 5316
+  },
+  "m-plan-PL-06": {
+   "fill": "teal",
+   "page": "plan",
+   "size": 24,
+   "text": "Motion · range keypad\nAs WO-05. Same for the rest: the copied values flash teal on each row below, 40 ms apart.",
+   "w": 420,
+   "x": 1410,
+   "y": 6580
+  },
+  "m-plan-PL-07": {
+   "fill": "teal",
+   "page": "plan",
+   "size": 24,
+   "text": "Motion · archived\nRestore: the row slides out (250 ms); the template reappears in Plan's row.",
+   "w": 420,
+   "x": 940,
+   "y": 7844
+  },
+  "m-plan-PL-08": {
+   "fill": "teal",
+   "page": "plan",
+   "size": 24,
+   "text": "Motion · programme weeks\nA week row opens with a height spring (350 ms); the open week's days fade in 20 ms apart. Choosing Deload re-colours the row's miniature (250 ms).",
+   "w": 420,
+   "x": 3760,
+   "y": 9108
+  },
+  "m-plan-PL-09": {
+   "fill": "teal",
+   "page": "plan",
+   "size": 24,
+   "text": "Motion · weights\nStatic list; tab switches cross-fade (250 ms).",
+   "w": 420,
+   "x": 940,
+   "y": 10372
+  },
+  "m-plan-PL-10": {
+   "fill": "teal",
+   "page": "plan",
+   "size": 24,
+   "text": "Motion · log\nA new note slides in at the top (350 ms).",
+   "w": 420,
+   "x": 1410,
+   "y": 11636
+  },
+  "m-plan-PL-11": {
+   "fill": "teal",
+   "page": "plan",
+   "size": 24,
+   "text": "Motion · settings\nInline pickers open with a height spring.",
+   "w": 420,
+   "x": 1880,
+   "y": 12900
+  },
+  "m-plan-PL-12": {
+   "fill": "teal",
+   "page": "plan",
+   "size": 24,
+   "text": "Motion · create programme\nA full-height sheet rising on the release spring; menus as WO-07.",
+   "w": 420,
+   "x": 1410,
+   "y": 14164
+  },
+  "m-running-RU-01": {
+   "fill": "teal",
+   "page": "running",
+   "size": 24,
+   "text": "Motion · run start\nThe GPS state cross-fades from searching (a spinner) to ready (teal dot, a light haptic). Start run: a 3-2-1 count in the big type (1 s each, Reduce Motion: no count, starts at once) and the live screen slides up.",
+   "w": 420,
+   "x": 1410,
+   "y": 260
+  },
+  "m-running-RU-02": {
+   "fill": "teal",
+   "page": "running",
+   "size": 24,
+   "text": "Motion · live run\nThe big number updates without animation. A tap cycles distance → time → pace → avg pace with a vertical cross-fade (200 ms). The map panel follows the finger and swipes away (release spring); the numbers grow to fill the space (350 ms). Lap: a banner drops for 3 s with a haptic.",
+   "w": 420,
+   "x": 4700,
+   "y": 1524
+  },
+  "m-running-RU-03": {
+   "fill": "teal",
+   "page": "running",
+   "size": 24,
+   "text": "Motion · paused\nThe numbers dim to 40 % and Paused pulses once (no loop). Resume and Finish replace Pause and Lap with a cross-fade.",
+   "w": 420,
+   "x": 470,
+   "y": 2788
+  },
+  "m-running-RU-04": {
+   "fill": "teal",
+   "page": "running",
+   "size": 24,
+   "text": "Motion · finish run\nAs WO-15.",
+   "w": 420,
+   "x": 940,
+   "y": 4052
+  },
+  "m-running-RU-05": {
+   "fill": "teal",
+   "page": "running",
+   "size": 24,
+   "text": "Motion · run summary · Strive 1+2\nThe route draws itself once (800 ms ease-out), then the stats sheet rises over the map's lower half (calm) while the distance rolls 0 → 8.04 km (700 ms) and a lime check pops by the title on the win spring (dampingRatio 0.45, stiffness 420). A run with records: the records card's sun edge glows once and its stars pop. The sheet scrolls up over the map into the sections. Reduce Motion: cross-fades only. (MO-finish)",
+   "w": 420,
+   "x": 2350,
+   "y": 5316
+  },
+  "m-running-RU-06": {
+   "fill": "teal",
+   "page": "running",
+   "size": 24,
+   "text": "Motion · sections\nTapping a chart moves a cursor along distance and shows the value at that point; a split row highlights (150 ms).",
+   "w": 420,
+   "x": 1410,
+   "y": 6580
+  },
+  "m-running-RU-07": {
+   "fill": "teal",
+   "page": "running",
+   "size": 24,
+   "text": "Motion · full map\nThe map expands from the summary's map (350 ms). Map types cross-fade (250 ms); 3D tilts the camera (600 ms ease-in-out).",
+   "w": 420,
+   "x": 1880,
+   "y": 7844
+  },
+  "m-running-RU-08": {
+   "fill": "teal",
+   "page": "running",
+   "size": 24,
+   "text": "Motion · flyover\nThe camera follows the route at 1x real speed scaled to 30 s for the whole run; the scrubber drives it. Reduce Motion: the flyover is replaced by the route drawing itself in 2D.",
+   "w": 420,
+   "x": 940,
+   "y": 9108
+  },
+  "m-running-RU-09": {
+   "fill": "teal",
+   "page": "running",
+   "size": 24,
+   "text": "Motion · edit run\nA sheet rising on the release spring.",
+   "w": 420,
+   "x": 940,
+   "y": 10372
+  },
+  "m-shell-SH-01": {
+   "fill": "teal",
+   "page": "shell",
+   "size": 24,
+   "text": "Motion · tab bar\nA tab switch cross-fades the content (250 ms) and the selected pill slides to the new tab on the release spring (350 ms, slight overshoot). Each tab keeps its stack and scroll. Content scrolls under the glass bar; the bar never moves. Reduce Transparency: glass turns solid, nothing else changes.",
+   "w": 420,
+   "x": 470,
+   "y": 260
+  },
+  "m-shell-SH-02": {
+   "fill": "teal",
+   "page": "shell",
+   "size": 24,
+   "text": "Motion · Home · Strive 1+2\nStart Push A: the button presses (scale .96, 100 ms), then the workout rises from the bottom as a full-screen sheet on the calm spring; Home stays behind it. Continue grows the minimised bar into the workout (350 ms). Cards appear without entrance animation: Home must feel instant.\nToday done: the first time Home shows after Finish, the card's lime edge and ✓ pop once on the win spring (dampingRatio 0.45, stiffness 420). A full week plays once on This week (MO-week). Reduce Motion: colour only.",
+   "w": 420,
+   "x": 3290,
+   "y": 1524
+  },
+  "m-shell-SH-03": {
+   "fill": "teal",
+   "page": "shell",
+   "size": 24,
+   "text": "Motion · Start bubbles (choice 14c)\nTap Start: + rotates 45° to × (350 ms spring); the nearly clear panel scales from .6 out of Start (350 ms); the four bubbles spring out along the arc one after another, 40 ms apart, each from Start's centre (translate + scale .2 → 1). Labels fade in with their bubble. A tap outside or ×: everything returns to Start in reverse, 250 ms, no stagger. Reduce Motion: panel and bubbles fade in place (250 ms).",
+   "w": 420,
+   "x": 2350,
+   "y": 2788
+  },
+  "m-shell-SH-04": {
+   "fill": "teal",
+   "page": "shell",
+   "size": 24,
+   "text": "Motion · From template\nThe four bubbles shrink back into From template while the template grid fades and scales up from it (350 ms); Back reverses. The grid scrolls; its top row fades under the panel's edge.",
+   "w": 420,
+   "x": 1410,
+   "y": 4052
+  },
+  "m-shell-SH-05": {
+   "fill": "teal",
+   "page": "shell",
+   "size": 24,
+   "text": "Motion · Food\nStatic. The tab is a placeholder; filling it later moves nothing.",
+   "w": 420,
+   "x": 470,
+   "y": 5316
+  },
+  "m-shell-SH-06": {
+   "fill": "teal",
+   "page": "shell",
+   "size": 24,
+   "text": "Motion · onboarding\nPages slide horizontally with the finger (paging, release spring); the dots stretch into the current one's capsule. Skip fades the onboarding out to Home (250 ms). The welcome art assembles once: the focus card, the week strip and the route line rise 12 pt and fade in, 40 ms apart.",
+   "w": 420,
+   "x": 1410,
+   "y": 6580
+  },
+  "m-shell-SH-07": {
+   "fill": "teal",
+   "page": "shell",
+   "size": 24,
+   "text": "Motion · hints\nA hint fades in 400 ms after the screen settles, with a 6 pt rise; its arrow points at the control. Got it, or using the control, fades it out (250 ms). Each hint shows once.",
+   "w": 420,
+   "x": 1880,
+   "y": 7844
+  },
+  "m-shell-SH-08": {
+   "fill": "teal",
+   "page": "shell",
+   "size": 24,
+   "text": "Motion · permissions\nStrive's explanation sheet rises on the release spring; Continue hands over to the system dialog (the system animates it). Denied: the screen shows its inline state without an alert.",
+   "w": 420,
+   "x": 3290,
+   "y": 9108
+  },
+  "m-workout-WO-01": {
+   "fill": "teal",
+   "page": "workout",
+   "size": 24,
+   "text": "Motion · empty workout\nA quick pick presses, then the card collapses (height spring 350 ms) and the picked exercise unfolds in its place with the focus card above it; the chip row fades. Add exercises pushes the picker up as a full-height sheet.",
+   "w": 420,
+   "x": 2350,
+   "y": 260
+  },
+  "m-workout-WO-02": {
+   "fill": "teal",
+   "page": "workout",
+   "size": 24,
+   "text": "Motion · logging (the signature moment) · Strive 1+2\n✓ or Log set: press 100 ms (scale .96), then the ✓ fills and pops 1 → 1.14 → 1 on the win spring (dampingRatio 0.45, stiffness 420), a light haptic; the logged row's edge flashes lime 2 px and fades in 400 ms; the header's count rolls up. The tint slides to the next row and the rest card rises on the calm spring (design 1's, 350 ms); the focus card's values cross-fade (250 ms). (MO-log)\nA record: six sun rays burst by the ✓ (300 ms), the sun toast drops from under the bar on the win spring and counts the value up in Unbounded (600 ms), a success haptic; it holds 2.5 s and leaves on the calm spring. (MO-record)\nAll logged: \"14 of 14 sets\" and the overview's n/n ✓ turn lime. Reduce Motion: cross-fades and colour only.",
+   "w": 420,
+   "x": 10810,
+   "y": 1524
+  },
+  "m-workout-WO-03": {
+   "fill": "teal",
+   "page": "workout",
+   "size": 24,
+   "text": "Motion · scrolled\nAs the large header leaves, the name and progress fade into the bar (250 ms) and the bar turns to glass. When the focus card leaves the view, the strip slides down from under the bar (350 ms) and fades in; scrolling back up slides it away. Tapping the strip scrolls to the card (spring scroll; Reduce Motion: jump).",
+   "w": 420,
+   "x": 1410,
+   "y": 2788
+  },
+  "m-workout-WO-04": {
+   "fill": "teal",
+   "page": "workout",
+   "size": 24,
+   "text": "Motion · dock\nA tap on a set: the dock rises from the bottom on the release spring (350 ms) and the list stays put. The grabber follows the finger 1:1; released past a third of its height, or flicked down (> 1000 pt/s), it closes; otherwise it springs back. Log: press, the dock drops (250 ms), the row updates, the rest card rises. RIR 4+ opens its row with a height spring. Reduce Motion: fade in and out.",
+   "w": 420,
+   "x": 2820,
+   "y": 4052
+  },
+  "m-workout-WO-05": {
+   "fill": "teal",
+   "page": "workout",
+   "size": 24,
+   "text": "Motion · keypad\nTapping a field swaps the − and + for the keypad: the RIR/rest row collapses, the keys fade in from 8 pt below, 20 ms apart by row; the rest card hides (fade 150 ms). Next moves the teal ring to the next field (250 ms). Plates swap the digits for plate keys with a cross-fade; each plate key drops a plate onto the drawn sleeve (scale-in 200 ms).",
+   "w": 420,
+   "x": 1880,
+   "y": 5316
+  },
+  "m-workout-WO-06": {
+   "fill": "teal",
+   "page": "workout",
+   "size": 24,
+   "text": "Motion · rest timer · Strive 1+2\nThe ring drains in 1 s linear ticks; the digits change without animation (tabular figures). − / + nudge the ring on the calm spring. Last 3 s: the ring and digits stay teal and pulse 1.04 once a second. At 0: the ring closes and turns lime with the card's edge, popping on the win spring (dampingRatio 0.45, stiffness 420); sound, long buzz and a success haptic; \"Rest over. Set 3 is yours.\" It holds about 600 ms, then settles 8 pt and fades (calm). Skip: fades at once. Reduce Motion: only the digits and colours change. (MO-rest)",
+   "w": 420,
+   "x": 1880,
+   "y": 6580
+  },
+  "m-workout-WO-07": {
+   "fill": "teal",
+   "page": "workout",
+   "size": 24,
+   "text": "Motion · menus\nPull-down menus scale from .96 at their anchor (transform-origin at the button) and fade in, 350 ms spring; a submenu slides in from the right within the menu (250 ms). A tap outside fades them (150 ms).",
+   "w": 420,
+   "x": 1410,
+   "y": 7844
+  },
+  "m-workout-after-WO-21": {
+   "fill": "teal",
+   "page": "workout-after",
+   "size": 24,
+   "text": "Motion · summary · Strive 1+2\nPushes in from the right after Finish (calm). \"Nailed it, Carl.\" fades in and rises 8 pt; the four tiles stagger in 50 ms apart on the win spring (dampingRatio 0.45, stiffness 420); the Records tile's sun edge glows once; the record stars pop in sequence. An exercise row expands with a height spring (calm). RPE segments fill on tap (100 ms). Reduce Motion: cross-fades only. (MO-finish)",
+   "w": 420,
+   "x": 1880,
+   "y": 260
+  },
+  "m-workout-after-WO-22": {
+   "fill": "teal",
+   "page": "workout-after",
+   "size": 24,
+   "text": "Motion · update template\nAs WO-08. Update closes the summary back to where the workout started (slide down, 350 ms).",
+   "w": 420,
+   "x": 940,
+   "y": 1524
+  },
+  "m-workout-after-WO-23": {
+   "fill": "teal",
+   "page": "workout-after",
+   "size": 24,
+   "text": "Motion · save as template\nAs WO-08; after Save, Plan's template row scrolls to the new card, which pulses its border once (teal, 600 ms).",
+   "w": 420,
+   "x": 940,
+   "y": 2788
+  },
+  "m-workout-after-WO-24": {
+   "fill": "teal",
+   "page": "workout-after",
+   "size": 24,
+   "text": "Motion · session detail\nPushed from History (iOS push, 350 ms). Edit cross-fades the read-only rows into editable rows (250 ms).",
+   "w": 420,
+   "x": 940,
+   "y": 4052
+  },
+  "m-workout-after-WO-25": {
+   "fill": "teal",
+   "page": "workout-after",
+   "size": 24,
+   "text": "Motion · editing\nAs the workout's rows and dock. Delete: alert, then pop back to History where the row collapses (350 ms).",
+   "w": 420,
+   "x": 1880,
+   "y": 5316
+  },
+  "m-workout-after-WO-26": {
+   "fill": "teal",
+   "page": "workout-after",
+   "size": 24,
+   "text": "Motion · History\nThe segmented control cross-fades the list (250 ms); week headers stick while their weeks scroll.",
+   "w": 420,
+   "x": 1880,
+   "y": 6580
+  },
+  "m-workout-more-WO-08": {
+   "fill": "teal",
+   "page": "workout-more",
+   "size": 24,
+   "text": "Motion · prompts\nAlerts and prompts fade and scale from 1.05 to 1 (250 ms) over a scrim fading to 32 %. The keyboard is the system's.",
+   "w": 420,
+   "x": 2350,
+   "y": 260
+  },
+  "m-workout-more-WO-09": {
+   "fill": "teal",
+   "page": "workout-more",
+   "size": 24,
+   "text": "Motion · exercise menu\nAs WO-07. Note opens today's note field under the header with a height spring and focuses it; Swap pushes the picker up as a sheet.",
+   "w": 420,
+   "x": 2350,
+   "y": 1524
+  },
+  "m-workout-more-WO-10": {
+   "fill": "teal",
+   "page": "workout-more",
+   "size": 24,
+   "text": "Motion · create superset\nPicking a partner closes the dialog; the partner's block lifts out of the list and lands under the exercise (350 ms spring), the edge line draws down the pair (250 ms), the A/B tags fade in.",
+   "w": 420,
+   "x": 940,
+   "y": 2788
+  },
+  "m-workout-more-WO-11": {
+   "fill": "teal",
+   "page": "workout-more",
+   "size": 24,
+   "text": "Motion · order and skip\n↑ ↓ swap neighbours with a 350 ms spring; a superset moves as one block. Skip greys the row (250 ms).",
+   "w": 420,
+   "x": 940,
+   "y": 4052
+  },
+  "m-workout-more-WO-12": {
+   "fill": "teal",
+   "page": "workout-more",
+   "size": 24,
+   "text": "Motion · exercise settings\nA sheet rising on the release spring; values change in place.",
+   "w": 420,
+   "x": 940,
+   "y": 5316
+  },
+  "m-workout-more-WO-13": {
+   "fill": "teal",
+   "page": "workout-more",
+   "size": 24,
+   "text": "Motion · set type\nThe badge's menu as WO-07. A set made a warm-up recolours (250 ms) and, if unlogged, lifts out and slides up to the next position (350 ms spring) while the rows between move down.",
+   "w": 420,
+   "x": 2350,
+   "y": 6580
+  },
+  "m-workout-more-WO-14": {
+   "fill": "teal",
+   "page": "workout-more",
+   "size": 24,
+   "text": "Motion · swipe to delete (O-20)\nThe row follows the finger 1:1, revealing red. Released short of 88 pt it springs back; between 88 pt and half the row it rests open on Delete; past half it keeps going: the red fills the row, Delete hugs the left, the row slides out (250 ms) and the rows below close up (350 ms spring), with a medium haptic. A swipe never counts as a tap.",
+   "w": 420,
+   "x": 940,
+   "y": 7844
+  },
+  "m-workout-more-WO-15": {
+   "fill": "teal",
+   "page": "workout-more",
+   "size": 24,
+   "text": "Motion · finish sheet\nThe action sheet rises from the bottom (350 ms spring) over a scrim; a choice drops it (250 ms) and the summary pushes in from the right.",
+   "w": 420,
+   "x": 940,
+   "y": 9108
+  },
+  "m-workout-more-WO-16": {
+   "fill": "teal",
+   "page": "workout-more",
+   "size": 24,
+   "text": "Motion · discard\nAs WO-08. Discard: the workout sheet slides down and away (350 ms) to where it started.",
+   "w": 420,
+   "x": 940,
+   "y": 10372
+  },
+  "m-workout-more-WO-17": {
+   "fill": "teal",
+   "page": "workout-more",
+   "size": 24,
+   "text": "Motion · minimise (O-20)\n⌄ or a drag down on the title bar: the workout shrinks into the bar above the tab bar, its frame morphing (350 ms spring), the tab bar fading back in. A drag past a third, or a flick, commits; otherwise it springs back. A tap on the bar grows it back. Reduce Motion: cross-fade. The bar's rest ring ticks like the card's.",
+   "w": 420,
+   "x": 1410,
+   "y": 11636
+  },
+  "m-workout-more-WO-18": {
+   "fill": "teal",
+   "page": "workout-more",
+   "size": 24,
+   "text": "Motion · notification\nSystem-animated. The buzz and the sound come with it.",
+   "w": 420,
+   "x": 940,
+   "y": 12900
+  },
+  "m-workout-more-WO-19": {
+   "fill": "teal",
+   "page": "workout-more",
+   "size": 24,
+   "text": "Motion · Live Activity\nThe countdown is a system timer (no per-second updates from the app). Ended: the ring swaps to a teal check with the system's content transition.",
+   "w": 420,
+   "x": 1410,
+   "y": 14164
+  },
+  "m-workout-more-WO-20": {
+   "fill": "teal",
+   "page": "workout-more",
+   "size": 24,
+   "text": "Motion · Dynamic Island\nSystem-animated: compact ↔ expanded on long-press; the ring drains with the system timer.",
+   "w": 420,
+   "x": 1880,
+   "y": 15428
+  },
+  "m-you-EL-01": {
+   "fill": "teal",
+   "page": "you",
+   "size": 24,
+   "text": "Motion · You\nRows push their screens (iOS push).",
+   "w": 420,
+   "x": 940,
+   "y": 260
+  },
+  "m-you-EL-02": {
+   "fill": "teal",
+   "page": "you",
+   "size": 24,
+   "text": "Motion · Progress · Strive 1+2\nThe total counts up once (800 ms) in Unbounded and the curve draws left to right. A tap on the comparison line cross-fades to the next line (250 ms), a light haptic. One rule: a tap shows the next, in the list's order, looping; never on a timer, nowhere but Progress (EL-02-cmp). Period changes re-draw the bars from the baseline (calm spring, 20 ms stagger). A tapped bar turns teal and its value appears above it.",
+   "w": 420,
+   "x": 5120,
+   "y": 1524
+  },
+  "m-you-EL-03": {
+   "fill": "teal",
+   "page": "you",
+   "size": 24,
+   "text": "Motion · Progress, running\nAs EL-02.",
+   "w": 420,
+   "x": 1410,
+   "y": 2788
+  },
+  "m-you-EL-04": {
+   "fill": "teal",
+   "page": "you",
+   "size": 24,
+   "text": "Motion · main lifts\nTicks fill (100 ms); past five, the rest dim (250 ms).",
+   "w": 420,
+   "x": 940,
+   "y": 4052
+  },
+  "m-you-EL-05": {
+   "fill": "teal",
+   "page": "you",
+   "size": 24,
+   "text": "Motion · profile\nFields edit in place; no motion.",
+   "w": 420,
+   "x": 940,
+   "y": 5316
+  },
+  "m-you-EL-06": {
+   "fill": "teal",
+   "page": "you",
+   "size": 24,
+   "text": "Motion · settings\nGrouped list; menus as WO-07; switches slide their knob on the release spring.",
+   "w": 420,
+   "x": 1410,
+   "y": 6580
+  },
+  "m-you-EL-07": {
+   "fill": "teal",
+   "page": "you",
+   "size": 24,
+   "text": "Motion · plates and bars\nAs EL-06.",
+   "w": 420,
+   "x": 1410,
+   "y": 7844
+  },
+  "m-you-EL-08": {
+   "fill": "teal",
+   "page": "you",
+   "size": 24,
+   "text": "Motion · devices\nLinking shows a spinner in the row; Linked cross-fades in with a light haptic.",
+   "w": 420,
+   "x": 1410,
+   "y": 9108
+  },
+  "m-you-EL-09": {
+   "fill": "teal",
+   "page": "you",
+   "size": 24,
+   "text": "Motion · Health\nLink hands over to the system sheet.",
+   "w": 420,
+   "x": 1410,
+   "y": 10372
+  },
+  "m-you-EL-10": {
+   "fill": "teal",
+   "page": "you",
+   "size": 24,
+   "text": "Motion · gear\nRows push detail; Retire slides the row into Retired.",
+   "w": 420,
+   "x": 1410,
+   "y": 11636
+  },
+  "m-you-EL-11": {
+   "fill": "teal",
+   "page": "you",
+   "size": 24,
+   "text": "Motion · gear detail\nA sheet for new gear; a push for existing gear.",
+   "w": 420,
+   "x": 1410,
+   "y": 12900
+  },
+  "m-you-EL-12": {
+   "fill": "teal",
+   "page": "you",
+   "size": 24,
+   "text": "Motion · choose shoes\nA sheet; the tick moves (150 ms).",
+   "w": 420,
+   "x": 940,
+   "y": 14164
+  },
+  "m-you-EL-13": {
+   "fill": "teal",
+   "page": "you",
+   "size": 24,
+   "text": "Motion · export\nShare… shows the spinner inside the button (the label cross-fades to Exporting…), then the system share sheet rises.",
+   "w": 420,
+   "x": 2350,
+   "y": 15428
+  },
+  "m-you-EL-14": {
+   "fill": "teal",
+   "page": "you",
+   "size": 24,
+   "text": "Motion · about\nStatic.",
+   "w": 420,
+   "x": 470,
+   "y": 16692
+  },
+  "readme": {
+   "fill": "gray",
+   "page": "shell",
+   "size": 24,
+   "text": "Strive 1 — Strive as built, polished and completed.\n\nEvery board is one screen state at 390 × 844. Each opens in dark with Increase Contrast (Carl's phone). Switch a board's mode in Tweaks: dark-hc · dark · light · light-hc. The All modes page shows each screen in the other three.\n\nPrototype: press Play on Main (Home) and tap. Every flow in the inventory is wired; a tap on a set's Previous stands in for the swipe that deletes it, and a scroll in the workout folds the focus card into the strip.\n\nLabels: screen ID · state · default mode. The decisions, the polish list and the coverage are in design-1.md.",
+   "w": 480,
+   "x": -560,
+   "y": 260
+  },
+  "t-exercises-EX-01": {
+   "kind": "title1",
+   "maxW": 3210,
+   "page": "exercises",
+   "text": "EX-01 · Exercise library",
+   "w": 240,
+   "x": 0,
+   "y": 0
+  },
+  "t-exercises-EX-02": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "exercises",
+   "text": "EX-02 · Library filter sheet",
+   "w": 240,
+   "x": 0,
+   "y": 1264
+  },
+  "t-exercises-EX-03": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "exercises",
+   "text": "EX-03 · Exercise picker",
+   "w": 240,
+   "x": 0,
+   "y": 2528
+  },
+  "t-exercises-EX-04": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "exercises",
+   "text": "EX-04 · Swap exercise",
+   "w": 240,
+   "x": 0,
+   "y": 3792
+  },
+  "t-exercises-EX-05": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "exercises",
+   "text": "EX-05 · Exercise detail · About",
+   "w": 240,
+   "x": 0,
+   "y": 5056
+  },
+  "t-exercises-EX-06": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "exercises",
+   "text": "EX-06 · Exercise detail · History",
+   "w": 240,
+   "x": 0,
+   "y": 6320
+  },
+  "t-exercises-EX-07": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "exercises",
+   "text": "EX-07 · Exercise detail · Chart",
+   "w": 240,
+   "x": 0,
+   "y": 7584
+  },
+  "t-exercises-EX-08": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "exercises",
+   "text": "EX-08 · Exercise detail · Records",
+   "w": 240,
+   "x": 0,
+   "y": 8848
+  },
+  "t-exercises-EX-09": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "exercises",
+   "text": "EX-09 · Create exercise",
+   "w": 240,
+   "x": 0,
+   "y": 10112
+  },
+  "t-exercises-EX-10": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "exercises",
+   "text": "EX-10 · Edit exercise",
+   "w": 240,
+   "x": 0,
+   "y": 11376
+  },
+  "t-exercises-EX-11": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "exercises",
+   "text": "EX-11 · Merge data",
+   "w": 240,
+   "x": 0,
+   "y": 12640
+  },
+  "t-later-EL-15": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "later",
+   "text": "EL-15 · Import (later)",
+   "w": 240,
+   "x": 0,
+   "y": 0
+  },
+  "t-later-EL-16": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "later",
+   "text": "EL-16 · Account and sync (later)",
+   "w": 240,
+   "x": 0,
+   "y": 1264
+  },
+  "t-later-EL-17": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "later",
+   "text": "EL-17 · Food today (later)",
+   "w": 240,
+   "x": 0,
+   "y": 2528
+  },
+  "t-later-EL-18": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "later",
+   "text": "EL-18 · Log food (later)",
+   "w": 240,
+   "x": 0,
+   "y": 3792
+  },
+  "t-later-EL-19": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "later",
+   "text": "EL-19 · Nutrition targets (later)",
+   "w": 240,
+   "x": 0,
+   "y": 5056
+  },
+  "t-later-O-22": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "later",
+   "text": "O-22 · Activity types (later)",
+   "w": 240,
+   "x": 0,
+   "y": 6320
+  },
+  "t-modes-MD00": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · SH-01 · SH-02 · SH-03 · SH-04",
+   "w": 240,
+   "x": 0,
+   "y": 0
+  },
+  "t-modes-MD01": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · SH-05 · SH-06 · SH-07 · SH-08",
+   "w": 240,
+   "x": 0,
+   "y": 1344
+  },
+  "t-modes-MD02": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · WO-01 · WO-02 · WO-03 · WO-04",
+   "w": 240,
+   "x": 0,
+   "y": 2688
+  },
+  "t-modes-MD03": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · WO-05 · WO-06 · WO-07 · WO-08",
+   "w": 240,
+   "x": 0,
+   "y": 4032
+  },
+  "t-modes-MD04": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · WO-09 · WO-10 · WO-11 · WO-12",
+   "w": 240,
+   "x": 0,
+   "y": 5376
+  },
+  "t-modes-MD05": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · WO-13 · WO-14 · WO-15 · WO-16",
+   "w": 240,
+   "x": 0,
+   "y": 6720
+  },
+  "t-modes-MD06": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · WO-17 · WO-18 · WO-19 · WO-20",
+   "w": 240,
+   "x": 0,
+   "y": 8064
+  },
+  "t-modes-MD07": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · WO-21 · WO-22 · WO-23 · WO-24",
+   "w": 240,
+   "x": 0,
+   "y": 9408
+  },
+  "t-modes-MD08": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · WO-25 · WO-26 · PL-01 · PL-02",
+   "w": 240,
+   "x": 0,
+   "y": 10752
+  },
+  "t-modes-MD09": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · PL-03 · PL-04 · PL-05 · PL-06",
+   "w": 240,
+   "x": 0,
+   "y": 12096
+  },
+  "t-modes-MD10": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · PL-07 · PL-08 · PL-09 · PL-10",
+   "w": 240,
+   "x": 0,
+   "y": 13440
+  },
+  "t-modes-MD11": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · PL-11 · PL-12 · EX-01 · EX-02",
+   "w": 240,
+   "x": 0,
+   "y": 14784
+  },
+  "t-modes-MD12": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · EX-03 · EX-04 · EX-05 · EX-06",
+   "w": 240,
+   "x": 0,
+   "y": 16128
+  },
+  "t-modes-MD13": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · EX-07 · EX-08 · EX-09 · EX-10",
+   "w": 240,
+   "x": 0,
+   "y": 17472
+  },
+  "t-modes-MD14": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · EX-11 · RU-01 · RU-02 · RU-03",
+   "w": 240,
+   "x": 0,
+   "y": 18816
+  },
+  "t-modes-MD15": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · RU-04 · RU-05 · RU-06 · RU-07",
+   "w": 240,
+   "x": 0,
+   "y": 20160
+  },
+  "t-modes-MD16": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · RU-08 · RU-09 · EL-01 · EL-02",
+   "w": 240,
+   "x": 0,
+   "y": 21504
+  },
+  "t-modes-MD17": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · EL-03 · EL-04 · EL-05 · EL-06",
+   "w": 240,
+   "x": 0,
+   "y": 22848
+  },
+  "t-modes-MD18": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · EL-07 · EL-08 · EL-09 · EL-10",
+   "w": 240,
+   "x": 0,
+   "y": 24192
+  },
+  "t-modes-MD19": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · EL-11 · EL-12 · EL-13 · EL-14",
+   "w": 240,
+   "x": 0,
+   "y": 25536
+  },
+  "t-modes-MD20": {
+   "kind": "title1",
+   "maxW": 5432,
+   "page": "modes",
+   "text": "All modes · EL-15 · EL-16 · EL-17 · EL-18",
+   "w": 240,
+   "x": 0,
+   "y": 26880
+  },
+  "t-modes-MD21": {
+   "kind": "title1",
+   "maxW": 2676,
+   "page": "modes",
+   "text": "All modes · EL-19 · O-22",
+   "w": 240,
+   "x": 0,
+   "y": 28224
+  },
+  "t-motion-MO": {
+   "kind": "title1",
+   "maxW": 5360,
+   "page": "motion",
+   "text": "Motion · the signature moments, timed · Strive 1+2: wins on the win spring",
+   "w": 240,
+   "x": 0,
+   "y": 0
+  },
+  "t-plan-PL-01": {
+   "kind": "title1",
+   "maxW": 5560,
+   "page": "plan",
+   "text": "PL-01 · Plan tab",
+   "w": 240,
+   "x": 0,
+   "y": 0
+  },
+  "t-plan-PL-02": {
+   "kind": "title1",
+   "maxW": 2740,
+   "page": "plan",
+   "text": "PL-02 · Plan menus",
+   "w": 240,
+   "x": 0,
+   "y": 1264
+  },
+  "t-plan-PL-03": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "plan",
+   "text": "PL-03 · Template card menu",
+   "w": 240,
+   "x": 0,
+   "y": 2528
+  },
+  "t-plan-PL-04": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "plan",
+   "text": "PL-04 · Template preview",
+   "w": 240,
+   "x": 0,
+   "y": 3792
+  },
+  "t-plan-PL-05": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "plan",
+   "text": "PL-05 · Template editor",
+   "w": 240,
+   "x": 0,
+   "y": 5056
+  },
+  "t-plan-PL-06": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "plan",
+   "text": "PL-06 · Template keypad",
+   "w": 240,
+   "x": 0,
+   "y": 6320
+  },
+  "t-plan-PL-07": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "plan",
+   "text": "PL-07 · Archived templates",
+   "w": 240,
+   "x": 0,
+   "y": 7584
+  },
+  "t-plan-PL-08": {
+   "kind": "title1",
+   "maxW": 2270,
+   "page": "plan",
+   "text": "PL-08 · Programme · Weeks",
+   "w": 240,
+   "x": 0,
+   "y": 8848
+  },
+  "t-plan-PL-09": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "plan",
+   "text": "PL-09 · Programme · Weights",
+   "w": 240,
+   "x": 0,
+   "y": 10112
+  },
+  "t-plan-PL-10": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "plan",
+   "text": "PL-10 · Programme · Log",
+   "w": 240,
+   "x": 0,
+   "y": 11376
+  },
+  "t-plan-PL-11": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "plan",
+   "text": "PL-11 · Programme · Settings",
+   "w": 240,
+   "x": 0,
+   "y": 12640
+  },
+  "t-plan-PL-12": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "plan",
+   "text": "PL-12 · Create programme",
+   "w": 240,
+   "x": 0,
+   "y": 13904
+  },
+  "t-running-RU-01": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "running",
+   "text": "RU-01 · Run start",
+   "w": 240,
+   "x": 0,
+   "y": 0
+  },
+  "t-running-RU-02": {
+   "kind": "title1",
+   "maxW": 4150,
+   "page": "running",
+   "text": "RU-02 · Live run",
+   "w": 240,
+   "x": 0,
+   "y": 1264
+  },
+  "t-running-RU-03": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "running",
+   "text": "RU-03 · Live run, paused",
+   "w": 240,
+   "x": 0,
+   "y": 2528
+  },
+  "t-running-RU-04": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "running",
+   "text": "RU-04 · Finish run",
+   "w": 240,
+   "x": 0,
+   "y": 3792
+  },
+  "t-running-RU-05": {
+   "kind": "title1",
+   "maxW": 2270,
+   "page": "running",
+   "text": "RU-05 · Run summary and run detail",
+   "w": 240,
+   "x": 0,
+   "y": 5056
+  },
+  "t-running-RU-06": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "running",
+   "text": "RU-06 · Run summary, sections",
+   "w": 240,
+   "x": 0,
+   "y": 6320
+  },
+  "t-running-RU-07": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "running",
+   "text": "RU-07 · Map, full screen",
+   "w": 240,
+   "x": 0,
+   "y": 7584
+  },
+  "t-running-RU-08": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "running",
+   "text": "RU-08 · Flyover replay",
+   "w": 240,
+   "x": 0,
+   "y": 8848
+  },
+  "t-running-RU-09": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "running",
+   "text": "RU-09 · Edit run",
+   "w": 240,
+   "x": 0,
+   "y": 10112
+  },
+  "t-shell-SH-01": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "shell",
+   "text": "SH-01 · Tab bar and app frame",
+   "w": 240,
+   "x": 0,
+   "y": 0
+  },
+  "t-shell-SH-02": {
+   "kind": "title1",
+   "maxW": 3210,
+   "page": "shell",
+   "text": "SH-02 · Home",
+   "w": 240,
+   "x": 0,
+   "y": 1264
+  },
+  "t-shell-SH-03": {
+   "kind": "title1",
+   "maxW": 2270,
+   "page": "shell",
+   "text": "SH-03 · Start bubbles",
+   "w": 240,
+   "x": 0,
+   "y": 2528
+  },
+  "t-shell-SH-04": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "shell",
+   "text": "SH-04 · Start › From template",
+   "w": 240,
+   "x": 0,
+   "y": 3792
+  },
+  "t-shell-SH-05": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "shell",
+   "text": "SH-05 · Food tab",
+   "w": 240,
+   "x": 0,
+   "y": 5056
+  },
+  "t-shell-SH-06": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "shell",
+   "text": "SH-06 · Onboarding",
+   "w": 240,
+   "x": 0,
+   "y": 6320
+  },
+  "t-shell-SH-07": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "shell",
+   "text": "SH-07 · First-use hints",
+   "w": 240,
+   "x": 0,
+   "y": 7584
+  },
+  "t-shell-SH-08": {
+   "kind": "title1",
+   "maxW": 3210,
+   "page": "shell",
+   "text": "SH-08 · Permission prompts",
+   "w": 240,
+   "x": 0,
+   "y": 8848
+  },
+  "t-vs-A": {
+   "kind": "title1",
+   "maxW": 3712,
+   "page": "vs",
+   "text": "1 vs 1+2 · Home, onboarding and empty states",
+   "w": 240,
+   "x": 0,
+   "y": 0
+  },
+  "t-vs-B": {
+   "kind": "title1",
+   "maxW": 3712,
+   "page": "vs",
+   "text": "1 vs 1+2 · logging, rest and the motion boards",
+   "w": 240,
+   "x": 0,
+   "y": 4492
+  },
+  "t-vs-C": {
+   "kind": "title1",
+   "maxW": 3712,
+   "page": "vs",
+   "text": "1 vs 1+2 · the summary, records and the run summary",
+   "w": 240,
+   "x": 0,
+   "y": 7838
+  },
+  "t-vs-D": {
+   "kind": "title1",
+   "maxW": 3712,
+   "page": "vs",
+   "text": "1 vs 1+2 · Progress and the comparisons",
+   "w": 240,
+   "x": 0,
+   "y": 10214
+  },
+  "t-workout-WO-01": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "workout",
+   "text": "WO-01 · Active workout, empty",
+   "w": 240,
+   "x": 0,
+   "y": 0
+  },
+  "t-workout-WO-02": {
+   "kind": "title1",
+   "maxW": 7440,
+   "page": "workout",
+   "text": "WO-02 · Active workout, exercise in focus",
+   "w": 240,
+   "x": 0,
+   "y": 1264
+  },
+  "t-workout-WO-03": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "workout",
+   "text": "WO-03 · Active workout, scrolled",
+   "w": 240,
+   "x": 0,
+   "y": 2528
+  },
+  "t-workout-WO-04": {
+   "kind": "title1",
+   "maxW": 2740,
+   "page": "workout",
+   "text": "WO-04 · Logging dock",
+   "w": 240,
+   "x": 0,
+   "y": 3792
+  },
+  "t-workout-WO-05": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "workout",
+   "text": "WO-05 · Keypad",
+   "w": 240,
+   "x": 0,
+   "y": 5056
+  },
+  "t-workout-WO-06": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "workout",
+   "text": "WO-06 · Rest timer card",
+   "w": 240,
+   "x": 0,
+   "y": 6320
+  },
+  "t-workout-WO-07": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "workout",
+   "text": "WO-07 · Free rest menu",
+   "w": 240,
+   "x": 0,
+   "y": 7584
+  },
+  "t-workout-after-WO-21": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "workout-after",
+   "text": "WO-21 · Workout summary",
+   "w": 240,
+   "x": 0,
+   "y": 0
+  },
+  "t-workout-after-WO-22": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "workout-after",
+   "text": "WO-22 · Update template alert",
+   "w": 240,
+   "x": 0,
+   "y": 1264
+  },
+  "t-workout-after-WO-23": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "workout-after",
+   "text": "WO-23 · Save as template",
+   "w": 240,
+   "x": 0,
+   "y": 2528
+  },
+  "t-workout-after-WO-24": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "workout-after",
+   "text": "WO-24 · Session detail",
+   "w": 240,
+   "x": 0,
+   "y": 3792
+  },
+  "t-workout-after-WO-25": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "workout-after",
+   "text": "WO-25 · Session detail, editing",
+   "w": 240,
+   "x": 0,
+   "y": 5056
+  },
+  "t-workout-after-WO-26": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "workout-after",
+   "text": "WO-26 · History",
+   "w": 240,
+   "x": 0,
+   "y": 6320
+  },
+  "t-workout-more-WO-08": {
+   "kind": "title1",
+   "maxW": 2270,
+   "page": "workout-more",
+   "text": "WO-08 · Workout menu",
+   "w": 240,
+   "x": 0,
+   "y": 0
+  },
+  "t-workout-more-WO-09": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "workout-more",
+   "text": "WO-09 · Exercise menu",
+   "w": 240,
+   "x": 0,
+   "y": 1264
+  },
+  "t-workout-more-WO-10": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "workout-more",
+   "text": "WO-10 · Create superset",
+   "w": 240,
+   "x": 0,
+   "y": 2528
+  },
+  "t-workout-more-WO-11": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "workout-more",
+   "text": "WO-11 · Order and skip",
+   "w": 240,
+   "x": 0,
+   "y": 3792
+  },
+  "t-workout-more-WO-12": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "workout-more",
+   "text": "WO-12 · Exercise settings",
+   "w": 240,
+   "x": 0,
+   "y": 5056
+  },
+  "t-workout-more-WO-13": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "workout-more",
+   "text": "WO-13 · Set type menu",
+   "w": 240,
+   "x": 0,
+   "y": 6320
+  },
+  "t-workout-more-WO-14": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "workout-more",
+   "text": "WO-14 · Swipe to delete a set",
+   "w": 240,
+   "x": 0,
+   "y": 7584
+  },
+  "t-workout-more-WO-15": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "workout-more",
+   "text": "WO-15 · Finish sheet",
+   "w": 240,
+   "x": 0,
+   "y": 8848
+  },
+  "t-workout-more-WO-16": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "workout-more",
+   "text": "WO-16 · Discard workout alert",
+   "w": 240,
+   "x": 0,
+   "y": 10112
+  },
+  "t-workout-more-WO-17": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "workout-more",
+   "text": "WO-17 · Minimised workout bar",
+   "w": 240,
+   "x": 0,
+   "y": 11376
+  },
+  "t-workout-more-WO-18": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "workout-more",
+   "text": "WO-18 · Rest notification",
+   "w": 240,
+   "x": 0,
+   "y": 12640
+  },
+  "t-workout-more-WO-19": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "workout-more",
+   "text": "WO-19 · Live Activity: lock screen",
+   "w": 240,
+   "x": 0,
+   "y": 13904
+  },
+  "t-workout-more-WO-20": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "workout-more",
+   "text": "WO-20 · Live Activity: Dynamic Island",
+   "w": 240,
+   "x": 0,
+   "y": 15168
+  },
+  "t-you-EL-01": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "you",
+   "text": "EL-01 · You",
+   "w": 240,
+   "x": 0,
+   "y": 0
+  },
+  "t-you-EL-02": {
+   "kind": "title1",
+   "maxW": 2740,
+   "page": "you",
+   "text": "EL-02 · Progress · Strength",
+   "w": 240,
+   "x": 0,
+   "y": 1264
+  },
+  "t-you-EL-03": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "you",
+   "text": "EL-03 · Progress · Running",
+   "w": 240,
+   "x": 0,
+   "y": 2528
+  },
+  "t-you-EL-04": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "you",
+   "text": "EL-04 · Choose main lifts",
+   "w": 240,
+   "x": 0,
+   "y": 3792
+  },
+  "t-you-EL-05": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "you",
+   "text": "EL-05 · Profile",
+   "w": 240,
+   "x": 0,
+   "y": 5056
+  },
+  "t-you-EL-06": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "you",
+   "text": "EL-06 · Settings",
+   "w": 240,
+   "x": 0,
+   "y": 6320
+  },
+  "t-you-EL-07": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "you",
+   "text": "EL-07 · Plates and bars",
+   "w": 240,
+   "x": 0,
+   "y": 7584
+  },
+  "t-you-EL-08": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "you",
+   "text": "EL-08 · Devices and apps",
+   "w": 240,
+   "x": 0,
+   "y": 8848
+  },
+  "t-you-EL-09": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "you",
+   "text": "EL-09 · Apple Health link",
+   "w": 240,
+   "x": 0,
+   "y": 10112
+  },
+  "t-you-EL-10": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "you",
+   "text": "EL-10 · Gear",
+   "w": 240,
+   "x": 0,
+   "y": 11376
+  },
+  "t-you-EL-11": {
+   "kind": "title1",
+   "maxW": 1330,
+   "page": "you",
+   "text": "EL-11 · Gear detail and edit",
+   "w": 240,
+   "x": 0,
+   "y": 12640
+  },
+  "t-you-EL-12": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "you",
+   "text": "EL-12 · Choose gear",
+   "w": 240,
+   "x": 0,
+   "y": 13904
+  },
+  "t-you-EL-13": {
+   "kind": "title1",
+   "maxW": 2270,
+   "page": "you",
+   "text": "EL-13 · Export",
+   "w": 240,
+   "x": 0,
+   "y": 15168
+  },
+  "t-you-EL-14": {
+   "kind": "title1",
+   "maxW": 900,
+   "page": "you",
+   "text": "EL-14 · About Strive",
+   "w": 240,
+   "x": 0,
+   "y": 16432
+  }
+ },
+ "order": [
+  "SH-01-rt.dc.html",
+  "Main.dc.html",
+  "SH-02-run.dc.html",
+  "SH-02-rest.dc.html",
+  "SH-02-done.dc.html",
+  "SH-02-inprog.dc.html",
+  "SH-02-first.dc.html",
+  "SH-02-gps.dc.html",
+  "SH-03-today.dc.html",
+  "SH-03-first.dc.html",
+  "SH-03-inprog.dc.html",
+  "SH-03-rest.dc.html",
+  "SH-03-run.dc.html",
+  "SH-04-four.dc.html",
+  "SH-04-many.dc.html",
+  "SH-04-none.dc.html",
+  "SH-05.dc.html",
+  "SH-06-welcome.dc.html",
+  "SH-06-units.dc.html",
+  "SH-06-body.dc.html",
+  "SH-07-check.dc.html",
+  "SH-07-dock.dc.html",
+  "SH-07-swipe.dc.html",
+  "SH-07-start.dc.html",
+  "SH-08-loc-pre.dc.html",
+  "SH-08-loc-sys.dc.html",
+  "SH-08-loc-denied.dc.html",
+  "SH-08-notif-pre.dc.html",
+  "SH-08-notif-sys.dc.html",
+  "SH-08-notif-denied.dc.html",
+  "SH-08-health-sys.dc.html",
+  "WO-01-marks.dc.html",
+  "WO-01-recent.dc.html",
+  "WO-01-none.dc.html",
+  "WO-01-picked.dc.html",
+  "WO-01-logged.dc.html",
+  "WO-02-s1.dc.html",
+  "WO-02-benA.dc.html",
+  "WO-02-pulla.dc.html",
+  "WO-02-s2.dc.html",
+  "WO-02-rir.dc.html",
+  "WO-02-s3.dc.html",
+  "WO-02-s4.dc.html",
+  "WO-02-s5.dc.html",
+  "WO-02-s5b.dc.html",
+  "WO-02-s5c.dc.html",
+  "WO-02-abc.dc.html",
+  "WO-02-s9f.dc.html",
+  "WO-02-s9d.dc.html",
+  "WO-02-s10bw.dc.html",
+  "WO-02-s10td.dc.html",
+  "WO-02-s12.dc.html",
+  "WO-02-s13.dc.html",
+  "WO-02-s14.dc.html",
+  "WO-02-s15.dc.html",
+  "WO-02-s16.dc.html",
+  "WO-02-note.dc.html",
+  "WO-02-removed.dc.html",
+  "WO-02-swap.dc.html",
+  "WO-03-strip.dc.html",
+  "WO-03-rest.dc.html",
+  "WO-03-end.dc.html",
+  "WO-04-new.dc.html",
+  "WO-04-logged.dc.html",
+  "WO-04-rest.dc.html",
+  "WO-04-rir4.dc.html",
+  "WO-04-heavy.dc.html",
+  "WO-04-lb.dc.html",
+  "WO-05-weight.dc.html",
+  "WO-05-reps.dc.html",
+  "WO-05-rest.dc.html",
+  "WO-05-plates.dc.html",
+  "WO-06-round.dc.html",
+  "WO-06-free.dc.html",
+  "WO-06-last.dc.html",
+  "WO-06-ended.dc.html",
+  "WO-07-menu.dc.html",
+  "WO-07-custom.dc.html",
+  "WO-07-replace.dc.html",
+  "WO-08-menu.dc.html",
+  "WO-08-rename.dc.html",
+  "WO-08-note-empty.dc.html",
+  "WO-08-note.dc.html",
+  "WO-08-time.dc.html",
+  "WO-09-menu.dc.html",
+  "WO-09-rest.dc.html",
+  "WO-09-superset.dc.html",
+  "WO-09-noweight.dc.html",
+  "WO-09-sticky.dc.html",
+  "WO-10.dc.html",
+  "WO-10-one.dc.html",
+  "WO-11.dc.html",
+  "WO-11-skip.dc.html",
+  "WO-12-bb.dc.html",
+  "WO-12-db.dc.html",
+  "WO-13-menu.dc.html",
+  "WO-13-added.dc.html",
+  "WO-13-moved.dc.html",
+  "WO-13-logged.dc.html",
+  "WO-13-warmup.dc.html",
+  "WO-14-revealed.dc.html",
+  "WO-14-full.dc.html",
+  "WO-15-one.dc.html",
+  "WO-15-several.dc.html",
+  "WO-16-discard.dc.html",
+  "WO-16-empty.dc.html",
+  "WO-17-plan.dc.html",
+  "WO-17-rest.dc.html",
+  "WO-17-killed.dc.html",
+  "WO-18-lock.dc.html",
+  "WO-18-banner.dc.html",
+  "WO-19-counting.dc.html",
+  "WO-19-ended.dc.html",
+  "WO-19-open.dc.html",
+  "WO-20-compact.dc.html",
+  "WO-20-minimal.dc.html",
+  "WO-20-expanded.dc.html",
+  "WO-20-ended.dc.html",
+  "WO-21-records.dc.html",
+  "WO-21-expanded.dc.html",
+  "WO-21-plain.dc.html",
+  "WO-21-empty.dc.html",
+  "WO-22-one.dc.html",
+  "WO-22-several.dc.html",
+  "WO-23-summary.dc.html",
+  "WO-23-edit.dc.html",
+  "WO-24.dc.html",
+  "WO-24-expanded.dc.html",
+  "WO-25-edit.dc.html",
+  "WO-25-delete.dc.html",
+  "WO-25-unsaved.dc.html",
+  "WO-25-dock.dc.html",
+  "WO-26-all.dc.html",
+  "WO-26-strength.dc.html",
+  "WO-26-running.dc.html",
+  "WO-26-empty.dc.html",
+  "PL-01-week.dc.html",
+  "PL-01-next.dc.html",
+  "PL-01-deloadrec.dc.html",
+  "PL-01-deload.dc.html",
+  "PL-01-calib.dc.html",
+  "PL-01-short.dc.html",
+  "PL-01-missed.dc.html",
+  "PL-01-done.dc.html",
+  "PL-01-rest.dc.html",
+  "PL-01-run.dc.html",
+  "PL-01-noprog.dc.html",
+  "PL-01-notmpl.dc.html",
+  "PL-01-saved.dc.html",
+  "PL-01-axlar.dc.html",
+  "PL-02-plan.dc.html",
+  "PL-02-short.dc.html",
+  "PL-02-type.dc.html",
+  "PL-02-day.dc.html",
+  "PL-02-move.dc.html",
+  "PL-02-moved.dc.html",
+  "PL-02-templates.dc.html",
+  "PL-03-menu.dc.html",
+  "PL-03-delete.dc.html",
+  "PL-03-share.dc.html",
+  "PL-03-archived.dc.html",
+  "PL-04-pusha.dc.html",
+  "PL-04-never.dc.html",
+  "PL-04-pulla.dc.html",
+  "PL-05-new.dc.html",
+  "PL-05-edit.dc.html",
+  "PL-05-discard.dc.html",
+  "PL-05-delete.dc.html",
+  "PL-05-added.dc.html",
+  "PL-06-reps.dc.html",
+  "PL-06-rir.dc.html",
+  "PL-06-same.dc.html",
+  "PL-07-list.dc.html",
+  "PL-07-empty.dc.html",
+  "PL-08-week6.dc.html",
+  "PL-08-std.dc.html",
+  "PL-08-week8.dc.html",
+  "PL-08-daymenu.dc.html",
+  "PL-08-changed.dc.html",
+  "PL-08-runmenu.dc.html",
+  "PL-08-runtarget.dc.html",
+  "PL-08-tempo.dc.html",
+  "PL-09.dc.html",
+  "PL-09-new.dc.html",
+  "PL-10.dc.html",
+  "PL-10-empty.dc.html",
+  "PL-10-write.dc.html",
+  "PL-11.dc.html",
+  "PL-11-nofixed.dc.html",
+  "PL-11-date.dc.html",
+  "PL-11-archive.dc.html",
+  "PL-12-empty.dc.html",
+  "PL-12-filled.dc.html",
+  "PL-12-notmpl.dc.html",
+  "EX-01.dc.html",
+  "EX-01-search.dc.html",
+  "EX-01-chip.dc.html",
+  "EX-01-filter.dc.html",
+  "EX-01-nomatch.dc.html",
+  "EX-01-mobility.dc.html",
+  "EX-01-sort.dc.html",
+  "EX-05-incline.dc.html",
+  "EX-06-incline.dc.html",
+  "EX-07-incline.dc.html",
+  "EX-07-inclinept.dc.html",
+  "EX-08-incline.dc.html",
+  "EX-02-none.dc.html",
+  "EX-02-db.dc.html",
+  "EX-02-no.dc.html",
+  "EX-03-none.dc.html",
+  "EX-03-one.dc.html",
+  "EX-03-two.dc.html",
+  "EX-03-search.dc.html",
+  "EX-03-tmpl.dc.html",
+  "EX-03-created.dc.html",
+  "EX-04.dc.html",
+  "EX-04-none.dc.html",
+  "EX-05.dc.html",
+  "EX-05-sheet.dc.html",
+  "EX-05-noillo.dc.html",
+  "EX-05-mark.dc.html",
+  "EX-06.dc.html",
+  "EX-06-empty.dc.html",
+  "EX-07.dc.html",
+  "EX-07-point.dc.html",
+  "EX-07-empty.dc.html",
+  "EX-08.dc.html",
+  "EX-08-empty.dc.html",
+  "EX-08-bw.dc.html",
+  "EX-09-empty.dc.html",
+  "EX-09-menu.dc.html",
+  "EX-09-muscles.dc.html",
+  "EX-09-filled.dc.html",
+  "EX-09-picker.dc.html",
+  "EX-10-used.dc.html",
+  "EX-10-unused.dc.html",
+  "EX-10-archived.dc.html",
+  "EX-11-list.dc.html",
+  "EX-11-alert.dc.html",
+  "EX-11-done.dc.html",
+  "RU-01-search.dc.html",
+  "RU-01-ready.dc.html",
+  "RU-01-weak.dc.html",
+  "RU-02.dc.html",
+  "RU-02-time.dc.html",
+  "RU-02-pace.dc.html",
+  "RU-02-avg.dc.html",
+  "RU-02-lap.dc.html",
+  "RU-02-gps.dc.html",
+  "RU-02-nomap.dc.html",
+  "RU-02-locked.dc.html",
+  "RU-02-mini.dc.html",
+  "RU-02-island.dc.html",
+  "RU-03.dc.html",
+  "RU-04.dc.html",
+  "RU-04-short.dc.html",
+  "RU-05-done.dc.html",
+  "RU-05-history.dc.html",
+  "RU-05-nohr.dc.html",
+  "RU-05-gap.dc.html",
+  "RU-05-watch.dc.html",
+  "RU-06-splits.dc.html",
+  "RU-06-charts.dc.html",
+  "RU-06-sel.dc.html",
+  "RU-07-std.dc.html",
+  "RU-07-sat.dc.html",
+  "RU-07-3d.dc.html",
+  "RU-07-sources.dc.html",
+  "RU-08-play.dc.html",
+  "RU-08-paused.dc.html",
+  "RU-09.dc.html",
+  "RU-09-delete.dc.html",
+  "EL-01.dc.html",
+  "EL-01-first.dc.html",
+  "EL-02-8wk.dc.html",
+  "EL-02-6mo.dc.html",
+  "EL-02-1yr.dc.html",
+  "EL-02-next.dc.html",
+  "EL-02-bar.dc.html",
+  "EL-02-6mobar.dc.html",
+  "EL-02-first.dc.html",
+  "EL-02-fewer.dc.html",
+  "EL-02-cmp.dc.html",
+  "EL-03.dc.html",
+  "EL-03-empty.dc.html",
+  "EL-03-bar.dc.html",
+  "EL-04-three.dc.html",
+  "EL-04-five.dc.html",
+  "EL-05.dc.html",
+  "EL-05-empty.dc.html",
+  "EL-06.dc.html",
+  "EL-06-menu.dc.html",
+  "EL-06-lb.dc.html",
+  "EL-07-kg.dc.html",
+  "EL-07-lb.dc.html",
+  "EL-07-edit.dc.html",
+  "EL-08-none.dc.html",
+  "EL-08.dc.html",
+  "EL-08-linking.dc.html",
+  "EL-09-before.dc.html",
+  "EL-09-linked.dc.html",
+  "EL-09-na.dc.html",
+  "EL-10.dc.html",
+  "EL-10-none.dc.html",
+  "EL-10-retired.dc.html",
+  "EL-11-new.dc.html",
+  "EL-11.dc.html",
+  "EL-11-retired.dc.html",
+  "EL-12.dc.html",
+  "EL-12-other.dc.html",
+  "EL-13.dc.html",
+  "EL-13-custom.dc.html",
+  "EL-13-nothing.dc.html",
+  "EL-13-exporting.dc.html",
+  "EL-13-share.dc.html",
+  "EL-14.dc.html",
+  "EL-15-source.dc.html",
+  "EL-15-preview.dc.html",
+  "EL-15-importing.dc.html",
+  "EL-15-done.dc.html",
+  "EL-16-out.dc.html",
+  "EL-16-syncing.dc.html",
+  "EL-16-synced.dc.html",
+  "EL-16-paused.dc.html",
+  "EL-17-notarget.dc.html",
+  "EL-17-ontrack.dc.html",
+  "EL-17-over.dc.html",
+  "EL-18-search.dc.html",
+  "EL-18-recent.dc.html",
+  "EL-18-portion.dc.html",
+  "EL-19-unset.dc.html",
+  "EL-19-set.dc.html",
+  "LT-activity.dc.html",
+  "LT-activity-list.dc.html",
+  "MO-log.dc.html",
+  "MO-rest.dc.html",
+  "MO-start.dc.html",
+  "MO-gestures.dc.html",
+  "MO-record.dc.html",
+  "MO-finish.dc.html",
+  "MO-week.dc.html",
+  "MD-SH-01-rt.dc.html",
+  "MD-Main.dc.html",
+  "MD-SH-03-today.dc.html",
+  "MD-SH-04-four.dc.html",
+  "MD-SH-05.dc.html",
+  "MD-SH-06-welcome.dc.html",
+  "MD-SH-07-check.dc.html",
+  "MD-SH-08-loc-pre.dc.html",
+  "MD-WO-01-marks.dc.html",
+  "MD-WO-02-s1.dc.html",
+  "MD-WO-03-strip.dc.html",
+  "MD-WO-04-new.dc.html",
+  "MD-WO-05-weight.dc.html",
+  "MD-WO-06-round.dc.html",
+  "MD-WO-07-menu.dc.html",
+  "MD-WO-08-menu.dc.html",
+  "MD-WO-09-menu.dc.html",
+  "MD-WO-10.dc.html",
+  "MD-WO-11.dc.html",
+  "MD-WO-12-bb.dc.html",
+  "MD-WO-13-menu.dc.html",
+  "MD-WO-14-revealed.dc.html",
+  "MD-WO-15-one.dc.html",
+  "MD-WO-16-discard.dc.html",
+  "MD-WO-17-plan.dc.html",
+  "MD-WO-18-lock.dc.html",
+  "MD-WO-19-counting.dc.html",
+  "MD-WO-20-compact.dc.html",
+  "MD-WO-21-records.dc.html",
+  "MD-WO-22-one.dc.html",
+  "MD-WO-23-summary.dc.html",
+  "MD-WO-24.dc.html",
+  "MD-WO-25-edit.dc.html",
+  "MD-WO-26-all.dc.html",
+  "MD-PL-01-week.dc.html",
+  "MD-PL-02-plan.dc.html",
+  "MD-PL-03-menu.dc.html",
+  "MD-PL-04-pusha.dc.html",
+  "MD-PL-05-new.dc.html",
+  "MD-PL-06-reps.dc.html",
+  "MD-PL-07-list.dc.html",
+  "MD-PL-08-week6.dc.html",
+  "MD-PL-09.dc.html",
+  "MD-PL-10.dc.html",
+  "MD-PL-11.dc.html",
+  "MD-PL-12-empty.dc.html",
+  "MD-EX-01.dc.html",
+  "MD-EX-02-none.dc.html",
+  "MD-EX-03-none.dc.html",
+  "MD-EX-04.dc.html",
+  "MD-EX-05.dc.html",
+  "MD-EX-06.dc.html",
+  "MD-EX-07.dc.html",
+  "MD-EX-08.dc.html",
+  "MD-EX-09-empty.dc.html",
+  "MD-EX-10-used.dc.html",
+  "MD-EX-11-list.dc.html",
+  "MD-RU-01-search.dc.html",
+  "MD-RU-02.dc.html",
+  "MD-RU-03.dc.html",
+  "MD-RU-04.dc.html",
+  "MD-RU-05-done.dc.html",
+  "MD-RU-06-splits.dc.html",
+  "MD-RU-07-std.dc.html",
+  "MD-RU-08-play.dc.html",
+  "MD-RU-09.dc.html",
+  "MD-EL-01.dc.html",
+  "MD-EL-02-8wk.dc.html",
+  "MD-EL-03.dc.html",
+  "MD-EL-04-three.dc.html",
+  "MD-EL-05.dc.html",
+  "MD-EL-06.dc.html",
+  "MD-EL-07-kg.dc.html",
+  "MD-EL-08-none.dc.html",
+  "MD-EL-09-before.dc.html",
+  "MD-EL-10.dc.html",
+  "MD-EL-11-new.dc.html",
+  "MD-EL-12.dc.html",
+  "MD-EL-13.dc.html",
+  "MD-EL-14.dc.html",
+  "MD-EL-15-source.dc.html",
+  "MD-EL-16-out.dc.html",
+  "MD-EL-17-notarget.dc.html",
+  "MD-EL-18-search.dc.html",
+  "MD-EL-19-unset.dc.html",
+  "MD-LT-activity.dc.html",
+  "vs-SH-02-rest.dc.html",
+  "vs-SH-02-done.dc.html",
+  "vs-SH-02-first.dc.html",
+  "vs-SH-06-welcome.dc.html",
+  "vs-SH-06-units.dc.html",
+  "vs-SH-06-body.dc.html",
+  "vs-WO-26-empty.dc.html",
+  "vs-EL-01-first.dc.html",
+  "vs-EL-02-first.dc.html",
+  "vs-EL-03-empty.dc.html",
+  "vs-EX-06-empty.dc.html",
+  "vs-EX-07-empty.dc.html",
+  "vs-EX-08-empty.dc.html",
+  "vs-PL-10-empty.dc.html",
+  "vs-EL-10-none.dc.html",
+  "vs-WO-02-s12.dc.html",
+  "vs-WO-02-s13.dc.html",
+  "vs-WO-06-ended.dc.html",
+  "vs-MO-log.dc.html",
+  "vs-MO-rest.dc.html",
+  "vs-WO-21-records.dc.html",
+  "vs-WO-21-expanded.dc.html",
+  "vs-WO-21-plain.dc.html",
+  "vs-WO-21-empty.dc.html",
+  "vs-EX-08.dc.html",
+  "vs-EL-03.dc.html",
+  "vs-RU-05-done.dc.html",
+  "vs-RU-05-history.dc.html",
+  "vs-EL-01.dc.html",
+  "vs-EL-02-8wk.dc.html",
+  "vs-EL-02-next.dc.html",
+  "vs-EL-02-1yr.dc.html"
+ ],
+ "pages": [
+  {
+   "id": "vs",
+   "name": "1 vs 1+2"
+  },
+  {
+   "id": "shell",
+   "name": "Shell"
+  },
+  {
+   "id": "workout",
+   "name": "Workout · logging"
+  },
+  {
+   "id": "workout-more",
+   "name": "Workout · around it"
+  },
+  {
+   "id": "workout-after",
+   "name": "Workout · after"
+  },
+  {
+   "id": "plan",
+   "name": "Plan"
+  },
+  {
+   "id": "exercises",
+   "name": "Exercises"
+  },
+  {
+   "id": "running",
+   "name": "Running"
+  },
+  {
+   "id": "you",
+   "name": "You"
+  },
+  {
+   "id": "later",
+   "name": "Later"
+  },
+  {
+   "id": "motion",
+   "name": "Motion"
+  },
+  {
+   "id": "modes",
+   "name": "All modes"
+  }
+ ],
+ "title": "Strive 1+2"
+}

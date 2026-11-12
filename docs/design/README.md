@@ -9,6 +9,9 @@ Version 1 is designed here as clickable HTML and CSS prototypes before app code 
 | [`15-tokens/`](15-tokens/index.html) | #15 Tokens as CSS custom properties | https://claude.ai/artifact/7A2qZDPnvdxupjX9aXuv3H |
 | [`16-components/`](16-components/index.html) | #16 Core components | https://claude.ai/artifact/Q1Cu1mfmb7WKeJhNvZWwVk |
 | [`17-strength/`](17-strength/index.html) | #17 Strength screens | https://claude.ai/artifact/WsDF57N3xVnqBJ74wZfjCX |
+| [`18-approved/`](18-approved/README.md) | None: Strive 1+2, the approved spec for the whole build (Carl, 2026-11-12) | https://claude.ai/artifact/Vcf9tb4Mafp5r8yqxu92TC |
+
+**18 is the spec now.** It is a canvas of boards, not a page: its README says how to render one.
 
 ## How a prototype is made
 

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Choose shoes</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"><span class="navtext">Cancel</span></div>
+<h1>Edit run</h1>
+<div class="r"><span class="navtext b">Save</span></div>
+</header>
+<main class="body" style="padding-top:16px">
+<div class="group"><h4>Title</h4><div class="field"><span class="in">Long run</span><span class="ic ic-clear s18"></span></div></div>
+<div class="group"><h4>Gear</h4>
+<div class="list"><span class="row lead"><span class="lic"><span class="ic ic-shoe s18"></span></span><span>Shoes</span><span class="val">Nike Pegasus 41<span class="ic ic-chev-r s16"></span></span></span></div>
+<p class="foot">712 km on these shoes, past the 700 km warning.</p></div>
+<div class="group"><h4>Note</h4><div class="field area"><span class="in ph">Add a note</span></div></div>
+<div class="group"><h4>Recorded</h4><div class="list">
+<div class="row"><span>Date</span><span class="val">Sunday 8 November · 09:30</span></div>
+<div class="row"><span>Distance</span><span class="val">14.21 km</span></div>
+<div class="row"><span>Device</span><span class="val">iPhone</span></div>
+</div><p class="foot">Distance and time come from the recording and cannot be edited.</p></div>
+<span class="btn danger">Delete run</span>
+</main>
+<a class="scrim" href="RU-09.dc.html" aria-label="Close"></a>
+<div class="sheet glass thick" role="dialog" aria-label="Shoes">
+<div class="grabber"></div>
+<div class="sheet-head"><span></span><h2>Shoes</h2><a class="navtext b" href="RU-09.dc.html" style="padding-right: 0">Done</a></div>
+<div class="list"><a class="row lead" href="EL-12-other.dc.html"><span class="lic"><span class="ic ic-shoe s18"></span></span><span>ASICS Novablast 4<small>412 km · default for runs</small></span><span></span></a><span class="row lead"><span class="lic"><span class="ic ic-shoe s18"></span></span><span>Nike Pegasus 41<small><span class="amber"><span class="ic ic-warn s14"></span> Past 700 km</span> · 712 km</small></span><span class="ic ic-check s20 check"></span></span><span class="row lead"><span class="lic"><span class="ic ic-x s18"></span></span><span>None<small>This run uses no gear</small></span><span></span></span></div>
+<p class="cap" style="padding: 0 4px">The run's 14.21 km move to the shoes you pick.</p>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

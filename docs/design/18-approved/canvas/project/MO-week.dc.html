@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Motion · a full week</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive" data-theme="{{mode}}" style="width: 1280px; height: 800px; box-sizing: border-box; padding: 32px 48px; background: var(--color-background); color: var(--color-on-surface); display: flex; flex-direction: column; gap: 20px">
+<header style="display: flex; justify-content: space-between; align-items: baseline">
+<h1 style="font: 700 34px/41px var(--font-family)">A full week</h1>
+<p class="muted" style="font: var(--type-body-medium)">Sunday 15 Nov, the long run was the week's last planned session. Plays once per week, the first time Home or Plan shows after it.</p>
+</header>
+
+<section style="display: grid; grid-template-columns: 390px 390px minmax(0, 1fr); gap: 20px" aria-label="Key frames">
+<figure style="margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-content: start">
+<figcaption class="cap">Plan · 0 ms Sunday's mark fills lime with a pop (win) · from 100 ms the seven days pulse left to right, 50 ms apart · 450 ms "Full week" pops in</figcaption>
+<section class="card wk" aria-label="This week">
+<div class="wkhead"><span class="ibtn plain" aria-hidden="true"><span class="ic ic-chev-l s20"></span></span><span><b>Week 6 of 8</b><small>Week 46 · 9–15 Nov</small></span><span class="ibtn plain" aria-hidden="true"><span class="ic ic-chev-r s20"></span></span></div>
+<div class="wkdays">
+<div class="wkday">M<b>9</b><span class="pl">Push A</span><span class="ic ic-check s14"></span></div>
+<div class="wkday">T<b>10</b><span class="pl">Ben A</span><span class="ic ic-check s14"></span></div>
+<div class="wkday">W<b>11</b><span class="pl" style="color: var(--color-on-surface-variant)">Rest</span></div>
+<div class="wkday" style="transform: scale(1.06)">T<b>12</b><span class="pl">Pull A</span><span class="ic ic-check s14"></span></div>
+<div class="wkday">F<b>13</b><span class="pl">Run 8k</span><span class="ic ic-check s14"></span></div>
+<div class="wkday">S<b>14</b><span class="pl">Push B</span><span class="ic ic-check s14"></span></div>
+<div class="wkday today">S<b>15</b><span class="pl">Long 14k</span><span class="m-lime m-ic" style="display: grid; transform: scale(1.14)"><span class="ic ic-check s14"></span></span></div>
+</div>
+<div class="between" style="padding-top: 10px"><p class="meta dlrec">6 weeks without a deload</p><span class="m-tag m-lime">Full week</span></div>
+</section>
+</figure>
+<figure style="margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-content: start">
+<figcaption class="cap">Home · the same beat on This week: Sunday's dot, the pulse, "Full week"; 550 ms the streak ticks to 2 weeks (digit roll, win)</figcaption>
+<div style="padding: 14px 16px; background: var(--color-background); border: 1px solid var(--color-outline-variant); border-radius: 16px">
+<section class="vstack" aria-label="This week">
+<h2 class="sec-h"><span>This week</span><span class="teal" style="font-weight: 400">Plan</span></h2>
+<div class="stats">
+<div class="stat"><span class="k">Workouts</span><span class="v">4<small>of 4</small></span><span class="sub">Every session done</span></div>
+<div class="stat"><span class="k">Running</span><span class="v">22<small>of 22 km</small></span><span class="sub">Long run today</span></div>
+</div>
+<div class="between" style="padding: 0 4px">
+<span class="hstack" style="gap: 4px" aria-label="Six sessions done, Wednesday rest"><span class="ic ic-dot s12"></span><span class="ic ic-dot s12"></span><span class="ic ic-dot s12 muted" style="opacity: .5"></span><span class="ic ic-dot s12"></span><span class="ic ic-dot s12"></span><span class="ic ic-dot s12"></span><span class="ic ic-dot s12 m-lime m-ic"></span></span>
+<span class="hstack" style="gap: 6px"><span class="m-tag m-lime">Full week</span><span class="m-tag m-flame"><span class="ic ic-flame s14"></span>2 weeks in a row</span></span>
+</div>
+</section>
+</div>
+<p class="cap">The dots and tags replace the "Last week: …" line; nothing grows.</p>
+</figure>
+<figure style="margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-content: start">
+<figcaption class="cap">The streak tag, before and after the tick</figcaption>
+<div style="padding: 14px 16px; background: var(--color-background); border: 1px solid var(--color-outline-variant); border-radius: 16px; display: grid; gap: 10px; justify-items: start">
+<span class="m-tag m-flame"><span class="ic ic-flame s14"></span>1 week in a row</span>
+<span class="m-tag m-flame"><span class="ic ic-flame s14"></span>2 weeks in a row</span>
+<p class="cap">Example: weeks 45 and 46 both full; week 44 missed Pull A, so the streak starts at week 45. A week counts when every planned session is done.</p>
+</div>
+</figure>
+</section>
+
+<section aria-label="Timeline" style="display: grid; gap: 6px">
+<div style="display: grid; grid-template-columns: 280px 1fr; align-items: end">
+<span class="cap"><span class="m-lime" style="display: inline-block; width: 18px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 2px var(--m); vertical-align: middle"></span> win spring <span style="display: inline-block; width: 18px; height: 10px; border-radius: 3px; background: var(--color-outline-variant); vertical-align: middle; margin-left: 10px"></span> calm or fade</span>
+<div style="position: relative; height: 16px; font: var(--type-label-small); color: var(--color-on-surface-variant)">
+<span style="position: absolute; left: 0">0</span><span style="position: absolute; left: 20%">200</span><span style="position: absolute; left: 40%">400</span><span style="position: absolute; left: 60%">600</span><span style="position: absolute; left: 80%">800</span><span style="position: absolute; right: 0">1000 ms</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: 280px 1fr; align-items: center; gap: 4px 0">
+<span class="title-small">Sunday's mark fills lime, pops</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i class="m-lime" style="position: absolute; left: 0; width: 52%; top: 4px; bottom: 4px; border-radius: 4px; box-shadow: inset 0 0 0 2px var(--m)"></i><span class="cap" style="position: absolute; left: 53%; top: 4px">1 → 1.14 → 1 · win spring</span></div>
+<span class="title-small">Seven days pulse, left to right</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 10%; width: 3%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-outline-variant)"></i><i style="position: absolute; left: 15%; width: 3%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-outline-variant)"></i><i style="position: absolute; left: 20%; width: 3%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-outline-variant)"></i><i style="position: absolute; left: 25%; width: 3%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-outline-variant)"></i><i style="position: absolute; left: 30%; width: 3%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-outline-variant)"></i><i style="position: absolute; left: 35%; width: 3%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-outline-variant)"></i><i style="position: absolute; left: 40%; width: 3%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-outline-variant)"></i><span class="cap" style="position: absolute; left: 44%; top: 4px">1 → 1.06 → 1 each, 50 ms apart · calm spring</span></div>
+<span class="title-small">"Full week" pops in</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i class="m-lime" style="position: absolute; left: 45%; width: 52%; top: 4px; bottom: 4px; border-radius: 4px; box-shadow: inset 0 0 0 2px var(--m)"></i><span class="cap" style="position: absolute; left: 22%; top: 4px">win spring · success haptic</span></div>
+<span class="title-small">Streak ticks 1 → 2 weeks</span>
+<div style="position: relative; height: 24px; background: var(--color-surface); border-radius: 6px"><i class="m-flame" style="position: absolute; left: 55%; right: 0; top: 4px; bottom: 4px; border-radius: 4px; box-shadow: inset 0 0 0 2px var(--m)"></i><span class="cap" style="position: absolute; left: 24%; top: 4px">the digit slides up · win spring</span></div>
+</div>
+</section>
+
+<section aria-label="Rules" style="display: grid; grid-template-columns: 1.15fr 1.3fr 1fr; gap: 20px; flex: 1; min-height: 0">
+<div class="card" style="gap: 10px; align-content: start">
+<div class="between"><h2 class="title-medium">Live loop</h2><span class="cap">every 2.4 s</span></div>
+<div class="between">
+<span class="hstack" style="gap: 4px"><span class="ic ic-dot s12 loop-pop"></span><span class="ic ic-dot s12 loop-pop" style="animation-delay: 50ms"></span><span class="ic ic-dot s12 muted loop-pop" style="animation-delay: 100ms"></span><span class="ic ic-dot s12 loop-pop" style="animation-delay: 150ms"></span><span class="ic ic-dot s12 loop-pop" style="animation-delay: 200ms"></span><span class="ic ic-dot s12 loop-pop" style="animation-delay: 250ms"></span><span class="ic ic-dot s12 m-lime m-ic loop-pop" style="animation-delay: 300ms"></span></span>
+<span class="hstack" style="gap: 6px"><span class="m-tag m-lime loop-pop" style="animation-delay: 350ms">Full week</span><span class="m-tag m-flame loop-pop" style="animation-delay: 450ms"><span class="ic ic-flame s14"></span>2 weeks in a row</span></span>
+</div>
+<p class="cap">Once per week in the app; the loop is the board's only repeat.</p>
+</div>
+<div class="card" style="gap: 6px; align-content: start">
+<h2 class="title-medium">Springs</h2>
+<p style="font: var(--type-body-small)"><b>Win</b> · Compose <code>spring(dampingRatio = 0.45f, stiffness = 420f)</code>, about 20 % overshoot, settled in about 430 ms. SwiftUI <code>.spring(response: 0.31, dampingFraction: 0.45)</code>. Web fallback only <code>cubic-bezier(0.34, 1.56, 0.64, 1)</code> 520 ms.</p>
+<p style="font: var(--type-body-small)"><b>Calm</b> · everything that is not a win: design 1's <code>spring(dampingRatio = 0.6f, stiffness = 400f)</code>, fallback 350 ms; fades 250 ms.</p>
+<p class="muted" style="font: var(--type-body-small)">Haptics: success on a win, light on a log.</p>
+</div>
+<div class="card" style="gap: 6px; align-content: start">
+<h2 class="title-medium">Reduce Motion</h2>
+<p class="muted" style="font: var(--type-body-small)">Cross-fades and colour changes only, no scale, no travel. Sunday's mark cross-fades to lime, no pulse; "Full week" fades in; the streak reads "2 weeks in a row" at once, no roll. The success haptic stays.</p>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

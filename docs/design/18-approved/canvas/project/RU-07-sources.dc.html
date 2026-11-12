@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Route map, data sources</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="map" style="position:absolute;inset:0"><img class="only-dark" src="/_blob/5f81896c79487b24b7f6d5ced01a2a9a" alt=""><img class="only-light" src="/_blob/13891c6b0a0ded6ca4836d993f759c2f" alt=""><img src="/_blob/49cb24d17f0497975f2b8a64713d9ee8" alt="Route"></div>
+<div class="mapctl glass" style="top:62px;left:16px"><a class="mapbtn" href="RU-05-done.dc.html" aria-label="Close map"><span class="ic ic-x s22"></span></a></div>
+<div class="mapctl glass" style="top:62px;right:16px"><a class="mapbtn" href="RU-07-sat.dc.html" aria-label="Map type"><span class="ic ic-layers s22"></span></a><a class="mapbtn" href="RU-07-3d.dc.html" aria-label="3D"><span style="font:var(--type-title-small)">3D</span></a><a class="mapbtn" href="RU-07-sources.dc.html" aria-label="Map data"><span class="ic ic-info s22"></span></a></div>
+<span class="btn small" style="position:absolute;z-index:2;bottom:44px;left:50%;transform:translateX(-50%);width:auto;min-height:44px;background:var(--material-regular);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:var(--border-hairline) solid var(--material-edge);box-shadow:var(--material-shadow)"><span class="ic ic-route s20"></span>Save route</span>
+<div class="scrim"></div>
+<section class="sheet glass thick" role="dialog" aria-label="Map data">
+<span aria-hidden="true" style="align-self:center;justify-self:center;width:36px;height:5px;border-radius:999px;background:var(--color-outline);flex:none"></span>
+<div class="sheet-head"><span></span><h2>Map data</h2><a class="navtext b" href="RU-07-std.dc.html">Done</a></div>
+<p style="font:var(--type-body-medium);color:var(--color-on-surface-variant)">The maps, the satellite images and the elevation come from the map provider Strive is built on. Which provider is a build choice, so the names below are filled in when it is made.</p>
+<div class="list">
+<div class="row"><span>Map data<small>© the provider and its data partners</small></span><span></span></div>
+<div class="row"><span>Satellite imagery<small>© the provider's imagery sources</small></span><span></span></div>
+<div class="row"><span>Elevation<small>The provider's terrain data</small></span><span></span></div>
+<div class="row"><span>Your route<small>Recorded by this iPhone, stored only in Strive</small></span><span></span></div>
+</div>
+<span class="btn"><span class="ic ic-external s18"></span>Licences and terms</span>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

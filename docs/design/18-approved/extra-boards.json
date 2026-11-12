@@ -1,0 +1,592 @@
+{
+ "motion": {
+  "MO": [
+   [
+    "MO-log",
+    "MO \u00b7 logging a set and a record \u00b7 dark-HC",
+    1280,
+    800
+   ],
+   [
+    "MO-rest",
+    "MO \u00b7 the rest timer ending \u00b7 dark-HC",
+    1280,
+    800
+   ],
+   [
+    "MO-start",
+    "MO \u00b7 Start bubbles \u00b7 dark-HC",
+    1280,
+    800
+   ],
+   [
+    "MO-gestures",
+    "MO \u00b7 gestures and thresholds \u00b7 dark-HC",
+    1280,
+    800
+   ]
+  ]
+ },
+ "modes": {
+  "MD00": [
+   [
+    "MD-SH-01-rt",
+    "SH-01 \u00b7 Reduce Transparency \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-Main",
+    "SH-02 \u00b7 strength day \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-SH-03-today",
+    "SH-03 \u00b7 today planned \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-SH-04-four",
+    "SH-04 \u00b7 four templates \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD01": [
+   [
+    "MD-SH-05",
+    "SH-05 \u00b7 Food (v1) \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-SH-06-welcome",
+    "SH-06 \u00b7 welcome \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-SH-07-check",
+    "SH-07 \u00b7 hint on \u2713 \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-SH-08-loc-pre",
+    "SH-08 \u00b7 location, before asking \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD02": [
+   [
+    "MD-WO-01-marks",
+    "WO-01 \u00b7 quick picks from marks \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-02-s1",
+    "WO-02 \u00b7 s1 started from template \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-03-strip",
+    "WO-03 \u00b7 scrolled, strip shown \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-04-new",
+    "WO-04 \u00b7 dock, set not logged \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD03": [
+   [
+    "MD-WO-05-weight",
+    "WO-05 \u00b7 keypad, weight \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-06-round",
+    "WO-06 \u00b7 a superset round's rest \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-07-menu",
+    "WO-07 \u00b7 free rest menu \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-08-menu",
+    "WO-08 \u00b7 workout menu \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD04": [
+   [
+    "MD-WO-09-menu",
+    "WO-09 \u00b7 exercise menu \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-10",
+    "WO-10 \u00b7 create superset \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-11",
+    "WO-11 \u00b7 order and skip \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-12-bb",
+    "WO-12 \u00b7 settings, barbell \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD05": [
+   [
+    "MD-WO-13-menu",
+    "WO-13 \u00b7 set type menu \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-14-revealed",
+    "WO-14 \u00b7 swipe, Delete revealed \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-15-one",
+    "WO-15 \u00b7 one set not logged \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-16-discard",
+    "WO-16 \u00b7 discard alert \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD06": [
+   [
+    "MD-WO-17-plan",
+    "WO-17 \u00b7 minimised, no rest \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-18-lock",
+    "WO-18 \u00b7 rest notification, locked \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-19-counting",
+    "WO-19 \u00b7 Live Activity, counting \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-20-compact",
+    "WO-20 \u00b7 Dynamic Island, compact \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD07": [
+   [
+    "MD-WO-21-records",
+    "WO-21 \u00b7 summary with records \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-22-one",
+    "WO-22 \u00b7 update template, one change \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-23-summary",
+    "WO-23 \u00b7 save as template \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-24",
+    "WO-24 \u00b7 session detail \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD08": [
+   [
+    "MD-WO-25-edit",
+    "WO-25 \u00b7 editing \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-WO-26-all",
+    "WO-26 \u00b7 History, All \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-PL-01-week",
+    "PL-01 \u00b7 this week \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-PL-02-plan",
+    "PL-02 \u00b7 Plan menu \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD09": [
+   [
+    "MD-PL-03-menu",
+    "PL-03 \u00b7 template card menu \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-PL-04-pusha",
+    "PL-04 \u00b7 template preview \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-PL-05-new",
+    "PL-05 \u00b7 new template \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-PL-06-reps",
+    "PL-06 \u00b7 range keypad, reps \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD10": [
+   [
+    "MD-PL-07-list",
+    "PL-07 \u00b7 archived templates \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-PL-08-week6",
+    "PL-08 \u00b7 programme, this week open \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-PL-09",
+    "PL-09 \u00b7 programme weights \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-PL-10",
+    "PL-10 \u00b7 programme log \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD11": [
+   [
+    "MD-PL-11",
+    "PL-11 \u00b7 programme settings \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-PL-12-empty",
+    "PL-12 \u00b7 create programme, empty \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EX-01",
+    "EX-01 \u00b7 library \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EX-02-none",
+    "EX-02 \u00b7 filter, nothing ticked \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD12": [
+   [
+    "MD-EX-03-none",
+    "EX-03 \u00b7 picker, none ticked \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EX-04",
+    "EX-04 \u00b7 swap, with alternatives \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EX-05",
+    "EX-05 \u00b7 About \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EX-06",
+    "EX-06 \u00b7 History \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD13": [
+   [
+    "MD-EX-07",
+    "EX-07 \u00b7 Chart \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EX-08",
+    "EX-08 \u00b7 Records \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EX-09-empty",
+    "EX-09 \u00b7 create exercise, empty \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EX-10-used",
+    "EX-10 \u00b7 edit a used exercise \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD14": [
+   [
+    "MD-EX-11-list",
+    "EX-11 \u00b7 merge, choose \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-RU-01-search",
+    "RU-01 \u00b7 looking for GPS \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-RU-02",
+    "RU-02 \u00b7 running, distance \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-RU-03",
+    "RU-03 \u00b7 paused \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD15": [
+   [
+    "MD-RU-04",
+    "RU-04 \u00b7 finish run \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-RU-05-done",
+    "RU-05 \u00b7 just finished \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-RU-06-splits",
+    "RU-06 \u00b7 splits \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-RU-07-std",
+    "RU-07 \u00b7 map, standard \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD16": [
+   [
+    "MD-RU-08-play",
+    "RU-08 \u00b7 flyover playing \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-RU-09",
+    "RU-09 \u00b7 edit run \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EL-01",
+    "EL-01 \u00b7 You \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EL-02-8wk",
+    "EL-02 \u00b7 Progress, 8 weeks \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD17": [
+   [
+    "MD-EL-03",
+    "EL-03 \u00b7 Progress, Running \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EL-04-three",
+    "EL-04 \u00b7 main lifts, three \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EL-05",
+    "EL-05 \u00b7 Profile \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EL-06",
+    "EL-06 \u00b7 Settings \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD18": [
+   [
+    "MD-EL-07-kg",
+    "EL-07 \u00b7 plates and bars, kg \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EL-08-none",
+    "EL-08 \u00b7 nothing linked \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EL-09-before",
+    "EL-09 \u00b7 Apple Health, before \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EL-10",
+    "EL-10 \u00b7 gear \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD19": [
+   [
+    "MD-EL-11-new",
+    "EL-11 \u00b7 add gear \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EL-12",
+    "EL-12 \u00b7 choose shoes \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EL-13",
+    "EL-13 \u00b7 export \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EL-14",
+    "EL-14 \u00b7 About Strive \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD20": [
+   [
+    "MD-EL-15-source",
+    "EL-15 \u00b7 import, source (later) \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EL-16-out",
+    "EL-16 \u00b7 sync, signed out (later) \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EL-17-notarget",
+    "EL-17 \u00b7 food, no target (later) \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-EL-18-search",
+    "EL-18 \u00b7 log food, search (later) \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ],
+  "MD21": [
+   [
+    "MD-EL-19-unset",
+    "EL-19 \u00b7 targets unset (later) \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ],
+   [
+    "MD-LT-activity",
+    "O-22 \u00b7 Activity bubble (later) \u00b7 dark \u00b7 light \u00b7 light-HC",
+    1298,
+    924
+   ]
+  ]
+ }
+}

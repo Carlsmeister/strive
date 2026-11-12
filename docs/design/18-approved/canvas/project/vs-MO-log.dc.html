@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>1 vs 1+2 · MO · logging a set and a record</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&amp;display=swap">
+</helmet>
+<div class="strive" data-theme="{{mode}}" style="width: 2648px; height: 894px; box-sizing: border-box; padding: 24px; background: var(--color-surface-container-low); color: var(--color-on-surface); display: flex; gap: 40px">
+<figure style="margin: 0; display: grid; gap: 10px; align-content: start; width: 1280px"><figcaption class="cap" style="font-weight: 600; height: 36px; line-height: 18px; overflow: hidden">Strive 1 · MO · logging a set and a record</figcaption><div style="width: 1280px; height: 800px; position: relative; overflow: hidden">
+<div class="strive" data-theme="{{mode}}" style="width: 1280px; height: 800px; box-sizing: border-box; padding: 40px 48px; background: var(--color-background); color: var(--color-on-surface); display: flex; flex-direction: column; gap: 28px">
+<header style="display: flex; justify-content: space-between; align-items: baseline">
+<h1 style="font: 700 34px/41px var(--font-family)">Logging a set, and a record</h1>
+<p class="muted" style="font: var(--type-body-medium)">The signature moment. Times from the tap, in ms. Reduce Motion keeps only the cross-fades.</p>
+</header>
+
+<section style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px" aria-label="Key frames">
+<figure style="margin: 0; display: grid; gap: 10px">
+<figcaption class="cap">0 ms · the tap: ✓ presses to .96</figcaption>
+<div style="padding: 12px 18px; background: var(--color-background); border: 1px solid var(--color-outline-variant); border-radius: 16px">
+<div class="srow next"><span class="badge">2</span><span class="sprev">80 × 8 @3</span><span class="cell w">82.5</span><span class="cell r">8</span><span class="ok" style="transform: scale(.96)"><span class="ic ic-check s18"></span></span></div>
+<div class="restl">Rest 2:00</div>
+<div class="srow"><span class="badge">3</span><span class="sprev">80 × 7 @2</span><span class="cell w">80</span><span class="cell r">7</span><span class="ok"><span class="ic ic-check s18"></span></span></div>
+</div>
+</figure>
+<figure style="margin: 0; display: grid; gap: 10px">
+<figcaption class="cap">100 ms · ✓ filled, light haptic, the star pops</figcaption>
+<div style="padding: 12px 18px; background: var(--color-background); border: 1px solid var(--color-outline-variant); border-radius: 16px">
+<div class="srow done"><span class="badge">2</span><span class="sprev">80 × 8 @3</span><span class="cell w">82.5</span><span class="cell r">8<small>@2</small></span><span class="ok"><span class="ic ic-check s18"></span></span><span class="star" style="position: absolute; right: -14px; top: 2px; transform: scale(1.2)"><span class="ic ic-star s16"></span></span></div>
+<div class="restl cur">Rest 2:00</div>
+<div class="srow"><span class="badge">3</span><span class="sprev">80 × 7 @2</span><span class="cell w">80</span><span class="cell r">7</span><span class="ok"><span class="ic ic-check s18"></span></span></div>
+</div>
+</figure>
+<figure style="margin: 0; display: grid; gap: 10px">
+<figcaption class="cap">450 ms · the tint has moved to set 3</figcaption>
+<div style="padding: 12px 18px; background: var(--color-background); border: 1px solid var(--color-outline-variant); border-radius: 16px">
+<div class="srow done"><span class="badge">2</span><span class="sprev">80 × 8 @3</span><span class="cell w">82.5</span><span class="cell r">8<small>@2</small></span><span class="ok"><span class="ic ic-check s18"></span></span></div>
+<div class="restl cur">Rest 2:00</div>
+<div class="srow next"><span class="badge">3</span><span class="sprev">80 × 7 @2</span><span class="cell w">80</span><span class="cell r">7</span><span class="ok"><span class="ic ic-check s18"></span></span></div>
+</div>
+</figure>
+<figure style="margin: 0; display: grid; gap: 10px">
+<figcaption class="cap">500 ms · the rest card has risen; the ring ticks each second</figcaption>
+<div class="glass thick" style="border-radius: 16px; padding: 14px; display: flex; align-items: center; gap: 14px">
+<div class="ring" style="width: 48px; height: 48px"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="track" cx="32" cy="32" r="23.5" stroke-width="6.4"></circle><circle class="prog" cx="32" cy="32" r="23.5" stroke-width="6.4" stroke-dasharray="147.65" stroke-dashoffset="1.2"></circle></svg></div>
+<div><div class="cap" style="font-weight: 600">Rest</div><div style="font: var(--type-display-small)">1:59</div></div>
+</div>
+</figure>
+</section>
+
+<section aria-label="Timeline" style="display: grid; gap: 10px">
+<div style="display: grid; grid-template-columns: 300px 1fr; align-items: end">
+<span></span>
+<div style="position: relative; height: 18px; font: var(--type-label-small); color: var(--color-on-surface-variant)">
+<span style="position: absolute; left: 0">0</span><span style="position: absolute; left: 20%">200</span><span style="position: absolute; left: 40%">400</span><span style="position: absolute; left: 60%">600</span><span style="position: absolute; left: 80%">800</span><span style="position: absolute; right: 0">1000 ms</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: 300px 1fr; align-items: center; gap: 8px 0">
+<span class="title-small">✓ press, then fill teal</span>
+<div style="position: relative; height: 26px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 0; width: 10%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-outline)"></i><span class="cap" style="position: absolute; left: 11%; top: 5px">press 100 · ease-out · light haptic</span></div>
+<span class="title-small">Record star (only on a record)</span>
+<div style="position: relative; height: 26px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 10%; width: 35%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-tertiary)"></i><span class="cap" style="position: absolute; left: 46%; top: 5px">scale 0 → 1.2 → 1 · release spring 350</span></div>
+<span class="title-small">Next-row tint slides down</span>
+<div style="position: relative; height: 26px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 10%; width: 35%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-primary)"></i><span class="cap" style="position: absolute; left: 46%; top: 5px">release spring 350 · cubic-bezier(.3, 1.4, .5, 1)</span></div>
+<span class="title-small">Focus card values cross-fade</span>
+<div style="position: relative; height: 26px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 10%; width: 25%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-outline)"></i><span class="cap" style="position: absolute; left: 36%; top: 5px">fade 250 · label "SET 3 OF 3"</span></div>
+<span class="title-small">Rest card rises 16 pt, fades in</span>
+<div style="position: relative; height: 26px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 15%; width: 35%; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-primary)"></i><span class="cap" style="position: absolute; left: 51%; top: 5px">release spring 350, starts at 150</span></div>
+<span class="title-small">Ring drains</span>
+<div style="position: relative; height: 26px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 50%; right: 0; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-tertiary); opacity: .6"></i><span class="cap" style="position: absolute; left: 18%; top: 5px">tick 1 s linear, until 0 →</span></div>
+<span class="title-small">"New record" toast (record only)</span>
+<div style="position: relative; height: 26px; background: var(--color-surface); border-radius: 6px"><i style="position: absolute; left: 20%; right: 0; top: 4px; bottom: 4px; border-radius: 4px; background: var(--color-inverse-surface)"></i><span class="cap" style="position: absolute; left: 21%; top: 5px; color: var(--color-inverse-on-surface)">drops from under the bar (350), stays 2.4 s, fades 250</span></div>
+</div>
+</section>
+</div>
+</div></figure>
+<figure style="margin: 0; display: grid; gap: 10px; align-content: start; width: 1280px"><figcaption class="cap" style="height: 36px; line-height: 18px; overflow: hidden" title="logging on the win spring: ✓ pops to 1.14, a lime row flash, the count rolls; the record moved to MO-record"><b>Strive 1+2</b> · logging on the win spring: ✓ pops to 1.14, a lime row flash, the count rolls; the record moved to MO-record</figcaption><dc-import name="MO-log" mode="{{mode}}" hint-size="1280px,800px"></dc-import></figure>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":2648,"height":894}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Live run, current pace</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="nav">
+<div class="l"><a class="ibtn plain" href="RU-02-mini.dc.html" aria-label="Minimise run"><span class="ic ic-down s22"></span></a></div>
+<h1>Easy run</h1>
+<div class="r"><span class="gps" style="padding-right:4px"><i></i>GPS</span></div>
+</header>
+<div class="map" style="margin:8px 16px 0;height:290px;border-radius:20px;flex:none"><img class="only-dark" src="/_blob/5f81896c79487b24b7f6d5ced01a2a9a" alt="" style="object-position:50% 42%"><img class="only-light" src="/_blob/13891c6b0a0ded6ca4836d993f759c2f" alt="" style="object-position:50% 42%"><img src="/_blob/340870eec271977beeb7c9bfd4ced45e" alt="Route" style="object-position:50% 42%"></div>
+<a href="RU-02-nomap.dc.html" aria-label="Hide map" style="display:grid;place-items:center;height:44px;flex:none"><span aria-hidden="true" style="width:36px;height:5px;border-radius:999px;background:var(--color-outline)"></span></a>
+<a class="bignum" href="RU-02-avg.dc.html" aria-label="Show average pace instead"><span class="v">5:38</span><span class="u">pace /km</span><span class="dotsnav" aria-hidden="true" style="margin-top:10px"><i></i><i></i><i class="on"></i><i></i></span></a>
+<div class="runstats" style="margin:16px 16px 0"><div><b>3.42</b><small>km</small></div><div><b>19:41</b><small>time</small></div><div><b>5:45</b><small>avg /km</small></div></div>
+
+<div style="position:absolute;left:0;right:0;bottom:56px;display:flex;justify-content:center;gap:56px">
+<a class="runbtn" href="RU-02-lap.dc.html"><span style="display:grid;justify-items:center;gap:2px"><span class="ic ic-flag s28"></span>Lap</span></a>
+<a class="runbtn main" href="RU-03.dc.html"><span style="display:grid;justify-items:center;gap:2px"><span class="ic ic-pause-f s28"></span>Pause</span></a>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

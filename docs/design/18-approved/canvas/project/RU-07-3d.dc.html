@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Route map, 3D hybrid</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="map" style="position:absolute;inset:0"><div class="tilt" style="position:absolute;inset:0"><img src="/_blob/d3af194229a445a27e388bbb7a34b15a" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><img src="/_blob/49cb24d17f0497975f2b8a64713d9ee8" alt="Route" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></div></div>
+<span class="maplabel glass" style="left:182px;top:560px">Djurgårdsbrunnsviken</span><span class="maplabel glass" style="left:40px;top:430px">Start</span>
+<div class="mapctl glass" style="top:62px;left:16px"><a class="mapbtn" href="RU-05-done.dc.html" aria-label="Close map"><span class="ic ic-x s22"></span></a></div>
+<div class="mapctl glass" style="top:62px;right:16px"><span class="mapbtn" aria-label="Map type"><span class="ic ic-layers s22"></span></span><span class="mapbtn" aria-label="3D" style="background:var(--color-primary);color:var(--color-on-primary);border-radius:0"><span style="font:var(--type-title-small)">3D</span></span><span class="mapbtn" aria-label="Map data"><span class="ic ic-info s22"></span></span></div>
+<span class="btn small" style="position:absolute;z-index:2;bottom:44px;left:50%;transform:translateX(-50%);width:auto;min-height:44px;background:var(--material-regular);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:var(--border-hairline) solid var(--material-edge);box-shadow:var(--material-shadow)"><span class="ic ic-route s20"></span>Save route</span>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>

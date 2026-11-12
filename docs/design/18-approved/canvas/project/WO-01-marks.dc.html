@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Empty workout · marks</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/strive1/tokens.css">
+<link rel="stylesheet" href="ds/strive1/components/bundle.css">
+<link rel="stylesheet" href="moments.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div class="strive screen" data-theme="{{mode}}">
+<div class="safe"></div>
+<header class="wtb">
+<div class="l">
+<a class="ibtn plain" href="SH-02-inprog.dc.html" aria-label="Minimise workout"><span class="ic ic-down s22"></span></a>
+<a class="ibtn" href="WO-07-menu.dc.html" aria-label="Free rest"><span class="ic ic-timer s20"></span></a>
+</div>
+<div class="mid"><span class="wn">Workout <a class="pill" href="WO-08-menu.dc.html" aria-label="Workout options">⋯</a></span><small>0:12</small></div>
+<a class="finish" href="WO-16-empty.dc.html">Finish</a>
+</header>
+<main class="body">
+<section class="qs" style="margin-top: 8px">
+<span class="mark"><span class="ic ic-plus s32"></span></span>
+<h2>What are you training today?</h2>
+<p>Pick from the library, or tap an exercise below.</p>
+<a class="btn filled" href="EX-03-none.dc.html">Add exercises</a>
+</section>
+<section class="vstack" style="gap: 12px; padding-top: 8px" aria-label="Quick picks">
+<div class="between" style="align-items: baseline"><h2 style="font: var(--type-title-small)">Quick picks</h2><span class="cap">Yes in My programmes</span></div>
+<div class="chipwrap">
+<a class="chip qp" href="WO-01-picked.dc.html" aria-label="Add Bench Press BB"><span class="plus">+</span>Bench Press BB</a>
+<button class="chip qp" aria-label="Add Squat BB"><span class="plus">+</span>Squat BB</button>
+<button class="chip qp" aria-label="Add Deadlift BB"><span class="plus">+</span>Deadlift BB</button>
+<button class="chip qp" aria-label="Add Overhead Press BB"><span class="plus">+</span>Overhead Press BB</button>
+<button class="chip qp" aria-label="Add Pull Up"><span class="plus">+</span>Pull Up</button>
+<button class="chip qp" aria-label="Add Incline Press DB"><span class="plus">+</span>Incline Press DB</button>
+</div>
+</section>
+<a class="discard" href="WO-16-discard.dc.html">Discard workout</a>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["dark-hc","dark","light","light-hc"],"default":"dark-hc"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { mode: this.props.mode ?? 'dark-hc' };
+  }
+}
+</script>
+</body>
+</html>
