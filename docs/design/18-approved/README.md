@@ -34,7 +34,6 @@ design 1. `review.md`, which `design-1.md` cites, stayed in the OS.
 | `v1-snap/` | Design 1's boards before 1+2 changed them; `tools/vs.py` draws them beside the new ones |
 | `polish-diff.json` | Copy and structure differences between design 1 and `dev`'s strings and Kotlin (2026-11-10) |
 | `extra-boards.json` | The boards of the Motion and All modes pages |
-| `ref-system/` | The design-system artifact type's reference: how a system artifact is shaped |
 | `tools/` | Python scripts, standard library only. See below |
 
 ## Render a board
