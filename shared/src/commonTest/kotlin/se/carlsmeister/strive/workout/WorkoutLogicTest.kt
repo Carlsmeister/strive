@@ -366,10 +366,10 @@ class ProgressCountTest {
     fun progressCountsEverySetButWarmUps() {
         val sets = listOf(
             WorkoutSet(1, done = true, kind = SetKind.Warmup), WorkoutSet(2, done = true), WorkoutSet(3),
-            WorkoutSet(4, kind = SetKind.Failure), WorkoutSet(5, kind = SetKind.Drop),
+            WorkoutSet(4, done = true, kind = SetKind.Failure), WorkoutSet(5, kind = SetKind.Drop),
         )
         val skipped = SessionExercise(2, 2, "Skipped", ExerciseType.WeightReps, null, "", listOf(WorkoutSet(6, done = true)), skipped = true)
         val w = Workout(1, "Push A", 0, null, "", null, listOf(SessionExercise(1, 1, "Bench Press BB", ExerciseType.WeightReps, null, "", sets), skipped))
-        assertEquals(1 to 4, w.countedLogged to w.countedSets)
+        assertEquals(2 to 4, w.countedLogged to w.countedSets)
     }
 }

@@ -74,7 +74,7 @@ internal data class Workout(
     val sets get() = exercises.filterNot { it.skipped }.sumOf { it.sets.size }
     val logged get() = exercises.filterNot { it.skipped }.sumOf { e -> e.sets.count { it.done } }
 
-    /** O-25: the progress count leaves out warm-ups; drop and failure sets count. [sets] and [logged] still count every set. */
+    /** O-25: the progress count leaves out warm-ups; drop and failure sets count. [sets] and [logged] still count warm-ups. */
     val countedSets get() = exercises.filterNot { it.skipped }.sumOf { e -> e.sets.count { it.kind != SetKind.Warmup } }
     val countedLogged get() = exercises.filterNot { it.skipped }.sumOf { e -> e.sets.count { it.done && it.kind != SetKind.Warmup } }
 }
