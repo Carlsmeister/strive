@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import se.carlsmeister.strive.theme.CssLineBox
 import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.StriveMoments
 import se.carlsmeister.strive.theme.StriveTheme
@@ -69,7 +70,7 @@ internal fun MomentTag(text: String, accent: Accent, modifier: Modifier = Modifi
     ) {
         if (icon != null) Icon(icon, contentDescription = null, Modifier.size(14.dp), tint = m.edge(accent))
         // `.m-tag`'s `font:` shorthand resets font-variant-numeric, so its figures are proportional, unlike labelMedium's.
-        Text(text, color = m.text(accent), style = MaterialTheme.typography.labelMedium.copy(fontFeatureSettings = null),
+        Text(text, color = m.text(accent), style = MaterialTheme.typography.labelMedium.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox),
             fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
     }
 }
@@ -88,5 +89,5 @@ internal fun MomentNumber(
     insideValue: Boolean = false,
 ) {
     val shown = if (celebrate) style.celebrate(celebrateFamily(), insideValue) else style
-    Text(text, modifier, color = StriveTheme.moments.text(accent), style = shown)
+    Text(text, modifier, color = StriveTheme.moments.text(accent), style = shown.copy(lineHeightStyle = CssLineBox))
 }

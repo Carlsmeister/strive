@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import se.carlsmeister.strive.theme.CssLineBox
 import se.carlsmeister.strive.theme.StriveIcons
 import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.ui.Accent
@@ -30,8 +31,8 @@ import se.carlsmeister.strive.ui.moment
 @Composable
 internal fun IconsBoard() = Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
     val colors = MaterialTheme.colorScheme
-    // `.cap` at the card's 10 px: label-medium's line height and weight, a smaller size.
-    val cap = MaterialTheme.typography.labelMedium.copy(fontSize = 10.sp)
+    // `.cap` at the card's 10 px: label-medium's 16 sp line box and weight, a smaller size.
+    val cap = MaterialTheme.typography.labelMedium.copy(fontSize = 10.sp, lineHeightStyle = CssLineBox)
     StriveIcons.all.chunked(6).forEach { row ->
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             row.forEach { (name, icon) ->
@@ -64,9 +65,10 @@ private fun MomentCard(accent: Accent, icon: ImageVector, number: String, tag: S
                 Icon(icon, contentDescription = null, Modifier.size(24.dp), tint = StriveTheme.moments.edge(accent))
                 MomentTag(tag, accent, icon = icon)
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.Bottom) {
-                MomentNumber(number, accent, MaterialTheme.typography.displaySmall, celebrate = true)
-                MomentNumber(number, accent, MaterialTheme.typography.displaySmall)
+            // On one baseline, as two inline numbers sit in CSS; their line boxes differ, so bottom alignment would offset them.
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                MomentNumber(number, accent, MaterialTheme.typography.displaySmall, Modifier.alignByBaseline(), celebrate = true)
+                MomentNumber(number, accent, MaterialTheme.typography.displaySmall, Modifier.alignByBaseline())
             }
         }
     }

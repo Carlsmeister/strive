@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.Density
 
 internal enum class Scheme(
@@ -38,6 +39,12 @@ internal fun glass(scheme: Scheme, reduceTransparency: Boolean): StriveMaterials
     val solid = scheme.colors.surface
     return StriveMaterials(regular = solid, thick = solid, edge = scheme.materials.edge, shadow = scheme.materials.shadow)
 }
+
+/**
+ * CSS's line box: half the leading above the first line and half below the last, as Material 3's own type default does. The
+ * generated StriveTypography stays trimmed, so built screens do not move until the whole theme decides; system-layer text copies this.
+ */
+internal val CssLineBox = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None)
 
 /** The phone's settings the theme follows beside light and dark. */
 internal data class Accessibility(

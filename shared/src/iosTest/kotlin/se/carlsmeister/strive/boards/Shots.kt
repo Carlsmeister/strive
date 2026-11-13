@@ -20,7 +20,8 @@ import platform.Foundation.writeToFile
 @OptIn(ExperimentalTestApi::class, ExperimentalForeignApi::class, BetaInteropApi::class)
 internal fun ComposeUiTest.savePng(folder: String, name: String) {
     waitForIdle()
-    val bytes = Image.makeFromBitmap(onAllNodes(isRoot())[0].captureToImage().asSkiaBitmap()).encodeToData(EncodedImageFormat.PNG)?.bytes ?: return
+    val bytes = Image.makeFromBitmap(onAllNodes(isRoot())[0].captureToImage().asSkiaBitmap()).encodeToData(EncodedImageFormat.PNG)?.bytes
+        ?: error("could not encode $name") // a silent skip would leave the previous run's PNG looking current
     NSFileManager.defaultManager.createDirectoryAtPath(folder, true, null, null)
     bytes.usePinned { NSData.create(bytes = it.addressOf(0), length = bytes.size.toULong()).writeToFile("$folder/$name.png", true) }
 }
