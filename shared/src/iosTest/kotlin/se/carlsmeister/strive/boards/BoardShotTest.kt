@@ -51,6 +51,9 @@ class BoardShotTest {
     @Test
     fun listsInDarkAndDarkHc() = boardShots("Lists", DarkModes) { ListsBoard() }
 
+    @Test
+    fun titleBarsInDarkAndDarkHc() = boardShots("TitleBars", DarkModes, waitFor = "Push A") { TitleBarsBoard() }
+
     /** A switch row toggles from a tap on its text; a switch on its own draws 32 dp but is a touch (44 dp) tall. */
     @Test
     fun aSwitchRowTogglesFromItsTextAndASwitchIsATouchTall() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {

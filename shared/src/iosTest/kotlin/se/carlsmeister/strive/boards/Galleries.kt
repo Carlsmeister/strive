@@ -16,15 +16,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.theme.CssLineBox
 import se.carlsmeister.strive.theme.StriveIcons
 import se.carlsmeister.strive.theme.StriveTheme
@@ -34,12 +38,14 @@ import se.carlsmeister.strive.ui.ActionKind
 import se.carlsmeister.strive.ui.ButtonRow
 import se.carlsmeister.strive.ui.ChoiceChip
 import se.carlsmeister.strive.ui.InputField
+import se.carlsmeister.strive.ui.LargeTitle
 import se.carlsmeister.strive.ui.ListBlock
 import se.carlsmeister.strive.ui.ListGroup
 import se.carlsmeister.strive.ui.ListRow
 import se.carlsmeister.strive.ui.MomentNumber
 import se.carlsmeister.strive.ui.MomentTag
 import se.carlsmeister.strive.ui.MorePill
+import se.carlsmeister.strive.ui.NavBar
 import se.carlsmeister.strive.ui.RoundButton
 import se.carlsmeister.strive.ui.RoundKind
 import se.carlsmeister.strive.ui.RowTone
@@ -47,8 +53,11 @@ import se.carlsmeister.strive.ui.Stat
 import se.carlsmeister.strive.ui.StatTiles
 import se.carlsmeister.strive.ui.SurfaceCard
 import se.carlsmeister.strive.ui.ToggleRow
+import se.carlsmeister.strive.ui.WorkoutBar
 import se.carlsmeister.strive.ui.edge
 import se.carlsmeister.strive.ui.moment
+import se.carlsmeister.strive.workout.now
+import se.carlsmeister.strive.workout.progress
 
 /** The Icons card: every glyph at 24 dp over its CSS name, in bundle.css's order; 6 columns, not the card's 8, on a phone (R6). */
 @Composable
@@ -166,4 +175,26 @@ internal fun ListsBoard() = Column(Modifier.padding(16.dp), verticalArrangement 
         ),
         tiles = true,
     )
+}
+
+/**
+ * The TitleBars card's four bars, each the phone's width: Library's nav bar, Plan's large title, the workout's bar at rest, then
+ * scrolled on glass with every set logged, named and counted from the fixture's open Push A (`1/14`, where the card draws `2/15`: R5).
+ */
+@Composable
+internal fun TitleBarsBoard() = Column(Modifier.padding(top = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    NavBar("Library", back = "Plan") {
+        RoundButton(StriveIcons.More, "More", {}, kind = RoundKind.Plain)
+        RoundButton(StriveIcons.Plus, "Add", {}, kind = RoundKind.Teal)
+    }
+    // The card's inline `padding: 0 16px` replaces `.lt`'s 4 dp on top, so the board takes those 4 dp back.
+    LargeTitle("Plan", Modifier.padding(horizontal = 16.dp).layout { m, c ->
+        val p = m.measure(c)
+        val top = 4.dp.roundToPx()
+        layout(p.width, p.height - top) { p.place(0, -top) }
+    }) { RoundButton(StriveIcons.More, "More", {}, kind = RoundKind.Plain) }
+    WorkoutBar({}, {}, {})
+    val sessions = LocalAppGraph.current.sessions
+    val w by remember { sessions.open() }.collectAsState(null)
+    WorkoutBar({}, {}, {}, allLogged = true, glassed = true, hairline = true, title = w?.name, progress = w?.let { progress(it, now()) })
 }
