@@ -7,6 +7,15 @@ in that issue's Design section.
 Files are numbered in order: `NNNN-short-title.md`, starting at `0001`. A decision is
 never edited after it is accepted; a new record supersedes it and says so.
 
+## Index
+
+- [0001. The iOS route](0001-ios-route.md) (#12)
+- [0002. Project structure](0002-project-structure.md) (#31)
+- [0003. Theme](0003-theme.md) (#30)
+- [0004. Database: SQLDelight](0004-database.md) (#33)
+- [0005. Dependency injection: by hand](0005-dependency-injection.md) (#33)
+- [0006. The system layer](0006-system-layer.md) (#56)
+
 ## Template
 
 ```markdown
