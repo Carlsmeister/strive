@@ -141,7 +141,7 @@ internal fun flexWidths(row: Float, gap: Float, bases: List<Float>, grows: List<
  * Reduce Motion keeps the dim and drops the scale. A disabled control never reports a press, so it does not react.
  */
 @Composable
-private fun Modifier.pressable(enabled: Boolean, onClick: () -> Unit): Modifier {
+internal fun Modifier.pressable(enabled: Boolean, onClick: () -> Unit): Modifier {
     val source = remember { MutableInteractionSource() }
     val pressed by source.collectIsPressedAsState()
     val states = StriveTheme.states

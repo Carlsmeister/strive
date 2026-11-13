@@ -1,5 +1,6 @@
 package se.carlsmeister.strive.boards
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,12 +10,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -26,14 +32,21 @@ import se.carlsmeister.strive.ui.Accent
 import se.carlsmeister.strive.ui.ActionButton
 import se.carlsmeister.strive.ui.ActionKind
 import se.carlsmeister.strive.ui.ButtonRow
+import se.carlsmeister.strive.ui.ChoiceChip
+import se.carlsmeister.strive.ui.InputField
+import se.carlsmeister.strive.ui.ListBlock
+import se.carlsmeister.strive.ui.ListGroup
+import se.carlsmeister.strive.ui.ListRow
 import se.carlsmeister.strive.ui.MomentNumber
 import se.carlsmeister.strive.ui.MomentTag
 import se.carlsmeister.strive.ui.MorePill
 import se.carlsmeister.strive.ui.RoundButton
 import se.carlsmeister.strive.ui.RoundKind
+import se.carlsmeister.strive.ui.RowTone
 import se.carlsmeister.strive.ui.Stat
 import se.carlsmeister.strive.ui.StatTiles
 import se.carlsmeister.strive.ui.SurfaceCard
+import se.carlsmeister.strive.ui.ToggleRow
 import se.carlsmeister.strive.ui.edge
 import se.carlsmeister.strive.ui.moment
 
@@ -114,5 +127,43 @@ internal fun CardsAndStatsBoard() = Column(Modifier.padding(16.dp), verticalArra
     StatTiles(
         listOf(Stat("Time", "64", unit = "min"), Stat("Avg RIR", "1.5", sub = "goal 2–3"), Stat("Sets", "15"), Stat("Records", "3")),
         Modifier.fillMaxWidth(),
+    )
+}
+
+/** The Controls card without `.segc` and `.seg` (R4, #57's): the chips scrolling in their row, two fields (the second focused), the switch. */
+@Composable
+internal fun ControlsBoard() = Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        ChoiceChip("Vertical pull", selected = true, onClick = {})
+        ChoiceChip("Horizontal press", selected = false, onClick = {})
+        ChoiceChip("Knee dominant", selected = false, onClick = {})
+    }
+    InputField("", {}, Modifier.fillMaxWidth(), placeholder = "Search 553 exercises", leading = StriveIcons.Search)
+    val focus = remember { FocusRequester() }
+    InputField("Push A", {}, Modifier.fillMaxWidth().focusRequester(focus))
+    LaunchedEffect(Unit) { focus.requestFocus() } // `.field.focus`: the ring and the caret
+    ToggleRow("Keep the screen awake", checked = true, onCheckedChange = {}, Modifier.fillMaxWidth())
+}
+
+/** The Lists card: the Account group's block with leading tiles, then a short list as joined tiles. */
+@Composable
+internal fun ListsBoard() = Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    ListGroup("Account") {
+        ListBlock(
+            listOf(
+                { ListRow("Profile", leading = StriveIcons.You, chevron = true, onClick = {}) },
+                { ListRow("Settings", leading = StriveIcons.Gear, chevron = true, onClick = {}) },
+                { ListRow("Export", leading = StriveIcons.Share, value = "18 workouts", chevron = true, onClick = {}) },
+            ),
+            hairlineInset = 56.dp, // `.row.lead + .row.lead`
+        )
+    }
+    ListBlock(
+        listOf(
+            { ListRow("Default rest", value = "2:00", onClick = {}) },
+            { ListRow("Units", value = "kg", onClick = {}) },
+            { ListRow("Add gear", tone = RowTone.Action, centered = true, onClick = {}) },
+        ),
+        tiles = true,
     )
 }
