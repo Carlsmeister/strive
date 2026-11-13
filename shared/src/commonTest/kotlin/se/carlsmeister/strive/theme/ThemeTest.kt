@@ -93,4 +93,12 @@ class ThemeTest {
         assertEquals(Color(0xFFFF6961), darkHcColors.errorContainer)
         assertEquals(Color.Black, darkHcColors.onErrorContainer)
     }
+
+    /** Design 2's win spring: about 20 % overshoot, settled in about 430 ms (moments.css). */
+    @Test
+    fun winIsDesign2sSpring() = Motion.win<Float>().let { assertEquals(0.45f to 420f, it.dampingRatio to it.stiffness) }
+
+    /** Design 1's release spring, for calm transitions (design-1.md, polish 10). */
+    @Test
+    fun calmIsDesign1sReleaseSpring() = Motion.calm<Float>().let { assertEquals(0.6f to 400f, it.dampingRatio to it.stiffness) }
 }

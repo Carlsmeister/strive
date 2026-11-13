@@ -109,3 +109,11 @@ internal object StriveTheme {
  */
 internal fun <T> Motion.settle(visibilityThreshold: T? = null): SpringSpec<T> =
     spring(dampingRatio = 1f, stiffness = 400f, visibilityThreshold = visibilityThreshold)
+
+/** Design 2's win spring: about 20 % overshoot, settled in about 430 ms (moments.css). For a number landing, a ring closing. */
+internal fun <T> Motion.win(visibilityThreshold: T? = null): SpringSpec<T> =
+    spring(dampingRatio = 0.45f, stiffness = 420f, visibilityThreshold = visibilityThreshold)
+
+/** Design 1's release spring (design-1.md, polish 10): a little give, for calm transitions that are not a win. */
+internal fun <T> Motion.calm(visibilityThreshold: T? = null): SpringSpec<T> =
+    spring(dampingRatio = 0.6f, stiffness = 400f, visibilityThreshold = visibilityThreshold)
