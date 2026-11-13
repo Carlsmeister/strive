@@ -24,10 +24,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
@@ -37,6 +38,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import se.carlsmeister.strive.theme.CssLineBox
 import se.carlsmeister.strive.theme.ShapeFull
@@ -133,6 +135,11 @@ internal fun ToggleRow(text: String, checked: Boolean, onCheckedChange: (Boolean
 private fun SwitchTrack(checked: Boolean) {
     val colors = MaterialTheme.colorScheme
     Box(Modifier.size(52.dp, 32.dp).background(if (checked) colors.primary else colors.surfaceContainerHighest, ShapeFull).padding(2.dp)) {
-        Box(Modifier.offset(x = if (checked) 20.dp else 0.dp).size(28.dp).shadow(2.dp, CircleShape).background(Color.White, CircleShape))
+        // `::after`'s box-shadow: 0 2px 6px rgb(0 0 0 / .25).
+        Box(
+            Modifier.offset(x = if (checked) 20.dp else 0.dp).size(28.dp)
+                .dropShadow(CircleShape, Shadow(6.dp, Color.Black, offset = DpOffset(0.dp, 2.dp), alpha = .25f))
+                .background(Color.White, CircleShape),
+        )
     }
 }
