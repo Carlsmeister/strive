@@ -3,12 +3,9 @@ package se.carlsmeister.strive.boards
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -28,6 +25,7 @@ import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.ui.Accent
 import se.carlsmeister.strive.ui.ActionButton
 import se.carlsmeister.strive.ui.ActionKind
+import se.carlsmeister.strive.ui.ButtonRow
 import se.carlsmeister.strive.ui.MomentNumber
 import se.carlsmeister.strive.ui.MomentTag
 import se.carlsmeister.strive.ui.MorePill
@@ -92,11 +90,10 @@ internal fun ButtonsBoard() = Column(Modifier.padding(16.dp), verticalArrangemen
     ActionButton("Start workout", {}, Modifier.fillMaxWidth(), kind = ActionKind.Filled)
     ActionButton("Edit", {}, Modifier.fillMaxWidth())
     ActionButton("Delete template", {}, Modifier.fillMaxWidth(), kind = ActionKind.Danger)
-    // `.btnrow` stretches its buttons to the tallest, the text button's 44 dp touch height.
-    Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        ActionButton("Show all", {}, Modifier.weight(1f).fillMaxHeight(), small = true)
-        ActionButton("Deload now", {}, Modifier.weight(1f).fillMaxHeight(), kind = ActionKind.Filled, small = true)
-        ActionButton("Cancel", {}, Modifier.weight(1f).fillMaxHeight(), kind = ActionKind.Text)
+    ButtonRow {
+        ActionButton("Show all", {}, small = true)
+        ActionButton("Deload now", {}, kind = ActionKind.Filled, small = true)
+        ActionButton("Cancel", {}, kind = ActionKind.Text)
     }
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
         RoundButton(StriveIcons.Timer, "Timer", {}, iconSize = 20.dp)
