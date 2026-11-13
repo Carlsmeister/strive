@@ -73,6 +73,10 @@ internal data class Workout(
 ) {
     val sets get() = exercises.filterNot { it.skipped }.sumOf { it.sets.size }
     val logged get() = exercises.filterNot { it.skipped }.sumOf { e -> e.sets.count { it.done } }
+
+    /** O-25: the progress count leaves out warm-ups; drop and failure sets count. [sets] and [logged] still count every set. */
+    val countedSets get() = exercises.filterNot { it.skipped }.sumOf { e -> e.sets.count { it.kind != SetKind.Warmup } }
+    val countedLogged get() = exercises.filterNot { it.skipped }.sumOf { e -> e.sets.count { it.done && it.kind != SetKind.Warmup } }
 }
 
 /** A set can be logged once the values its exercise's type records are there. */

@@ -138,7 +138,7 @@ internal fun rememberNow(): Long {
 
 /** "12:34 · 3/9 set", the progress line under the workout's name in the title bar and the bar it minimises to. */
 @Composable
-internal fun progress(w: Workout, now: Long) = stringResource(Res.string.time_sets, clock((now - w.startedAt) / 1_000), w.logged, w.sets)
+internal fun progress(w: Workout, now: Long) = stringResource(Res.string.time_sets, clock((now - w.startedAt) / 1_000), w.countedLogged, w.countedSets)
 
 /**
  * The active workout as design D draws it (decision 39, #17 choices 1–6, F1): one bar on top, the large title, the focus card, then

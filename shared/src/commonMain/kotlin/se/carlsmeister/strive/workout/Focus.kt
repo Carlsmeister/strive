@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -67,6 +68,7 @@ import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.data.WorkoutSet
 import se.carlsmeister.strive.library.kilos
+import se.carlsmeister.strive.theme.ShapeLargeIncreased
 import se.carlsmeister.strive.theme.StriveTheme
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.add_exercises
@@ -271,7 +273,7 @@ internal fun LargeHeader(w: Workout, now: Long) {
                 Glyph(Glyph.Clock, 16.dp, color = grey, stroke = 1.8f)
                 Text(clock((now - w.startedAt) / 1_000), style = style)
             }
-            Text(stringResource(Res.string.sets_progress, w.logged, w.sets), style = style, color = grey)
+            Text(stringResource(Res.string.sets_progress, w.countedLogged, w.countedSets), style = style, color = grey)
         }
     }
 }
@@ -317,7 +319,7 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
     val type = MaterialTheme.typography
     val sv = swedish
     Column(
-        Modifier.fillMaxWidth().background(colors.surface, RoundedCornerShape(22.dp)).padding(StriveTheme.spacing.s16).testTag("focus"),
+        Modifier.fillMaxWidth().background(colors.surface, ShapeLargeIncreased).padding(StriveTheme.spacing.s16).testTag("focus"),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(nowLabel(e, set, badge, strip = false, tag), style = type.bodySmall.copy(letterSpacing = 0.3.sp), fontWeight = FontWeight.SemiBold,
@@ -420,7 +422,7 @@ internal fun SetRow(
     Row(
         Modifier.fillMaxWidth().heightIn(min = if (current) 42.dp else 38.dp)
             .background(colors.background, RowShape)
-            .then(if (current) Modifier.background(colors.primary.copy(alpha = 0.12f), RowShape) else Modifier)
+            .then(if (current) Modifier.background(StriveTheme.roles.stateNextRow, RowShape) else Modifier)
             .clickable { onOpen(null) }.testTag(tag).padding(horizontal = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8),
@@ -430,7 +432,7 @@ internal fun SetRow(
             // VoiceOver reads a failure set's number with its type, since the colour alone says nothing: "Set 2, till failure".
             val desc = if (set.kind == SetKind.Failure) stringResource(Res.string.set_failure, badge) else label
             Box(
-                Modifier.width(SetColumn).height(28.dp).clip(RoundedCornerShape(8.dp)).background(if (current) colors.primary else colors.surfaceContainerHigh)
+                Modifier.width(SetColumn).height(28.dp).clip(MaterialTheme.shapes.small).background(if (current) colors.primary else colors.surfaceContainerHigh)
                     .clickable(onClickLabel = label) { guard { menu = true } }.semantics { contentDescription = desc },
                 contentAlignment = Alignment.Center,
             ) {
@@ -513,8 +515,8 @@ internal fun ExerciseOverview(e: SessionExercise, first: Boolean, last: Boolean,
     val colors = MaterialTheme.colorScheme
     val logged = e.sets.count { it.done }
     val label = stringResource(Res.string.expand, e.name)
-    val top = if (first) 18.dp else 0.dp
-    val bottom = if (last) 18.dp else 0.dp
+    val top = if (first) ShapeLargeIncreased.topStart else ZeroCornerSize
+    val bottom = if (last) ShapeLargeIncreased.topStart else ZeroCornerSize
     Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(top, top, bottom, bottom)).background(colors.surface)) {
         if (!first) HorizontalDivider(thickness = 0.5.dp, color = colors.outlineVariant)
         Row(
@@ -560,7 +562,7 @@ internal fun QuickStart(picks: List<Pair<Long, String>>, fromMarks: Boolean, onL
     val colors = MaterialTheme.colorScheme
     Column(verticalArrangement = Arrangement.spacedBy(space.s24), modifier = Modifier.padding(top = space.s16)) {
         Column(
-            Modifier.fillMaxWidth().background(colors.surface, RoundedCornerShape(24.dp)).padding(horizontal = space.s20, vertical = space.s24),
+            Modifier.fillMaxWidth().background(colors.surface, ShapeLargeIncreased).padding(horizontal = space.s20, vertical = space.s24),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(space.s12),
         ) {
