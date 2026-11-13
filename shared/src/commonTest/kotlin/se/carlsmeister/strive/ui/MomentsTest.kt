@@ -17,10 +17,10 @@ class MomentsTest {
 
     @Test
     fun aMomentFillsWithItsWashInDarkAndLight() {
-        for (s in listOf(Scheme.Dark, Scheme.Light)) {
+        for (s in listOf(Scheme.Dark, Scheme.Light)) for (a in Accent.entries) {
             val base = s.colors.surface
-            assertEquals(srgbMix(s.moments.limeWash, base, s.moments.tint), momentFill(s.moments, Accent.Lime, base), "$s")
-            assertNotEquals(base, momentFill(s.moments, Accent.Lime, base), "$s")
+            assertEquals(srgbMix(s.moments.wash(a), base, s.moments.tint), momentFill(s.moments, a, base), "$s $a")
+            assertNotEquals(base, momentFill(s.moments, a, base), "$s $a")
         }
     }
 
@@ -31,11 +31,14 @@ class MomentsTest {
             assertEquals(s.colors.surfaceContainerHigh, momentFill(s.moments, a, s.colors.surfaceContainerHigh), "$s $a")
     }
 
+    /** Both schemes: dark's edge and wash share a hex and light's edge and text do, so only the pair catches every swap. */
     @Test
     fun eachAccentPicksItsOwnColours() {
-        val m = Scheme.Dark.moments
-        assertEquals(listOf(m.sun, m.flame, m.lime), Accent.entries.map { m.edge(it) })
-        assertEquals(listOf(m.sunText, m.flameText, m.limeText), Accent.entries.map { m.text(it) })
-        assertEquals(listOf(m.sunWash, m.flameWash, m.limeWash), Accent.entries.map { m.wash(it) })
+        for (s in listOf(Scheme.Dark, Scheme.Light)) {
+            val m = s.moments
+            assertEquals(listOf(m.sun, m.flame, m.lime), Accent.entries.map { m.edge(it) }, "$s")
+            assertEquals(listOf(m.sunText, m.flameText, m.limeText), Accent.entries.map { m.text(it) }, "$s")
+            assertEquals(listOf(m.sunWash, m.flameWash, m.limeWash), Accent.entries.map { m.wash(it) }, "$s")
+        }
     }
 }

@@ -1,10 +1,5 @@
 package se.carlsmeister.strive.ui
 
-/*
- * The moment layer (moments.css): an accent marks an edge, an icon or a number on design 1's surface roles. It never fills a
- * card. Dark and light add a faint wash under the edge; the -hc modes never do.
- */
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +25,10 @@ import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.theme.celebrate
 import se.carlsmeister.strive.theme.celebrateFamily
 
-/** Sun marks a record, flame a streak, lime done. */
+/**
+ * Sun marks a record, flame a streak, lime done. The moment layer's rule (moments.css): an accent marks an edge, an icon or a
+ * number on design 1's surface roles. It never fills a card. Dark and light add a faint wash under the edge; the -hc modes never do.
+ */
 internal enum class Accent { Sun, Flame, Lime }
 
 /** `--m`: the edge and the icon. */
@@ -70,12 +68,16 @@ internal fun MomentTag(text: String, accent: Accent, modifier: Modifier = Modifi
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) Icon(icon, contentDescription = null, Modifier.size(14.dp), tint = m.edge(accent))
-        Text(text, color = m.text(accent), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold,
-            maxLines = 1, softWrap = false)
+        // `.m-tag`'s `font:` shorthand resets font-variant-numeric, so its figures are proportional, unlike labelMedium's.
+        Text(text, color = m.text(accent), style = MaterialTheme.typography.labelMedium.copy(fontFeatureSettings = null),
+            fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
     }
 }
 
-/** `.m-num`, with `.celebrate` when asked. Its own Text: `insideValue` sets the line height, which a span would drop. */
+/**
+ * `.m-num`, with `.celebrate` when asked. Its own Text: `insideValue` sets the line height, which a span would drop.
+ * [style] must be the host's full type style with a font size: `.celebrate` scales it to .88, and an unspecified size throws.
+ */
 @Composable
 internal fun MomentNumber(
     text: String,
