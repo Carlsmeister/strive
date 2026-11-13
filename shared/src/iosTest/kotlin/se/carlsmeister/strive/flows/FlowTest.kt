@@ -138,6 +138,8 @@ import strive.shared.generated.resources.superset_create
 import strive.shared.generated.resources.superset_leave
 import strive.shared.generated.resources.superset_rest
 import androidx.compose.ui.graphics.Color
+import se.carlsmeister.strive.workout.wallClock
+import kotlin.time.Clock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -149,11 +151,14 @@ import kotlin.test.assertTrue
  */
 @OptIn(ExperimentalTestApi::class)
 class FlowTest {
-    private fun flow(graph: AppGraph = AppGraph(memoryDriver()), dark: Boolean? = null, highContrast: Boolean? = null, block: suspend Flow.() -> Unit) =
+    private fun flow(graph: AppGraph = AppGraph(memoryDriver()), dark: Boolean? = null, highContrast: Boolean? = null, block: suspend Flow.() -> Unit) {
+        // iOS runs every test class in one process: a clock another test left pinned would freeze this flow's rest timers.
+        check(wallClock === Clock.System) { "a test left the clock pinned" }
         runSkikoComposeUiTest(Size(1284f, 2778f), Density(3f)) {
             setContent { CompositionLocalProvider(LocalDarkTheme provides dark, LocalHighContrast provides highContrast) { App(graph) } }
             Flow(this, graph).block()
         }
+    }
 
     /** The whole workout in dark mode, for a person to look at: text that named no colour was black on black there (#42). */
     @Test
