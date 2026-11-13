@@ -1,0 +1,65 @@
+package se.carlsmeister.strive.boards
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.v2.runSkikoComposeUiTest
+import androidx.compose.ui.unit.Density
+import se.carlsmeister.strive.data.AppGraph
+import se.carlsmeister.strive.data.LocalAppGraph
+import se.carlsmeister.strive.data.memoryDriver
+import se.carlsmeister.strive.fixture.SampleData
+import se.carlsmeister.strive.theme.LocalDarkTheme
+import se.carlsmeister.strive.theme.LocalHighContrast
+import se.carlsmeister.strive.theme.StriveTheme
+import se.carlsmeister.strive.workout.wallClock
+import kotlin.time.Clock
+
+/** The four modes a board is drawn in, named as the boards' `data-theme` names them. */
+internal enum class Mode(val id: String, val dark: Boolean, val highContrast: Boolean) {
+    Dark("dark", true, false), DarkHc("dark-hc", true, true), Light("light", false, false), LightHc("light-hc", false, true)
+}
+
+/** Carl's phone runs dark-HC: the modes checked first. */
+internal val DarkModes = listOf(Mode.Dark, Mode.DarkHc)
+
+// shortcut: shots go to a fixed folder outside the repo, for a person to read; pass a path from Gradle if CI should keep them.
+internal const val BOARD_SHOTS = "/tmp/strive-board-shots"
+
+/**
+ * Shoots [content] on Carl's sample data at 390 × 844 pt and density 3 (R9), once per mode, as `[BOARD_SHOTS]/[id]-<mode>.png`.
+ * [waitFor] is a text the content shows once its data arrives: reads run on Dispatchers.IO, which waitForIdle does not wait for.
+ */
+@OptIn(ExperimentalTestApi::class)
+internal fun boardShots(id: String, modes: List<Mode>, waitFor: String? = null, content: @Composable () -> Unit) {
+    try {
+        runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+            val graph = AppGraph(memoryDriver())
+            SampleData.load(graph)
+            var mode by mutableStateOf(modes.first())
+            setContent {
+                CompositionLocalProvider(LocalAppGraph provides graph, LocalDarkTheme provides mode.dark, LocalHighContrast provides mode.highContrast) {
+                    StriveTheme { Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { content() } }
+                }
+            }
+            for (m in modes) {
+                mode = m
+                if (waitFor != null) waitUntil("see '$waitFor'", 10_000) { onAllNodes(hasText(waitFor, substring = true)).fetchSemanticsNodes().isNotEmpty() }
+                waitForIdle()
+                savePng(BOARD_SHOTS, "$id-${m.id}")
+            }
+        }
+    } finally {
+        wallClock = Clock.System
+    }
+}
