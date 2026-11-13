@@ -522,7 +522,11 @@ function tokenTables(t) {
     return `<tr class="group"><td colspan="${schemes.length + 1}">${label}</td></tr>` + rows.map(r =>
       `<tr><td><code>--color-${r}</code></td>${schemes.map(n => `<td><span class="sw" style="background:${t.schemes[n][r]}"></span><span class="hex">${t.schemes[n][r]}</span></td>`).join("")}</tr>`).join("");
   }).join("") + `<tr class="group"><td colspan="${schemes.length + 1}">Accents (Strive's own: what a set or a superset is)</td></tr>` + Object.keys(t.accents.light).map(k =>
-    `<tr><td><code>--accent-${k}</code></td>${schemes.map(n => `<td><span class="sw" style="background:${t.accents[n][k]}"></span><span class="hex">${t.accents[n][k]}</span></td>`).join("")}</tr>`).join("");
+    `<tr><td><code>--accent-${k}</code></td>${schemes.map(n => `<td><span class="sw" style="background:${t.accents[n][k]}"></span><span class="hex">${t.accents[n][k]}</span></td>`).join("")}</tr>`).join("")
+  + `<tr class="group"><td colspan="${schemes.length + 1}">Moments (design 2's accents, moments.css)</td></tr>` + Object.keys(t.moments.light).map(k =>
+    `<tr><td><code>--m-${k}</code></td>${schemes.map(n => `<td>${/^#/.test(t.moments[n][k]) ? `<span class="sw" style="background:${t.moments[n][k]}"></span>` : ""}<span class="hex">${t.moments[n][k]}</span></td>`).join("")}</tr>`).join("")
+  + `<tr class="group"><td colspan="${schemes.length + 1}">Roles (design 1)</td></tr>` + Object.keys(t.roles.light).map(k =>
+    `<tr><td><code>--${k}</code></td>${schemes.map(n => `<td><span class="sw" style="background:${t.roles[n][k]}"></span><span class="hex">${t.roles[n][k]}</span></td>`).join("")}</tr>`).join("");
   document.getElementById("contrast").innerHTML = `<tr><th>Pair</th>${schemes.map(n => `<th class="num">${NAMES[n]}</th>`).join("")}</tr>` + t.pairs.map(p =>
     `<tr><td>${p.fg} on ${p.bg}${p.kind === "non-text" ? " (border)" : ""}</td>${schemes.map(n => {
       const min = p.kind === "non-text" ? 3 : n.endsWith("-hc") ? 7 : 4.5, r = p.ratio[n];
@@ -535,10 +539,13 @@ function tokenTables(t) {
     `<tr><td><code>--material-${k}</code></td>${schemes.map(n => `<td class="hex">${t.materials[n][k]}</td>`).join("")}</tr>`).join("");
   const map = [...roles.map(r => [`--color-${r}`, `MaterialTheme.colorScheme.${camel(r)}`, "lightColorScheme, darkColorScheme, and the two + schemes"]),
     ...Object.entries(t.type).map(([r, [w, sz, lh]]) => [`--type-${r}`, `MaterialTheme.typography.${camel(r)}`, `FontWeight(${w}), ${sz}.sp, lineHeight ${lh}.sp, FontFamily.Default`]),
-    ...Object.entries(t.shape).map(([r, v]) => [`--shape-${r}`, r === "full" ? "CircleShape" : `MaterialTheme.shapes.${camel(r)}`, r === "full" ? "Material's Shapes has no full slot" : `RoundedCornerShape(${parseInt(v)}.dp)`]),
+    ...Object.entries(t.shape).map(([r, v]) => [`--shape-${r}`, r === "full" ? "CircleShape" : r === "large-increased" ? "ShapeLargeIncreased" : `MaterialTheme.shapes.${camel(r)}`,
+      r === "full" ? "Material's Shapes has no full slot" : r === "large-increased" ? "RoundedCornerShape(20.dp), outside Shapes: the workout's cards and .card.xl" : `RoundedCornerShape(${parseInt(v)}.dp)`]),
     ...t.space.map(n => [`--space-${n}`, `Spacing.s${n}`, `${n}.dp, Strive's own`]),
     ...Object.keys(t.materials.light).map(k => [`--material-${k}`, `StriveMaterials.${k}`, "Strive's own; blur through the library strive#3 picks"]),
     ...Object.keys(t.accents.light).map(k => [`--accent-${k}`, `StriveTheme.accents.${k}`, "Strive's own; never for what you can tap"]),
+    ...Object.keys(t.moments.light).map(k => [`--m-${k}`, `StriveTheme.moments.${camel(k)}`, "Design 2's; only where something is won, never a fill"]),
+    ...Object.keys(t.roles.light).map(k => [`--${k}`, `StriveTheme.roles.${camel(k)}`, "Design 1's, derived from the scheme in tokens.py"]),
     ["--material-blur", "StriveMaterials.blur", "24.dp"], ["--font-family", "FontFamily.Default", "SF Pro on iPhone, Roboto on Android"],
     ...Object.entries(t.size || {}).map(([k, v]) => [`--size-${k}`, `Sizes.${camel(k)}`, `${parseInt(v)}.dp, Strive's own (strive#16)`]),
     ["--border-hairline", "Dp.Hairline", "One device pixel, as iOS draws separators; .5px in the prototype (strive#16)"],

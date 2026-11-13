@@ -198,9 +198,9 @@ internal val darkHcColors: ColorScheme = darkColorScheme(
     surfaceTint = Color(0xFF8AEDE3),
     inverseSurface = Color(0xFFFFFFFF),
     inverseOnSurface = Color(0xFF000000),
-    error = Color(0xFFFFD1CC),
+    error = Color(0xFFFFBDB6),
     onError = Color(0xFF000000),
-    errorContainer = Color(0xFFFFD1CC),
+    errorContainer = Color(0xFFFF6961),
     onErrorContainer = Color(0xFF000000),
     outline = Color(0xFFAEAEB2),
     outlineVariant = Color(0xFF7C7C80),
@@ -253,6 +253,41 @@ internal val darkAccents = StriveAccents(failure = Color(0xFFFF6C47), drop = Col
 internal val lightHcAccents = StriveAccents(failure = Color(0xFF7D2A06), drop = Color(0xFF55278F), superset = Color(0xFF0F428F))
 internal val darkHcAccents = StriveAccents(failure = Color(0xFFFFA088), drop = Color(0xFFD9A3FF), superset = Color(0xFF7CBEFF))
 
+/** Where something is won: an accent's edge and icon, its -text and the -wash a tint mixes from; tint 0 means no wash. */
+@Immutable
+internal class StriveMoments(
+    val sun: Color = Color.Unspecified,
+    val sunText: Color = Color.Unspecified,
+    val sunWash: Color = Color.Unspecified,
+    val flame: Color = Color.Unspecified,
+    val flameText: Color = Color.Unspecified,
+    val flameWash: Color = Color.Unspecified,
+    val lime: Color = Color.Unspecified,
+    val limeText: Color = Color.Unspecified,
+    val limeWash: Color = Color.Unspecified,
+    val tint: Float = 0f,
+    val edge: Dp = 0.dp,
+)
+
+internal val lightMoments = StriveMoments(sun = Color(0xFF7F5A00), sunText = Color(0xFF7F5A00), sunWash = Color(0xFFFFC933), flame = Color(0xFFB83C0A), flameText = Color(0xFFB83C0A), flameWash = Color(0xFFFF5A1F), lime = Color(0xFF3D6B00), limeText = Color(0xFF3D6B00), limeWash = Color(0xFF8ED400), tint = 0.14f, edge = 1.5.dp)
+internal val darkMoments = StriveMoments(sun = Color(0xFFFFD23F), sunText = Color(0xFFFFD23F), sunWash = Color(0xFFFFD23F), flame = Color(0xFFFF6A2B), flameText = Color(0xFFFF8A57), flameWash = Color(0xFFFF6A2B), lime = Color(0xFFB8F23D), limeText = Color(0xFFC4F55C), limeWash = Color(0xFFB8F23D), tint = 0.12f, edge = 1.5.dp)
+internal val lightHcMoments = StriveMoments(sun = Color(0xFF5E4200), sunText = Color(0xFF5E4200), sunWash = Color(0xFFFFD23F), flame = Color(0xFF7A2500), flameText = Color(0xFF7A2500), flameWash = Color(0xFFFF7A45), lime = Color(0xFF2C4F00), limeText = Color(0xFF2C4F00), limeWash = Color(0xFF8ED400), tint = 0f, edge = 2.dp)
+internal val darkHcMoments = StriveMoments(sun = Color(0xFFFFE07A), sunText = Color(0xFFFFE38A), sunWash = Color(0xFFFFE07A), flame = Color(0xFFFF8A57), flameText = Color(0xFFFFC4A6), flameWash = Color(0xFFFF8A57), lime = Color(0xFFCCFF70), limeText = Color(0xFFD6FF8A), limeWash = Color(0xFFCCFF70), tint = 0f, edge = 2.dp)
+
+/** Design 1's roles: the next set's row, a run's route and the always-dark Dynamic Island's accents. */
+@Immutable
+internal class StriveRoles(
+    val stateNextRow: Color = Color.Unspecified,
+    val mapRoute: Color = Color.Unspecified,
+    val islandPrimary: Color = Color.Unspecified,
+    val islandTertiary: Color = Color.Unspecified,
+)
+
+internal val lightRoles = StriveRoles(stateNextRow = Color(0x1A08736C), mapRoute = Color(0xFF08736C), islandPrimary = Color(0xFF40C8BD), islandTertiary = Color(0xFFFFB95F))
+internal val darkRoles = StriveRoles(stateNextRow = Color(0x1F40C8BD), mapRoute = Color(0xFF40C8BD), islandPrimary = Color(0xFF40C8BD), islandTertiary = Color(0xFFFFB95F))
+internal val lightHcRoles = StriveRoles(stateNextRow = Color(0x1F00504B), mapRoute = Color(0xFF00504B), islandPrimary = Color(0xFF8AEDE3), islandTertiary = Color(0xFFFFD8A8))
+internal val darkHcRoles = StriveRoles(stateNextRow = Color(0x248AEDE3), mapRoute = Color(0xFF8AEDE3), islandPrimary = Color(0xFF8AEDE3), islandTertiary = Color(0xFFFFD8A8))
+
 internal val MaterialBlur: Dp = 24.dp
 internal val MaterialShadowOffsetY: Dp = 8.dp
 internal val MaterialShadowRadius: Dp = 24.dp
@@ -286,6 +321,9 @@ internal val StriveShapes = Shapes(
 
 /** `full`: a pill, whatever the height. */
 internal val ShapeFull = RoundedCornerShape(percent = 50)
+
+/** `large-increased`: the workout's cards and `.card.xl`. */
+internal val ShapeLargeIncreased = RoundedCornerShape(20.dp)
 
 /** The spacing scale in dp, `s16` for 16. */
 @Immutable

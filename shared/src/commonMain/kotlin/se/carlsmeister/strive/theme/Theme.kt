@@ -12,11 +12,17 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 
-internal enum class Scheme(val colors: ColorScheme, val materials: StriveMaterials, val accents: StriveAccents) {
-    Light(lightColors, lightMaterials, lightAccents),
-    Dark(darkColors, darkMaterials, darkAccents),
-    LightHc(lightHcColors, lightHcMaterials, lightHcAccents),
-    DarkHc(darkHcColors, darkHcMaterials, darkHcAccents),
+internal enum class Scheme(
+    val colors: ColorScheme,
+    val materials: StriveMaterials,
+    val accents: StriveAccents,
+    val moments: StriveMoments,
+    val roles: StriveRoles,
+) {
+    Light(lightColors, lightMaterials, lightAccents, lightMoments, lightRoles),
+    Dark(darkColors, darkMaterials, darkAccents, darkMoments, darkRoles),
+    LightHc(lightHcColors, lightHcMaterials, lightHcAccents, lightHcMoments, lightHcRoles),
+    DarkHc(darkHcColors, darkHcMaterials, darkHcAccents, darkHcMoments, darkHcRoles),
 }
 
 internal fun scheme(dark: Boolean, highContrast: Boolean) = when {
@@ -55,6 +61,8 @@ internal fun FixedTextSize(content: @Composable () -> Unit) =
 
 private val LocalGlass = staticCompositionLocalOf { lightMaterials }
 private val LocalAccents = staticCompositionLocalOf { lightAccents }
+private val LocalMoments = staticCompositionLocalOf { lightMoments }
+private val LocalRoles = staticCompositionLocalOf { lightRoles }
 
 /** Light or dark regardless of the phone, for the tests that look at both; null follows the phone. */
 internal val LocalDarkTheme = staticCompositionLocalOf<Boolean?> { null }
@@ -70,6 +78,8 @@ internal fun StriveTheme(content: @Composable () -> Unit) {
     CompositionLocalProvider(
         LocalGlass provides glass(scheme, settings.reduceTransparency),
         LocalAccents provides scheme.accents,
+        LocalMoments provides scheme.moments,
+        LocalRoles provides scheme.roles,
         LocalReduceMotion provides settings.reduceMotion,
     ) {
         MaterialTheme(colorScheme = scheme.colors, shapes = StriveShapes, typography = StriveTypography) {
@@ -88,6 +98,8 @@ internal object StriveTheme {
     val states = States()
     val glass: StriveMaterials @Composable get() = LocalGlass.current
     val accents: StriveAccents @Composable get() = LocalAccents.current
+    val moments: StriveMoments @Composable get() = LocalMoments.current
+    val roles: StriveRoles @Composable get() = LocalRoles.current
     /** Reduce Motion is on: what an animation does instead is the animating component's call. */
     val reduceMotion: Boolean @Composable get() = LocalReduceMotion.current
 }
