@@ -64,6 +64,8 @@ is its row in the registry: `grep -n '^| WO-02-s12 ' boards.md`. Every board of 
 
 - **Render:** `preview.py`, `preview_grid.py` (many boards, one mode), `preview_wide.py`, `shot.py`
   (any local HTML page).
+- **Compare:** `compare.py ID` renders a board or a system card in dark and dark-HC at 3× beside
+  the simulator shot of the same name in `/tmp/strive-board-shots`.
 - **Check:** `lint.py` (459 boards, 7 known findings from design 1), `flows.py --check` (all 64
   flows play), `coverage.py` (the inventory against the boards), `classes.py`, `anchors.py`, `ctx.py`.
 - **Build:** `build_canvas.py`, `build_modes.py`, `build_ds_cards.py`, `vs.py`, `add_board.py`,
