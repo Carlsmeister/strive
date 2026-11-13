@@ -27,6 +27,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -60,7 +61,7 @@ internal fun ListRow(
     val pressed by source.collectIsPressedAsState()
     Row(
         modifier.fillMaxWidth()
-            .then(if (onClick != null) Modifier.clickable(source, indication = null, onClick = onClick) else Modifier)
+            .then(if (onClick != null) Modifier.clickable(source, indication = null, role = Role.Button, onClick = onClick) else Modifier)
             .background(if (pressed) colors.surfaceContainerHighest else Color.Transparent)
             .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = space.s16, vertical = space.s12),
         horizontalArrangement = Arrangement.spacedBy(space.s12),

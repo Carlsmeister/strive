@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -53,7 +52,8 @@ internal fun ChoiceChip(text: String, selected: Boolean, onClick: () -> Unit, mo
             .padding(horizontal = StriveTheme.spacing.s16),
         contentAlignment = Alignment.Center,
     ) {
-        val style = MaterialTheme.typography.bodyMedium.copy(fontWeight = if (selected) FontWeight(600) else null, lineHeightStyle = CssLineBox)
+        val base = MaterialTheme.typography.bodyMedium
+        val style = base.copy(fontWeight = if (selected) FontWeight(600) else base.fontWeight, lineHeightStyle = CssLineBox)
         Text(text, color = if (selected) colors.onPrimary else colors.onSurface, style = style, maxLines = 1, softWrap = false)
     }
 }
@@ -89,7 +89,9 @@ internal fun InputField(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (leading != null) Icon(leading, contentDescription = null, Modifier.size(20.dp), tint = colors.onSurfaceVariant)
-            // `.field .in`: 10 px above and below one line box. An empty field measures 1.3 dp taller on Skiko, so the line is pinned.
+            // `.field .in`: 10 px above and below one line box, pinned to the style's line height.
+            // shortcut: an empty BasicTextField measures 1.3 dp taller than a filled one on Skiko (Compose Multiplatform 1.12.1), and
+            // the pin hides that; drop it when an upgrade makes the empty and filled fields equally tall without it.
             Box(Modifier.weight(1f).padding(vertical = 10.dp).height(with(LocalDensity.current) { style.lineHeight.toDp() })) {
                 if (value.isEmpty()) Text(placeholder, color = colors.onSurfaceVariant, style = style, maxLines = 1)
                 field()
@@ -98,27 +100,39 @@ internal fun InputField(
     }
 }
 
-/** `.switch`: 52 × 32, teal on; the knob stays white in every mode. [label] is what a screen reader says. */
+/**
+ * `.switch` on its own: drawn 52 × 32, tapped across at least the 44 dp touch size, which it keeps as its height. [label] is
+ * what a screen reader says.
+ */
 @Composable
 internal fun Toggle(checked: Boolean, onCheckedChange: (Boolean) -> Unit, label: String, modifier: Modifier = Modifier) {
-    val colors = MaterialTheme.colorScheme
     Box(
-        modifier.size(52.dp, 32.dp)
+        modifier.heightIn(min = StriveTheme.sizes.touch)
             .toggleable(checked, interactionSource = null, indication = null, role = Role.Switch, onValueChange = onCheckedChange)
-            .semantics { contentDescription = label }
-            .background(if (checked) colors.primary else colors.surfaceContainerHighest, ShapeFull)
-            .padding(2.dp),
+            .semantics { contentDescription = label },
+        contentAlignment = Alignment.Center,
+    ) { SwitchTrack(checked) }
+}
+
+/** `.between`: a setting's text, its switch at the end. The whole row toggles, and its text is the switch's label. */
+@Composable
+internal fun ToggleRow(text: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        modifier.toggleable(checked, interactionSource = null, indication = null, role = Role.Switch, onValueChange = onCheckedChange),
+        horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.offset(x = if (checked) 20.dp else 0.dp).size(28.dp).shadow(2.dp, CircleShape).background(Color.White, CircleShape))
+        val style = MaterialTheme.typography.bodyLarge.copy(lineHeightStyle = CssLineBox)
+        Text(text, Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurface, style = style)
+        SwitchTrack(checked)
     }
 }
 
-/** `.between`: a setting's text, its switch at the end; the switch carries the text for a screen reader. */
+/** `.switch`'s drawing only: 52 × 32, teal on; the knob stays white in every mode. */
 @Composable
-internal fun ToggleRow(text: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
-    Row(modifier, horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8), verticalAlignment = Alignment.CenterVertically) {
-        val style = MaterialTheme.typography.bodyLarge.copy(lineHeightStyle = CssLineBox)
-        Text(text, Modifier.weight(1f).clearAndSetSemantics {}, color = MaterialTheme.colorScheme.onSurface, style = style)
-        Toggle(checked, onCheckedChange, label = text)
+private fun SwitchTrack(checked: Boolean) {
+    val colors = MaterialTheme.colorScheme
+    Box(Modifier.size(52.dp, 32.dp).background(if (checked) colors.primary else colors.surfaceContainerHighest, ShapeFull).padding(2.dp)) {
+        Box(Modifier.offset(x = if (checked) 20.dp else 0.dp).size(28.dp).shadow(2.dp, CircleShape).background(Color.White, CircleShape))
     }
 }
