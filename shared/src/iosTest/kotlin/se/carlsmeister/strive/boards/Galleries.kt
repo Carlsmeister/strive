@@ -179,7 +179,8 @@ internal fun ListsBoard() = Column(Modifier.padding(16.dp), verticalArrangement 
 
 /**
  * The TitleBars card's four bars, each the phone's width: Library's nav bar, Plan's large title, the workout's bar at rest, then
- * scrolled on glass with every set logged, named and counted from the fixture's open Push A (`1/14`, where the card draws `2/15`: R5).
+ * scrolled on glass with Finish filled as when every set is logged, named and counted from the fixture's open Push A (`1/14`,
+ * where the card draws `2/15`: R5).
  */
 @Composable
 internal fun TitleBarsBoard() = Column(Modifier.padding(top = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {

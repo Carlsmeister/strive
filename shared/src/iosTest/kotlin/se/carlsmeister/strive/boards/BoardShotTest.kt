@@ -2,6 +2,7 @@ package se.carlsmeister.strive.boards
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -13,7 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -23,8 +29,10 @@ import androidx.compose.ui.unit.dp
 import se.carlsmeister.strive.theme.LocalHighContrast
 import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.ui.Accent
+import se.carlsmeister.strive.ui.NavText
 import se.carlsmeister.strive.ui.Toggle
 import se.carlsmeister.strive.ui.ToggleRow
+import se.carlsmeister.strive.ui.WorkoutBar
 import se.carlsmeister.strive.ui.moment
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -66,6 +74,40 @@ class BoardShotTest {
         assertTrue(on)
         onNodeWithTag("row").assertIsOn()
         assertTrue(onNodeWithTag("alone").fetchSemanticsNode().size.height >= 44 * 3)
+    }
+
+    /**
+     * Scrolled, the workout's name fades into the bar's middle; cleared, it keeps showing while it fades away, then goes (the
+     * TitleBars README). Finish draws a 40 dp capsule but is a touch (44 dp) tall.
+     */
+    @Test
+    fun theWorkoutBarsNameFadesInAndOutAndFinishIsATouchTall() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        var title by mutableStateOf<String?>(null)
+        mainClock.autoAdvance = false
+        setContent { StriveTheme { WorkoutBar({}, {}, {}, title = title, progress = "24:13 · 1/14 sets") } }
+        mainClock.advanceTimeBy(500)
+        onNodeWithText("Push A").assertDoesNotExist()
+        title = "Push A"
+        mainClock.advanceTimeBy(500)
+        onNodeWithText("Push A").assertExists()
+        title = null
+        mainClock.advanceTimeBy(100)
+        onNodeWithText("Push A").assertExists() // mid-fade, still the name it had
+        mainClock.advanceTimeBy(500)
+        onNodeWithText("Push A").assertDoesNotExist()
+        assertTrue(onAllNodes(hasClickAction()).onLast().fetchSemanticsNode().size.height >= 44 * 3)
+    }
+
+    /** `.navtext` is a touch tall and acts; `.navtext.dim` cannot act yet. */
+    @Test
+    fun aNavTextIsATouchTallAndADimOneIsDisabled() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        setContent { StriveTheme { Row {
+            NavText("Edit", {}, bold = true)
+            NavText("Save", {}, dim = true)
+        } } }
+        onNodeWithText("Edit").assertIsEnabled().assertHasClickAction()
+        onNodeWithText("Save").assertIsNotEnabled()
+        assertTrue(onNodeWithText("Edit").fetchSemanticsNode().size.height >= 44 * 3)
     }
 
     /** .moment draws its edge inset: a marked card takes exactly the room an unmarked one does (moments.css). */

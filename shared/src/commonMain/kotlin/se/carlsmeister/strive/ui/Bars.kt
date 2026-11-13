@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -40,7 +41,7 @@ import strive.shared.generated.resources.workout_options
 
 /**
  * `.nav`, a pushed screen's bar: [back] (a teal chevron and the parent's name) on the left, the title centred on the bar, [actions]
- * on the right, 4 dp apart. [glassed], once content runs under it: thick glass over a hairline.
+ * ([NavText] or plain [RoundButton]s) on the right, 4 dp apart. [glassed], once content runs under it: thick glass over a hairline.
  */
 @Composable
 internal fun NavBar(
@@ -77,6 +78,19 @@ internal fun NavBar(
         if (glassed) Hairline()
     }
 }
+
+/** `.navtext`, a bar's text action: teal, [bold] for the confirming one (`.b`), [dim] when it cannot act yet (`.dim`). */
+@Composable
+internal fun NavText(label: String, onClick: () -> Unit, modifier: Modifier = Modifier, bold: Boolean = false, dim: Boolean = false) =
+    Box(
+        modifier.heightIn(min = StriveTheme.sizes.touch).alpha(if (dim) StriveTheme.states.disabledOpacity else 1f).pressable(!dim, onClick)
+            .padding(horizontal = StriveTheme.spacing.s8),
+        contentAlignment = Alignment.Center,
+    ) {
+        val style = if (bold) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodyLarge
+        Text(label, color = if (dim) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
+            style = style.copy(lineHeightStyle = CssLineBox), softWrap = false)
+    }
 
 /** `.lt`, a root screen's large title (Home, Plan, You, the workout's name) with [actions] at the end. */
 @Composable
@@ -132,13 +146,16 @@ internal fun WorkoutBar(
                 }
             }
             Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
-                Box(
-                    Modifier.height(40.dp).pressable(true, onFinish).clip(ShapeFull)
-                        .background(if (allLogged) colors.primary else colors.surfaceContainerHigh).padding(horizontal = space.s16),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(stringResource(Res.string.finish), color = if (allLogged) colors.onPrimary else colors.onSurface,
-                        style = type.titleSmall.copy(lineHeightStyle = CssLineBox), softWrap = false)
+                // A 40 dp capsule tapped across the 44 dp touch size; the row is 44 tall already, so nothing drawn moves.
+                Box(Modifier.heightIn(min = StriveTheme.sizes.touch).pressable(true, onFinish), contentAlignment = Alignment.Center) {
+                    Box(
+                        Modifier.height(40.dp).clip(ShapeFull)
+                            .background(if (allLogged) colors.primary else colors.surfaceContainerHigh).padding(horizontal = space.s16),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(stringResource(Res.string.finish), color = if (allLogged) colors.onPrimary else colors.onSurface,
+                            style = type.titleSmall.copy(lineHeightStyle = CssLineBox), softWrap = false)
+                    }
                 }
             }
         }
