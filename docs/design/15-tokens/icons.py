@@ -19,7 +19,8 @@ ATTR = re.compile(r"([\w:-]+)='([^']*)'")
 FILLED = {"xmlns": "http://www.w3.org/2000/svg", "viewBox": "0 0 24 24", "fill": "black"}
 STROKED = {"xmlns": "http://www.w3.org/2000/svg", "viewBox": "0 0 24 24", "fill": "none", "stroke": "black",
            "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round"}
-PATH_DATA = re.compile(r"[MmLlHhVvCcSsQqTtAaZz0-9.,\s-]*")
+# Spaces only, no other whitespace: a decoded %0A would break the Kotlin string literal.
+PATH_DATA = re.compile(r"[MmLlHhVvCcSsQqTtAaZz0-9., -]*")
 
 
 def circle(cx, cy, r):
@@ -27,7 +28,6 @@ def circle(cx, cy, r):
 
 
 def rect(x, y, width, height, rx):
-    rx = min(rx, width / 2, height / 2)
     h, v = width - 2 * rx, height - 2 * rx
     a = f"a{rx:g} {rx:g} 0 0 1"
     return (f"M{x + rx:g} {y:g}h{h:g}{a} {rx:g} {rx:g}v{v:g}{a} {-rx:g} {rx:g}"
@@ -41,11 +41,15 @@ def pascal(name):
 def elements(name, markup):
     """The icon's elements as one path string; anything else stops the script."""
     out = []
-    for e in ET.fromstring(f"<g>{markup}</g>"):
+    try:
+        group = ET.fromstring(f"<g>{markup}</g>")
+    except ET.ParseError as e:
+        raise SystemExit(f"{name}: {e}")
+    for e in group:
         a = e.attrib
         if len(e) or (e.text or "").strip() or (e.tail or "").strip():
             raise SystemExit(f"{name}: <{e.tag}> has content icons.py does not translate")
-        if e.tag == "path" and out and a.get("d", "").startswith("m"):
+        if e.tag == "path" and out and a.get("d", "").lstrip().startswith("m"):
             # Joined into one path, a relative m would start from the previous element's end, not from 0 0.
             raise SystemExit(f"{name}: a <path> after the first starts with a relative m; write it as M")
         if e.tag == "path" and a.keys() == {"d"} and PATH_DATA.fullmatch(a["d"]):
@@ -53,7 +57,11 @@ def elements(name, markup):
         elif e.tag == "circle" and a.keys() == {"cx", "cy", "r"}:
             out.append(circle(*(float(a[k]) for k in ("cx", "cy", "r"))))
         elif e.tag == "rect" and a.keys() in ({"x", "y", "width", "height"}, {"x", "y", "width", "height", "rx"}):
-            out.append(rect(*(float(a.get(k, 0)) for k in ("x", "y", "width", "height", "rx"))))
+            x, y, width, height, rx = (float(a.get(k, 0)) for k in ("x", "y", "width", "height", "rx"))
+            if rx > min(width, height) / 2:
+                # SVG clamps rx and ry to each side separately, which draws elliptical corners the circular arcs here cannot.
+                raise SystemExit(f"{name}: <rect> rx {rx:g} is over half its shorter side ({min(width, height):g})")
+            out.append(rect(x, y, width, height, rx))
         else:
             raise SystemExit(f"{name}: <{e.tag} {' '.join(f'{k}={v!r}' for k, v in a.items())}> is not a path, circle or rect icons.py translates")
     return "".join(out)
@@ -73,8 +81,8 @@ def icon(name, svg):
 def icons():
     css = BUNDLE.read_text()
     found = [(name, *icon(name, unquote(svg))) for name, svg in MASK.findall(css)]
-    if len(found) != css.count("--i: url("):
-        raise SystemExit("a --i mask in bundle.css is not written as `.ic-<name> { --i: url(\"data:image/svg+xml,…\"); }`")
+    if len(found) != css.count("data:image/svg+xml"):
+        raise SystemExit("an SVG in bundle.css is not written as `.ic-<name> { --i: url(\"data:image/svg+xml,…\"); }`")
     return found
 
 
@@ -129,11 +137,19 @@ if __name__ == "__main__":
     except SystemExit as stop:
         assert "dot" in str(stop) and "line" in str(stop)
     assert elements("chev-r", "<path d='m9 6 6 6-6 6'/>") == "m9 6 6 6-6 6"
-    try:
-        elements("skip", "<path d='M18 5v14'/><path d='m5 5 9 7'/>")
-        raise AssertionError("a relative m after the first element must stop the script")
-    except SystemExit as stop:
-        assert "skip" in str(stop)
+    assert elements("plan", "<rect x='3' y='5' width='18' height='16' rx='8'/>").startswith("M11 5")
+    for icon_name, markup in [
+        ("skip", "<path d='M18 5v14'/><path d='m5 5 9 7'/>"),  # a relative m after the first element
+        ("skip", "<path d='M18 5v14'/><path d=' m5 5 9 7'/>"),  # the same, after leading whitespace
+        ("plan", "<rect x='3' y='5' width='18' height='16' rx='9'/>"),  # rx over half the shorter side
+        ("home", "<path d='M3 11'"),  # malformed markup
+        ("plus", "<path d='M12 5v14&#10;M5 12h14'/>"),  # a newline would break the Kotlin string
+    ]:
+        try:
+            elements(icon_name, markup)
+            raise AssertionError(f"{markup} must stop the script")
+        except SystemExit as stop:
+            assert icon_name in str(stop), stop
     found = icons()
     names = [pascal(n) for n, _, _ in found]
     assert len(set(names)) == len(names) and all(n.isidentifier() and not n[0].isdigit() for n in names), names

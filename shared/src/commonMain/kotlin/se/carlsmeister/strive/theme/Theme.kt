@@ -104,8 +104,8 @@ internal object StriveTheme {
     val reduceMotion: Boolean @Composable get() = LocalReduceMotion.current
 }
 /**
- * Critically damped, response about 0.3 s: apple-motion's default for anything that moves into place. Not a token, since the
- * CSS prototypes have no springs, so it lives here rather than in the generated Tokens.kt.
+ * Critically damped, response about 0.3 s: apple-motion's default for anything that moves into place. Springs are not
+ * tokens: tokens.py emits none, so they live here beside win and calm rather than in the generated Tokens.kt.
  */
 internal fun <T> Motion.settle(visibilityThreshold: T? = null): SpringSpec<T> =
     spring(dampingRatio = 1f, stiffness = 400f, visibilityThreshold = visibilityThreshold)
