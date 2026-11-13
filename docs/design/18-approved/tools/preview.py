@@ -1,8 +1,9 @@
 """Render one or more Strive 1 boards (.dc.html) locally in all four modes and screenshot them with headless Chrome.
 
 Usage: python3 preview.py OUT.png BOARD.dc.html [BOARD2.dc.html ...] [--modes dark-hc,dark,light,light-hc] [--bare] [--scale N]
-Each board becomes a row of phones (one per mode). --bare drops the labels, gaps and padding, so each cell is exactly the
-390 x 844 phone and the window is the phones' size; --scale N renders at Chrome's device scale N. Only {{mode}} is substituted; <sc-if value="{{x}}"> blocks are dropped
+--bare drops the labels, gaps and padding, so each cell is exactly the 390 x 844 phone and the window is the phones' size.
+--scale N renders at Chrome's device scale N.
+Each board becomes a row of phones (one per mode). Only {{mode}} is substituted; <sc-if value="{{x}}"> blocks are dropped
 (a board's interactive branches start closed); every other {{hole}} is left visible so a stray one is easy to spot.
 """
 import os, re, subprocess, sys, tempfile, pathlib
