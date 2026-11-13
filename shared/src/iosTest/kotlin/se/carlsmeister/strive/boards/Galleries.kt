@@ -3,9 +3,12 @@ package se.carlsmeister.strive.boards
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -16,14 +19,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import se.carlsmeister.strive.theme.CssLineBox
 import se.carlsmeister.strive.theme.StriveIcons
 import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.ui.Accent
+import se.carlsmeister.strive.ui.ActionButton
+import se.carlsmeister.strive.ui.ActionKind
 import se.carlsmeister.strive.ui.MomentNumber
 import se.carlsmeister.strive.ui.MomentTag
+import se.carlsmeister.strive.ui.MorePill
+import se.carlsmeister.strive.ui.RoundButton
+import se.carlsmeister.strive.ui.RoundKind
+import se.carlsmeister.strive.ui.Stat
+import se.carlsmeister.strive.ui.StatTiles
+import se.carlsmeister.strive.ui.SurfaceCard
 import se.carlsmeister.strive.ui.edge
 import se.carlsmeister.strive.ui.moment
 
@@ -72,4 +84,38 @@ private fun MomentCard(accent: Accent, icon: ImageVector, number: String, tag: S
             }
         }
     }
+}
+
+/** The Buttons card: the three wide buttons, the `.btnrow`, then the round buttons, the ⋯ pill and a disabled Save. */
+@Composable
+internal fun ButtonsBoard() = Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    ActionButton("Start workout", {}, Modifier.fillMaxWidth(), kind = ActionKind.Filled)
+    ActionButton("Edit", {}, Modifier.fillMaxWidth())
+    ActionButton("Delete template", {}, Modifier.fillMaxWidth(), kind = ActionKind.Danger)
+    // `.btnrow` stretches its buttons to the tallest, the text button's 44 dp touch height.
+    Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        ActionButton("Show all", {}, Modifier.weight(1f).fillMaxHeight(), small = true)
+        ActionButton("Deload now", {}, Modifier.weight(1f).fillMaxHeight(), kind = ActionKind.Filled, small = true)
+        ActionButton("Cancel", {}, Modifier.weight(1f).fillMaxHeight(), kind = ActionKind.Text)
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        RoundButton(StriveIcons.Timer, "Timer", {}, iconSize = 20.dp)
+        RoundButton(StriveIcons.More, "More", {}, kind = RoundKind.Plain)
+        MorePill("More", {})
+        RoundButton(StriveIcons.Sliders, "Filters", {}, kind = RoundKind.On, iconSize = 20.dp)
+        ActionButton("Save", {}, enabled = false)
+    }
+}
+
+/** The CardsAndStats card: the planned workout's card with its button, then four stat tiles. */
+@Composable
+internal fun CardsAndStatsBoard() = Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    SurfaceCard(
+        "Push A", Modifier.fillMaxWidth(), eyebrow = "Planned today · Week 6 of 8", meta = "5 exercises · 15 sets · about 30 min",
+        titleStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight(600)), // the card's inline weight
+    ) { ActionButton("Start Push A", {}, Modifier.fillMaxWidth(), kind = ActionKind.Filled) }
+    StatTiles(
+        listOf(Stat("Time", "64", unit = "min"), Stat("Avg RIR", "1.5", sub = "goal 2–3"), Stat("Sets", "15"), Stat("Records", "3")),
+        Modifier.fillMaxWidth(),
+    )
 }

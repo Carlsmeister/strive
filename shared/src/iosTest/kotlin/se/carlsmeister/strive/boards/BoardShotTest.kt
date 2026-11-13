@@ -30,6 +30,12 @@ class BoardShotTest {
     @Test
     fun momentsInFourModes() = boardShots("Moments", Mode.entries) { MomentsBoard() }
 
+    @Test
+    fun buttonsInDarkAndDarkHc() = boardShots("Buttons", DarkModes) { ButtonsBoard() }
+
+    @Test
+    fun cardsAndStatsInDarkAndDarkHc() = boardShots("CardsAndStats", DarkModes) { CardsAndStatsBoard() }
+
     /** .moment draws its edge inset: a marked card takes exactly the room an unmarked one does (moments.css). */
     @Test
     fun theMomentEdgeChangesNoSize() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
