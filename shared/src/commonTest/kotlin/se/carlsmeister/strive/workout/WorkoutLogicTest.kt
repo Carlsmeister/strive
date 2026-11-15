@@ -372,4 +372,42 @@ class ProgressCountTest {
         val w = Workout(1, "Push A", 0, null, "", null, listOf(SessionExercise(1, 1, "Bench Press BB", ExerciseType.WeightReps, null, "", sets), skipped))
         assertEquals(2 to 4, w.countedLogged to w.countedSets)
     }
+
+    private fun workout(vararg sets: WorkoutSet, skipped: Boolean = false) =
+        Workout(1, "Push A", 0, null, "", null, listOf(SessionExercise(1, 1, "Bench Press BB", ExerciseType.WeightReps, null, "", sets.toList(), skipped = skipped)))
+
+    @Test
+    fun aWarmUpNotLoggedIsLeftOutOfTheTotal() =
+        assertEquals(0 to 1, workout(WorkoutSet(1, kind = SetKind.Warmup), WorkoutSet(2)).let { it.countedLogged to it.countedSets })
+
+    @Test
+    fun aLoggedWarmUpIsLeftOutOfTheLoggedCount() =
+        assertEquals(0 to 1, workout(WorkoutSet(1, done = true, kind = SetKind.Warmup), WorkoutSet(2)).let { it.countedLogged to it.countedSets })
+
+    @Test
+    fun aDropSetCounts() =
+        assertEquals(1 to 2, workout(WorkoutSet(1, done = true, kind = SetKind.Drop), WorkoutSet(2, kind = SetKind.Drop)).let { it.countedLogged to it.countedSets })
+
+    @Test
+    fun aFailureSetCounts() =
+        assertEquals(1 to 2, workout(WorkoutSet(1, done = true, kind = SetKind.Failure), WorkoutSet(2, kind = SetKind.Failure)).let { it.countedLogged to it.countedSets })
+
+    @Test
+    fun aSkippedExercisesSetsAreLeftOut() =
+        assertEquals(0 to 0, workout(WorkoutSet(1, done = true), WorkoutSet(2), skipped = true).let { it.countedLogged to it.countedSets })
+
+    @Test
+    fun aWorkoutOfOnlyWarmUpsCountsZeroOfZero() =
+        assertEquals(0 to 0, workout(WorkoutSet(1, done = true, kind = SetKind.Warmup)).let { it.countedLogged to it.countedSets })
+}
+
+class BarStateTest {
+    @Test
+    fun aWorkoutLeftOpenReadsLeftOpenEvenWhileResting() = assertEquals(BarState.LeftOpen, barState(leftOpen = true, restLeft = 103))
+
+    @Test
+    fun aRunningRestReadsResting() = assertEquals(BarState.Resting, barState(leftOpen = false, restLeft = 1))
+
+    @Test
+    fun aRestAtZeroReadsOpen() = assertEquals(BarState.Open, barState(leftOpen = false, restLeft = 0))
 }
