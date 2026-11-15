@@ -37,6 +37,7 @@ import se.carlsmeister.strive.App
 import se.carlsmeister.strive.boards.savePng
 import se.carlsmeister.strive.theme.LocalDarkTheme
 import se.carlsmeister.strive.theme.LocalHighContrast
+import se.carlsmeister.strive.theme.LocalReduceMotionSetting
 import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.theme.Scheme
 import se.carlsmeister.strive.data.AppGraph
@@ -141,11 +142,15 @@ import kotlin.test.assertTrue
  */
 @OptIn(ExperimentalTestApi::class)
 class FlowTest {
-    private fun flow(graph: AppGraph = AppGraph(memoryDriver()), dark: Boolean? = null, highContrast: Boolean? = null, block: suspend Flow.() -> Unit) {
+    private fun flow(graph: AppGraph = AppGraph(memoryDriver()), dark: Boolean? = null, highContrast: Boolean? = null, reduceMotion: Boolean? = null, block: suspend Flow.() -> Unit) {
         // iOS runs every test class in one process: a clock another test left pinned would freeze this flow's rest timers.
         check(wallClock === Clock.System) { "a test left the clock pinned" }
         runSkikoComposeUiTest(Size(1284f, 2778f), Density(3f)) {
-            setContent { CompositionLocalProvider(LocalDarkTheme provides dark, LocalHighContrast provides highContrast) { App(graph) } }
+            setContent {
+                CompositionLocalProvider(LocalDarkTheme provides dark, LocalHighContrast provides highContrast, LocalReduceMotionSetting provides reduceMotion) {
+                    App(graph)
+                }
+            }
             Flow(this, graph).block()
         }
     }

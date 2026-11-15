@@ -33,10 +33,10 @@ internal fun scheme(dark: Boolean, highContrast: Boolean) = when {
     else -> Scheme.Light
 }
 
-// Reduce Transparency: the solid surface instead of a translucent fill; edge and shadow stay.
+// Reduce Transparency: the solid surface-container-high instead of a translucent fill, as `.no-glass .glass`; edge and shadow stay.
 internal fun glass(scheme: Scheme, reduceTransparency: Boolean): StriveMaterials {
     if (!reduceTransparency) return scheme.materials
-    val solid = scheme.colors.surface
+    val solid = scheme.colors.surfaceContainerHigh
     return StriveMaterials(regular = solid, thick = solid, edge = scheme.materials.edge, shadow = scheme.materials.shadow)
 }
 
@@ -67,6 +67,7 @@ internal fun FixedTextSize(content: @Composable () -> Unit) =
     CompositionLocalProvider(LocalDensity provides Density(LocalDensity.current.density), content = content)
 
 private val LocalGlass = staticCompositionLocalOf { lightMaterials }
+private val LocalMaterials = staticCompositionLocalOf { lightMaterials }
 private val LocalAccents = staticCompositionLocalOf { lightAccents }
 private val LocalMoments = staticCompositionLocalOf { lightMoments }
 private val LocalRoles = staticCompositionLocalOf { lightRoles }
@@ -78,16 +79,23 @@ private val LocalReduceMotion = staticCompositionLocalOf { false }
 /** Increase Contrast on or off regardless of the phone, for the tests that shoot the high-contrast palette; null follows the phone. */
 internal val LocalHighContrast = staticCompositionLocalOf<Boolean?> { null }
 
+/** Reduce Transparency on or off regardless of the phone, for the tests that shoot solid glass; null follows the phone. */
+internal val LocalReduceTransparency = staticCompositionLocalOf<Boolean?> { null }
+
+/** Reduce Motion on or off regardless of the phone, for the tests that walk the still variant; null follows the phone. */
+internal val LocalReduceMotionSetting = staticCompositionLocalOf<Boolean?> { null }
+
 @Composable
 internal fun StriveTheme(content: @Composable () -> Unit) {
     val settings = accessibility()
     val scheme = scheme(LocalDarkTheme.current ?: isSystemInDarkTheme(), LocalHighContrast.current ?: settings.highContrast)
     CompositionLocalProvider(
-        LocalGlass provides glass(scheme, settings.reduceTransparency),
+        LocalGlass provides glass(scheme, LocalReduceTransparency.current ?: settings.reduceTransparency),
+        LocalMaterials provides scheme.materials,
         LocalAccents provides scheme.accents,
         LocalMoments provides scheme.moments,
         LocalRoles provides scheme.roles,
-        LocalReduceMotion provides settings.reduceMotion,
+        LocalReduceMotion provides (LocalReduceMotionSetting.current ?: settings.reduceMotion),
     ) {
         MaterialTheme(colorScheme = scheme.colors, shapes = StriveShapes, typography = StriveTypography) {
             // Every text that names no colour reads on the background; without this, anything outside a Scaffold (the workout,
@@ -103,7 +111,10 @@ internal object StriveTheme {
     val sizes = Sizes()
     val borders = Borders()
     val states = States()
+    /** Glass's materials, solid under Reduce Transparency: for `.glass`, `.bpanel` and `.menu`. */
     val glass: StriveMaterials @Composable get() = LocalGlass.current
+    /** The scheme's own materials whatever Reduce Transparency says: for a fill that names a material without being glass. */
+    val materials: StriveMaterials @Composable get() = LocalMaterials.current
     val accents: StriveAccents @Composable get() = LocalAccents.current
     val moments: StriveMoments @Composable get() = LocalMoments.current
     val roles: StriveRoles @Composable get() = LocalRoles.current

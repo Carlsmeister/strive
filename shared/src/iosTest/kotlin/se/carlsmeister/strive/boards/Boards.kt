@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
@@ -21,6 +22,7 @@ import se.carlsmeister.strive.data.memoryDriver
 import se.carlsmeister.strive.fixture.SampleData
 import se.carlsmeister.strive.theme.LocalDarkTheme
 import se.carlsmeister.strive.theme.LocalHighContrast
+import se.carlsmeister.strive.theme.LocalReduceTransparency
 import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.workout.wallClock
 import kotlin.time.Clock
@@ -39,23 +41,38 @@ internal const val BOARD_SHOTS = "/tmp/strive-board-shots"
 /**
  * Shoots [content] on Carl's sample data at 390 × 844 pt and density 3 (R9), once per mode, as `[BOARD_SHOTS]/[id]-<mode>.png`.
  * [waitFor] is a text the content shows once its data arrives: reads run on Dispatchers.IO, which waitForIdle does not wait for.
+ * [arrange] runs once after the first idle, before the first shot: a tap or a write that brings the board's state on screen.
  */
 @OptIn(ExperimentalTestApi::class)
-internal fun boardShots(id: String, modes: List<Mode>, waitFor: String? = null, content: @Composable () -> Unit) {
+internal fun boardShots(
+    id: String,
+    modes: List<Mode>,
+    waitFor: String? = null,
+    reduceTransparency: Boolean = false,
+    arrange: suspend ComposeUiTest.(AppGraph) -> Unit = {},
+    content: @Composable () -> Unit,
+) {
     try {
         runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
             val graph = AppGraph(memoryDriver())
             SampleData.load(graph)
             var mode by mutableStateOf(modes.first())
             setContent {
-                CompositionLocalProvider(LocalAppGraph provides graph, LocalDarkTheme provides mode.dark, LocalHighContrast provides mode.highContrast) {
+                CompositionLocalProvider(
+                    LocalAppGraph provides graph, LocalDarkTheme provides mode.dark, LocalHighContrast provides mode.highContrast,
+                    LocalReduceTransparency provides reduceTransparency,
+                ) {
                     StriveTheme { Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { content() } }
                 }
             }
-            for (m in modes) {
+            for ((i, m) in modes.withIndex()) {
                 mode = m
                 if (waitFor != null) waitUntil("see '$waitFor'", 10_000) { onAllNodes(hasText(waitFor, substring = true)).fetchSemanticsNodes().isNotEmpty() }
                 waitForIdle()
+                if (i == 0) {
+                    arrange(graph)
+                    waitForIdle()
+                }
                 savePng(BOARD_SHOTS, "$id-${m.id}")
             }
         }

@@ -29,11 +29,13 @@ class ThemeTest {
     }
 
     @Test
-    fun reduceTransparencyMakesGlassTheSolidSurface() {
-        val surface = Scheme.Light.colors.surface
-        val glass = glass(Scheme.Light, reduceTransparency = true)
-        assertEquals(surface, glass.regular)
-        assertEquals(surface, glass.thick)
+    fun reduceTransparencyMakesGlassSurfaceContainerHigh() {
+        for (scheme in listOf(Scheme.Light, Scheme.DarkHc)) {
+            val glass = glass(scheme, reduceTransparency = true)
+            assertEquals(scheme.colors.surfaceContainerHigh, glass.regular)
+            assertEquals(scheme.colors.surfaceContainerHigh, glass.thick)
+            assertEquals(scheme.materials.edge, glass.edge)
+        }
     }
 
     @Test
