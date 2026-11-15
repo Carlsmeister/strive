@@ -143,10 +143,10 @@ internal fun flexWidths(row: Float, gap: Float, bases: List<Float>, grows: List<
 /**
  * The Buttons README's press, in place of the ripple: scale .96 and dim while held, 100 ms down, the release curve back up.
  * Reduce Motion keeps the dim and drops the scale. A disabled control never reports a press, so it does not react.
- * [role] is what a screen reader calls it.
+ * [role] is what a screen reader calls it, [label] what it says a tap does.
  */
 @Composable
-internal fun Modifier.pressable(enabled: Boolean, onClick: () -> Unit, role: Role = Role.Button): Modifier {
+internal fun Modifier.pressable(enabled: Boolean, onClick: () -> Unit, role: Role = Role.Button, label: String? = null): Modifier {
     val source = remember { MutableInteractionSource() }
     val pressed by source.collectIsPressedAsState()
     val states = StriveTheme.states
@@ -157,7 +157,7 @@ internal fun Modifier.pressable(enabled: Boolean, onClick: () -> Unit, role: Rol
         scaleX = scale.value
         scaleY = scale.value
         alpha = dim.value.coerceAtMost(1f) // the release curve overshoots
-    }.clickable(source, indication = null, enabled = enabled, role = role, onClick = onClick)
+    }.clickable(source, indication = null, enabled = enabled, onClickLabel = label, role = role, onClick = onClick)
 }
 
 /** `.ibtn`: a grey disc on bars, `.plain` in lists, `.teal` without the disc, `.on` a filter in use. */

@@ -84,13 +84,11 @@ import se.carlsmeister.strive.library.kilos
 import se.carlsmeister.strive.theme.Motion
 import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.StriveTheme
-import se.carlsmeister.strive.theme.glass
 import se.carlsmeister.strive.theme.settle
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.add_exercises
 import strive.shared.generated.resources.add_set
 import strive.shared.generated.resources.add_set_rest
-import strive.shared.generated.resources.back_to_workout
 import strive.shared.generated.resources.bar
 import strive.shared.generated.resources.cancel
 import strive.shared.generated.resources.collapse
@@ -113,7 +111,6 @@ import strive.shared.generated.resources.order_skip
 import strive.shared.generated.resources.remove_exercise
 import strive.shared.generated.resources.rest_all
 import strive.shared.generated.resources.rest_change
-import strive.shared.generated.resources.rest_row
 import strive.shared.generated.resources.save_without
 import strive.shared.generated.resources.skip
 import strive.shared.generated.resources.step
@@ -671,26 +668,4 @@ private fun quickPicks(): Pair<List<Pair<Long, String>>, Boolean> {
     val marked = all.filter { it.mark == se.carlsmeister.strive.data.Mark.Yes }.map { it.id to it.name }
     if (marked.isNotEmpty()) return marked.take(6) to true
     return history.flatMap { w -> w.exercises.map { it.exerciseId to it.name } }.distinctBy { it.first }.take(6) to false
-}
-
-/** The bar a minimised workout sits in above the tabs: its name, progress and the rest left; a tap brings it back (Q19). */
-@Composable
-internal fun MiniBar(w: Workout, haze: HazeState, onClick: () -> Unit) {
-    val space = StriveTheme.spacing
-    val now = rememberNow()
-    val rest by LocalAppGraph.current.rest.collectAsState()
-    val left = rest?.left(now) ?: 0
-    Row(
-        Modifier.padding(horizontal = space.s20, vertical = space.s8).fillMaxWidth().clip(ShapeFull)
-            .glass(haze, StriveTheme.glass)
-            .clickable(onClickLabel = stringResource(Res.string.back_to_workout), onClick = onClick)
-            .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = space.s20, vertical = space.s8),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column {
-            Text(w.name, style = MaterialTheme.typography.titleSmall)
-            Text(progress(w, now) + if (left > 0) " · " + stringResource(Res.string.rest_row, clock(left.toLong())) else "",
-                style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
 }

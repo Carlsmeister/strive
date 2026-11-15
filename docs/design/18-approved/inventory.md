@@ -343,8 +343,8 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
 - **States:** no rest; resting; after the app was killed (a workout left open is offered here);
   Reduce Motion (fades instead of rising).
 - **Source:** #17 Q19, choice 5; #42.
-- **Built:** `workout/WorkoutScreen.kt` (MiniBar), `App.kt`. Dragging the workout down is not built
-  (only ⌄).
+- **Built:** `ui/TabBar.kt` (`WorkoutMiniBar`), `App.kt`: the three states. Dragging the workout down is not
+  built (only ⌄).
 
 **WO-18 · Rest notification (locked phone)**
 - **Purpose:** say rest is over when the phone is locked.

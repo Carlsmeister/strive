@@ -1,6 +1,15 @@
 package se.carlsmeister.strive.boards
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import se.carlsmeister.strive.ui.RestRing
+import se.carlsmeister.strive.ui.TabBar
+import se.carlsmeister.strive.ui.TabItem
+import se.carlsmeister.strive.ui.WorkoutMiniBar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -198,4 +207,27 @@ internal fun TitleBarsBoard() = Column(Modifier.padding(top = 16.dp), verticalAr
     val sessions = LocalAppGraph.current.sessions
     val w by remember { sessions.open() }.collectAsState(null)
     WorkoutBar({}, {}, {}, allLogged = true, glassed = true, hairline = true, title = w?.name, progress = w?.let { progress(it, now()) })
+}
+
+/**
+ * The TabBar card: its 390 × 200 box (border-box, so the stack sits inside the 1 dp edge) holding the bottom stack, the minimised
+ * Push A resting with the card's 22 dp ring (P4) over the tab bar, Home current.
+ */
+@Composable
+internal fun TabBarBoard() {
+    val colors = MaterialTheme.colorScheme
+    val corner = RoundedCornerShape(16.dp)
+    Box(
+        Modifier.padding(top = 16.dp).fillMaxWidth().height(200.dp).clip(corner).background(colors.background)
+            .border(1.dp, colors.outlineVariant, corner).padding(1.dp),
+    ) {
+        Column(Modifier.align(Alignment.BottomCenter).padding(start = 20.dp, end = 20.dp, bottom = 22.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            WorkoutMiniBar("Push A", "24:13 · 2/15 sets", "Back to the workout", {}, rest = RestRing(103, 120, 22.dp, 2.2.dp))
+            TabBar(
+                before = listOf(TabItem(StriveIcons.Home, "Home", true) {}, TabItem(StriveIcons.Food, "Food", false) {}),
+                after = listOf(TabItem(StriveIcons.Plan, "Plan", false) {}, TabItem(StriveIcons.You, "You", false) {}),
+                startLabel = "Start", startOpen = false, onStart = {},
+            )
+        }
+    }
 }

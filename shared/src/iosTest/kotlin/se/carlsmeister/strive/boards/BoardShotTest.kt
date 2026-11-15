@@ -1,6 +1,13 @@
 package se.carlsmeister.strive.boards
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
+import se.carlsmeister.strive.theme.LocalDarkTheme
+import se.carlsmeister.strive.theme.ShapeFull
+import se.carlsmeister.strive.theme.glass
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -81,6 +88,9 @@ class BoardShotTest {
 
     @Test
     fun listsInDarkAndDarkHc() = boardShots("Lists", DarkModes) { ListsBoard() }
+
+    @Test
+    fun tabBarInDarkAndDarkHc() = boardShots("TabBar", DarkModes) { TabBarBoard() }
 
     @Test
     fun titleBarsInDarkAndDarkHc() = boardShots("TitleBars", DarkModes, waitFor = "Push A") { TitleBarsBoard() }
@@ -196,6 +206,29 @@ class BoardShotTest {
         }
         assertEquals(2f * 3, chevronDrop("chev"), 1f, "Profile's chevron")
         assertEquals(0f, chevronDrop("val"), 1f, "Export's chevron")
+    }
+
+    /**
+     * `.glass`'s box-shadow paints only outside the box, as CSS does: over content, a glass capsule's middle is its tint over that
+     * content, not darkened by its own shadow underneath.
+     */
+    @Test
+    fun glassPaintsItsShadowOnlyOutsideItsShape() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        var expected = Color.Unspecified
+        setContent {
+            CompositionLocalProvider(LocalDarkTheme provides true) { StriveTheme {
+                expected = StriveTheme.glass.regular.compositeOver(Color.Gray)
+                Box(Modifier.testTag("behind").background(Color.Gray).padding(48.dp)) {
+                    Box(Modifier.size(200.dp, 100.dp).glass(null, StriveTheme.glass, shape = ShapeFull))
+                }
+            } }
+        }
+        val pixels = onNodeWithTag("behind").captureToImage().toPixelMap()
+        val middle = pixels[pixels.width / 2, pixels.height / 2]
+        for ((name, got, want) in listOf(Triple("red", middle.red, expected.red), Triple("green", middle.green, expected.green), Triple("blue", middle.blue, expected.blue)))
+            assertEquals(want, got, 2f / 255, "$name: the middle $middle, the tint over grey $expected")
+        val below = pixels[pixels.width / 2, (48 + 100 + 6) * 3] // 6 dp under the capsule, where its 8 dp offset shadow falls
+        assertTrue(below.red < Color.Gray.red - 0.05f, "the shadow under the capsule: $below")
     }
 
     /** `.navtext` is a touch tall and acts; `.navtext.dim` cannot act yet. */

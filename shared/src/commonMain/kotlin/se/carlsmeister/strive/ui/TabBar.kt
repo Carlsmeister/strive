@@ -1,6 +1,15 @@
 package se.carlsmeister.strive.ui
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
+import se.carlsmeister.strive.workout.clock
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -73,6 +82,55 @@ internal fun TabBar(
             }
         }
         after.forEach { Tab(it) }
+    }
+}
+
+/** A rest running in the minimised workout: [left] of [of] seconds, drawn as a ring [size] across with a [stroke] wide arc (P4). */
+internal class RestRing(val left: Int, val of: Int, val size: Dp = 26.dp, val stroke: Dp = 3.25.dp)
+
+/**
+ * `.minibar` (WO-17): the minimised workout as a capsule of regular glass, [title] over [sub], each one line; while a [rest] runs,
+ * its ring and time at the end in tertiary. No chevron (P3). [clickLabel] is what a screen reader says a tap does.
+ */
+@Composable
+internal fun WorkoutMiniBar(
+    title: String,
+    sub: String,
+    clickLabel: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    rest: RestRing? = null,
+) = FixedTextSize {
+    val colors = MaterialTheme.colorScheme
+    val type = MaterialTheme.typography
+    val edge = StriveTheme.borders.hairline
+    // Each of `.minibar`'s texts sets `font:`, which resets `.strive`'s tabular-nums.
+    fun TextStyle.css() = copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox)
+    Row(
+        // Border-box, as the tab bar: the hairline edge takes its room inside the capsule, before the padding.
+        modifier.fillMaxWidth().pressable(true, onClick, label = clickLabel).heightIn(min = 52.dp)
+            .glass(LocalGlassSource.current, StriveTheme.glass, shape = ShapeFull)
+            .padding(start = StriveTheme.spacing.s20 + edge, top = StriveTheme.spacing.s8 + edge, end = StriveTheme.spacing.s12 + edge, bottom = StriveTheme.spacing.s8 + edge),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s12),
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(title, color = colors.onSurface, style = type.titleSmall.css(), maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(sub, color = colors.onSurfaceVariant, style = type.labelMedium.css(), maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+        rest?.let { r ->
+            Row(Modifier.testTag("bar-rest"), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Canvas(Modifier.size(r.size)) {
+                    // The card's 64-unit ring: radius 23.5, the arc from 12 o'clock clockwise over what is left.
+                    val radius = size.width * 23.5f / 64
+                    val corner = Offset(center.x - radius, center.y - radius)
+                    val box = Size(2 * radius, 2 * radius)
+                    drawArc(colors.surfaceContainerHighest, 0f, 360f, false, corner, box, style = Stroke(r.stroke.toPx()))
+                    drawArc(colors.tertiary, -90f, 360f * r.left / r.of, false, corner, box, style = Stroke(r.stroke.toPx(), cap = StrokeCap.Round))
+                }
+                Text(clock(r.left.toLong()), color = colors.tertiary, style = type.titleSmall.css(), maxLines = 1, softWrap = false)
+            }
+        }
     }
 }
 

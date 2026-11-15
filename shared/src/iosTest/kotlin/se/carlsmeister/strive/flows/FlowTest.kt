@@ -133,6 +133,10 @@ import strive.shared.generated.resources.superset_leave
 import strive.shared.generated.resources.superset_rest
 import androidx.compose.ui.graphics.Color
 import se.carlsmeister.strive.workout.wallClock
+import se.carlsmeister.strive.workout.now
+import se.carlsmeister.strive.data.Rest
+import strive.shared.generated.resources.bar_left_open
+import strive.shared.generated.resources.tap_to_continue
 import kotlin.time.Clock
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -537,6 +541,26 @@ class FlowTest {
         bar()
         test.onNode(clickLabel(s(Res.string.back_to_workout))).performClick()
         see(s(Res.string.what_today))
+    }
+
+    @Test
+    fun theBarShowsTheRestAsARingAndTimeAndDropsThemAtZero() = flow {
+        startWorkout()
+        tapDesc(s(Res.string.minimise))
+        bar()
+        // Unmerged: the bar is one button, and a test tag inside it does not merge up into the button's node.
+        fun restShows() = test.onAllNodes(hasTestTag("bar-rest"), useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
+        graph.rest.value = Rest(now() - 17_000, 120)
+        wait("the rest in the bar") { restShows() }
+        graph.rest.value = Rest(now() - 121_000, 120)
+        wait("the rest to leave the bar") { !restShows() }
+    }
+
+    @Test
+    fun aLongWorkoutNameKeepsTheBarOneLineTall() = flow {
+        startWorkout()
+        val short = barHeightAfterRenaming("Push A")
+        assertEquals(short, barHeightAfterRenaming("Överkropp tung med extra armar och lite till för säkerhets skull"))
     }
 
     @Test
@@ -1046,9 +1070,15 @@ class FlowTest {
         try {
             flow(AppGraph(again)) {
                 bar()
-                see("1/1", substring = true)
+                see(s(Res.string.tap_to_continue))
+                see(s(Res.string.bar_left_open, s(Res.string.workout), ""), substring = true) // the title up to its time
                 test.onNode(clickLabel(s(Res.string.back_to_workout))).performClick()
                 seeDesc(s(Res.string.logged, 1))
+                // Opened once, it reads as any open workout again.
+                tapDesc(s(Res.string.minimise))
+                bar()
+                see("1/1", substring = true)
+                gone(hasText(s(Res.string.tap_to_continue)))
             }
         } finally {
             again.close()
@@ -1059,7 +1089,7 @@ class FlowTest {
 
 private const val TIMEOUT = 10_000L
 
-private fun clickLabel(label: String) =
+internal fun clickLabel(label: String) =
     SemanticsMatcher("click label $label") { it.config.getOrNull(SemanticsActions.OnClick)?.label == label }
 
 /** The steps a person takes and what they check, in the words of the app. */
@@ -1093,6 +1123,16 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
         test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(clickLabel(label)).fetchSemanticsNodes().isNotEmpty() }
     }
 
+    /** Renames the open workout, minimises it if it shows, and returns the bar's height once the bar shows the new name. */
+    suspend fun barHeightAfterRenaming(name: String): Int {
+        graph.sessions.rename(open().id, name)
+        val minimise = s(Res.string.minimise)
+        if (test.onAllNodes(hasContentDescription(minimise)).fetchSemanticsNodes().isNotEmpty()) tapDesc(minimise)
+        bar()
+        see(name.take(10), substring = true)
+        return test.onNode(clickLabel(s(Res.string.back_to_workout))).fetchSemanticsNode().size.height
+    }
+
     fun gone(matcher: SemanticsMatcher) = wait("${matcher.description} to go") { test.onAllNodes(matcher).fetchSemanticsNodes().isEmpty() }
 
     /** Taps the last clickable node that matches: what is drawn last lies on top. */
@@ -1115,7 +1155,7 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
     /** The tab bar's tab labelled [label]. */
     fun tab(label: String) = test.onNode(hasText(label) and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab))
 
-    fun tapSegment(label: String) =tapLast(hasText(label) and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab))
+    fun tapSegment(label: String) = tapLast(hasText(label) and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab))
 
     fun keys(typed: String) = typed.forEach {
         test.onNodeWithTag("key-$it").performClick()

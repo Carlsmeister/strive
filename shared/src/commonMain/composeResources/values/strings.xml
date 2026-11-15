@@ -134,6 +134,8 @@
     <string name="start_a_workout">Start a workout</string>
     <string name="back_to_workout">Back to the workout</string>
     <string name="continue_workout">Continue %1$s · %2$s</string>
+    <string name="bar_left_open">%1$s · left open · %2$s</string>
+    <string name="tap_to_continue">Tap to continue</string>
     <string name="history_sets">%1$d sets</string>
     <plurals name="unlogged"><item quantity="one">%1$d set not logged</item><item quantity="other">%1$d sets not logged</item></plurals>
     <plurals name="week_workouts"><item quantity="one">Week %1$d · %2$d workout</item><item quantity="other">Week %1$d · %2$d workouts</item></plurals>

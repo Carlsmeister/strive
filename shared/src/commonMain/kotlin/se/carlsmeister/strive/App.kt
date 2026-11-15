@@ -20,7 +20,9 @@ import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.theme.Motion
 import se.carlsmeister.strive.theme.settle
 import se.carlsmeister.strive.workout.HistoryScreen
-import se.carlsmeister.strive.workout.MiniBar
+import se.carlsmeister.strive.workout.BarState
+import se.carlsmeister.strive.workout.barState
+import se.carlsmeister.strive.workout.progress
 import se.carlsmeister.strive.workout.SummaryScreen
 import se.carlsmeister.strive.workout.WorkoutScreen
 import se.carlsmeister.strive.workout.clock
@@ -92,9 +94,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import se.carlsmeister.strive.theme.LocalGlassSource
 import se.carlsmeister.strive.theme.StriveIcons
 import se.carlsmeister.strive.ui.TabBar
+import se.carlsmeister.strive.ui.RestRing
 import se.carlsmeister.strive.ui.TabItem
+import se.carlsmeister.strive.ui.WorkoutMiniBar
 import se.carlsmeister.strive.ui.barBottom
 import strive.shared.generated.resources.close_start
+import strive.shared.generated.resources.back_to_workout
+import strive.shared.generated.resources.bar_left_open
+import strive.shared.generated.resources.tap_to_continue
 
 // The navigation from #14: four tabs around a Start button. Every screen is a placeholder until its feature exists.
 private enum class Tab(val title: StringResource) {
@@ -145,13 +152,20 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
         val sessions = graph.sessions
         // A workout left open, by ⌄ or by the app being killed, is offered in the bar above the tabs.
         val open by remember { sessions.open() }.collectAsState(null)
+        // A workout already open as the app starts was left open by the app being killed (R5): its id, until it is opened once.
+        var leftOpen by remember { mutableStateOf<Long?>(null) }
+        LaunchedEffect(graph) { leftOpen = sessions.open().first()?.id }
+        fun showWorkout() {
+            leftOpen = null
+            root += ActiveWorkout
+        }
         val scope = rememberCoroutineScope()
         val name = stringResource(Res.string.workout)
         // Two workouts cannot run at once (Q46): Start continues the open one.
         fun startWorkout() {
             scope.launch {
                 if (sessions.open().first() == null) sessions.start(name, now())
-                root += ActiveWorkout
+                showWorkout()
             }
         }
         val safe = WindowInsets.safeDrawing.asPaddingValues()
@@ -162,8 +176,8 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
             entryProvider = { route ->
                 when (route) {
                     Tabs -> NavEntry(route) {
-                        TabsScreen(stacks, selected, open, onSelect = { selected = it }, onStartWorkout = ::startWorkout,
-                            onStartRun = { root += Session(Res.string.start_run) }, onRestore = { root += ActiveWorkout })
+                        TabsScreen(stacks, selected, open, leftOpen = leftOpen != null && leftOpen == open?.id, onSelect = { selected = it },
+                            onStartWorkout = ::startWorkout, onStartRun = { root += Session(Res.string.start_run) }, onRestore = ::showWorkout)
                     }
                     is Session -> NavEntry(route) {
                         Page { Placeholder(stringResource(route.title), Modifier.safeContentPadding(), close = { root.pop() }) }
@@ -210,6 +224,7 @@ private fun TabsScreen(
     stacks: Map<Tab, SnapshotStateList<Screen>>,
     selected: Tab,
     open: Workout?,
+    leftOpen: Boolean,
     onSelect: (Tab) -> Unit,
     onStartWorkout: () -> Unit,
     onStartRun: () -> Unit,
@@ -224,6 +239,9 @@ private fun TabsScreen(
     var stackHeight by remember { mutableStateOf(0.dp) }
     // Screens run on under the floating bottom stack; each pads its own content clear of it.
     val padding = PaddingValues(top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding(), bottom = stackHeight + gap)
+    // The shell's one clock, ticking only while a workout is open; a second one kept UI tests from going idle.
+    val now = if (open != null) rememberNow() else 0L
+    val rest by LocalAppGraph.current.rest.collectAsState()
 
     Box(Modifier.fillMaxSize()) { CompositionLocalProvider(LocalGlassSource provides haze) {
         val stack: SnapshotStateList<Screen> = stacks.getValue(selected)
@@ -264,7 +282,17 @@ private fun TabsScreen(
                 .onSizeChanged { stackHeight = with(density) { it.height.toDp() } },
             verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8),
         ) {
-            open?.let { MiniBar(it, haze, onRestore) }
+            open?.let { w ->
+                val back = stringResource(Res.string.back_to_workout)
+                val r = rest
+                val left = r?.left(now) ?: 0
+                when (barState(leftOpen, left)) {
+                    BarState.LeftOpen -> WorkoutMiniBar(stringResource(Res.string.bar_left_open, w.name, clock((now - w.startedAt) / 1_000)),
+                        stringResource(Res.string.tap_to_continue), back, onRestore)
+                    BarState.Resting -> WorkoutMiniBar(w.name, progress(w, now), back, onRestore, rest = RestRing(left, r!!.seconds))
+                    BarState.Open -> WorkoutMiniBar(w.name, progress(w, now), back, onRestore)
+                }
+            }
             @Composable
             fun item(tab: Tab, icon: ImageVector) = TabItem(icon, stringResource(tab.title), tab == selected) { onSelect(tab) }
             TabBar(
@@ -282,7 +310,7 @@ private fun TabsScreen(
             Column(Modifier.fillMaxWidth().padding(StriveTheme.spacing.s16), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
                 if (open != null) {
                     // With a workout in progress Start offers only to continue it (Q46).
-                    val label = stringResource(Res.string.continue_workout, open.name, clock((rememberNow() - open.startedAt) / 1_000))
+                    val label = stringResource(Res.string.continue_workout, open.name, clock((now - open.startedAt) / 1_000))
                     Button(onClick = { startOpen = false; onRestore() }, Modifier.fillMaxWidth()) { Text(label) }
                 } else {
                     Button(onClick = { startOpen = false; onStartWorkout() }, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.start_workout)) }
