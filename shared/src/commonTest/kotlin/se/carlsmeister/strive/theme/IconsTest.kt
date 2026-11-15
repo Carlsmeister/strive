@@ -30,13 +30,27 @@ class IconsTest {
     /** Four masks fill (fill='black'); the rest are 2 pt round strokes (Icons card). */
     @Test
     fun theFourFilledIconsFillAndTheRestStroke() {
-        val paths = StriveIcons.all.map { (name, v) -> name to v.root[0] as VectorPath }
+        val paths = StriveIcons.all.map { (name, v) -> name to v.root.last() as VectorPath }
         assertEquals(listOf("star", "play-f", "pause-f", "dot"), paths.filter { it.second.fill != null }.map { it.first })
         paths.filter { it.second.fill == null }.forEach { (name, p) ->
             assertNotNull(p.stroke, name)
             assertEquals(2f, p.strokeLineWidth, name)
             assertEquals(StrokeCap.Round to StrokeJoin.Round, p.strokeLineCap to p.strokeLineJoin, name)
         }
+    }
+
+    /**
+     * On iOS, Compose 1.12.1's Skia stroke paint starts out reading StrokeJoin.Round while Skia strokes mitred, and
+     * CanvasDrawScope only sets a join that differs from the one it reads, so an icon's round joins drew mitred (S1).
+     * Each icon strokes an empty Miter path first, so its glyph's Round is set on the paint.
+     */
+    @Test
+    fun everyIconStrokesAnEmptyMiterPathBeforeItsGlyph() = StriveIcons.all.forEach { (name, v) ->
+        assertEquals(2, v.root.size, name)
+        val primer = v.root[0] as VectorPath
+        assertEquals(emptyList(), primer.pathData, name)
+        assertNotNull(primer.stroke, name)
+        assertEquals(StrokeJoin.Miter, primer.strokeLineJoin, name)
     }
 
     /** bundle.css writes "5.9.9-4.3" for 5.9, .9, -4.3, as SVG allows; the star misdraws if the parser reads it otherwise. */
