@@ -43,6 +43,7 @@ import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import se.carlsmeister.strive.ui.SegmentedTabs
 import se.carlsmeister.strive.ui.Toast
+import se.carlsmeister.strive.ui.Hint
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.hasAnyAncestor
@@ -265,6 +266,20 @@ class BoardShotTest {
         onNodeWithText("Undo").performClick()
         assertTrue(undone)
         assertTrue(onNodeWithText("Undo").fetchSemanticsNode().size.height >= 44 * 3)
+    }
+
+    /**
+     * A hint's dismiss label calls back and is a touch (44 dp) tall, while the hint keeps the card's drawn 102 dp: 12 padding, the
+     * title's 20, a 4 gap, the text's 18, a 4 gap, `.got`'s 32, 12 padding.
+     */
+    @Test
+    fun aHintsDismissIsTappedAndATouchTall() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        var dismissed = false
+        setContent { StriveTheme { Box(Modifier.testTag("hintFootprint")) { Hint("Log in one tap", "Tap ✓ to log the set.", "Got it", onDismiss = { dismissed = true }) } } }
+        onNodeWithText("Got it").performClick()
+        assertTrue(dismissed)
+        assertTrue(onNodeWithText("Got it").fetchSemanticsNode().size.height >= 44 * 3)
+        assertEquals(102 * 3, onNodeWithTag("hintFootprint").fetchSemanticsNode().size.height, "the hint's layout")
     }
 
     /** A board's `waitFor` names what it shows once arranged, so a text only `arrange` brings on screen is waited for, not timed out on. */
