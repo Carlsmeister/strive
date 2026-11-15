@@ -282,10 +282,11 @@ private fun TabsScreen(
                                 Stub(Tab.Food, 1) -> FoodScreen(padding)
                                 is Stub -> {
                                     val title = stringResource(screen.tab.title)
+                                    fun named(depth: Int) = if (depth == 1) title else "$title $depth"
                                     Placeholder(
-                                        if (screen.depth == 1) title else "$title ${screen.depth}",
+                                        named(screen.depth),
                                         Modifier.padding(padding),
-                                        back = if (screen.depth > 1) title else null,
+                                        back = if (screen.depth > 1) named(screen.depth - 1) else null,
                                         onBack = { stack.pop() },
                                         next = { stack += Stub(screen.tab, screen.depth + 1) },
                                         library = if (screen.tab == Tab.Plan && screen.depth == 1) ({ stack += Library }) else null,

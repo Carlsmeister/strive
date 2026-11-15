@@ -38,6 +38,7 @@ import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.StriveIcons
 import se.carlsmeister.strive.theme.StriveTheme
 import strive.shared.generated.resources.Res
+import strive.shared.generated.resources.back
 import strive.shared.generated.resources.finish
 import strive.shared.generated.resources.free_rest
 import strive.shared.generated.resources.minimise
@@ -80,16 +81,21 @@ internal fun NavBar(
     }
 }
 
-/** `.back`: a teal chevron and the [parent]'s name, the screen it goes back to. Tagged `back`, so a flow finds it apart from a tab of the same name. */
+/**
+ * `.back`: a teal chevron and the [parent]'s name, the screen it goes back to, ending in an ellipsis where a title leaves it too little
+ * room. VoiceOver reads the name and says a tap goes back. Tagged `back`, so a flow finds it apart from a tab of the same name.
+ */
 @Composable
 internal fun BackLabel(parent: String, onBack: () -> Unit, modifier: Modifier = Modifier) =
     Row(
-        modifier.testTag("back").heightIn(min = StriveTheme.sizes.touch).pressable(true, onBack).padding(end = StriveTheme.spacing.s8),
+        modifier.testTag("back").heightIn(min = StriveTheme.sizes.touch).pressable(true, onBack, label = stringResource(Res.string.back))
+            .padding(end = StriveTheme.spacing.s8),
         horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(StriveIcons.Back, contentDescription = null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary)
         Text(parent, color = MaterialTheme.colorScheme.primary,
-            style = MaterialTheme.typography.bodyLarge.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox), softWrap = false)
+            style = MaterialTheme.typography.bodyLarge.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox),
+            softWrap = false, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 
 /** `.navtext`, a bar's text action: teal, [bold] for the confirming one (`.b`), [dim] when it cannot act yet (`.dim`). */

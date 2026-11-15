@@ -27,6 +27,8 @@ import androidx.compose.ui.test.printToString
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.onLast
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
@@ -56,6 +58,7 @@ import strive.shared.generated.resources.add_count
 import strive.shared.generated.resources.add_exercises
 import strive.shared.generated.resources.add_set
 import strive.shared.generated.resources.all_activities
+import strive.shared.generated.resources.back
 import strive.shared.generated.resources.back_to_workout
 import strive.shared.generated.resources.cancel
 import strive.shared.generated.resources.close
@@ -1358,6 +1361,7 @@ class FlowTest {
     fun backNamesTheParentInTheLibrary() = flow {
         tap(s(Res.string.tab_plan)); tap(s(Res.string.library))
         backReads(s(Res.string.tab_plan))
+        test.onNode(hasTestTag("back")).assert(clickLabel(s(Res.string.back))) // VoiceOver: "Plan", and a tap goes back
         shot("22-library")
         search("Bench Press BB"); tap("Bench Press BB")
         backReads(s(Res.string.library))
@@ -1366,6 +1370,31 @@ class FlowTest {
         backReads(s(Res.string.tab_plan))
         tapBack()
         gone(hasTestTag("back"))            // Plan's first screen has no parent
+    }
+
+    @Test
+    fun aLongWorkoutNameEllipsizesTheBackLabelInsteadOfCuttingIt() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8")
+        val name = "Push A, heavy upper body"
+        graph.sessions.rename(open().id, name)
+        tap(s(Res.string.finish))
+        tap(s(Res.string.done))
+        tap(s(Res.string.tab_you))
+        tap(s(Res.string.all_activities))
+        tap(name)
+        val parent = s(Res.string.all_activities)
+        backReads(parent)
+        shot("24-long-name-detail")
+        val text = test.onNode(hasText(parent) and hasAnyAncestor(hasTestTag("back")), useUnmergedTree = true).fetchSemanticsNode()
+        val layouts = mutableListOf<TextLayoutResult>()
+        text.config[SemanticsActions.GetTextLayoutResult].action!!(layouts)
+        val layout = layouts.single()
+        // The title leaves the label less room than its text needs, so the label must end in an ellipsis, not be cut mid-word.
+        assertTrue(text.boundsInRoot.width < layout.multiParagraph.intrinsics.maxIntrinsicWidth, "'$parent' overflows: ${text.boundsInRoot}")
+        assertEquals(TextOverflow.Ellipsis, layout.layoutInput.overflow)
+        assertEquals(1, layout.layoutInput.maxLines)
     }
 
     @Test
