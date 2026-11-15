@@ -66,7 +66,8 @@ internal expect fun ProvideTextScale(content: @Composable () -> Unit)
 internal fun FixedTextSize(content: @Composable () -> Unit) =
     CompositionLocalProvider(LocalDensity provides Density(LocalDensity.current.density), content = content)
 
-private val LocalGlass = staticCompositionLocalOf { lightMaterials }
+// Internal, not private, for a test that lowers the glass's tint to see what shows through it.
+internal val LocalGlass = staticCompositionLocalOf { lightMaterials }
 private val LocalMaterials = staticCompositionLocalOf { lightMaterials }
 private val LocalAccents = staticCompositionLocalOf { lightAccents }
 private val LocalMoments = staticCompositionLocalOf { lightMoments }

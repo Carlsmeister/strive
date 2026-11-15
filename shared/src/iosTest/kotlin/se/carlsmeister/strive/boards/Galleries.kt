@@ -316,7 +316,10 @@ internal fun MenuOverTextBoard() {
     CompositionLocalProvider(LocalGlassSource provides haze) {
         Box(Modifier.fillMaxWidth()) {
             Column(Modifier.fillMaxWidth().hazeSource(haze).background(MaterialTheme.colorScheme.background).padding(16.dp)) {
-                repeat(20) { Text("Line ${it + 1}: the quick brown fox jumps", style = MaterialTheme.typography.bodyLarge) }
+                repeat(20) {
+                    Text("Line ${it + 1}: the quick brown fox jumps over the lazy dog", style = MaterialTheme.typography.bodyLarge,
+                        maxLines = 1, softWrap = false)
+                }
             }
             Box(Modifier.align(Alignment.TopEnd).padding(top = 60.dp, end = 16.dp)) {
                 GlassMenu(expanded = true, onDismiss = {}) {

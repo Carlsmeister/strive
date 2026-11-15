@@ -6,6 +6,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import se.carlsmeister.strive.theme.LocalDarkTheme
+import kotlin.math.abs
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isRoot
+import se.carlsmeister.strive.ui.MenuRow
+import se.carlsmeister.strive.ui.GlassMenu
+import se.carlsmeister.strive.theme.StriveMaterials
+import se.carlsmeister.strive.theme.LocalGlass
 import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.glass
 import androidx.compose.foundation.layout.Column
@@ -98,9 +107,73 @@ class BoardShotTest {
     @Test
     fun menusInDarkAndDarkHc() = boardShots("Menus", DarkModes, waitFor = "Remove exercise") { MenusBoard() }
 
-    /** P5: read by eye, the lines behind the panel in its popup must be blurred. */
+    /**
+     * P5: a menu in its popup blurs the screen behind it. On one scanline through a line of text, the largest luminance step between
+     * neighbouring pixels behind the panel must be under a quarter of the same step beside it: a glyph's edge is a step of most of
+     * the range, a blur leaves gentle slopes. The largest step, not a count of transitions, because a count hangs on a threshold and
+     * on which glyphs the line holds, while the largest step is set by the sharpest edge alone. The panel's tint is lowered to .3
+     * here so that what shows through decides it: at the real .8, a sharp glyph behind the panel is still a step of about a fifth of
+     * the range, too close to a blur's to call. The shot is saved for a person to look at.
+     */
     @Test
-    fun aMenuBlursWhatIsBehindIt() = boardShots("MenuOverText", listOf(Mode.Dark), waitFor = "Change start time") { MenuOverTextBoard() }
+    fun aMenuBlursWhatIsBehindIt() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        setContent {
+            CompositionLocalProvider(LocalDarkTheme provides true) { StriveTheme {
+                val glass = StriveTheme.glass
+                CompositionLocalProvider(LocalGlass provides StriveMaterials(glass.regular, glass.thick.copy(alpha = .3f), glass.edge, glass.shadow)) {
+                    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { MenuOverTextBoard() }
+                }
+            } }
+        }
+        waitForIdle()
+        savePng(BOARD_SHOTS, "MenuOverText-dark")
+        val panel = onNodeWithTag("glass-menu").fetchSemanticsNode().boundsInRoot
+        val dp = 3f
+        // A line of text through the panel's middle row, its centre clear of the row's hairlines.
+        val line = onAllNodes(hasText("Line ", substring = true)).fetchSemanticsNodes().map { it.boundsInRoot }
+            .first { it.center.y in (panel.top + panel.height / 3 + 6 * dp)..(panel.bottom - panel.height / 3 - 6 * dp) }
+        val pixels = onAllNodes(isRoot())[0].captureToImage().toPixelMap()
+        fun largestStep(from: Float, to: Float): Float {
+            val y = line.center.y.toInt()
+            fun luminance(x: Int) = pixels[x, y].let { (it.red + it.green + it.blue) / 3 }
+            return (from.toInt() until to.toInt()).maxOf { x -> abs(luminance(x + 1) - luminance(x)) }
+        }
+        // Beside: the line's start, clear of the panel's shadow. Behind: the panel's right part, clear of the row's own label.
+        val beside = largestStep(line.left, panel.left - 32 * dp)
+        val behind = largestStep(panel.left + 140 * dp, panel.right - 20 * dp)
+        assertTrue(beside > .5f, "the scanline crosses glyphs beside the panel: largest step $beside")
+        assertTrue(behind < beside / 4, "glyph edges gone behind the panel: largest step $behind behind, $beside beside")
+    }
+
+    /**
+     * A menu that opens above its button grows from its bottom corner from its first frame: the corner is chosen where the popup is
+     * placed, after composition, so it must be read when the layer draws.
+     */
+    @Test
+    fun aMenuThatOpensAboveItsButtonGrowsFromItsBottomCorner() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        var open by mutableStateOf(false)
+        setContent {
+            CompositionLocalProvider(LocalDarkTheme provides true) { StriveTheme {
+                Box(Modifier.fillMaxSize()) {
+                    Box(Modifier.align(Alignment.BottomEnd).padding(end = 16.dp, bottom = 40.dp).size(44.dp)) {
+                        GlassMenu(open, {}) { MenuRow("One", {}); MenuRow("Two", {}); MenuRow("Three", {}) }
+                    }
+                }
+            } }
+        }
+        waitForIdle()
+        mainClock.autoAdvance = false
+        open = true
+        // The first frame the panel is on screen, as it draws: its bounds carry the layer's scale.
+        var frames = 0
+        while (onAllNodes(hasTestTag("glass-menu")).fetchSemanticsNodes().isEmpty() && frames++ < 5) mainClock.advanceTimeByFrame()
+        val first = onNodeWithTag("glass-menu").fetchSemanticsNode().boundsInRoot
+        mainClock.autoAdvance = true
+        waitForIdle()
+        val settled = onNodeWithTag("glass-menu").fetchSemanticsNode().boundsInRoot
+        assertTrue(first.height < settled.height - 3, "still growing on its first frame: $first, settled $settled")
+        assertEquals(settled.bottom, first.bottom, 1.5f, "grows from its bottom: first $first, settled $settled")
+    }
 
     @Test
     fun titleBarsInDarkAndDarkHc() = boardShots("TitleBars", DarkModes, waitFor = "Push A") { TitleBarsBoard() }

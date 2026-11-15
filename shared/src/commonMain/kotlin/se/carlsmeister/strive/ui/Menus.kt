@@ -1,11 +1,8 @@
 package se.carlsmeister.strive.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.rememberTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -32,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
@@ -75,11 +73,16 @@ internal fun GlassMenu(expanded: Boolean, onDismiss: () -> Unit, modifier: Modif
     val placement = remember(density) { with(density) { MenuPlacement(6.dp.roundToPx(), 8.dp.roundToPx()) { origin = it } } }
     val reduceMotion = StriveTheme.reduceMotion
     Popup(popupPositionProvider = placement, onDismissRequest = onDismiss, properties = PopupProperties(focusable = true)) {
-        AnimatedVisibility(
-            shown,
-            enter = if (reduceMotion) fadeIn(Motion.fade()) else fadeIn(Motion.fade()) + scaleIn(Motion.fade(), .9f, origin),
-            exit = if (reduceMotion) fadeOut(Motion.fade()) else fadeOut(Motion.fade()) + scaleOut(Motion.fade(), .9f, origin),
-        ) { MenuPanel(modifier, content) }
+        val progress by rememberTransition(shown).animateFloat({ Motion.fade() }) { if (it) 1f else 0f }
+        // The corner is read as the layer draws, as Material's menu does: placement chooses it after composition, so a transition
+        // built in composition scaled a menu that opens above from its top corner on its first frame.
+        MenuPanel(modifier.graphicsLayer {
+            alpha = progress
+            val scale = if (reduceMotion) 1f else .9f + .1f * progress
+            scaleX = scale
+            scaleY = scale
+            transformOrigin = origin
+        }, content)
     }
 }
 
@@ -101,6 +104,8 @@ private class MenuPlacement(private val gap: Int, private val margin: Int, priva
  * `.mrow + .mrow`'s hairline shows only between two rows, so each row brings its own line and the panel lays out only those that
  * follow a row.
  */
+// shortcut: no max height and no scroll; the tallest menu (tiles and 7 rows, about 430 dp) fits a portrait phone, so large text or
+// landscape clips it; cap it at the window and scroll once a menu or a text size outgrows that.
 @Composable
 private fun MenuPanel(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     val edge = StriveTheme.borders.hairline
