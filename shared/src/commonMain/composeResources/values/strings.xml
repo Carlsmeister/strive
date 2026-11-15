@@ -1,6 +1,9 @@
 <resources>
     <string name="tab_home">Home</string>
     <string name="tab_food">Food</string>
+    <string name="food_later_title">Nutrition comes later</string>
+    <string name="food_later_body">Calories and protein against a daily target, logged from what you eat. It lands here, and nothing else moves.</string>
+    <string name="food_log_later">See the food log (later)</string>
     <string name="tab_start">Start</string>
     <string name="close_start">Close Start</string>
     <string name="tab_plan">Plan</string>

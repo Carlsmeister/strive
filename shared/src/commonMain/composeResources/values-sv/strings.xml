@@ -1,6 +1,9 @@
 <resources>
     <string name="tab_home">Hem</string>
     <string name="tab_food">Mat</string>
+    <string name="food_later_title">Kost kommer senare</string>
+    <string name="food_later_body">Kalorier och protein mot ett dagsmål, loggat från det du äter. Det hamnar här, och inget annat flyttas.</string>
+    <string name="food_log_later">Se matloggen (senare)</string>
     <string name="tab_start">Starta</string>
     <string name="close_start">Stäng Start</string>
     <string name="tab_plan">Plan</string>

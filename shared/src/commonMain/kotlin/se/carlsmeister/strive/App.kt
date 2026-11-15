@@ -279,6 +279,7 @@ private fun TabsScreen(
                     entryProvider = { screen ->
                         NavEntry(screen) { Page {
                             when (screen) {
+                                Stub(Tab.Food, 1) -> FoodScreen(padding)
                                 is Stub -> {
                                     val title = stringResource(screen.tab.title)
                                     Placeholder(

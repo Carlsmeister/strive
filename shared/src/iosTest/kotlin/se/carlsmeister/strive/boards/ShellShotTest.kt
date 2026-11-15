@@ -23,6 +23,7 @@ import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.back_to_workout
 import strive.shared.generated.resources.finish
 import strive.shared.generated.resources.minimise
+import strive.shared.generated.resources.tab_food
 import strive.shared.generated.resources.tab_plan
 import strive.shared.generated.resources.tab_start
 import kotlin.test.Test
@@ -66,6 +67,11 @@ class ShellShotTest {
     fun sh03InProgressInDarkAndDarkHc() = boardShots("SH-03-inprog", DarkModes, waitFor = "Continue",
         arrange = { backOnTheTabs(); onNode(hasContentDescription(getString(Res.string.tab_start))).performClick(); waitForIdle() },
     ) { ShellBoard() }
+
+    /** Food's placeholder: no workout open, the sample day's date under the title. */
+    @Test
+    fun sh05InDarkAndDarkHc() = boardShots("SH-05", DarkModes, waitFor = "Nutrition comes later",
+        arrange = { graph -> graph.sessions.discard(graph.sessions.open().first()!!.id); tapTab(Res.string.tab_food) }) { ShellBoard() }
 }
 
 /** The app as a board frames it: under the board's 54 pt `.safe` band (`--safe-top`), which the test window does not have. */

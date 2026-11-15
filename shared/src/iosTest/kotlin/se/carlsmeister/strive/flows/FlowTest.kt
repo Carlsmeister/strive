@@ -92,6 +92,8 @@ import strive.shared.generated.resources.bubble_empty_desc
 import strive.shared.generated.resources.close_start
 import strive.shared.generated.resources.start_run
 import strive.shared.generated.resources.tab_food
+import strive.shared.generated.resources.food_later_title
+import strive.shared.generated.resources.food_log_later
 import se.carlsmeister.strive.boards.BOARD_SHOTS
 import se.carlsmeister.strive.boards.inEnglish
 import se.carlsmeister.strive.boards.clearLeftOverLanguage
@@ -740,6 +742,14 @@ class FlowTest {
         see(s(Res.string.no_workouts))
         tap(s(Res.string.start_a_workout))
         see(s(Res.string.what_today))
+    }
+
+    @Test
+    fun foodSaysNutritionComesLaterAndItsButtonGoesNowhere() = flow {
+        tap(s(Res.string.tab_food))
+        see(s(Res.string.food_later_title))
+        tap(s(Res.string.food_log_later))
+        see(s(Res.string.food_later_title))
     }
 
     @Test
