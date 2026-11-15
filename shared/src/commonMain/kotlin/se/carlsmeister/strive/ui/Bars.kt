@@ -69,12 +69,14 @@ internal fun NavBar(
                         horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(StriveIcons.Back, contentDescription = null, Modifier.size(22.dp), tint = colors.primary)
-                        Text(back, color = colors.primary, style = type.bodyLarge.copy(lineHeightStyle = CssLineBox), softWrap = false)
+                        Text(back, color = colors.primary, style = type.bodyLarge.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox),
+                            softWrap = false)
                     }
                 }
             },
             middle = {
-                Text(title, style = type.titleMedium.copy(lineHeightStyle = CssLineBox), textAlign = TextAlign.Center,
+                // `.nav h1`, `.back`, `.navtext`, `.lt h1` and `.wtb .mid` set `font:`, which resets `.strive`'s tabular-nums.
+                Text(title, style = type.titleMedium.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox), textAlign = TextAlign.Center,
                     maxLines = 1, overflow = TextOverflow.Ellipsis)
             },
             end = {
@@ -95,7 +97,7 @@ internal fun NavText(label: String, onClick: () -> Unit, modifier: Modifier = Mo
     ) {
         val style = if (bold) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodyLarge
         Text(label, color = if (dim) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
-            style = style.copy(lineHeightStyle = CssLineBox), softWrap = false)
+            style = style.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox), softWrap = false)
     }
 
 /** `.lt`, a root screen's large title (Home, Plan, You, the workout's name) with [actions] at the end. */
@@ -105,7 +107,8 @@ internal fun LargeTitle(title: String, modifier: Modifier = Modifier, actions: @
         modifier.padding(top = StriveTheme.spacing.s4),
         horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8), verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(title, Modifier.weight(1f), style = MaterialTheme.typography.headlineLarge.copy(lineHeightStyle = CssLineBox))
+        Text(title, Modifier.weight(1f),
+            style = MaterialTheme.typography.headlineLarge.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox))
         actions()
     }
 
@@ -146,11 +149,13 @@ internal fun WorkoutBar(
                     val (name, sub) = shown.value
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text(name.orEmpty(), Modifier.weight(1f, fill = false), style = type.titleMedium.copy(lineHeightStyle = CssLineBox),
+                            Text(name.orEmpty(), Modifier.weight(1f, fill = false),
+                                style = type.titleMedium.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox),
                                 maxLines = 1, overflow = TextOverflow.Ellipsis)
                             MorePill(stringResource(Res.string.workout_options), onMenu, small = true)
                         }
-                        if (sub != null) Text(sub, color = colors.onSurfaceVariant, style = type.bodyMedium.copy(lineHeightStyle = CssLineBox))
+                        if (sub != null) Text(sub, color = colors.onSurfaceVariant,
+                            style = type.bodyMedium.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox))
                     }
                 }
             },

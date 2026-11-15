@@ -43,9 +43,12 @@ internal fun SurfaceCard(
         modifier.background(colors.surface, if (large) ShapeLargeIncreased else MaterialTheme.shapes.large).padding(space.s16),
         verticalArrangement = Arrangement.spacedBy(space.s4),
     ) {
-        if (eyebrow != null) Text(eyebrow, color = colors.onSurfaceVariant, style = type.labelMedium.copy(lineHeightStyle = CssLineBox))
-        Text(title, color = colors.onSurface, style = titleStyle.copy(lineHeightStyle = CssLineBox))
-        if (meta != null) Text(meta, color = colors.onSurfaceVariant, style = type.bodyMedium.copy(lineHeightStyle = CssLineBox))
+        // `.card .eyebrow`, `.title` and `.meta` set `font:`, which resets `.strive`'s tabular-nums.
+        if (eyebrow != null) Text(eyebrow, color = colors.onSurfaceVariant,
+            style = type.labelMedium.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox))
+        Text(title, color = colors.onSurface, style = titleStyle.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox))
+        if (meta != null) Text(meta, color = colors.onSurfaceVariant,
+            style = type.bodyMedium.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox))
         if (action != null) Box(Modifier.padding(top = space.s12)) { action() }
     }
 }
@@ -60,7 +63,8 @@ internal fun StatTiles(stats: List<Stat>, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
     val type = MaterialTheme.typography
     val space = StriveTheme.spacing
-    val muted = type.labelMedium.copy(lineHeightStyle = CssLineBox)
+    // Each `.stat` rule sets `font:`, which resets `.strive`'s tabular-nums: the card's figures are proportional.
+    val muted = type.labelMedium.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox)
     Row(modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(space.s8)) {
         stats.forEach { stat ->
             Column(
@@ -71,11 +75,12 @@ internal fun StatTiles(stats: List<Stat>, modifier: Modifier = Modifier) {
                 Text(stat.key, color = colors.onSurfaceVariant, style = muted)
                 // `.v` never wraps: "64 min" overhangs its tile's padding, as on the card, rather than breaking.
                 Row(Modifier.wrapContentWidth(Alignment.Start, unbounded = true)) {
-                    val value = type.headlineSmall.copy(fontWeight = FontWeight(600), lineHeightStyle = CssLineBox) // 600 22/28
+                    // 600 22/28
+                    val value = type.headlineSmall.copy(fontWeight = FontWeight(600), fontFeatureSettings = null, lineHeightStyle = CssLineBox)
                     Text(stat.value, Modifier.alignByBaseline(), color = colors.onSurface, style = value, softWrap = false)
                     if (stat.unit != null) Text(
                         stat.unit, Modifier.padding(start = space.s4).alignByBaseline(), color = colors.onSurfaceVariant,
-                        style = type.titleMedium.copy(lineHeightStyle = CssLineBox), softWrap = false,
+                        style = type.titleMedium.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox), softWrap = false,
                     )
                 }
                 if (stat.sub != null) Text(stat.sub, color = colors.onSurfaceVariant, style = muted)

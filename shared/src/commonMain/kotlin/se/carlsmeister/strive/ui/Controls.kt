@@ -57,7 +57,9 @@ internal fun ChoiceChip(text: String, selected: Boolean, onClick: () -> Unit, mo
         contentAlignment = Alignment.Center,
     ) {
         val base = MaterialTheme.typography.bodyMedium
-        val style = base.copy(fontWeight = if (selected) FontWeight(600) else base.fontWeight, lineHeightStyle = CssLineBox)
+        // `.chip` sets `font:`, which resets `.strive`'s tabular-nums.
+        val weight = if (selected) FontWeight(600) else base.fontWeight
+        val style = base.copy(fontWeight = weight, fontFeatureSettings = null, lineHeightStyle = CssLineBox)
         Text(text, color = if (selected) colors.onPrimary else colors.onSurface, style = style, maxLines = 1, softWrap = false)
     }
 }
@@ -75,7 +77,8 @@ internal fun InputField(
     val shape = MaterialTheme.shapes.medium
     val ring = StriveTheme.borders.focus
     var focused by remember { mutableStateOf(false) }
-    val style = MaterialTheme.typography.bodyLarge.copy(color = colors.onSurface, lineHeightStyle = CssLineBox)
+    // `.field .in` sets `font:`, which resets `.strive`'s tabular-nums.
+    val style = MaterialTheme.typography.bodyLarge.copy(color = colors.onSurface, fontFeatureSettings = null, lineHeightStyle = CssLineBox)
     // A field that takes focus puts the caret after its text, as iOS does; the String overload would start it at 0.
     var edit by remember { mutableStateOf(TextFieldValue(value, TextRange(value.length))) }
     BasicTextField(
@@ -135,6 +138,7 @@ internal fun ToggleRow(text: String, checked: Boolean, onCheckedChange: (Boolean
         horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // `.between`'s text inherits `.strive`'s font untouched, so it keeps the theme's tabular figures.
         val style = MaterialTheme.typography.bodyLarge.copy(lineHeightStyle = CssLineBox)
         Text(text, Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurface, style = style)
         SwitchTrack(checked)

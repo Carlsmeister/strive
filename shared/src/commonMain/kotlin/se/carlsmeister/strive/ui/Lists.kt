@@ -77,7 +77,8 @@ internal fun ListRow(
             RowTone.Action -> colors.primary
             RowTone.Danger -> colors.error
         }
-        val style = MaterialTheme.typography.bodyLarge.copy(lineHeightStyle = CssLineBox)
+        // `.row` sets `font:`, which resets `.strive`'s tabular-nums; `.val` inherits the reset.
+        val style = MaterialTheme.typography.bodyLarge.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox)
         Text(text, Modifier.weight(1f), color = ink, style = style, textAlign = if (centered) TextAlign.Center else null)
         if (value != null || chevron) {
             Row(horizontalArrangement = Arrangement.spacedBy(space.s4), verticalAlignment = Alignment.CenterVertically) {
@@ -126,7 +127,8 @@ internal fun ListGroup(title: String, modifier: Modifier = Modifier, content: @C
     Column(modifier, verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
         Text(
             title, Modifier.padding(horizontal = StriveTheme.spacing.s16).semantics { heading() },
-            color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.titleSmall.copy(lineHeightStyle = CssLineBox),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.titleSmall.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox),
         )
         content()
     }

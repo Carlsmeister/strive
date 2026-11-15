@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsEnabled
@@ -26,17 +27,30 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import se.carlsmeister.strive.theme.LocalHighContrast
 import se.carlsmeister.strive.theme.StriveIcons
 import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.ui.Accent
+import se.carlsmeister.strive.ui.ActionButton
+import se.carlsmeister.strive.ui.ActionKind
+import se.carlsmeister.strive.ui.ChoiceChip
+import se.carlsmeister.strive.ui.InputField
+import se.carlsmeister.strive.ui.LargeTitle
+import se.carlsmeister.strive.ui.ListBlock
+import se.carlsmeister.strive.ui.ListGroup
+import se.carlsmeister.strive.ui.ListRow
+import se.carlsmeister.strive.ui.MomentTag
 import se.carlsmeister.strive.ui.MorePill
 import se.carlsmeister.strive.ui.NavBar
 import se.carlsmeister.strive.ui.NavText
 import se.carlsmeister.strive.ui.RoundButton
 import se.carlsmeister.strive.ui.RoundKind
+import se.carlsmeister.strive.ui.Stat
+import se.carlsmeister.strive.ui.StatTiles
+import se.carlsmeister.strive.ui.SurfaceCard
 import se.carlsmeister.strive.ui.Toggle
 import se.carlsmeister.strive.ui.ToggleRow
 import se.carlsmeister.strive.ui.WorkoutBar
@@ -174,5 +188,41 @@ class BoardShotTest {
             } } }
         }
         assertEquals(onNodeWithTag("plain").fetchSemanticsNode().size, onNodeWithTag("moment").fetchSemanticsNode().size)
+    }
+
+    /**
+     * Figures follow each card's cascade: a rule that sets `font:` resets `.strive`'s tabular-nums, so its text draws proportional
+     * figures (no card uses `.tnum`); a switch row's text inherits `.strive`'s font untouched and keeps them.
+     */
+    @Test
+    fun figuresAreProportionalWhereTheCardsFontShorthandResetsThem() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        setContent { StriveTheme { Column {
+            SurfaceCard("Push A 1", eyebrow = "Week 6 of 8", meta = "15 sets") { ActionButton("Start 2", {}, kind = ActionKind.Filled) }
+            StatTiles(listOf(Stat("Time 3", "64", unit = "min 4", sub = "goal 2–3")))
+            ListGroup("Account 5") { ListBlock(listOf { ListRow("Rest 6", value = "2:00") }) }
+            NavBar("Library 7", back = "Plan 8") { NavText("Edit 9", {}); NavText("Save 10", {}, bold = true) }
+            LargeTitle("Week 11")
+            WorkoutBar({}, {}, {}, title = "Push B 12", progress = "24:13 · 1/14 sets")
+            ActionButton("Show 13", {}, small = true)
+            ActionButton("Cancel 14", {}, kind = ActionKind.Text)
+            ChoiceChip("Pull 15", selected = true, onClick = {})
+            ChoiceChip("Press 16", selected = false, onClick = {})
+            InputField("Push A 17", {})
+            InputField("", {}, placeholder = "Search 553 exercises")
+            MomentTag("PR 82.5", Accent.Sun)
+            ToggleRow("Keep 18 awake", false, {})
+        } } }
+        fun features(text: String): String? {
+            val layouts = mutableListOf<TextLayoutResult>()
+            onNodeWithText(text, useUnmergedTree = true).fetchSemanticsNode().config[SemanticsActions.GetTextLayoutResult].action!!(layouts)
+            return layouts.single().layoutInput.style.fontFeatureSettings
+        }
+        val proportional = listOf(
+            "Week 6 of 8", "Push A 1", "15 sets", "Start 2", "Time 3", "64", "min 4", "goal 2–3", "Account 5", "Rest 6", "2:00",
+            "Library 7", "Plan 8", "Edit 9", "Save 10", "Week 11", "Push B 12", "24:13 · 1/14 sets", "Show 13", "Cancel 14",
+            "Pull 15", "Press 16", "Push A 17", "Search 553 exercises", "PR 82.5",
+        )
+        assertEquals(proportional.map { it to null }, proportional.map { it to features(it) })
+        assertEquals("tnum", features("Keep 18 awake"))
     }
 }

@@ -82,7 +82,9 @@ internal fun ActionButton(
         contentAlignment = Alignment.Center,
     ) {
         val style = if (bare) type.bodyLarge else if (small) type.titleSmall else type.labelLarge
-        Text(text, color = content, style = style.copy(lineHeightStyle = CssLineBox), textAlign = TextAlign.Center, softWrap = !small)
+        // `.btn`, `.btn.small` and `.btn.text` set `font:`, which resets `.strive`'s tabular-nums.
+        Text(text, color = content, style = style.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox),
+            textAlign = TextAlign.Center, softWrap = !small)
     }
 }
 
