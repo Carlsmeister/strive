@@ -2,7 +2,6 @@ package se.carlsmeister.strive.flows
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -10,7 +9,6 @@ import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SkikoComposeUiTest
-import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
@@ -29,22 +27,14 @@ import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
 import androidx.compose.ui.unit.Density
-import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.skia.EncodedImageFormat
-import org.jetbrains.skia.Image
-import platform.Foundation.NSData
-import platform.Foundation.NSFileManager
-import platform.Foundation.create
-import platform.Foundation.writeToFile
 import androidx.compose.runtime.CompositionLocalProvider
 import se.carlsmeister.strive.App
+import se.carlsmeister.strive.boards.savePng
 import se.carlsmeister.strive.theme.LocalDarkTheme
 import se.carlsmeister.strive.theme.LocalHighContrast
 import se.carlsmeister.strive.data.SetKind
@@ -138,6 +128,8 @@ import strive.shared.generated.resources.superset_create
 import strive.shared.generated.resources.superset_leave
 import strive.shared.generated.resources.superset_rest
 import androidx.compose.ui.graphics.Color
+import se.carlsmeister.strive.workout.wallClock
+import kotlin.time.Clock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -149,11 +141,14 @@ import kotlin.test.assertTrue
  */
 @OptIn(ExperimentalTestApi::class)
 class FlowTest {
-    private fun flow(graph: AppGraph = AppGraph(memoryDriver()), dark: Boolean? = null, highContrast: Boolean? = null, block: suspend Flow.() -> Unit) =
+    private fun flow(graph: AppGraph = AppGraph(memoryDriver()), dark: Boolean? = null, highContrast: Boolean? = null, block: suspend Flow.() -> Unit) {
+        // iOS runs every test class in one process: a clock another test left pinned would freeze this flow's rest timers.
+        check(wallClock === Clock.System) { "a test left the clock pinned" }
         runSkikoComposeUiTest(Size(1284f, 2778f), Density(3f)) {
             setContent { CompositionLocalProvider(LocalDarkTheme provides dark, LocalHighContrast provides highContrast) { App(graph) } }
             Flow(this, graph).block()
         }
+    }
 
     /** The whole workout in dark mode, for a person to look at: text that named no colour was black on black there (#42). */
     @Test
@@ -1200,13 +1195,7 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
     }
 
     /** A picture of the screen for a person to look at; the tests never compare them. */
-    @OptIn(ExperimentalForeignApi::class)
-    fun shot(name: String) {
-        test.waitForIdle()
-        val bytes = Image.makeFromBitmap(test.onAllNodes(isRoot())[0].captureToImage().asSkiaBitmap()).encodeToData(EncodedImageFormat.PNG)?.bytes ?: return
-        NSFileManager.defaultManager.createDirectoryAtPath(SHOTS, true, null, null)
-        bytes.usePinned { NSData.create(bytes = it.addressOf(0), length = bytes.size.toULong()).writeToFile("$SHOTS/$name.png", true) }
-    }
+    fun shot(name: String) = test.savePng(SHOTS, name)
 }
 
 // shortcut: screenshots go to a fixed folder outside the repo, for a person to read; pass a path from Gradle if CI should keep them.

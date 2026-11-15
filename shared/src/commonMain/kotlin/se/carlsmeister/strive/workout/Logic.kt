@@ -15,6 +15,7 @@ import se.carlsmeister.strive.data.WorkoutSet
 import se.carlsmeister.strive.library.kilos
 import kotlin.math.max
 import kotlin.math.roundToLong
+import kotlin.time.Clock
 import kotlin.time.Instant
 
 /** A keypad field's text (#17 K3). A field just opened is fresh: the first key replaces what it shows. */
@@ -177,7 +178,11 @@ internal fun clock(seconds: Long): String {
 internal fun grouped(n: Long, swedish: Boolean): String =
     n.toString().reversed().chunked(3).joinToString(if (swedish) " " else ",").reversed()
 
-internal fun now() = kotlin.time.Clock.System.now().toEpochMilliseconds()
+/** The clock [now] reads; a test pins it so every reading of the app moves at once (R10). */
+// shortcut: one process-wide clock a test pins; move it into AppGraph if two clocks ever need to differ.
+internal var wallClock: Clock = Clock.System
+
+internal fun now() = wallClock.now().toEpochMilliseconds()
 
 /** Ändra starttid: the same day at [hour]:[minute], never later than [now]. */
 internal fun withTime(at: Long, hour: Int, minute: Int, zone: TimeZone, now: Long): Long {

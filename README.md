@@ -7,7 +7,9 @@ sessions, GPS runs, and export of everything to Carl's own training log.
 text in Swedish and English (#31), themed from the design tokens and following the phone's dark
 mode, contrast, transparency and text size (#30), on a local database (#33). Built so far: the
 exercise library with 553 exercises (#41), and logging a workout from Start, with its summary
-and History (#42). Not yet: the rest timer, templates, hints, records, plates, programmes, runs
+and History (#42). The system layer from the approved design (#56) is built: moment accents,
+Unbounded for celebration numbers, 79 icons, buttons, cards, controls, lists and title bars. No
+screen uses it yet. Not yet: the rest timer, templates, hints, records, plates, programmes, runs
 and export. Home and Food are placeholders; Plan and Du only lead to the library and History.
 CI checks every pull request (#32). The design is prototyped in `docs/design/`.
 Beside those, this repository holds the plan: issue templates, the

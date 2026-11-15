@@ -10,13 +10,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.Density
 
-internal enum class Scheme(val colors: ColorScheme, val materials: StriveMaterials, val accents: StriveAccents) {
-    Light(lightColors, lightMaterials, lightAccents),
-    Dark(darkColors, darkMaterials, darkAccents),
-    LightHc(lightHcColors, lightHcMaterials, lightHcAccents),
-    DarkHc(darkHcColors, darkHcMaterials, darkHcAccents),
+internal enum class Scheme(
+    val colors: ColorScheme,
+    val materials: StriveMaterials,
+    val accents: StriveAccents,
+    val moments: StriveMoments,
+    val roles: StriveRoles,
+) {
+    Light(lightColors, lightMaterials, lightAccents, lightMoments, lightRoles),
+    Dark(darkColors, darkMaterials, darkAccents, darkMoments, darkRoles),
+    LightHc(lightHcColors, lightHcMaterials, lightHcAccents, lightHcMoments, lightHcRoles),
+    DarkHc(darkHcColors, darkHcMaterials, darkHcAccents, darkHcMoments, darkHcRoles),
 }
 
 internal fun scheme(dark: Boolean, highContrast: Boolean) = when {
@@ -32,6 +39,12 @@ internal fun glass(scheme: Scheme, reduceTransparency: Boolean): StriveMaterials
     val solid = scheme.colors.surface
     return StriveMaterials(regular = solid, thick = solid, edge = scheme.materials.edge, shadow = scheme.materials.shadow)
 }
+
+/**
+ * CSS's line box: half the leading above the first line and half below the last, as Material 3's own type default does. The
+ * generated StriveTypography stays trimmed, so built screens do not move until the whole theme decides; system-layer text copies this.
+ */
+internal val CssLineBox = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None)
 
 /** The phone's settings the theme follows beside light and dark. */
 internal data class Accessibility(
@@ -55,6 +68,8 @@ internal fun FixedTextSize(content: @Composable () -> Unit) =
 
 private val LocalGlass = staticCompositionLocalOf { lightMaterials }
 private val LocalAccents = staticCompositionLocalOf { lightAccents }
+private val LocalMoments = staticCompositionLocalOf { lightMoments }
+private val LocalRoles = staticCompositionLocalOf { lightRoles }
 
 /** Light or dark regardless of the phone, for the tests that look at both; null follows the phone. */
 internal val LocalDarkTheme = staticCompositionLocalOf<Boolean?> { null }
@@ -70,6 +85,8 @@ internal fun StriveTheme(content: @Composable () -> Unit) {
     CompositionLocalProvider(
         LocalGlass provides glass(scheme, settings.reduceTransparency),
         LocalAccents provides scheme.accents,
+        LocalMoments provides scheme.moments,
+        LocalRoles provides scheme.roles,
         LocalReduceMotion provides settings.reduceMotion,
     ) {
         MaterialTheme(colorScheme = scheme.colors, shapes = StriveShapes, typography = StriveTypography) {
@@ -88,12 +105,22 @@ internal object StriveTheme {
     val states = States()
     val glass: StriveMaterials @Composable get() = LocalGlass.current
     val accents: StriveAccents @Composable get() = LocalAccents.current
+    val moments: StriveMoments @Composable get() = LocalMoments.current
+    val roles: StriveRoles @Composable get() = LocalRoles.current
     /** Reduce Motion is on: what an animation does instead is the animating component's call. */
     val reduceMotion: Boolean @Composable get() = LocalReduceMotion.current
 }
 /**
- * Critically damped, response about 0.3 s: apple-motion's default for anything that moves into place. Not a token, since the
- * CSS prototypes have no springs, so it lives here rather than in the generated Tokens.kt.
+ * Critically damped, response about 0.3 s: apple-motion's default for anything that moves into place. Springs are not
+ * tokens: tokens.py emits none, so they live here beside win and calm rather than in the generated Tokens.kt.
  */
 internal fun <T> Motion.settle(visibilityThreshold: T? = null): SpringSpec<T> =
     spring(dampingRatio = 1f, stiffness = 400f, visibilityThreshold = visibilityThreshold)
+
+/** Design 2's win spring: about 20 % overshoot, settled in about 430 ms (moments.css). For a number landing, a ring closing. */
+internal fun <T> Motion.win(visibilityThreshold: T? = null): SpringSpec<T> =
+    spring(dampingRatio = 0.45f, stiffness = 420f, visibilityThreshold = visibilityThreshold)
+
+/** Design 1's release spring (design-1.md, polish 10): a little give, for calm transitions that are not a win. */
+internal fun <T> Motion.calm(visibilityThreshold: T? = null): SpringSpec<T> =
+    spring(dampingRatio = 0.6f, stiffness = 400f, visibilityThreshold = visibilityThreshold)

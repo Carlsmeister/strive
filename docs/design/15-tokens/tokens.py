@@ -66,7 +66,9 @@ SCHEMES = {
         "background": "#000000", "on-background": "#ffffff", "surface": "#1c1c1e", "on-surface": "#ffffff",
         "surface-variant": "#2c2c2e", "on-surface-variant": "#d1d1d6", "surface-tint": "#8aede3",
         "inverse-surface": "#ffffff", "inverse-on-surface": "#000000",
-        "error": "#ffd1cc", "on-error": "#000000", "error-container": "#ffd1cc", "on-error-container": "#000000",
+        # Design 1's polish 4: error is the destructive text, 7:1 on every container; the swipe slab is a red container
+        # with black on it (#ffd1cc for both read as a near-white slab).
+        "error": "#ffbdb6", "on-error": "#000000", "error-container": "#ff6961", "on-error-container": "#000000",
         "outline": "#aeaeb2", "outline-variant": "#7c7c80", "scrim": "#000000",
         "surface-bright": "#3a3a3c", "surface-dim": "#000000", "surface-container-lowest": "#000000", "surface-container-low": "#121214",
         "surface-container": "#1c1c1e", "surface-container-high": "#2c2c2e", "surface-container-highest": "#3a3a3c",
@@ -94,6 +96,44 @@ ACCENTS = {
     "dark-hc": {"failure": "#ffa088", "drop": "#d9a3ff", "superset": "#7cbeff"},
 }
 
+# The moments (design 2's warm accents, moments.css), only where something is won. An accent marks an edge, an icon or a
+# number on a surface role and never fills a card. Per accent: the edge and icon (3:1), the -text (4.5:1, 7:1 in -hc) and
+# the -wash a faint tint is mixed from. The -hc modes get no wash (tint 0 %) and a wider edge.
+MOMENTS = {
+    "light": {"sun": "#7f5a00", "sun-text": "#7f5a00", "sun-wash": "#ffc933",
+              "flame": "#b83c0a", "flame-text": "#b83c0a", "flame-wash": "#ff5a1f",
+              "lime": "#3d6b00", "lime-text": "#3d6b00", "lime-wash": "#8ed400"},
+    "dark": {"sun": "#ffd23f", "sun-text": "#ffd23f", "sun-wash": "#ffd23f",
+             "flame": "#ff6a2b", "flame-text": "#ff8a57", "flame-wash": "#ff6a2b",
+             "lime": "#b8f23d", "lime-text": "#c4f55c", "lime-wash": "#b8f23d"},
+    "light-hc": {"sun": "#5e4200", "sun-text": "#5e4200", "sun-wash": "#ffd23f",
+                 "flame": "#7a2500", "flame-text": "#7a2500", "flame-wash": "#ff7a45",
+                 "lime": "#2c4f00", "lime-text": "#2c4f00", "lime-wash": "#8ed400"},
+    "dark-hc": {"sun": "#ffe07a", "sun-text": "#ffe38a", "sun-wash": "#ffe07a",
+                "flame": "#ff8a57", "flame-text": "#ffc4a6", "flame-wash": "#ff8a57",
+                "lime": "#ccff70", "lime-text": "#d6ff8a", "lime-wash": "#ccff70"},
+}
+MOMENT_TINT = {"light": "14%", "dark": "12%", "light-hc": "0%", "dark-hc": "0%"}
+MOMENT_EDGE = {"light": "1.5px", "dark": "1.5px", "light-hc": "2px", "dark-hc": "2px"}
+
+# Design 1's roles, derived from the schemes rather than typed: the next set's row is the scheme's teal at a low alpha, a
+# run's route is the teal, and the Dynamic Island, always dark, takes the dark scheme's primary and tertiary in every mode.
+NEXT_ROW_ALPHA = {"light": ".1", "dark": ".12", "light-hc": ".12", "dark-hc": ".14"}
+
+
+def rgb(hex_colour, alpha):
+    """'#40c8bd', '.12' as 'rgb(64 200 189 / .12)'."""
+    return f"rgb({' '.join(str(int(hex_colour[i:i + 2], 16)) for i in (1, 3, 5))} / {alpha})"
+
+
+def derived_roles(scheme):
+    primary, island = SCHEMES[scheme]["primary"], SCHEMES["dark-hc" if scheme.endswith("-hc") else "dark"]
+    return {"state-next-row": rgb(primary, NEXT_ROW_ALPHA[scheme]), "map-route": primary,
+            "island-primary": island["primary"], "island-tertiary": island["tertiary"]}
+
+
+ROLES = {scheme: derived_roles(scheme) for scheme in SCHEMES}
+
 # Apple's text styles under Material 3's names (Q4): weight, size and line height in points.
 TYPE = {
     "display-large": (600, 56, 60), "display-medium": (600, 44, 48), "display-small": (600, 34, 41),
@@ -104,7 +144,7 @@ TYPE = {
 }
 SPACE = [4, 8, 12, 16, 20, 24, 32, 40, 48]
 BLUR = "24px"
-SHAPE = {"extra-small": "6px", "small": "10px", "medium": "12px", "large": "16px", "extra-large": "28px", "full": "9999px"}
+SHAPE = {"extra-small": "6px", "small": "10px", "medium": "12px", "large": "16px", "large-increased": "20px", "extra-large": "28px", "full": "9999px"}
 
 # Component values from strive#16, all Strive's own. Sizes: the 44-point tap area Apple asks for, icons, the rest timer's ring.
 SIZE = {"touch": "44px", "icon": "24px", "ring-small": "64px"}
@@ -127,8 +167,14 @@ PAIRS += [("primary", s) for s in ["background", "surface", "surface-container-h
 PAIRS += [(f"on-{r}-fixed{v}", f"{r}-fixed{d}") for r in ["primary", "secondary", "tertiary"] for v in ["", "-variant"] for d in ["", "-dim"]]
 # Accents colour text and badges on rows (background, surface) and on the set badge (surface-container-high).
 ACCENT_PAIRS = [(f"accent-{a}", s) for a in ACCENTS["light"] for s in ["background", "surface", "surface-container-high"]]
+# A moment never sits on surface-dim (no rule in bundle.css or moments.css uses it); with it, three text pairs would miss:
+# light m-flame-text 4.17:1, light-hc m-sun-text 6.81:1 and m-lime-text 6.91:1.
+MOMENT_SURFACES = [s for s in SURFACES if s != "surface-dim"]
+MOMENT_ACCENTS = [k for k in MOMENTS["light"] if "-" not in k]
+MOMENT_PAIRS = [(f"m-{a}-text", s) for a in MOMENT_ACCENTS for s in MOMENT_SURFACES]
 # Borders and icons need 3:1 against what they sit on (WCAG 1.4.11).
 NON_TEXT = [("outline", "surface"), ("outline", "background")]
+NON_TEXT += [(f"m-{a}", s) for a in MOMENT_ACCENTS for s in MOMENT_SURFACES]
 
 
 def luminance(hex_colour):
@@ -143,8 +189,9 @@ def contrast(a, b):
 
 
 def colours(scheme):
-    """A scheme's roles with its accents beside them as accent-*, so a pair can name either."""
-    return {**SCHEMES[scheme], **{f"accent-{k}": v for k, v in ACCENTS[scheme].items()}}
+    """A scheme's roles with its accents and moments beside them as accent-* and m-*, so a pair can name any."""
+    return {**SCHEMES[scheme], **{f"accent-{k}": v for k, v in ACCENTS[scheme].items()},
+            **{f"m-{k}": v for k, v in MOMENTS[scheme].items()}}
 
 
 def failures():
@@ -152,7 +199,7 @@ def failures():
     for name in SCHEMES:
         roles = colours(name)
         text_min = 7.0 if name.endswith("-hc") else 4.5
-        for pairs, minimum in [(PAIRS + ACCENT_PAIRS, text_min), (NON_TEXT, 3.0)]:
+        for pairs, minimum in [(PAIRS + ACCENT_PAIRS + MOMENT_PAIRS, text_min), (NON_TEXT, 3.0)]:
             for fg, bg in pairs:
                 ratio = contrast(roles[fg], roles[bg])
                 if ratio < minimum:
@@ -164,6 +211,9 @@ def block(selector, scheme, dark):
     lines = [f"  --color-{role}: {value};" for role, value in SCHEMES[scheme].items()]
     lines += [f"  --material-{key}: {value};" for key, value in MATERIALS[scheme].items()]
     lines += [f"  --accent-{key}: {value};" for key, value in ACCENTS[scheme].items()]
+    lines += [f"  --m-{key}: {value};" for key, value in MOMENTS[scheme].items()]
+    lines += [f"  --m-tint: {MOMENT_TINT[scheme]};", f"  --m-edge: {MOMENT_EDGE[scheme]};"]
+    lines += [f"  --{key}: {value};" for key, value in ROLES[scheme].items()]
     lines.append(f"  color-scheme: {'dark' if dark else 'light'};")
     return f"{selector} {{\n" + "\n".join(lines) + "\n}\n"
 
@@ -283,6 +333,18 @@ def kotlin():
                       [(camel(k), "Color", "Color.Unspecified") for k in ACCENTS["light"]]) + "\n")
     for scheme, a in ACCENTS.items():
         out.append(f"internal val {camel(scheme)}Accents = StriveAccents(" + ", ".join(f"{camel(k)} = Color({argb(v)})" for k, v in a.items()) + ")")
+    out.append("")
+    out.append(holder("StriveMoments", "Where something is won: an accent's edge and icon, its -text and the -wash a tint mixes from; tint 0 means no wash.",
+                      [(camel(k), "Color", "Color.Unspecified") for k in MOMENTS["light"]] + [("tint", "Float", "0f"), ("edge", "Dp", "0.dp")]) + "\n")
+    for scheme, m in MOMENTS.items():
+        values = [f"{camel(k)} = Color({argb(v)})" for k, v in m.items()]
+        values += [f"tint = {float(MOMENT_TINT[scheme].removesuffix('%')) / 100:g}f", f"edge = {dp(MOMENT_EDGE[scheme])}"]
+        out.append(f"internal val {camel(scheme)}Moments = StriveMoments(" + ", ".join(values) + ")")
+    out.append("")
+    out.append(holder("StriveRoles", "Design 1's roles: the next set's row, a run's route and the always-dark Dynamic Island's accents.",
+                      [(camel(k), "Color", "Color.Unspecified") for k in ROLES["light"]]) + "\n")
+    for scheme, r in ROLES.items():
+        out.append(f"internal val {camel(scheme)}Roles = StriveRoles(" + ", ".join(f"{camel(k)} = Color({argb(v)})" for k, v in r.items()) + ")")
     out += ["", f"internal val MaterialBlur: Dp = {dp(BLUR)}",
             f"internal val MaterialShadowOffsetY: Dp = {dp(shadow_y)}", f"internal val MaterialShadowRadius: Dp = {dp(shadow_radius)}", ""]
     out.append("// Numbers use tabular figures (strive#15, Q5); tnum changes digits only.")
@@ -290,10 +352,13 @@ def kotlin():
     out += [f'    {camel(r)} = TextStyle(fontWeight = FontWeight({w}), fontSize = {s}.sp, lineHeight = {h}.sp, fontFeatureSettings = "tnum"),'
             for r, (w, s, h) in TYPE.items()]
     out.append(")\n")
-    shapes = {k: v for k, v in SHAPE.items() if k != "full"}
+    # large-increased stays out of Shapes(...), so this file fills no Material slot newer than these five.
+    shapes = {k: v for k, v in SHAPE.items() if k not in ("full", "large-increased")}
     out.append("internal val StriveShapes = Shapes(")
     out += [f"    {camel(k)} = RoundedCornerShape({dp(v)})," for k, v in shapes.items()]
-    out += [")", "", "/** `full`: a pill, whatever the height. */", "internal val ShapeFull = RoundedCornerShape(percent = 50)", ""]
+    out += [")", "", "/** `full`: a pill, whatever the height. */", "internal val ShapeFull = RoundedCornerShape(percent = 50)", "",
+            "/** `large-increased`: the workout's cards and `.card.xl`. */",
+            f"internal val ShapeLargeIncreased = RoundedCornerShape({dp(SHAPE['large-increased'])})", ""]
     out.append(holder("Spacing", "The spacing scale in dp, `s16` for 16.", [(f"s{n}", "Dp", dp(n)) for n in SPACE]) + "\n")
     out.append(holder("Sizes", "Tap area, icon and the rest timer's ring.", [(camel(k), "Dp", dp(v)) for k, v in SIZE.items()]) + "\n")
     out.append(holder("Borders", "A list's hairline and a focused field's ring.", [(camel(k), "Dp", dp(v)) for k, v in BORDER.items()]) + "\n")
@@ -309,6 +374,10 @@ if __name__ == "__main__":
     assert all(len(roles) == 48 for roles in SCHEMES.values()), {n: len(r) for n, r in SCHEMES.items()}
     assert all(roles.keys() == SCHEMES["light"].keys() for roles in SCHEMES.values()), "every scheme needs the same roles"
     assert ACCENTS.keys() == SCHEMES.keys() and all(a.keys() == ACCENTS["light"].keys() for a in ACCENTS.values()), "every scheme needs the same accents"
+    assert MOMENTS.keys() == MOMENT_TINT.keys() == MOMENT_EDGE.keys() == SCHEMES.keys(), "every scheme needs its moments"
+    assert all(m.keys() == MOMENTS["light"].keys() for m in MOMENTS.values()), "every scheme needs the same moments"
+    assert ROLES.keys() == SCHEMES.keys() and all(r.keys() == ROLES["light"].keys() for r in ROLES.values()), "every scheme needs the same roles"
+    assert ROLES["dark"]["state-next-row"] == "rgb(64 200 189 / .12)", "design 1's tokens.css writes the dark next row so"
     assert argb("rgb(255 255 255 / .62)") == "0x9EFFFFFF" and argb("#08736c") == "0xFF08736C"
     assert easing("cubic-bezier(.3, 1.4, .5, 1)") == "CubicBezierEasing(.3f, 1.4f, .5f, 1f)"
     problems = failures()
@@ -317,8 +386,9 @@ if __name__ == "__main__":
     here = Path(__file__).parent
     (here / "tokens.css").write_text(css())
     pairs = [{"fg": fg, "bg": bg, "kind": kind, "ratio": {n: round(contrast(colours(n)[fg], colours(n)[bg]), 2) for n in SCHEMES}}
-             for kind, group in [("text", PAIRS + ACCENT_PAIRS), ("non-text", NON_TEXT)] for fg, bg in group]
-    data = {"schemes": SCHEMES, "materials": MATERIALS, "accents": ACCENTS, "type": TYPE, "space": SPACE, "shape": SHAPE,
+             for kind, group in [("text", PAIRS + ACCENT_PAIRS + MOMENT_PAIRS), ("non-text", NON_TEXT)] for fg, bg in group]
+    moments = {s: {**m, "tint": MOMENT_TINT[s], "edge": MOMENT_EDGE[s]} for s, m in MOMENTS.items()}
+    data = {"schemes": SCHEMES, "materials": MATERIALS, "accents": ACCENTS, "moments": moments, "roles": ROLES, "type": TYPE, "space": SPACE, "shape": SHAPE,
             "size": SIZE, "border": BORDER, "state": STATE, "motion": MOTION, "pairs": pairs}
     (here / "tokens.json").write_text(json.dumps(data, indent=1) + "\n")
     KOTLIN.parent.mkdir(parents=True, exist_ok=True)

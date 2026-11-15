@@ -359,3 +359,17 @@ class SupersetTest {
         assertEquals(slots(1L to null, 2L to null, 3L to 4L, 4L to 4L, 5L to null, 6L to null),
             tidy(slots(1L to 4L, 2L to null, 3L to 4L, 4L to 4L, 5L to null, 6L to 4L)))
 }
+
+class ProgressCountTest {
+    /** O-25: the progress line counts every set but warm-ups, so Push A at 24:13 reads 1 of 14 (design 1, polish 2). */
+    @Test
+    fun progressCountsEverySetButWarmUps() {
+        val sets = listOf(
+            WorkoutSet(1, done = true, kind = SetKind.Warmup), WorkoutSet(2, done = true), WorkoutSet(3),
+            WorkoutSet(4, done = true, kind = SetKind.Failure), WorkoutSet(5, kind = SetKind.Drop),
+        )
+        val skipped = SessionExercise(2, 2, "Skipped", ExerciseType.WeightReps, null, "", listOf(WorkoutSet(6, done = true)), skipped = true)
+        val w = Workout(1, "Push A", 0, null, "", null, listOf(SessionExercise(1, 1, "Bench Press BB", ExerciseType.WeightReps, null, "", sets), skipped))
+        assertEquals(2 to 4, w.countedLogged to w.countedSets)
+    }
+}
