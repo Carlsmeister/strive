@@ -597,8 +597,7 @@ private fun SupersetDialog(w: Workout, e: SessionExercise, onDone: () -> Unit) {
     val sessions = LocalAppGraph.current.sessions
     val scope = rememberCoroutineScope()
     AlertBox(onDone) {
-        Text(stringResource(Res.string.superset_create), Modifier.fillMaxWidth().padding(bottom = StriveTheme.spacing.s8),
-            style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+        Text(stringResource(Res.string.superset_create), Modifier.fillMaxWidth(), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
         for (other in w.exercises.filter { it.id != e.id && !it.skipped }) {
             Text(other.name, Modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium)
                 .clickable { scope.launch { sessions.superset(e.id, other.id) }; onDone() }

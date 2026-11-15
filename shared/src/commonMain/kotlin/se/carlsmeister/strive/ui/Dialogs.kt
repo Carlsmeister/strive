@@ -12,11 +12,11 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -42,12 +42,15 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -70,17 +73,24 @@ internal expect fun dialogWindow(scrim: Color): DialogProperties
  * The window every system dialog opens in (P6): Compose's Dialog, for modality, focus and back, filling the screen so its content
  * places its own panel. A tap on the scrim is [onDismiss]. The panels' glass blurs the screen's haze source ([LocalGlassSource],
  * which reaches into the window), provided that source paints its own background.
+ *
+ * The content ends above the keyboard by its own `imePadding`, not the window's: that consumes the keyboard's inset, so a sheet's
+ * navigation-bar padding under it shrinks to nothing instead of adding the home indicator's height above the keyboard.
  */
 @Composable
 private fun DialogWindow(onDismiss: () -> Unit, content: @Composable BoxScope.() -> Unit) =
     Dialog(onDismiss, dialogWindow(Color.Black.copy(alpha = StriveTheme.states.scrimOpacity))) {
         val dismiss by rememberUpdatedState(onDismiss)
-        Box(Modifier.fillMaxSize()) {
-            // Under the panel, as its sibling, so a tap on the panel never reaches it.
+        Box(Modifier.fillMaxSize().imePadding()) {
+            // Under the panel, as its sibling: Compose passes a tap on to the next sibling down unless the one above records a hit,
+            // so every panel records one (Modifier.panel) and only a tap beside it reaches this.
             Spacer(Modifier.matchParentSize().pointerInput(Unit) { detectTapGestures { dismiss() } })
             content()
         }
     }
+
+/** A panel in a dialog window records the hit of a tap on it, even where nothing in it acts, so the tap never reaches the scrim. */
+private fun Modifier.panel() = pointerInput(Unit) {}
 
 /** A sheet's entrance: it rises from below on `Motion.settle`, or fades in under Reduce Motion. */
 @Composable
@@ -99,7 +109,7 @@ internal fun AlertBox(onDismiss: () -> Unit, content: @Composable ColumnScope.()
 /** `.alert.glass.thick`: 290 dp of thick glass, 28 dp corners, 20 dp padding, its parts 8 dp apart and centred. */
 @Composable
 private fun AlertFrame(modifier: Modifier, content: @Composable ColumnScope.() -> Unit) = Column(
-    modifier.testTag("glass-alert").width(290.dp)
+    modifier.testTag("glass-alert").width(290.dp).panel()
         .glass(LocalGlassSource.current, StriveTheme.glass, thick = true, shape = MaterialTheme.shapes.extraLarge).padding(StriveTheme.spacing.s20),
     verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8),
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -135,18 +145,36 @@ internal fun TextPrompt(title: String, initial: String, onSave: (String) -> Unit
 @Composable
 private fun AlertText(text: String, style: TextStyle) = Text(text, Modifier.fillMaxWidth(), style = style.css(), textAlign = TextAlign.Center)
 
-/** `.alert .acts`: Cancel and [confirm] side by side, equal, 8 dp apart and 8 dp further down. */
+/**
+ * `.alert .acts`, 8 dp further down: Cancel and [confirm] side by side, equal and 8 dp apart. When either label would not fit its
+ * half on one line, measured, it is `.acts.stack`: both full width, 8 dp apart, [confirm] first and Cancel under it (no board draws
+ * the stacked order).
+ */
 @Composable
-private fun AlertActions(confirm: String, color: Color, onConfirm: () -> Unit, onCancel: () -> Unit) =
-    Row(Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s8), horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
+private fun AlertActions(confirm: String, color: Color, onConfirm: () -> Unit, onCancel: () -> Unit) = Layout(
+    {
         AlertButton(stringResource(Res.string.cancel), MaterialTheme.colorScheme.primary, onCancel)
         AlertButton(confirm, color, onConfirm)
+    },
+    Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s8),
+) { (cancel, ok), constraints ->
+    val gap = StriveTheme.spacing.s8.roundToPx()
+    val width = constraints.maxWidth
+    val half = (width - gap) / 2
+    fun Measurable.at(w: Int) = measure(constraints.copy(minWidth = w, maxWidth = w, minHeight = 0))
+    if (maxOf(cancel.maxIntrinsicWidth(Constraints.Infinity), ok.maxIntrinsicWidth(Constraints.Infinity)) <= half) {
+        val (c, o) = cancel.at(half) to ok.at(half)
+        layout(width, maxOf(c.height, o.height)) { c.placeRelative(0, 0); o.placeRelative(width - half, 0) }
+    } else {
+        val (o, c) = ok.at(width) to cancel.at(width)
+        layout(width, o.height + gap + c.height) { o.placeRelative(0, 0); c.placeRelative(0, o.height + gap) }
     }
+}
 
 /** `.btn` in `.acts`: at least 44 dp, 16 dp corners, surface-container-high, title-small. */
 @Composable
-private fun RowScope.AlertButton(label: String, color: Color, onClick: () -> Unit) = Box(
-    Modifier.weight(1f).pressable(true, onClick).background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.large)
+private fun AlertButton(label: String, color: Color, onClick: () -> Unit) = Box(
+    Modifier.pressable(true, onClick).background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.large)
         .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = StriveTheme.spacing.s16),
     contentAlignment = Alignment.Center,
 ) { Text(label, color = color, style = MaterialTheme.typography.titleSmall.css(), textAlign = TextAlign.Center) }
@@ -173,10 +201,10 @@ internal fun ActionSheetPanel(header: String, actions: List<SheetAction>, cancel
         SheetBlock { SheetRow(cancel, colors.primary, type.labelLarge, 56.dp, onClick = onDismiss) }
     }
 
-/** `.asheet .list`: 16 dp corners, thick and blurred, with no edge or shadow. */
+/** `.asheet .list`: 16 dp corners, thick and blurred, with no edge or shadow. A tap in the 8 dp between two blocks is the scrim's. */
 @Composable
 private fun SheetBlock(content: @Composable ColumnScope.() -> Unit) =
-    Column(Modifier.fillMaxWidth().clip(MaterialTheme.shapes.large).glass(LocalGlassSource.current, StriveTheme.glass, thick = true), content = content)
+    Column(Modifier.fillMaxWidth().panel().clip(MaterialTheme.shapes.large).glass(LocalGlassSource.current, StriveTheme.glass, thick = true), content = content)
 
 /**
  * `.asheet .row`: centred text, padding 12/16, at least [minHeight]. [line] is `.row + .row::after`, a hairline from 16 dp to the
@@ -215,7 +243,7 @@ internal fun HeaderSheet(
 ) = DialogWindow(onDismiss) {
     val space = StriveTheme.spacing
     Column(
-        Modifier.align(Alignment.BottomCenter).rise().fillMaxWidth().glass(LocalGlassSource.current, StriveTheme.glass, thick = true, shape = SheetShape)
+        Modifier.align(Alignment.BottomCenter).rise().fillMaxWidth().panel().glass(LocalGlassSource.current, StriveTheme.glass, thick = true, shape = SheetShape)
             .padding(start = space.s16, top = space.s8, end = space.s16).navigationBarsPadding().padding(bottom = space.s16),
         verticalArrangement = Arrangement.spacedBy(space.s12),
     ) {

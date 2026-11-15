@@ -25,6 +25,8 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToString
 import androidx.compose.ui.test.isRoot
+import androidx.compose.ui.test.onLast
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
@@ -49,6 +51,7 @@ import se.carlsmeister.strive.data.fileDriver
 import se.carlsmeister.strive.data.memoryDriver
 import se.carlsmeister.strive.db.StriveDatabase
 import strive.shared.generated.resources.Res
+import strive.shared.generated.resources.exercise_settings
 import strive.shared.generated.resources.add_count
 import strive.shared.generated.resources.add_exercises
 import strive.shared.generated.resources.add_set
@@ -581,6 +584,61 @@ class FlowTest {
         tap(s(Res.string.cancel))
         gone(hasText(s(Res.string.discard_question)))
         open()
+    }
+
+    /** A tap on a prompt's title is a tap on its panel, not on the scrim: the prompt stays open with what was typed. */
+    @Test
+    fun aTapOnAPromptsTitleKeepsWhatWasTyped() = flow {
+        startWorkout()
+        tap(s(Res.string.workout))
+        tap(s(Res.string.rename))
+        type("Push A")
+        tapOnText(s(Res.string.rename))
+        assertTrue(test.onAllNodes(hasSetTextAction() and hasText("Push A")).fetchSemanticsNodes().isNotEmpty(), "the prompt, still holding Push A")
+    }
+
+    /** A tap on a header sheet's title leaves the sheet open, its choice unsaved but still chosen. */
+    @Test
+    fun aTapOnASheetsTitleKeepsItsChoice() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.exercise_settings))
+        tapSegment("5")
+        tapOnText(s(Res.string.exercise_settings))
+        test.onAllNodes(hasText("5") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)).onLast().assertIsSelected()
+    }
+
+    /** A tap on an action sheet's header row leaves the sheet open. */
+    @Test
+    fun aTapOnAnActionSheetsHeaderKeepsItOpen() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        tap(s(Res.string.finish))
+        val header = getPluralString(Res.plurals.unlogged, 1, 1)
+        see(header)
+        tapOnText(header)
+        assertTrue(test.onAllNodes(hasText(s(Res.string.keep_going))).fetchSemanticsNodes().isNotEmpty(), "the sheet, still open")
+    }
+
+    /** In the simulator's language, the discard alert's two labels are each one line and inside their buttons: stacked if need be. */
+    @Test
+    fun theDiscardAlertsLabelsStayOnOneLine() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        tap(s(Res.string.discard_workout))
+        see(s(Res.string.discard_question))
+        val inAlert = hasAnyAncestor(hasTestTag("glass-alert"))
+        for (label in listOf(s(Res.string.cancel), s(Res.string.discard_workout))) {
+            val text = test.onNode(hasText(label) and inAlert, useUnmergedTree = true).fetchSemanticsNode()
+            val layouts = mutableListOf<TextLayoutResult>()
+            text.config[SemanticsActions.GetTextLayoutResult].action!!(layouts)
+            val button = test.onNode(hasText(label) and hasClickAction() and inAlert).fetchSemanticsNode().boundsInRoot
+            // Its drawn height, not the layout's line count: the layout the action hands back measured the label at its widest.
+            val oneLine = layouts.single().layoutInput.let { with(it.density) { it.style.lineHeight.toPx() } }
+            assertTrue(text.boundsInRoot.height <= oneLine + 1, "'$label' one line (${oneLine}px) tall: ${text.boundsInRoot}")
+            assertTrue(text.boundsInRoot.width <= button.width, "'$label' (${text.boundsInRoot}) inside its button ($button)")
+        }
     }
 
     @Test
@@ -1399,6 +1457,12 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
     fun tapContaining(text: String) = tapLast(hasText(text, substring = true) and hasClickAction() and !hasSetTextAction())
 
     fun tapDesc(desc: String) = tapLast(hasContentDescription(desc))
+
+    /** A tap where [text] is drawn, on something that is not a button: the last such text, as what is drawn last lies on top. */
+    fun tapOnText(text: String) {
+        test.onAllNodes(hasText(text) and !hasClickAction()).onLast().performTouchInput { click() }
+        test.waitForIdle()
+    }
 
     fun tapDescContaining(text: String) = tapLast(descContains(text))
 
