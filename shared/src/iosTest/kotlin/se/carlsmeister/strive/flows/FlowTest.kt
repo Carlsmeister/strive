@@ -93,6 +93,11 @@ import strive.shared.generated.resources.close_start
 import strive.shared.generated.resources.start_run
 import strive.shared.generated.resources.tab_food
 import se.carlsmeister.strive.boards.BOARD_SHOTS
+import se.carlsmeister.strive.boards.inEnglish
+import strive.shared.generated.resources.next_screen
+import androidx.compose.runtime.DisposableEffect
+import androidx.navigationevent.DirectNavigationEventInput
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import strive.shared.generated.resources.tab_home
 import strive.shared.generated.resources.tab_plan
 import strive.shared.generated.resources.tab_start
@@ -159,12 +164,19 @@ class FlowTest {
         // iOS runs every test class in one process: a clock another test left pinned would freeze this flow's rest timers.
         check(wallClock === Clock.System) { "a test left the clock pinned" }
         runSkikoComposeUiTest(Size(1284f, 2778f), Density(3f)) {
+            val back = DirectNavigationEventInput()
             setContent {
+                // The system's back, as a gesture or button sends it, through the host's own dispatcher.
+                val dispatcher = LocalNavigationEventDispatcherOwner.current!!.navigationEventDispatcher
+                DisposableEffect(dispatcher) {
+                    dispatcher.addInput(back)
+                    onDispose { dispatcher.removeInput(back) }
+                }
                 CompositionLocalProvider(LocalDarkTheme provides dark, LocalHighContrast provides highContrast, LocalReduceMotionSetting provides reduceMotion) {
                     App(graph)
                 }
             }
-            Flow(this, graph).block()
+            Flow(this, graph, back).block()
         }
     }
 
@@ -577,10 +589,8 @@ class FlowTest {
     fun aLongNameEndsInAnEllipsisUnderTheContinueBubble() = flow {
         startWorkout()
         val name = "Överkropp tung med extra armar och lite till för säkerhets skull"
-        // Minimised before the rename: on the empty workout the name in the title bar squeezes ⌄ to nothing, a bug of its own.
-        tapDesc(s(Res.string.minimise)); bar()
         graph.sessions.rename(open().id, name)
-        see(name.take(10), substring = true)
+        tapDesc(s(Res.string.minimise)); bar()
         tapDesc(s(Res.string.tab_start))
         val label = test.onNode(hasText(name.take(10), substring = true) and hasAnyAncestor(hasTestTag("start-bubbles"))).fetchSemanticsNode().boundsInRoot
         val root = test.onAllNodes(isRoot())[0].fetchSemanticsNode().boundsInRoot
@@ -653,9 +663,12 @@ class FlowTest {
         return early.zip(settled) { a, b -> (a - b).getDistance() }.max()
     }
 
-    /** MO-start's three key frames, 0, 120 and 470 ms after Start's tap, at the flow tests' size: compared by eye with the motion board (P11). */
+    /**
+     * MO-start's three key frames, 0, 120 and 470 ms after Start's tap, at the flow tests' size: compared by eye with the motion board
+     * (P11), so drawn in English as the board is.
+     */
     @Test
-    fun moStartFramesInDarkAndDarkHc() {
+    fun moStartFramesInDarkAndDarkHc() = inEnglish {
         for ((highContrast, mode) in listOf(false to "dark", true to "dark-hc")) flow(dark = true, highContrast = highContrast) {
             test.mainClock.autoAdvance = false
             test.onNode(hasContentDescription(s(Res.string.tab_start))).performClick()
@@ -664,8 +677,58 @@ class FlowTest {
             test.savePng(BOARD_SHOTS, "MO-start-120-$mode")
             test.mainClock.advanceTimeBy(350)
             test.savePng(BOARD_SHOTS, "MO-start-470-$mode")
+            seeDesc(s(Res.string.bubble_empty_desc)); seeDesc(s(Res.string.start_run))
             test.mainClock.autoAdvance = true
         }
+    }
+
+    @Test
+    fun aDoubleTapOnContinueOpensTheWorkoutOnce() = flow {
+        startWorkout()
+        tapDesc(s(Res.string.minimise)); bar()
+        tapDesc(s(Res.string.tab_start))
+        test.onNode(descContains(s(Res.string.bubble_continue))).performTouchInput { click(); click() }
+        see(s(Res.string.what_today))
+        tapDesc(s(Res.string.minimise))
+        gone(hasContentDescription(s(Res.string.minimise)))   // a second copy of the workout would still show
+        bar()
+    }
+
+    @Test
+    fun aDoubleTapOnRunOpensItOnce() = flow {
+        tapDesc(s(Res.string.tab_start))
+        test.onNode(hasContentDescription(s(Res.string.start_run))).performTouchInput { click(); click() }
+        see(s(Res.string.close)); tap(s(Res.string.close))
+        gone(hasText(s(Res.string.close)))   // a second run page would still show
+        seeDesc(s(Res.string.tab_start))
+    }
+
+    @Test
+    fun aTapOnABubblesLabelActsAsTheBubble() = flow {
+        tapDesc(s(Res.string.tab_start))
+        test.onNode(hasText(s(Res.string.start_run)) and hasAnyAncestor(hasTestTag("start-bubbles"))).performClick()
+        see(s(Res.string.close))
+    }
+
+    @Test
+    fun aTapOnThePanelBetweenTheBubblesLeavesStartOpen() = flow {
+        tapDesc(s(Res.string.tab_start))
+        val empty = centre(s(Res.string.bubble_empty_desc))
+        val run = centre(s(Res.string.start_run))
+        test.onAllNodes(isRoot())[0].performTouchInput { click(Offset((empty.x + run.x) / 2, empty.y)) }
+        test.waitForIdle()
+        seeDesc(s(Res.string.bubble_empty_desc)); seeDesc(s(Res.string.close_start))
+    }
+
+    @Test
+    fun backClosesStartAndLeavesTheTabWhereItWas() = flow {
+        tap(s(Res.string.next_screen))
+        val second = "${s(Res.string.tab_home)} 2"
+        see(second)
+        tapDesc(s(Res.string.tab_start)); seeDesc(s(Res.string.bubble_empty_desc))
+        back()
+        gone(hasContentDescription(s(Res.string.bubble_empty_desc)))
+        see(second)
     }
 
     @Test
@@ -1204,7 +1267,13 @@ private fun descContains(text: String) = SemanticsMatcher("description contains 
 
 /** The steps a person takes and what they check, in the words of the app. */
 @OptIn(ExperimentalTestApi::class)
-private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
+private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private val backInput: DirectNavigationEventInput) {
+    /** The system's back: a completed back gesture. */
+    fun back() {
+        test.runOnIdle { backInput.backCompleted() }
+        test.waitForIdle()
+    }
+
     suspend fun s(res: StringResource, vararg args: Any) = getString(res, *args)
 
     suspend fun open(): Workout = graph.sessions.open().first()!!

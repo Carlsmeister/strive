@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.layout.Layout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -415,22 +416,20 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
     val alpha by animateFloatAsState(if (showTitle) 1f else 0f, Motion.fade())
     val colors = MaterialTheme.colorScheme
     Column(Modifier.fillMaxWidth().background(if (glassed) StriveTheme.glass.thick else colors.background)) {
-        Row(
-            Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
-                .padding(start = 12.dp, end = 12.dp, bottom = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                IconTarget(stringResource(Res.string.minimise), onMinimise) { Glyph(Glyph.Down, 22.dp, stroke = 2.2f, color = colors.onSurface) }
-                RestButton(onRest)
-            }
-            Column(Modifier.alpha(alpha), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                if (alpha > 0f) {
-                    WorkoutMenu(w, large = false, nowMs = nowMs)
-                    Text(progress(w, nowMs), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+        // `.nav`'s `1fr auto 1fr`: the buttons keep their size and the name, centred, takes the room left between the wider side
+        // and its mirror, ending in an ellipsis. In a Row the unweighted name was measured first and squeezed the buttons to nothing.
+        Layout(
+            content = {
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    IconTarget(stringResource(Res.string.minimise), onMinimise) { Glyph(Glyph.Down, 22.dp, stroke = 2.2f, color = colors.onSurface) }
+                    RestButton(onRest)
                 }
-            }
-            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
+                Column(Modifier.alpha(alpha), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    if (alpha > 0f) {
+                        WorkoutMenu(w, large = false, nowMs = nowMs)
+                        Text(progress(w, nowMs), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                    }
+                }
                 val all = w.sets > 0 && w.logged == w.sets
                 Box(Modifier.height(StriveTheme.sizes.touch), contentAlignment = Alignment.Center) {
                     Btn(onFinish, Modifier.height(40.dp), container = if (all) colors.primary else colors.surfaceContainerHigh,
@@ -438,6 +437,20 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
                         Text(stringResource(Res.string.finish), Modifier.padding(horizontal = 16.dp), style = MaterialTheme.typography.titleSmall)
                     }
                 }
+            },
+            modifier = Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
+                .padding(start = 12.dp, end = 12.dp, bottom = 6.dp),
+        ) { (start, name, end), constraints ->
+            val loose = constraints.copy(minWidth = 0, minHeight = 0)
+            val left = start.measure(loose)
+            val right = end.measure(loose)
+            val side = maxOf(left.width, right.width)
+            val middle = name.measure(loose.copy(maxWidth = (constraints.maxWidth - 2 * side).coerceAtLeast(0)))
+            val height = maxOf(left.height, middle.height, right.height)
+            layout(constraints.maxWidth, height) {
+                left.place(0, (height - left.height) / 2)
+                middle.place((constraints.maxWidth - middle.width) / 2, (height - middle.height) / 2)
+                right.place(constraints.maxWidth - right.width, (height - right.height) / 2)
             }
         }
         if (glassed && hairline) HorizontalDivider(thickness = 0.5.dp, color = colors.outlineVariant)

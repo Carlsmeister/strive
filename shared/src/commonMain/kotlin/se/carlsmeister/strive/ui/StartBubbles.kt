@@ -8,6 +8,11 @@ import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -105,8 +110,16 @@ internal fun Bubble(item: BubbleItem, modifier: Modifier = Modifier) = FixedText
         val glow = Shadow(colors.background, blurRadius = with(LocalDensity.current) { 6.dp.toPx() })
         val small = MaterialTheme.typography.labelSmall.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox, shadow = glow)
         val label = small.copy(fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight(600))
-        Text(item.label, Modifier.padding(top = 6.dp), colors.onSurface, style = label, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        item.sub?.let { Text(it, color = colors.onSurfaceVariant, style = small, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+        // The label is inside `.bub`'s link, so a tap on it is the bubble's; a pointer handler, not a click, keeps the bubble's one
+        // description and action on the circle.
+        val onClick by rememberUpdatedState(item.onClick)
+        Column(
+            Modifier.padding(top = 6.dp).pointerInput(Unit) { detectTapGestures { onClick() } },
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(item.label, color = colors.onSurface, style = label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            item.sub?.let { Text(it, color = colors.onSurfaceVariant, style = small, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+        }
     }
 }
 
@@ -152,13 +165,21 @@ internal fun StartBubbles(
         ) { if (it) 1f else 0f }
     }
     val centres = bubbleCentres(shown.size, lift)
+    // One act per opening: a tap during the close, even a second tap in the same frame as the first, does nothing.
+    val acted = remember(open) { mutableStateOf(!open) }
+    fun act(action: () -> Unit) {
+        if (acted.value) return
+        acted.value = true
+        action()
+    }
     Box(modifier.fillMaxSize().testTag("start-bubbles")) {
-        // `.scrim.clear`: a tap anywhere off a bubble closes Start.
-        Box(Modifier.fillMaxSize().clickable(null, null, onClickLabel = closeLabel, onClick = onDismiss))
+        // `.scrim.clear`: a tap anywhere off the panel closes Start; gone as Start closes, so the screen behind takes taps again.
+        if (open) Box(Modifier.fillMaxSize().clickable(null, null, onClickLabel = closeLabel) { act(onDismiss) })
         Layout(
             content = {
                 BubblePanel(
-                    Modifier.graphicsLayer {
+                    // The panel lies over the scrim, as on the board: a tap on it, between the bubbles, does nothing.
+                    Modifier.pointerInput(Unit) { detectTapGestures { } }.graphicsLayer {
                         val p = panel.value
                         alpha = p.coerceIn(0f, 1f)
                         // Faded per drawing, not offscreen: an offscreen layer cuts the shadow off at the layer's edge.
@@ -172,7 +193,7 @@ internal fun StartBubbles(
                 )
                 shown.forEachIndexed { i, item ->
                     Bubble(
-                        item,
+                        BubbleItem(item.icon, item.label, item.sub, item.filled, item.description) { act(item.onClick) },
                         Modifier.graphicsLayer {
                             val p = bubbles[i].value
                             alpha = p.coerceIn(0f, 1f)

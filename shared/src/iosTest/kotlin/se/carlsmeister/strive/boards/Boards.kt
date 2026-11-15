@@ -54,11 +54,7 @@ internal fun boardShots(
     reduceTransparency: Boolean = false,
     arrange: suspend ComposeUiTest.(AppGraph) -> Unit = {},
     content: @Composable () -> Unit,
-) {
-    // Compose resources reads NSLocale.preferredLanguages, which follows AppleLanguages in this process.
-    val defaults = NSUserDefaults.standardUserDefaults
-    val languages = defaults.objectForKey(APPLE_LANGUAGES)
-    defaults.setObject(listOf("en"), APPLE_LANGUAGES)
+) = inEnglish {
     try {
         runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
             val graph = AppGraph(memoryDriver())
@@ -84,8 +80,23 @@ internal fun boardShots(
             }
         }
     } finally {
-        if (languages == null) defaults.removeObjectForKey(APPLE_LANGUAGES) else defaults.setObject(languages, APPLE_LANGUAGES)
         wallClock = Clock.System
+    }
+}
+
+/**
+ * Runs [block] with Compose resources resolving English, as the boards are drawn, then hands back the simulator's language.
+ * Compose resources reads NSLocale.preferredLanguages, which follows AppleLanguages; the app's own domain overrides the
+ * simulator's global one. Restoring removes the key rather than writing back what objectForKey read: that is the resolved
+ * value, and writing it pinned it in the app's persistent domain, so one run left every later run in English.
+ */
+internal fun <T> inEnglish(block: () -> T): T {
+    val defaults = NSUserDefaults.standardUserDefaults
+    defaults.setObject(listOf("en"), APPLE_LANGUAGES)
+    try {
+        return block()
+    } finally {
+        defaults.removeObjectForKey(APPLE_LANGUAGES)
     }
 }
 

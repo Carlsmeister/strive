@@ -172,10 +172,11 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
                 }
             }
         }.collectAsState(null)
+        // Pushed once, however many taps reach it (the bar, Continue, Start).
         fun showWorkout() {
             started = true
             leftOpen = null
-            root += ActiveWorkout
+            if (root.last() != ActiveWorkout) root += ActiveWorkout
         }
         val scope = rememberCoroutineScope()
         val name = stringResource(Res.string.workout)
@@ -186,7 +187,7 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
             scope.launch {
                 starting.withLock {
                     if (sessions.open().first() == null) sessions.start(name, now())
-                    if (root.last() != ActiveWorkout) showWorkout()
+                    showWorkout()
                 }
             }
         }
@@ -299,6 +300,8 @@ private fun TabsScreen(
                 )
             }
         }
+        // Back closes Start before it reaches the tab's stack; added after the tab's display, so it is asked first.
+        NavigationBackHandler(rememberNavigationEventState(NavigationEventInfo.None), isBackEnabled = startOpen, onBackCompleted = { startOpen = false })
         val items = startChoices(open != null).map { choice ->
             when (choice) {
                 StartChoice.Continue -> {
