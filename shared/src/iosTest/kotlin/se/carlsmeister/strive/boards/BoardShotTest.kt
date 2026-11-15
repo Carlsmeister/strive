@@ -93,6 +93,9 @@ class BoardShotTest {
     fun tabBarInDarkAndDarkHc() = boardShots("TabBar", DarkModes) { TabBarBoard() }
 
     @Test
+    fun startBubblesInDarkAndDarkHc() = boardShots("StartBubbles", DarkModes) { StartBubblesBoard() }
+
+    @Test
     fun titleBarsInDarkAndDarkHc() = boardShots("TitleBars", DarkModes, waitFor = "Push A") { TitleBarsBoard() }
 
     /** A board's `waitFor` names what it shows once arranged, so a text only `arrange` brings on screen is waited for, not timed out on. */

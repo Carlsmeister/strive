@@ -87,7 +87,12 @@ import strive.shared.generated.resources.save_change
 import strive.shared.generated.resources.save_without
 import strive.shared.generated.resources.session_note
 import strive.shared.generated.resources.start_a_workout
-import strive.shared.generated.resources.start_workout
+import strive.shared.generated.resources.bubble_continue
+import strive.shared.generated.resources.bubble_empty_desc
+import strive.shared.generated.resources.close_start
+import strive.shared.generated.resources.start_run
+import strive.shared.generated.resources.tab_food
+import se.carlsmeister.strive.boards.BOARD_SHOTS
 import strive.shared.generated.resources.tab_home
 import strive.shared.generated.resources.tab_plan
 import strive.shared.generated.resources.tab_start
@@ -529,9 +534,10 @@ class FlowTest {
         bar()
         shot("07-minimised")
         tapDesc(s(Res.string.tab_start))
-        // Two workouts cannot run at once: the sheet only continues this one.
-        gone(hasText(s(Res.string.start_workout)))
-        tapContaining(s(Res.string.workout))
+        // Two workouts cannot run at once: Start only continues this one.
+        gone(hasContentDescription(s(Res.string.bubble_empty_desc)))
+        gone(hasContentDescription(s(Res.string.start_run)))
+        tapDescContaining(s(Res.string.bubble_continue))
         see(s(Res.string.add_set), substring = true)
     }
 
@@ -565,6 +571,101 @@ class FlowTest {
         startWorkout()
         val short = barHeightAfterRenaming("Push A")
         assertEquals(short, barHeightAfterRenaming("Överkropp tung med extra armar och lite till för säkerhets skull"))
+    }
+
+    @Test
+    fun aLongNameEndsInAnEllipsisUnderTheContinueBubble() = flow {
+        startWorkout()
+        val name = "Överkropp tung med extra armar och lite till för säkerhets skull"
+        // Minimised before the rename: on the empty workout the name in the title bar squeezes ⌄ to nothing, a bug of its own.
+        tapDesc(s(Res.string.minimise)); bar()
+        graph.sessions.rename(open().id, name)
+        see(name.take(10), substring = true)
+        tapDesc(s(Res.string.tab_start))
+        val label = test.onNode(hasText(name.take(10), substring = true) and hasAnyAncestor(hasTestTag("start-bubbles"))).fetchSemanticsNode().boundsInRoot
+        val root = test.onAllNodes(isRoot())[0].fetchSemanticsNode().boundsInRoot
+        assertTrue(label.left >= root.left && label.right <= root.right, "$label inside $root")
+        assertTrue(label.width <= 160 * 3 + 1, "the label is capped at 160 dp")
+        assertTrue(label.height <= 13 * 3 + 1, "one line of label-small (13 dp), not wrapped")
+    }
+
+    /** Centre of the node with [desc], in px. */
+    private fun Flow.centre(desc: String) = test.onNode(hasContentDescription(desc)).fetchSemanticsNode().boundsInRoot.center
+
+    @Test
+    fun twoBubblesSitInTheArcOverStart() = flow {
+        tapDesc(s(Res.string.tab_start))
+        val start = centre(s(Res.string.close_start))
+        val empty = centre(s(Res.string.bubble_empty_desc))
+        val run = centre(s(Res.string.start_run))
+        // P2: (−47, −157) and (47, −157) dp from Start's centre, at density 3, within a pixel.
+        assertEquals(-141f, empty.x - start.x, 1f); assertEquals(-471f, empty.y - start.y, 1f)
+        assertEquals(141f, run.x - start.x, 1f); assertEquals(-471f, run.y - start.y, 1f)
+    }
+
+    @Test
+    fun aTapOutsideOrOnTheCrossClosesStart() = flow {
+        tapDesc(s(Res.string.tab_start)); seeDesc(s(Res.string.bubble_empty_desc))
+        test.onNode(clickLabel(s(Res.string.close_start))).performClick()   // the scrim
+        gone(hasContentDescription(s(Res.string.bubble_empty_desc)))
+        tapDesc(s(Res.string.tab_start)); tapDesc(s(Res.string.close_start)) // the ×
+        gone(hasContentDescription(s(Res.string.bubble_empty_desc)))
+    }
+
+    @Test
+    fun anEmptyWorkoutOrARunStartsInTwoTapsFromAnyTab() = flow {
+        for (tab in listOf(Res.string.tab_home, Res.string.tab_food, Res.string.tab_plan, Res.string.tab_you)) {
+            tap(s(tab))
+            tapDesc(s(Res.string.tab_start)); tapDesc(s(Res.string.start_run))                 // two taps
+            see(s(Res.string.close)); tap(s(Res.string.close))
+            tapDesc(s(Res.string.tab_start)); tapDesc(s(Res.string.bubble_empty_desc))         // two taps
+            see(s(Res.string.what_today))
+            tapDesc(s(Res.string.minimise)); bar()
+            runBlocking { graph.sessions.discard(open().id) }
+            gone(clickLabel(s(Res.string.back_to_workout)))
+        }
+    }
+
+    @Test
+    fun aDoubleTapOnEmptyStartsOneWorkout() = flow {
+        tapDesc(s(Res.string.tab_start))
+        test.onNode(hasContentDescription(s(Res.string.bubble_empty_desc))).performTouchInput { click(); click() }
+        see(s(Res.string.what_today))
+        runBlocking { graph.sessions.discard(open().id) }
+        waitUntilTrue { graph.sessions.open().first() == null }   // a second workout would still be open
+    }
+
+    @Test
+    fun underReduceMotionTheBubblesAppearInPlace() = flow(reduceMotion = true) { assertTrue(bubbleMovesAfterTheTap() == 0f) }
+
+    @Test
+    fun theBubblesSpringUpFromStart() = flow { assertTrue(bubbleMovesAfterTheTap() > 0f) }
+
+    /** How far the Empty workout and Run bubbles move between 16 ms after Start's tap and settling: the larger, in px. */
+    private suspend fun Flow.bubbleMovesAfterTheTap(): Float {
+        test.mainClock.autoAdvance = false
+        test.onNode(hasContentDescription(s(Res.string.tab_start))).performClick()
+        test.mainClock.advanceTimeBy(16)
+        val early = listOf(centre(s(Res.string.bubble_empty_desc)), centre(s(Res.string.start_run)))
+        test.mainClock.autoAdvance = true
+        test.waitForIdle()
+        val settled = listOf(centre(s(Res.string.bubble_empty_desc)), centre(s(Res.string.start_run)))
+        return early.zip(settled) { a, b -> (a - b).getDistance() }.max()
+    }
+
+    /** MO-start's three key frames, 0, 120 and 470 ms after Start's tap, at the flow tests' size: compared by eye with the motion board (P11). */
+    @Test
+    fun moStartFramesInDarkAndDarkHc() {
+        for ((highContrast, mode) in listOf(false to "dark", true to "dark-hc")) flow(dark = true, highContrast = highContrast) {
+            test.mainClock.autoAdvance = false
+            test.onNode(hasContentDescription(s(Res.string.tab_start))).performClick()
+            test.savePng(BOARD_SHOTS, "MO-start-0-$mode")
+            test.mainClock.advanceTimeBy(120)
+            test.savePng(BOARD_SHOTS, "MO-start-120-$mode")
+            test.mainClock.advanceTimeBy(350)
+            test.savePng(BOARD_SHOTS, "MO-start-470-$mode")
+            test.mainClock.autoAdvance = true
+        }
     }
 
     @Test
@@ -1096,6 +1197,11 @@ private const val TIMEOUT = 10_000L
 internal fun clickLabel(label: String) =
     SemanticsMatcher("click label $label") { it.config.getOrNull(SemanticsActions.OnClick)?.label == label }
 
+/** A node whose content description contains [text]: for a description that carries a running time. */
+private fun descContains(text: String) = SemanticsMatcher("description contains $text") {
+    it.config.getOrNull(SemanticsProperties.ContentDescription)?.any { d -> text in d } == true
+}
+
 /** The steps a person takes and what they check, in the words of the app. */
 @OptIn(ExperimentalTestApi::class)
 private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
@@ -1153,6 +1259,8 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
 
     fun tapDesc(desc: String) = tapLast(hasContentDescription(desc))
 
+    fun tapDescContaining(text: String) = tapLast(descContains(text))
+
     /** The last clickable node with exactly this text, such as a button in a dialog drawn over a row with the same word. */
     fun tapLastText(text: String) = tapLast(hasText(text) and hasClickAction())
 
@@ -1191,7 +1299,7 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
 
     suspend fun startWorkout() {
         tapDesc(s(Res.string.tab_start))
-        tap(s(Res.string.start_workout))
+        tapDesc(s(Res.string.bubble_empty_desc))
         see(s(Res.string.finish))
     }
 

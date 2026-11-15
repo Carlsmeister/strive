@@ -1,6 +1,11 @@
 package se.carlsmeister.strive.ui
 
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.foundation.Canvas
+import androidx.compose.runtime.getValue
+import se.carlsmeister.strive.theme.Motion
 import androidx.compose.foundation.background
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -53,7 +58,7 @@ internal class TabItem(val icon: ImageVector, val label: String, val selected: B
 
 /**
  * `.tabbar` (SH-01): a capsule of regular glass, [before] and [after] either side of Start's teal disc, in five equal columns.
- * [startLabel] is what a screen reader calls Start; [startOpen] turns its plus 45°.
+ * [startLabel] is what a screen reader calls Start; [startOpen] turns its plus 45° to ×.
  */
 @Composable
 internal fun TabBar(
@@ -78,7 +83,14 @@ internal fun TabBar(
                     .background(colors.primary, ShapeFull),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(StriveIcons.Plus, null, Modifier.size(28.dp).rotate(if (startOpen) 45f else 0f), tint = colors.onPrimary)
+                // MO-start: opening turns it with the panel, closing returns it with the bubbles; under Reduce Motion it is × at once.
+                val spec: FiniteAnimationSpec<Float> = when {
+                    StriveTheme.reduceMotion -> snap()
+                    startOpen -> startOpening()
+                    else -> Motion.fade()
+                }
+                val turn by animateFloatAsState(if (startOpen) 45f else 0f, spec)
+                Icon(StriveIcons.Plus, null, Modifier.size(28.dp).rotate(turn), tint = colors.onPrimary)
             }
         }
         after.forEach { Tab(it) }

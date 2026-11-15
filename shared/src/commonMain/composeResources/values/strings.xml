@@ -5,7 +5,10 @@
     <string name="close_start">Close Start</string>
     <string name="tab_plan">Plan</string>
     <string name="tab_you">You</string>
-    <string name="start_workout">Workout</string>
+    <string name="bubble_continue">Continue</string>
+    <string name="name_time">%1$s · %2$s</string>
+    <string name="bubble_empty">Empty</string>
+    <string name="bubble_empty_desc">Empty workout</string>
     <string name="start_run">Run</string>
     <string name="next_screen">Next screen</string>
     <string name="back">Back</string>

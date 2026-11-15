@@ -6,6 +6,11 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.Dp
+import kotlin.math.roundToInt
+import se.carlsmeister.strive.ui.Bubble
+import se.carlsmeister.strive.ui.BubbleItem
+import se.carlsmeister.strive.ui.BubblePanel
 import se.carlsmeister.strive.ui.RestRing
 import se.carlsmeister.strive.ui.TabBar
 import se.carlsmeister.strive.ui.TabItem
@@ -230,4 +235,37 @@ internal fun TabBarBoard() {
             )
         }
     }
+}
+
+/**
+ * The StartBubbles card: its 390 × 320 box (border-box, as the TabBar card's) with the panel at left 26, right 26, bottom 72 and
+ * 170 tall, the card's four bubbles at their centres, and the tab bar with Start open over them.
+ */
+@Composable
+internal fun StartBubblesBoard() {
+    val colors = MaterialTheme.colorScheme
+    val corner = RoundedCornerShape(16.dp)
+    Box(
+        Modifier.padding(top = 16.dp).fillMaxWidth().height(320.dp).clip(corner).background(colors.background)
+            .border(1.dp, colors.outlineVariant, corner).padding(1.dp),
+    ) {
+        BubblePanel(Modifier.align(Alignment.BottomCenter).padding(start = 26.dp, end = 26.dp, bottom = 72.dp).fillMaxWidth().height(170.dp))
+        Bubble(BubbleItem(StriveIcons.Lift, "Push A", "today", filled = true) {}, Modifier.bubbleAt(80.dp, 160.dp))
+        Bubble(BubbleItem(StriveIcons.Plus, "Empty") {}, Modifier.bubbleAt(150.dp, 108.dp))
+        Bubble(BubbleItem(StriveIcons.List, "From template") {}, Modifier.bubbleAt(240.dp, 108.dp))
+        Bubble(BubbleItem(StriveIcons.Run, "Run") {}, Modifier.bubbleAt(310.dp, 160.dp))
+        TabBar(
+            before = listOf(TabItem(StriveIcons.Home, "Home", true) {}, TabItem(StriveIcons.Food, "Food", false) {}),
+            after = listOf(TabItem(StriveIcons.Plan, "Plan", false) {}, TabItem(StriveIcons.You, "You", false) {}),
+            startLabel = "Close Start", startOpen = true, onStart = {},
+            modifier = Modifier.align(Alignment.BottomCenter).padding(start = 20.dp, end = 20.dp, bottom = 22.dp),
+        )
+    }
+}
+
+/** A bubble by its circle's centre, as `.bub`'s left, top and −28 margins place it; the column centres the circle over its label. */
+private fun Modifier.bubbleAt(x: Dp, y: Dp) = layout { m, c ->
+    val p = m.measure(c.copy(minWidth = 0, minHeight = 0))
+    val half = 28.dp.roundToPx()
+    layout(p.width, p.height) { p.place(x.roundToPx() - ((p.width - 2 * half) / 2f).roundToInt() - half, y.roundToPx() - half) }
 }

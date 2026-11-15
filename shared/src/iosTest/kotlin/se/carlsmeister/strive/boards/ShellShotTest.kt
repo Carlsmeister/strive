@@ -60,6 +60,12 @@ class ShellShotTest {
     @Test
     fun sh01ReduceTransparencyInDarkAndDarkHc() =
         boardShots("SH-01-rt", DarkModes, waitFor = "1/14", reduceTransparency = true, arrange = { backOnTheTabs() }) { ShellBoard() }
+
+    /** Start with Push A open: one bubble, Continue. The bar's chevron is P3's deviation, the Home behind R3's. */
+    @Test
+    fun sh03InProgressInDarkAndDarkHc() = boardShots("SH-03-inprog", DarkModes, waitFor = "Continue",
+        arrange = { backOnTheTabs(); onNode(hasContentDescription(getString(Res.string.tab_start))).performClick(); waitForIdle() },
+    ) { ShellBoard() }
 }
 
 /** The app as a board frames it: under the board's 54 pt `.safe` band (`--safe-top`), which the test window does not have. */

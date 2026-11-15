@@ -17,6 +17,16 @@ import androidx.compose.ui.unit.IntOffset
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import se.carlsmeister.strive.ui.BubbleItem
+import se.carlsmeister.strive.ui.StartBubbles
+import se.carlsmeister.strive.ui.StartChoice
+import se.carlsmeister.strive.ui.startChoices
+import strive.shared.generated.resources.bubble_continue
+import strive.shared.generated.resources.bubble_empty
+import strive.shared.generated.resources.bubble_empty_desc
+import strive.shared.generated.resources.name_time
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.theme.Motion
 import se.carlsmeister.strive.theme.settle
@@ -41,9 +51,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -80,7 +88,6 @@ import strive.shared.generated.resources.close
 import strive.shared.generated.resources.library
 import strive.shared.generated.resources.next_screen
 import strive.shared.generated.resources.start_run
-import strive.shared.generated.resources.start_workout
 import strive.shared.generated.resources.tab_food
 import strive.shared.generated.resources.tab_home
 import strive.shared.generated.resources.tab_plan
@@ -172,11 +179,15 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
         }
         val scope = rememberCoroutineScope()
         val name = stringResource(Res.string.workout)
-        // Two workouts cannot run at once (Q46): Start continues the open one.
+        // Two workouts cannot run at once (Q46): Start continues the open one. Under the lock, so two quick taps start one workout
+        // and push it once.
+        val starting = remember { Mutex() }
         fun startWorkout() {
             scope.launch {
-                if (sessions.open().first() == null) sessions.start(name, now())
-                showWorkout()
+                starting.withLock {
+                    if (sessions.open().first() == null) sessions.start(name, now())
+                    if (root.last() != ActiveWorkout) showWorkout()
+                }
             }
         }
         val safe = WindowInsets.safeDrawing.asPaddingValues()
@@ -229,7 +240,6 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TabsScreen(
     stacks: Map<Tab, SnapshotStateList<Screen>>,
@@ -241,13 +251,14 @@ private fun TabsScreen(
     onStartRun: () -> Unit,
     onRestore: () -> Unit,
 ) {
-    // Open, Start shows the Material sheet until its bubbles replace it.
+    // Open, Start shows its bubbles over the screen.
     var startOpen by remember { mutableStateOf(false) }
     val tabState = rememberSaveableStateHolder()
     val haze = rememberHazeState()
     val density = LocalDensity.current
     val gap = barBottom(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())
     var stackHeight by remember { mutableStateOf(0.dp) }
+    var tabBarHeight by remember { mutableStateOf(0.dp) }
     // Screens run on under the floating bottom stack; each pads its own content clear of it.
     val padding = PaddingValues(top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding(), bottom = stackHeight + gap)
     // The shell's one clock, ticking only while a workout is open; a second one kept UI tests from going idle.
@@ -288,6 +299,24 @@ private fun TabsScreen(
                 )
             }
         }
+        val items = startChoices(open != null).map { choice ->
+            when (choice) {
+                StartChoice.Continue -> {
+                    val w = open!!
+                    val time = clock((now - w.startedAt) / 1_000)
+                    BubbleItem(StriveIcons.Lift, stringResource(Res.string.bubble_continue), stringResource(Res.string.name_time, w.name, time), filled = true,
+                        description = stringResource(Res.string.continue_workout, w.name, time)) { startOpen = false; onRestore() }
+                }
+                StartChoice.Empty -> BubbleItem(StriveIcons.Plus, stringResource(Res.string.bubble_empty), description = stringResource(Res.string.bubble_empty_desc)) {
+                    startOpen = false
+                    onStartWorkout()
+                }
+                StartChoice.Run -> BubbleItem(StriveIcons.Run, stringResource(Res.string.start_run)) { startOpen = false; onStartRun() }
+            }
+        }
+        // Under the bottom stack, as the board's panel (z 4) is under the tab bar (z 5); the arc rises over the workout bar.
+        StartBubbles(startOpen, items, startAbove = gap + tabBarHeight / 2, lift = if (open != null) stackHeight - tabBarHeight else 0.dp,
+            closeLabel = stringResource(Res.string.close_start), onDismiss = { startOpen = false })
         Column(
             Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = gap)
                 .onSizeChanged { stackHeight = with(density) { it.height.toDp() } },
@@ -312,24 +341,10 @@ private fun TabsScreen(
                 startLabel = stringResource(if (startOpen) Res.string.close_start else Res.string.tab_start),
                 startOpen = startOpen,
                 onStart = { startOpen = !startOpen },
+                modifier = Modifier.onSizeChanged { tabBarHeight = with(density) { it.height.toDp() } },
             )
         }
     } }
-
-    if (startOpen) {
-        ModalBottomSheet(onDismissRequest = { startOpen = false }) {
-            Column(Modifier.fillMaxWidth().padding(StriveTheme.spacing.s16), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
-                if (open != null) {
-                    // With a workout in progress Start offers only to continue it (Q46).
-                    val label = stringResource(Res.string.continue_workout, open.name, clock((now - open.startedAt) / 1_000))
-                    Button(onClick = { startOpen = false; onRestore() }, Modifier.fillMaxWidth()) { Text(label) }
-                } else {
-                    Button(onClick = { startOpen = false; onStartWorkout() }, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.start_workout)) }
-                    Button(onClick = { startOpen = false; onStartRun() }, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.start_run)) }
-                }
-            }
-        }
-    }
 }
 
 // Opaque, so the screen sliding in covers the one it leaves instead of showing both at once.
