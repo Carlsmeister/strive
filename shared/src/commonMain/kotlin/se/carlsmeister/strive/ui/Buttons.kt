@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -187,9 +189,11 @@ internal fun RoundButton(
 internal fun MorePill(label: String, onClick: () -> Unit, modifier: Modifier = Modifier, small: Boolean = false) {
     val colors = MaterialTheme.colorScheme
     val size = if (small) 14.sp else 17.sp
+    val (width, height) = if (small) 32.dp to 24.dp else 40.dp to 32.dp
+    // Taps land across the touch size centred on the pill; the extra hangs over its neighbours, so what it draws stays its layout.
     Box(
-        modifier.size(if (small) 32.dp else 40.dp, if (small) 24.dp else 32.dp).pressable(true, onClick).clip(ShapeFull)
-            .background(colors.primaryContainer),
+        modifier.size(width, height).requiredSize(StriveTheme.sizes.touch).pressable(true, onClick).wrapContentSize().size(width, height)
+            .clip(ShapeFull).background(colors.primaryContainer),
         contentAlignment = Alignment.Center,
     ) {
         // `700 17px/1`: the line box is the font size.

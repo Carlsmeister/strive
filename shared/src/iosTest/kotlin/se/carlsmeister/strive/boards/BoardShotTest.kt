@@ -32,6 +32,7 @@ import se.carlsmeister.strive.theme.LocalHighContrast
 import se.carlsmeister.strive.theme.StriveIcons
 import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.ui.Accent
+import se.carlsmeister.strive.ui.MorePill
 import se.carlsmeister.strive.ui.NavBar
 import se.carlsmeister.strive.ui.NavText
 import se.carlsmeister.strive.ui.RoundButton
@@ -68,18 +69,33 @@ class BoardShotTest {
     @Test
     fun titleBarsInDarkAndDarkHc() = boardShots("TitleBars", DarkModes, waitFor = "Push A") { TitleBarsBoard() }
 
-    /** A switch row toggles from a tap on its text; a switch on its own draws 32 dp but is a touch (44 dp) tall. */
+    /**
+     * A switch row toggles from a tap on its text; a switch on its own draws 32 dp but is a touch (44 dp) tall. A switch row alone
+     * takes taps across a touch too, yet keeps its 32 dp of layout, so nothing drawn moves.
+     */
     @Test
     fun aSwitchRowTogglesFromItsTextAndASwitchIsATouchTall() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
         var on by mutableStateOf(false)
         setContent { StriveTheme { Column {
-            ToggleRow("Keep the screen awake", on, { on = it }, Modifier.testTag("row"))
+            Box(Modifier.testTag("rowFootprint")) { ToggleRow("Keep the screen awake", on, { on = it }, Modifier.testTag("row")) }
             Toggle(false, {}, "Alone", Modifier.testTag("alone"))
         } } }
         onNodeWithText("Keep the screen awake", useUnmergedTree = true).performClick()
         assertTrue(on)
         onNodeWithTag("row").assertIsOn()
         assertTrue(onNodeWithTag("alone").fetchSemanticsNode().size.height >= 44 * 3)
+        assertTrue(onNodeWithTag("row").fetchSemanticsNode().size.height >= 44 * 3, "the row's tap area")
+        assertEquals(32 * 3, onNodeWithTag("rowFootprint").fetchSemanticsNode().size.height, "the row's layout")
+    }
+
+    /** The ⋯ pill draws 40 × 32 and keeps that as its layout, yet takes taps across a touch (44 dp) each way. */
+    @Test
+    fun aMorePillIsATouchEachWayAndKeepsItsLayout() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        setContent { StriveTheme { Box(Modifier.testTag("pillFootprint")) { MorePill("More", {}, Modifier.testTag("pill")) } } }
+        val tapArea = onNodeWithTag("pill").fetchSemanticsNode().size
+        val footprint = onNodeWithTag("pillFootprint").fetchSemanticsNode().size
+        assertTrue(tapArea.width >= 44 * 3 && tapArea.height >= 44 * 3, "the pill's tap area: $tapArea")
+        assertEquals(40 * 3 to 32 * 3, footprint.width to footprint.height, "the pill's layout")
     }
 
     /**
@@ -106,7 +122,8 @@ class BoardShotTest {
 
     /**
      * A long title ends in an ellipsis and leaves the sides what they need: on a 390 dp phone every side control of both bars stays
-     * inside its bar and at least a touch (44 dp) wide, and the ⋯ pill keeps its 32 dp beside the workout's name.
+     * inside its bar and at least a touch (44 dp) wide, and the ⋯ pill, drawn 32 × 24 beside the workout's name, takes taps across a
+     * touch each way.
      */
     @Test
     fun aLongTitleLeavesTheBarsSideControlsATouchWide() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
@@ -128,7 +145,11 @@ class BoardShotTest {
             for (b in sides) assertTrue(b.width >= 44 * 3 && b.left >= edge.left && b.right <= edge.right, "$bar: $b, bar $edge")
         }
         assertTrue(minimise.right <= rest.left, "⌄ $minimise, ⏱ $rest")
-        assertTrue(pill.width >= 32 * 3 && pill.left >= rest.right && pill.right <= finish.left, "the pill: $pill")
+        // Its tap area is centred on what it draws: 32 dp wide, 6 dp after the name, its right edge clear of Finish.
+        val name = onNodeWithText("Upper Body Strength and Conditioning").fetchSemanticsNode().boundsInRoot
+        val (drawnLeft, drawnRight) = pill.center.x - 16 * 3 to pill.center.x + 16 * 3
+        assertTrue(pill.width >= 44 * 3 && pill.height >= 44 * 3 && pill.left >= rest.right && drawnRight <= finish.left, "the pill: $pill")
+        assertEquals(name.right + 6 * 3, drawnLeft, .5f, "the pill beside the name: $pill, name $name")
     }
 
     /** `.navtext` is a touch tall and acts; `.navtext.dim` cannot act yet. */

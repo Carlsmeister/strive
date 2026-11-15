@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.dp
 import se.carlsmeister.strive.theme.CssLineBox
 import se.carlsmeister.strive.theme.ShapeFull
@@ -119,8 +121,17 @@ internal fun Toggle(checked: Boolean, onCheckedChange: (Boolean) -> Unit, label:
 /** `.between`: a setting's text, its switch at the end. The whole row toggles, and its text is the switch's label. */
 @Composable
 internal fun ToggleRow(text: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+    val touch = StriveTheme.sizes.touch
     Row(
-        modifier.toggleable(checked, interactionSource = null, indication = null, role = Role.Switch, onValueChange = onCheckedChange),
+        // Its layout stays its own height, while it takes taps across at least the touch size centred on it: the extra hangs
+        // over its neighbours, so nothing drawn moves.
+        modifier.layout { measurable, constraints ->
+            val own = constraints.constrainHeight(measurable.minIntrinsicHeight(constraints.maxWidth))
+            val tapHeight = maxOf(own, touch.roundToPx())
+            val tapArea = measurable.measure(constraints.copy(minHeight = tapHeight, maxHeight = tapHeight))
+            layout(tapArea.width, own) { tapArea.place(0, (own - tapHeight) / 2) }
+        }
+            .toggleable(checked, interactionSource = null, indication = null, role = Role.Switch, onValueChange = onCheckedChange),
         horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8),
         verticalAlignment = Alignment.CenterVertically,
     ) {
