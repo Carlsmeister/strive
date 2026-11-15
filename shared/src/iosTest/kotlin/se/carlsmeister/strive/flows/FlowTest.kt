@@ -495,6 +495,7 @@ class FlowTest {
         tap(s(Res.string.workout))
         tap(s(Res.string.rename))
         type("Push A")
+        shot("18-rename-prompt")
         tap(s(Res.string.save))
         see("Push A")
         tap("Push A")
@@ -588,6 +589,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         tap(s(Res.string.discard_workout))
         see(s(Res.string.discard_question))
+        shot("19-discard-alert")
         tap(s(Res.string.cancel))
         open()
         tap(s(Res.string.discard_workout))
@@ -979,6 +981,7 @@ class FlowTest {
         tap(s(Res.string.order_skip))
         tapLastText(s(Res.string.skip)) // Squat's, the last row
         waitUntilTrue { open().exercises[1].skipped && open().sets == 1 }
+        shot("20-order-sheet")
         tap(s(Res.string.done))
         see(s(Res.string.skipped))
         // Swap Bench Press, the one still open, for another exercise.
@@ -1259,6 +1262,7 @@ class FlowTest {
         addExercises("Bench Press BB", "Squat BB", "Incline Press DB")
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.superset_create))
+        shot("21-superset-alert")
         tapLastText("Incline Press DB")
         // Incline Press moves up to follow Bench Press, and the two are one superset.
         waitUntilTrue {

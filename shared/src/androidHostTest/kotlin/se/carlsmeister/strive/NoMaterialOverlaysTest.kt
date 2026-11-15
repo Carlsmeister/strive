@@ -14,4 +14,11 @@ class NoMaterialOverlaysTest {
         assertTrue(sources().size > 20, "the scan found the sources")
         assertEquals(emptyList(), sources().filter { "DropdownMenu" in it.readText() }.map { it.name })
     }
+
+    /** Dialogs and sheets are the system's: nothing outside ui/Dialogs.kt calls Compose's Dialog or Material's sheet or alert. */
+    @Test
+    fun noDialogOrSheetIsCalledOutsideTheSystemsDialogs() {
+        val users = sources().filter { Regex("""\b(Dialog|ModalBottomSheet|AlertDialog)\(""").containsMatchIn(it.readText()) }.map { it.name }
+        assertEquals(listOf("Dialogs.kt"), users)
+    }
 }

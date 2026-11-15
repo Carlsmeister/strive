@@ -28,7 +28,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.PixelMap
 import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.test.ComposeUiTest
+import se.carlsmeister.strive.ui.AlertBox
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -80,6 +84,8 @@ import kotlin.test.assertTrue
 /** The system's galleries, shot in every mode at 390 × 844 pt into [BOARD_SHOTS] for a person to set beside the cards. */
 @OptIn(ExperimentalTestApi::class)
 class BoardShotTest {
+    private companion object { const val DP = 3f }
+
     @Test
     fun iconsInFourModes() = boardShots("Icons", Mode.entries) { IconsBoard() }
 
@@ -107,6 +113,9 @@ class BoardShotTest {
     @Test
     fun menusInDarkAndDarkHc() = boardShots("Menus", DarkModes, waitFor = "Remove exercise") { MenusBoard() }
 
+    @Test
+    fun dialogsInDarkAndDarkHc() = boardShots("Dialogs", DarkModes, waitFor = "Continue workout") { DialogsBoard() }
+
     /**
      * P5: a menu in its popup blurs the screen behind it. On one scanline through a line of text, the largest luminance step between
      * neighbouring pixels behind the panel must be under a quarter of the same step beside it: a glyph's edge is a step of most of
@@ -117,31 +126,77 @@ class BoardShotTest {
      */
     @Test
     fun aMenuBlursWhatIsBehindIt() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        setLowTintContent { MenuOverTextBoard() }
+        savePng(BOARD_SHOTS, "MenuOverText-dark")
+        val panel = onNodeWithTag("glass-menu").fetchSemanticsNode().boundsInRoot
+        // A line of text through the panel's middle row, its centre clear of the row's hairlines.
+        val line = textLines().first { it.center.y in (panel.top + panel.height / 3 + 6 * DP)..(panel.bottom - panel.height / 3 - 6 * DP) }
+        val pixels = onAllNodes(isRoot())[0].captureToImage().toPixelMap()
+        // Beside: the line's start, clear of the panel's shadow. Behind: the panel's right part, clear of the row's own label.
+        assertBlurred(
+            behind = pixels.largestStep(line.center.y, panel.left + 140 * DP, panel.right - 20 * DP),
+            beside = pixels.largestStep(line.center.y, line.left, panel.left - 32 * DP),
+        )
+    }
+
+    /**
+     * P6 with P5: a panel in a dialog's window blurs the screen behind it as a menu's does, measured the same way. The alert sits
+     * in the middle of the screen with no room beside it, so "beside" is the nearest line above the panel and its shadow, across
+     * the same columns.
+     */
+    @Test
+    fun aDialogBlursWhatIsBehindIt() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        setLowTintContent { DialogOverTextBoard() }
+        savePng(BOARD_SHOTS, "DialogOverText-dark")
+        val panel = onNodeWithTag("glass-alert").fetchSemanticsNode().boundsInRoot
+        val lines = textLines()
+        val inside = lines.first { it.center.y in (panel.top + panel.height / 3)..(panel.bottom - panel.height / 3) }
+        val above = lines.last { it.bottom < panel.top - 32 * DP }
+        val pixels = onAllNodes(isRoot())[0].captureToImage().toPixelMap()
+        val (from, to) = panel.left + 20 * DP to panel.right - 20 * DP
+        assertBlurred(behind = pixels.largestStep(inside.center.y, from, to), beside = pixels.largestStep(above.center.y, from, to))
+    }
+
+    /** A dialog dims the screen with the card's one scrim, black at `scrimOpacity`: the window's own, and no second one of ours. */
+    @Test
+    fun aDialogDimsTheScreenOnceAtTheScrimOpacity() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        var expected = Color.Unspecified
+        setContent {
+            CompositionLocalProvider(LocalDarkTheme provides true) { StriveTheme {
+                expected = Color.Black.copy(alpha = StriveTheme.states.scrimOpacity).compositeOver(Color.Gray)
+                Box(Modifier.fillMaxSize().background(Color.Gray))
+                AlertBox(onDismiss = {}) { Text("Dim") }
+            } }
+        }
+        waitForIdle()
+        val corner = onAllNodes(isRoot())[0].captureToImage().toPixelMap()[30, 30]
+        for ((name, got, want) in listOf(Triple("red", corner.red, expected.red), Triple("green", corner.green, expected.green), Triple("blue", corner.blue, expected.blue)))
+            assertEquals(want, got, 2f / 255, "$name: the screen's corner $corner, one scrim over grey $expected")
+    }
+
+    /** A dark board with the panels' thick tint lowered to .3, so what shows through them decides whether it is blurred. */
+    private fun ComposeUiTest.setLowTintContent(content: @Composable () -> Unit) {
         setContent {
             CompositionLocalProvider(LocalDarkTheme provides true) { StriveTheme {
                 val glass = StriveTheme.glass
                 CompositionLocalProvider(LocalGlass provides StriveMaterials(glass.regular, glass.thick.copy(alpha = .3f), glass.edge, glass.shadow)) {
-                    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { MenuOverTextBoard() }
+                    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { content() }
                 }
             } }
         }
         waitForIdle()
-        savePng(BOARD_SHOTS, "MenuOverText-dark")
-        val panel = onNodeWithTag("glass-menu").fetchSemanticsNode().boundsInRoot
-        val dp = 3f
-        // A line of text through the panel's middle row, its centre clear of the row's hairlines.
-        val line = onAllNodes(hasText("Line ", substring = true)).fetchSemanticsNodes().map { it.boundsInRoot }
-            .first { it.center.y in (panel.top + panel.height / 3 + 6 * dp)..(panel.bottom - panel.height / 3 - 6 * dp) }
-        val pixels = onAllNodes(isRoot())[0].captureToImage().toPixelMap()
-        fun largestStep(from: Float, to: Float): Float {
-            val y = line.center.y.toInt()
-            fun luminance(x: Int) = pixels[x, y].let { (it.red + it.green + it.blue) / 3 }
-            return (from.toInt() until to.toInt()).maxOf { x -> abs(luminance(x + 1) - luminance(x)) }
-        }
-        // Beside: the line's start, clear of the panel's shadow. Behind: the panel's right part, clear of the row's own label.
-        val beside = largestStep(line.left, panel.left - 32 * dp)
-        val behind = largestStep(panel.left + 140 * dp, panel.right - 20 * dp)
-        assertTrue(beside > .5f, "the scanline crosses glyphs beside the panel: largest step $beside")
+    }
+
+    private fun ComposeUiTest.textLines() = onAllNodes(hasText("Line ", substring = true)).fetchSemanticsNodes().map { it.boundsInRoot }
+
+    /** The largest luminance step between neighbouring pixels on the scanline at [y], from [from] to [to]. */
+    private fun PixelMap.largestStep(y: Float, from: Float, to: Float): Float {
+        fun luminance(x: Int) = this[x, y.toInt()].let { (it.red + it.green + it.blue) / 3 }
+        return (from.toInt() until to.toInt()).maxOf { x -> abs(luminance(x + 1) - luminance(x)) }
+    }
+
+    private fun assertBlurred(behind: Float, beside: Float) {
+        assertTrue(beside > .5f, "the scanline crosses glyphs beside the panel: largest step $behind behind, $beside beside")
         assertTrue(behind < beside / 4, "glyph edges gone behind the panel: largest step $behind behind, $beside beside")
     }
 

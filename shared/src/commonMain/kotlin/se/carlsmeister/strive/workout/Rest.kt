@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import se.carlsmeister.strive.ui.GlassMenu
 import se.carlsmeister.strive.ui.MenuRow
+import se.carlsmeister.strive.ui.TextPrompt
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

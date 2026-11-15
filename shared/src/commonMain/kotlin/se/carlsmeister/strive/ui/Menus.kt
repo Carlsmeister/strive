@@ -132,8 +132,8 @@ private fun MenuPanel(modifier: Modifier = Modifier, content: @Composable () -> 
 private const val ROW = "menu-row"
 private const val LINE = "menu-line"
 
-/** A `.mrow` text sets `font:`, which resets `.strive`'s tabular-nums. */
-private fun TextStyle.css() = copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox)
+/** Text whose CSS rule sets `font:` (`.mrow`, `.alert h2`, `.asheet .row`), which resets `.strive`'s tabular-nums. */
+internal fun TextStyle.css() = copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox)
 
 /**
  * `.mrow`: [text] left, a 20 dp [icon] or a [tail] right. [danger] is `.mrow.danger`, in error. A non-null [checked] adds `.lead`'s

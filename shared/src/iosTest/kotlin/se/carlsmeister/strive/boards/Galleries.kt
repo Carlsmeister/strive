@@ -17,12 +17,14 @@ import se.carlsmeister.strive.ui.TabItem
 import se.carlsmeister.strive.ui.WorkoutMiniBar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Icon
@@ -37,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
@@ -60,10 +63,15 @@ import se.carlsmeister.strive.ui.MomentNumber
 import se.carlsmeister.strive.ui.MomentTag
 import se.carlsmeister.strive.ui.GlassMenu
 import se.carlsmeister.strive.ui.MenuRow
+import se.carlsmeister.strive.ui.ActionSheetPanel
+import se.carlsmeister.strive.ui.AlertBox
+import se.carlsmeister.strive.ui.AlertPanel
+import se.carlsmeister.strive.ui.SheetAction
 import se.carlsmeister.strive.ui.MenuTile
 import se.carlsmeister.strive.ui.MenuTiles
 import se.carlsmeister.strive.theme.LocalGlassSource
 import androidx.compose.runtime.CompositionLocalProvider
+import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import se.carlsmeister.strive.ui.MorePill
@@ -315,12 +323,7 @@ internal fun MenuOverTextBoard() {
     val haze = rememberHazeState()
     CompositionLocalProvider(LocalGlassSource provides haze) {
         Box(Modifier.fillMaxWidth()) {
-            Column(Modifier.fillMaxWidth().hazeSource(haze).background(MaterialTheme.colorScheme.background).padding(16.dp)) {
-                repeat(20) {
-                    Text("Line ${it + 1}: the quick brown fox jumps over the lazy dog", style = MaterialTheme.typography.bodyLarge,
-                        maxLines = 1, softWrap = false)
-                }
-            }
+            LinesToBlur(haze, 20)
             Box(Modifier.align(Alignment.TopEnd).padding(top = 60.dp, end = 16.dp)) {
                 GlassMenu(expanded = true, onDismiss = {}) {
                     MenuRow("Rename", {})
@@ -329,5 +332,54 @@ internal fun MenuOverTextBoard() {
                 }
             }
         }
+    }
+}
+
+/** [lines] lines of text marked to blur, on a source that paints its own background as a screen's must. */
+@Composable
+private fun LinesToBlur(haze: HazeState, lines: Int) =
+    Column(Modifier.fillMaxWidth().hazeSource(haze).background(MaterialTheme.colorScheme.background).padding(16.dp)) {
+        repeat(lines) {
+            Text("Line ${it + 1}: the quick brown fox jumps over the lazy dog", style = MaterialTheme.typography.bodyLarge, maxLines = 1, softWrap = false)
+        }
+    }
+
+/** [MenuOverTextBoard]'s twin for a dialog: an empty alert panel, in its Dialog window, over 36 lines of text marked to blur. */
+@Composable
+internal fun DialogOverTextBoard() {
+    val haze = rememberHazeState()
+    CompositionLocalProvider(LocalGlassSource provides haze) {
+        LinesToBlur(haze, 36)
+        AlertBox(onDismiss = {}) { Spacer(Modifier.height(120.dp)) }
+    }
+}
+
+/**
+ * The Dialogs card: its two 390 x 420 boxes (border-box, as the TabBar card's), stacked as they wrap at 390, each over the scrim:
+ * the alert in `.center`, and the action sheet 8 dp from the sides and 8 dp above the card's 34 dp safe area. The panels are drawn
+ * in place; in the app each opens in its own window.
+ */
+@Composable
+// Unbounded: the second box runs past the 844 pt screen, as the card's does in Chrome, instead of shrinking to fit.
+internal fun DialogsBoard() = Column(Modifier.wrapContentHeight(Alignment.Top, unbounded = true).padding(top = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    DialogCardBox {
+        AlertPanel("Discard the workout?", "Every set in it is deleted.", "Discard", {}, {}, modifier = Modifier.align(Alignment.Center).padding(24.dp))
+    }
+    DialogCardBox {
+        ActionSheetPanel(
+            "2 sets not logged",
+            listOf(SheetAction("Log them as they are and save") {}, SheetAction("Save without them") {}, SheetAction("Discard workout", destructive = true) {}),
+            "Continue workout", {}, Modifier.align(Alignment.BottomCenter).padding(start = 8.dp, end = 8.dp, bottom = 8.dp + 34.dp),
+        )
+    }
+}
+
+@Composable
+private fun DialogCardBox(content: @Composable BoxScope.() -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val corner = RoundedCornerShape(16.dp)
+    Box(Modifier.fillMaxWidth().height(420.dp).clip(corner).background(colors.background).border(1.dp, colors.outlineVariant, corner).padding(1.dp)) {
+        Box(Modifier.matchParentSize().background(Color.Black.copy(alpha = StriveTheme.states.scrimOpacity)))
+        content()
     }
 }

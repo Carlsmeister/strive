@@ -63,14 +63,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import androidx.compose.runtime.CompositionLocalProvider
 import se.carlsmeister.strive.theme.LocalGlassSource
 import se.carlsmeister.strive.theme.StriveIcons
+import se.carlsmeister.strive.ui.ActionSheet
+import se.carlsmeister.strive.ui.Alert
+import se.carlsmeister.strive.ui.AlertBox
 import se.carlsmeister.strive.ui.GlassMenu
+import se.carlsmeister.strive.ui.HeaderSheet
+import se.carlsmeister.strive.ui.SheetAction
+import se.carlsmeister.strive.ui.TextPrompt
 import se.carlsmeister.strive.ui.MenuRow
 import se.carlsmeister.strive.ui.MenuTile
 import se.carlsmeister.strive.ui.MenuTiles
@@ -379,27 +384,28 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             Dock(e, set, badges(e.sets)[i], defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
                 field = editField, logs = !editRest)
         }
-    } }
 
-    if (finishing) {
-        val left = w.sets - w.logged
-        ActionSheet(
-            pluralStringResource(Res.plurals.unlogged, left, left),
-            listOf(
-                SheetAction(stringResource(Res.string.log_and_save)) { finishing = false; scope.launch { sessions.finish(w.id, Finish.LogAsTheyStand, now()); onFinished(w.id) } },
-                SheetAction(stringResource(Res.string.save_without)) { finishing = false; scope.launch { sessions.finish(w.id, Finish.WithoutThem, now()); onFinished(w.id) } },
-                // Red, with no alert after it: Avsluta was the intentional action, not discarding (#16).
-                SheetAction(stringResource(Res.string.discard_workout), destructive = true) { finishing = false; scope.launch { sessions.discard(w.id); onMinimise() } },
-            ),
-            stringResource(Res.string.keep_going), onDismiss = { finishing = false },
-        )
-    }
-    if (discarding) {
-        Alert(
-            stringResource(Res.string.discard_question), stringResource(Res.string.discard_body), stringResource(Res.string.discard_workout),
-            onConfirm = { discarding = false; scope.launch { sessions.discard(w.id); onMinimise() } }, onDismiss = { discarding = false },
-        )
-    }
+        // In the screen's glass source, so the sheet and the alert blur the list behind them.
+        if (finishing) {
+            val left = w.sets - w.logged
+            ActionSheet(
+                pluralStringResource(Res.plurals.unlogged, left, left),
+                listOf(
+                    SheetAction(stringResource(Res.string.log_and_save)) { finishing = false; scope.launch { sessions.finish(w.id, Finish.LogAsTheyStand, now()); onFinished(w.id) } },
+                    SheetAction(stringResource(Res.string.save_without)) { finishing = false; scope.launch { sessions.finish(w.id, Finish.WithoutThem, now()); onFinished(w.id) } },
+                    // Red, with no alert after it: Avsluta was the intentional action, not discarding (#16).
+                    SheetAction(stringResource(Res.string.discard_workout), destructive = true) { finishing = false; scope.launch { sessions.discard(w.id); onMinimise() } },
+                ),
+                stringResource(Res.string.keep_going), onDismiss = { finishing = false },
+            )
+        }
+        if (discarding) {
+            Alert(
+                stringResource(Res.string.discard_question), stringResource(Res.string.discard_body), stringResource(Res.string.discard_workout),
+                onConfirm = { discarding = false; scope.launch { sessions.discard(w.id); onMinimise() } }, onDismiss = { discarding = false },
+            )
+        }
+    } }
 }
 
 /** D's add button: a dark surface with a teal +, for "Lägg till set (2:00)" and "Lägg till övningar"; in a superset, with its letter. */
@@ -568,13 +574,8 @@ private fun OrderDialog(w: Workout, onDone: () -> Unit) {
         ids[i] = ids[j].also { ids[j] = ids[i] }
         scope.launch { sessions.reorder(ids) }
     }
-    Dialog(onDismissRequest = onDone) {
-        Column(
-            Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.extraLarge).padding(StriveTheme.spacing.s16),
-            verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4),
-        ) {
-            Text(stringResource(Res.string.order_skip), Modifier.fillMaxWidth().padding(bottom = StriveTheme.spacing.s8),
-                style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+    HeaderSheet(stringResource(Res.string.order_skip), onDone, done = stringResource(Res.string.done)) {
+        Column(verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4)) {
             exercises.forEachIndexed { i, e ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(e.name, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge,
@@ -586,7 +587,6 @@ private fun OrderDialog(w: Workout, onDone: () -> Unit) {
                     }
                 }
             }
-            TextButton(onDone, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.done)) }
         }
     }
 }
@@ -596,21 +596,16 @@ private fun OrderDialog(w: Workout, onDone: () -> Unit) {
 private fun SupersetDialog(w: Workout, e: SessionExercise, onDone: () -> Unit) {
     val sessions = LocalAppGraph.current.sessions
     val scope = rememberCoroutineScope()
-    Dialog(onDismissRequest = onDone) {
-        Column(
-            Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.extraLarge).padding(StriveTheme.spacing.s16),
-            verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4),
-        ) {
-            Text(stringResource(Res.string.superset_create), Modifier.fillMaxWidth().padding(bottom = StriveTheme.spacing.s8),
-                style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-            for (other in w.exercises.filter { it.id != e.id && !it.skipped }) {
-                Text(other.name, Modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium)
-                    .clickable { scope.launch { sessions.superset(e.id, other.id) }; onDone() }
-                    .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = StriveTheme.spacing.s8, vertical = 12.dp),
-                    style = MaterialTheme.typography.bodyLarge)
-            }
-            TextButton(onDone, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.cancel)) }
+    AlertBox(onDone) {
+        Text(stringResource(Res.string.superset_create), Modifier.fillMaxWidth().padding(bottom = StriveTheme.spacing.s8),
+            style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+        for (other in w.exercises.filter { it.id != e.id && !it.skipped }) {
+            Text(other.name, Modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium)
+                .clickable { scope.launch { sessions.superset(e.id, other.id) }; onDone() }
+                .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = StriveTheme.spacing.s8, vertical = 12.dp),
+                style = MaterialTheme.typography.bodyLarge)
         }
+        TextButton(onDone, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.cancel)) }
     }
 }
 
@@ -624,21 +619,14 @@ private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
     var bar by remember { mutableStateOf(e.bar) }
     val steps = listOf(1.0, 1.25, 2.0, 2.5, 4.0, 5.0)
     val bars = listOf(null, 7.5, 15.0, 20.0, 25.0)
-    Dialog(onDismissRequest = onDone) {
-        Column(
-            Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.extraLarge).padding(StriveTheme.spacing.s20),
-            verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s12),
-        ) {
-            Text(stringResource(Res.string.exercise_settings), Modifier.fillMaxWidth(), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-            Text(stringResource(Res.string.step), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Segments(steps.map { kilos(it, swedish) }, steps.indexOf(step).takeIf { it >= 0 }, { i -> i?.let { step = steps[it] } }, clearable = false)
-            Text(stringResource(Res.string.bar), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            val none = stringResource(Res.string.no_bar)
-            Segments(bars.map { it?.let { b -> kilos(b, swedish) } ?: none }, bars.indexOf(bar).takeIf { it >= 0 }, { i -> i?.let { bar = bars[it] } }, clearable = false)
-            TextButton({ scope.launch { exercises.setSettings(e.exerciseId, step, bar) }; onDone() }, Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.done))
-            }
-        }
+    // A tap on the scrim closes without saving, as dismissing the dialog did.
+    HeaderSheet(stringResource(Res.string.exercise_settings), onDismiss = onDone, done = stringResource(Res.string.done),
+        onDone = { scope.launch { exercises.setSettings(e.exerciseId, step, bar) }; onDone() }) {
+        Text(stringResource(Res.string.step), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Segments(steps.map { kilos(it, swedish) }, steps.indexOf(step).takeIf { it >= 0 }, { i -> i?.let { step = steps[it] } }, clearable = false)
+        Text(stringResource(Res.string.bar), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        val none = stringResource(Res.string.no_bar)
+        Segments(bars.map { it?.let { b -> kilos(b, swedish) } ?: none }, bars.indexOf(bar).takeIf { it >= 0 }, { i -> i?.let { bar = bars[it] } }, clearable = false)
     }
 }
 

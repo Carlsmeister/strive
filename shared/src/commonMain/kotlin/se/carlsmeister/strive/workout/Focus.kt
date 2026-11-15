@@ -21,12 +21,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.Button
 import se.carlsmeister.strive.ui.GlassMenu
+import se.carlsmeister.strive.ui.HeaderSheet
 import se.carlsmeister.strive.ui.MenuRow
+import se.carlsmeister.strive.ui.TextPrompt
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -53,7 +54,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.isoDayNumber
@@ -239,18 +239,9 @@ internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
 private fun StartPrompt(startedAt: Long, onSave: (Int, Int) -> Unit, onDismiss: () -> Unit) {
     val start = local(startedAt)
     val state = rememberTimePickerState(start.hour, start.minute, is24Hour = true)
-    Dialog(onDismissRequest = onDismiss) {
-        Column(
-            Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.extraLarge).padding(StriveTheme.spacing.s20),
-            verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s12), horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(stringResource(Res.string.change_start), style = MaterialTheme.typography.titleMedium)
-            TimeInput(state)
-            Row {
-                TextButton(onDismiss, Modifier.weight(1f)) { Text(stringResource(Res.string.cancel)) }
-                TextButton({ onSave(state.hour, state.minute) }, Modifier.weight(1f)) { Text(stringResource(Res.string.save)) }
-            }
-        }
+    HeaderSheet(stringResource(Res.string.change_start), onDismiss, cancel = stringResource(Res.string.cancel), done = stringResource(Res.string.save),
+        onDone = { onSave(state.hour, state.minute) }) {
+        TimeInput(state, Modifier.align(Alignment.CenterHorizontally))
     }
 }
 
