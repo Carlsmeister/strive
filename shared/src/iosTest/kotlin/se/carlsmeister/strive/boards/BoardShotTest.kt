@@ -18,7 +18,9 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -27,9 +29,13 @@ import androidx.compose.ui.test.v2.runSkikoComposeUiTest
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import se.carlsmeister.strive.theme.LocalHighContrast
+import se.carlsmeister.strive.theme.StriveIcons
 import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.ui.Accent
+import se.carlsmeister.strive.ui.NavBar
 import se.carlsmeister.strive.ui.NavText
+import se.carlsmeister.strive.ui.RoundButton
+import se.carlsmeister.strive.ui.RoundKind
 import se.carlsmeister.strive.ui.Toggle
 import se.carlsmeister.strive.ui.ToggleRow
 import se.carlsmeister.strive.ui.WorkoutBar
@@ -96,6 +102,33 @@ class BoardShotTest {
         mainClock.advanceTimeBy(500)
         onNodeWithText("Push A").assertDoesNotExist()
         assertTrue(onAllNodes(hasClickAction()).onLast().fetchSemanticsNode().size.height >= 44 * 3)
+    }
+
+    /**
+     * A long title ends in an ellipsis and leaves the sides what they need: on a 390 dp phone every side control of both bars stays
+     * inside its bar and at least a touch (44 dp) wide, and the ⋯ pill keeps its 32 dp beside the workout's name.
+     */
+    @Test
+    fun aLongTitleLeavesTheBarsSideControlsATouchWide() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        setContent { StriveTheme { Column {
+            NavBar("Bulgarian Split Squat DB with a long pause", Modifier.testTag("nav"), back = "Library") {
+                RoundButton(StriveIcons.More, "More", {}, kind = RoundKind.Plain)
+                RoundButton(StriveIcons.Plus, "Add", {}, kind = RoundKind.Teal)
+            }
+            WorkoutBar({}, {}, {}, Modifier.testTag("wtb"), title = "Upper Body Strength and Conditioning", progress = "24:13 · 1/14 sets")
+        } } }
+        // Left to right, not by label: the simulator may run in Swedish. The nav bar's are back, More, Add; the workout bar's ⌄, ⏱, ⋯, Finish.
+        fun taps(bar: String) =
+            onAllNodes(hasClickAction() and hasAnyAncestor(hasTestTag(bar))).fetchSemanticsNodes().map { it.boundsInRoot }.sortedBy { it.left }
+        val nav = taps("nav")
+        val (minimise, rest, pill, finish) = taps("wtb").also { assertEquals(4, it.size) }
+        assertEquals(3, nav.size)
+        for ((bar, sides) in listOf("nav" to nav, "wtb" to listOf(minimise, rest, finish))) {
+            val edge = onNodeWithTag(bar).fetchSemanticsNode().boundsInRoot
+            for (b in sides) assertTrue(b.width >= 44 * 3 && b.left >= edge.left && b.right <= edge.right, "$bar: $b, bar $edge")
+        }
+        assertTrue(minimise.right <= rest.left, "⌄ $minimise, ⏱ $rest")
+        assertTrue(pill.width >= 32 * 3 && pill.left >= rest.right && pill.right <= finish.left, "the pill: $pill")
     }
 
     /** `.navtext` is a touch tall and acts; `.navtext.dim` cannot act yet. */
