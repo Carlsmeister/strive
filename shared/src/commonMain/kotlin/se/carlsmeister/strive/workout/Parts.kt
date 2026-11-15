@@ -12,11 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
@@ -30,8 +26,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -44,7 +38,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -89,42 +82,6 @@ internal fun IconTarget(label: String, onClick: () -> Unit, content: @Composable
             .semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) { content() }
-
-/**
- * Segments in a grey track, the iOS segmented control; tapping the chosen one again clears it when [clearable]. [compact] is D's focus
- * card: a darker track, 34 pt segments.
- */
-@Composable
-internal fun Segments(options: List<String>, selected: Int?, onSelect: (Int?) -> Unit, modifier: Modifier = Modifier, clearable: Boolean = true,
-                      compact: Boolean = false) {
-    val space = StriveTheme.spacing
-    val gap = if (compact) 3.dp else 2.dp
-    Row(
-        modifier.background(
-            if (compact) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surfaceContainerHighest,
-            if (compact) RoundedCornerShape(12.dp) else MaterialTheme.shapes.medium,
-        ).padding(gap),
-        horizontalArrangement = Arrangement.spacedBy(gap),
-    ) {
-        options.forEachIndexed { i, label ->
-            val on = i == selected
-            Box(
-                Modifier.weight(1f).then(if (compact) Modifier.height(34.dp) else Modifier.heightIn(min = StriveTheme.sizes.touch - 4.dp))
-                    // Teal, what the tokens keep for chosen: the catalogue's surface is darker than the track in dark mode.
-                    .background(if (on) MaterialTheme.colorScheme.primary else Color.Transparent, if (compact) RoundedCornerShape(9.dp) else MaterialTheme.shapes.small)
-                    .clickable { onSelect(if (on && clearable) null else i) }
-                    // A tab that says whether it is chosen, as VoiceOver reads iOS's segmented control.
-                    .semantics { role = Role.Tab; this.selected = on }
-                    .padding(vertical = if (compact) 0.dp else space.s4),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(label, style = if (compact) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.titleSmall,
-                    fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal, maxLines = 1,
-                    color = if (on) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface)
-            }
-        }
-    }
-}
 
 /**
  * Where a row let go of settles, as Mail's rows do: past half its width it is deleted, a flick left shows Ta bort and a flick right

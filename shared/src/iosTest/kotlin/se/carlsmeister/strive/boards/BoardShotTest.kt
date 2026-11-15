@@ -39,6 +39,10 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
+import se.carlsmeister.strive.ui.SegmentedTabs
+import se.carlsmeister.strive.ui.Toast
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.hasAnyAncestor
@@ -232,6 +236,36 @@ class BoardShotTest {
 
     @Test
     fun titleBarsInDarkAndDarkHc() = boardShots("TitleBars", DarkModes, waitFor = "Push A") { TitleBarsBoard() }
+
+    @Test
+    fun hintsAndToastsInDarkAndDarkHc() = boardShots("HintsAndToasts", DarkModes) { HintsAndToastsBoard() }
+
+    @Test
+    fun aSegmentedTabTellsWhichIsChosenAndIsATouchTall() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        var chosen by mutableStateOf(0)
+        setContent { StriveTheme { SegmentedTabs(listOf("About", "History"), chosen, { chosen = it }, Modifier.testTag("segc")) } }
+        onNodeWithText("History").performClick()
+        assertEquals(1, chosen)
+        onNodeWithText("History").assertIsSelected()
+        onNodeWithText("About").assertIsNotSelected()
+        assertTrue(onNodeWithText("History").fetchSemanticsNode().size.height >= 44 * 3)
+    }
+
+    @Test
+    fun aGroupsFootnoteSitsUnderItsList() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        setContent { StriveTheme { ListGroup("Account", footnote = "Kept on this phone.") { ListBlock(listOf({ ListRow("Profile", Modifier.testTag("row")) })) } } }
+        val row = onNodeWithTag("row").fetchSemanticsNode().boundsInRoot
+        assertTrue(onNodeWithText("Kept on this phone.").fetchSemanticsNode().boundsInRoot.top >= row.bottom)
+    }
+
+    @Test
+    fun aToastsActionIsTappedAndATouchTall() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        var undone = false
+        setContent { StriveTheme { Toast("Bench Press BB removed", action = "Undo", onAction = { undone = true }) } }
+        onNodeWithText("Undo").performClick()
+        assertTrue(undone)
+        assertTrue(onNodeWithText("Undo").fetchSemanticsNode().size.height >= 44 * 3)
+    }
 
     /** A board's `waitFor` names what it shows once arranged, so a text only `arrange` brings on screen is waited for, not timed out on. */
     @Test

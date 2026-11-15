@@ -70,6 +70,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import se.carlsmeister.strive.theme.LocalGlassSource
 import se.carlsmeister.strive.theme.StriveIcons
 import se.carlsmeister.strive.ui.ActionSheet
+import se.carlsmeister.strive.ui.Segments
 import se.carlsmeister.strive.ui.Alert
 import se.carlsmeister.strive.ui.AlertBox
 import se.carlsmeister.strive.ui.GlassMenu

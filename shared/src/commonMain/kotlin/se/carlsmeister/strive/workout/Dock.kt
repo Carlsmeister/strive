@@ -60,6 +60,7 @@ import se.carlsmeister.strive.theme.Motion
 import se.carlsmeister.strive.theme.settle
 import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.StriveTheme
+import se.carlsmeister.strive.ui.Segments
 import se.carlsmeister.strive.theme.glass
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.close

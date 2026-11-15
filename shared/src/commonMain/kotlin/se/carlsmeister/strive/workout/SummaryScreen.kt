@@ -55,6 +55,7 @@ import se.carlsmeister.strive.library.kilos
 import se.carlsmeister.strive.theme.Motion
 import se.carlsmeister.strive.theme.settle
 import se.carlsmeister.strive.theme.StriveTheme
+import se.carlsmeister.strive.ui.Segments
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.back
 import strive.shared.generated.resources.done

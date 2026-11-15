@@ -83,6 +83,11 @@ import se.carlsmeister.strive.ui.Stat
 import se.carlsmeister.strive.ui.StatTiles
 import se.carlsmeister.strive.ui.SurfaceCard
 import se.carlsmeister.strive.ui.ToggleRow
+import se.carlsmeister.strive.ui.Hint
+import se.carlsmeister.strive.ui.SegmentedTabs
+import se.carlsmeister.strive.ui.Segments
+import se.carlsmeister.strive.ui.Toast
+import androidx.compose.foundation.layout.offset
 import se.carlsmeister.strive.ui.WorkoutBar
 import se.carlsmeister.strive.ui.edge
 import se.carlsmeister.strive.ui.moment
@@ -169,9 +174,11 @@ internal fun CardsAndStatsBoard() = Column(Modifier.padding(16.dp), verticalArra
     )
 }
 
-/** The Controls card without `.segc` and `.seg` (R4, #57's): the chips scrolling in their row, two fields (the second focused), the switch. */
+/** The Controls card: `.segc` on About, `.seg` on Calibration, the chips scrolling in their row, two fields (the second focused), the switch. */
 @Composable
 internal fun ControlsBoard() = Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    SegmentedTabs(listOf("About", "History", "Chart", "Records"), 0, {}, Modifier.fillMaxWidth())
+    Segments(listOf("Normal", "Calibration", "Deload"), 1, {}, Modifier.fillMaxWidth(), clearable = false)
     Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         ChoiceChip("Vertical pull", selected = true, onClick = {})
         ChoiceChip("Horizontal press", selected = false, onClick = {})
@@ -182,6 +189,17 @@ internal fun ControlsBoard() = Column(Modifier.padding(16.dp), verticalArrangeme
     InputField("Push A", {}, Modifier.fillMaxWidth().focusRequester(focus))
     LaunchedEffect(Unit) { focus.requestFocus() } // `.field.focus`: the ring and the caret
     ToggleRow("Keep the screen awake", checked = true, onCheckedChange = {}, Modifier.fillMaxWidth())
+}
+
+/**
+ * The HintsAndToasts card: its 358 × 200 box with the hint at left 20, top 0, its arrow under it 85 % across, and the record toast
+ * centred at top 150.
+ */
+@Composable
+internal fun HintsAndToastsBoard() = Box(Modifier.padding(16.dp).size(358.dp, 200.dp)) {
+    Hint("Log in one tap", "Tap ✓ to log the set as it stands.", "Got it", onDismiss = {}, Modifier.offset(x = 20.dp), arrowAt = .85f)
+    Toast("New record · Bench Press BB · 82.5 kg", Modifier.align(Alignment.TopCenter).offset(y = 150.dp), icon = StriveIcons.Star,
+        iconTint = MaterialTheme.colorScheme.tertiary)
 }
 
 /** The Lists card: the Account group's block with leading tiles, then a short list as joined tiles. */

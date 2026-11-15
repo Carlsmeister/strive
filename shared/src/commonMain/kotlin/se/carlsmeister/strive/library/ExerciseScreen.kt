@@ -15,9 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import se.carlsmeister.strive.ui.GlassMenu
 import se.carlsmeister.strive.ui.MenuRow
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import se.carlsmeister.strive.ui.SegmentedTabs
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -74,11 +72,7 @@ internal fun ExerciseScreen(id: Long, padding: PaddingValues, onBack: () -> Unit
         TextButton(onBack, Modifier.padding(start = space.s8)) { Text(stringResource(Res.string.back)) }
         val e = exercise ?: return@Column
         Text(e.name, Modifier.padding(horizontal = space.s16), style = MaterialTheme.typography.headlineMedium)
-        SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(horizontal = space.s16, vertical = space.s8)) {
-            Tabs.forEachIndexed { i, label ->
-                SegmentedButton(tab == i, { tab = i }, SegmentedButtonDefaults.itemShape(i, Tabs.size)) { Text(stringResource(label), maxLines = 1) }
-            }
-        }
+        SegmentedTabs(Tabs.map { stringResource(it) }, tab, { tab = it }, Modifier.fillMaxWidth().padding(horizontal = space.s16, vertical = space.s8))
         if (tab == 0) {
             About(e, Modifier.verticalScroll(rememberScrollState()).padding(bottom = padding.calculateBottomPadding()))
         } else {
