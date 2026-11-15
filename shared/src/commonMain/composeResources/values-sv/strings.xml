@@ -2,6 +2,7 @@
     <string name="tab_home">Hem</string>
     <string name="tab_food">Mat</string>
     <string name="tab_start">Starta</string>
+    <string name="close_start">Stäng Start</string>
     <string name="tab_plan">Plan</string>
     <string name="tab_you">Du</string>
     <string name="start_workout">Träningspass</string>

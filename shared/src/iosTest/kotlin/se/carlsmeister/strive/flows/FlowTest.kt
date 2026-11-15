@@ -434,7 +434,7 @@ class FlowTest {
         test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasText("80 × 8")).fetchSemanticsNodes().size >= 2 }
         shot("05b-summary-open")
         tap(s(Res.string.done))
-        see(s(Res.string.tab_start))
+        seeDesc(s(Res.string.tab_start))
         assertNull(graph.sessions.open().first())
     }
 
@@ -473,7 +473,7 @@ class FlowTest {
         tap(s(Res.string.finish))
         see(s(Res.string.keep_going))
         tap(s(Res.string.discard_workout)) // the sheet's row is drawn last, over the list's own button
-        see(s(Res.string.tab_start))
+        seeDesc(s(Res.string.tab_start))
         assertNull(graph.sessions.open().first())
         assertEquals(0, graph.sessions.history().first().size)
     }
@@ -509,7 +509,7 @@ class FlowTest {
         tap(s(Res.string.discard_workout))
         see(s(Res.string.discard_question))
         tap(s(Res.string.discard_workout)) // the alert's button is drawn last
-        see(s(Res.string.tab_start))
+        seeDesc(s(Res.string.tab_start))
         assertNull(graph.sessions.open().first())
     }
 
@@ -520,7 +520,7 @@ class FlowTest {
         tapDesc(s(Res.string.minimise))
         bar()
         shot("07-minimised")
-        tap(s(Res.string.tab_start))
+        tapDesc(s(Res.string.tab_start))
         // Two workouts cannot run at once: the sheet only continues this one.
         gone(hasText(s(Res.string.start_workout)))
         tapContaining(s(Res.string.workout))
@@ -1138,7 +1138,7 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
     }
 
     suspend fun startWorkout() {
-        tap(s(Res.string.tab_start))
+        tapDesc(s(Res.string.tab_start))
         tap(s(Res.string.start_workout))
         see(s(Res.string.finish))
     }

@@ -37,14 +37,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -60,7 +56,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigationevent.NavigationEventInfo
@@ -74,9 +69,6 @@ import se.carlsmeister.strive.data.AppGraph
 import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.library.ExerciseScreen
 import se.carlsmeister.strive.library.LibraryScreen
-import se.carlsmeister.strive.theme.FixedTextSize
-import se.carlsmeister.strive.theme.ShapeFull
-import se.carlsmeister.strive.theme.glass
 import se.carlsmeister.strive.theme.StriveTheme
 import org.jetbrains.compose.resources.stringResource
 import strive.shared.generated.resources.Res
@@ -91,6 +83,18 @@ import strive.shared.generated.resources.tab_home
 import strive.shared.generated.resources.tab_plan
 import strive.shared.generated.resources.tab_start
 import strive.shared.generated.resources.tab_you
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.vector.ImageVector
+import se.carlsmeister.strive.theme.LocalGlassSource
+import se.carlsmeister.strive.theme.StriveIcons
+import se.carlsmeister.strive.ui.TabBar
+import se.carlsmeister.strive.ui.TabItem
+import se.carlsmeister.strive.ui.barBottom
+import strive.shared.generated.resources.close_start
 
 // The navigation from #14: four tabs around a Start button. Every screen is a placeholder until its feature exists.
 private enum class Tab(val title: StringResource) {
@@ -211,34 +215,17 @@ private fun TabsScreen(
     onStartRun: () -> Unit,
     onRestore: () -> Unit,
 ) {
-    var sheet by remember { mutableStateOf(false) }
+    // Open, Start shows the Material sheet until its bubbles replace it.
+    var startOpen by remember { mutableStateOf(false) }
     val tabState = rememberSaveableStateHolder()
     val haze = rememberHazeState()
+    val density = LocalDensity.current
+    val gap = barBottom(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())
+    var stackHeight by remember { mutableStateOf(0.dp) }
+    // Screens run on under the floating bottom stack; each pads its own content clear of it.
+    val padding = PaddingValues(top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding(), bottom = stackHeight + gap)
 
-    Scaffold(
-        bottomBar = { Column {
-            open?.let { MiniBar(it, haze, onRestore) }
-            FixedTextSize { NavigationBar(Modifier.glass(haze, StriveTheme.glass), containerColor = Color.Transparent) {
-                @Composable
-                fun item(tab: Tab) = NavigationBarItem(
-                    selected = tab == selected,
-                    onClick = { onSelect(tab) },
-                    icon = {},
-                    label = { Text(stringResource(tab.title), maxLines = 1) },
-                )
-                item(Tab.Home)
-                item(Tab.Food)
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { sheet = true },
-                    icon = { Box(Modifier.size(StriveTheme.sizes.touch).background(MaterialTheme.colorScheme.primary, ShapeFull)) },
-                    label = { Text(stringResource(Res.string.tab_start), maxLines = 1) },
-                )
-                item(Tab.Plan)
-                item(Tab.You)
-            } }
-        } },
-    ) { padding ->
+    Box(Modifier.fillMaxSize()) { CompositionLocalProvider(LocalGlassSource provides haze) {
         val stack: SnapshotStateList<Screen> = stacks.getValue(selected)
         // A fresh display per tab, so switching tabs swaps stacks instead of animating as a push; the holder
         // keeps each tab's saved screen state (scroll, drafts) while its display is gone.
@@ -246,8 +233,7 @@ private fun TabsScreen(
             tabState.SaveableStateProvider(selected.name) {
                 NavDisplay(
                     backStack = stack,
-                    // Screens run on under the glass bar; each pads its own content clear of it.
-                    modifier = Modifier.hazeSource(haze),
+                    modifier = Modifier.fillMaxSize().hazeSource(haze),
                     onBack = { stack.pop() },
                     entryProvider = { screen ->
                         NavEntry(screen) { Page {
@@ -273,18 +259,34 @@ private fun TabsScreen(
                 )
             }
         }
-    }
+        Column(
+            Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = gap)
+                .onSizeChanged { stackHeight = with(density) { it.height.toDp() } },
+            verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8),
+        ) {
+            open?.let { MiniBar(it, haze, onRestore) }
+            @Composable
+            fun item(tab: Tab, icon: ImageVector) = TabItem(icon, stringResource(tab.title), tab == selected) { onSelect(tab) }
+            TabBar(
+                before = listOf(item(Tab.Home, StriveIcons.Home), item(Tab.Food, StriveIcons.Food)),
+                after = listOf(item(Tab.Plan, StriveIcons.Plan), item(Tab.You, StriveIcons.You)),
+                startLabel = stringResource(if (startOpen) Res.string.close_start else Res.string.tab_start),
+                startOpen = startOpen,
+                onStart = { startOpen = !startOpen },
+            )
+        }
+    } }
 
-    if (sheet) {
-        ModalBottomSheet(onDismissRequest = { sheet = false }) {
+    if (startOpen) {
+        ModalBottomSheet(onDismissRequest = { startOpen = false }) {
             Column(Modifier.fillMaxWidth().padding(StriveTheme.spacing.s16), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
                 if (open != null) {
                     // With a workout in progress Start offers only to continue it (Q46).
                     val label = stringResource(Res.string.continue_workout, open.name, clock((rememberNow() - open.startedAt) / 1_000))
-                    Button(onClick = { sheet = false; onRestore() }, Modifier.fillMaxWidth()) { Text(label) }
+                    Button(onClick = { startOpen = false; onRestore() }, Modifier.fillMaxWidth()) { Text(label) }
                 } else {
-                    Button(onClick = { sheet = false; onStartWorkout() }, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.start_workout)) }
-                    Button(onClick = { sheet = false; onStartRun() }, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.start_run)) }
+                    Button(onClick = { startOpen = false; onStartWorkout() }, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.start_workout)) }
+                    Button(onClick = { startOpen = false; onStartRun() }, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.start_run)) }
                 }
             }
         }
