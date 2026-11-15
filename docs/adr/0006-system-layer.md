@@ -57,8 +57,11 @@ rendered boards.**
   under Reduce Motion. Buttons,
   the ⋯ pill, chips and the bars' pressables use it.
 - **`.navtext` is built from the TitleBars README** (`NavText`), though the card draws none.
-- **Touch areas stay 44 dp without changing the drawing:** the standalone switch draws 52 × 32
-  and the workout bar's Finish a 40 dp capsule; both take taps across at least 44 dp.
+- **Touch areas stay 44 dp without changing the drawing:** the standalone switch draws 52 × 32,
+  the workout bar's Finish is a 40 dp capsule, the default ⋯ pill draws 40 × 32, the workout
+  bar's small one 32 × 24, and a switch row alone (`ToggleRow`) lays out 32 dp tall. Each takes
+  taps across at least 44 dp. The pills and the row keep their own layout size, so the extra
+  hangs over their neighbours.
 - **The fixture is Carl's sample data on one fixed clock** (R10): a process-wide `wallClock` in
   `workout/Logic.kt` that `now()` reads, so pinning it moves every reading and adds no ticker.
   Every test that loads it resets it after.
