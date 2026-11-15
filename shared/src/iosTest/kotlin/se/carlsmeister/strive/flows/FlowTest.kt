@@ -94,6 +94,7 @@ import strive.shared.generated.resources.start_run
 import strive.shared.generated.resources.tab_food
 import se.carlsmeister.strive.boards.BOARD_SHOTS
 import se.carlsmeister.strive.boards.inEnglish
+import se.carlsmeister.strive.boards.clearLeftOverLanguage
 import strive.shared.generated.resources.next_screen
 import androidx.compose.runtime.DisposableEffect
 import androidx.navigationevent.DirectNavigationEventInput
@@ -163,6 +164,7 @@ class FlowTest {
     private fun flow(graph: AppGraph = AppGraph(memoryDriver()), dark: Boolean? = null, highContrast: Boolean? = null, reduceMotion: Boolean? = null, block: suspend Flow.() -> Unit) {
         // iOS runs every test class in one process: a clock another test left pinned would freeze this flow's rest timers.
         check(wallClock === Clock.System) { "a test left the clock pinned" }
+        clearLeftOverLanguage()
         runSkikoComposeUiTest(Size(1284f, 2778f), Density(3f)) {
             val back = DirectNavigationEventInput()
             setContent {

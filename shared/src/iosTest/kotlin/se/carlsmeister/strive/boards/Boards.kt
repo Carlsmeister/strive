@@ -91,6 +91,7 @@ internal fun boardShots(
  * value, and writing it pinned it in the app's persistent domain, so one run left every later run in English.
  */
 internal fun <T> inEnglish(block: () -> T): T {
+    clearLeftOverLanguage()
     val defaults = NSUserDefaults.standardUserDefaults
     defaults.setObject(listOf("en"), APPLE_LANGUAGES)
     try {
@@ -99,5 +100,12 @@ internal fun <T> inEnglish(block: () -> T): T {
         defaults.removeObjectForKey(APPLE_LANGUAGES)
     }
 }
+
+// The simulator does not reliably write the removal to test.kexe.plist before the test process ends (even after synchronize()),
+// while the English before it can land there; the next run then started in English. So each process clears it once, first.
+private val leftOverCleared by lazy { NSUserDefaults.standardUserDefaults.removeObjectForKey(APPLE_LANGUAGES) }
+
+/** Hands the simulator's own language back if an earlier test process left the boards' English behind; once per process. */
+internal fun clearLeftOverLanguage() = leftOverCleared
 
 private const val APPLE_LANGUAGES = "AppleLanguages"

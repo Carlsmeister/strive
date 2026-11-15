@@ -179,7 +179,8 @@ internal fun StartBubbles(
             content = {
                 BubblePanel(
                     // The panel lies over the scrim, as on the board: a tap on it, between the bubbles, does nothing.
-                    Modifier.pointerInput(Unit) { detectTapGestures { } }.graphicsLayer {
+                    // Only while open: closing, the panel shrinks inside its unscaled bounds, and the screen behind takes taps again.
+                    (if (open) Modifier.pointerInput(Unit) { detectTapGestures { } } else Modifier).graphicsLayer {
                         val p = panel.value
                         alpha = p.coerceIn(0f, 1f)
                         // Faded per drawing, not offscreen: an offscreen layer cuts the shadow off at the layer's edge.
