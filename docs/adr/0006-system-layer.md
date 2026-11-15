@@ -67,7 +67,11 @@ rendered boards.**
   (R9), so a pair has one size and nothing is resized. A card whose content is exactly
   phone-wide renders at 390 with no side padding, as the shot draws it.
 
-Generated, because the design files and the app then cannot disagree and CI proves it. Per
+Generated, so the app cannot drift from the generators: CI reruns `tokens.py` and `icons.py`
+and fails on any diff, and `icons.py` reads `bundle.css` itself, so the icons follow the design
+files. **Two things are hand copies that CI does not check:** `MOMENTS` in `tokens.py` copies
+`moments.css`, and `Motion.win` and `Motion.calm` in `Theme.kt` copy its spring values. A change
+to `moments.css` leaves CI green and the app on the old value. Per
 card and adopted later, because rewiring five screens is five issues' worth of flows and
 shots. Side by side, because a person reading two pictures catches what a pixel diff drowns in
 font noise.
