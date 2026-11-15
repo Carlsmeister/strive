@@ -12,13 +12,11 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import se.carlsmeister.strive.App
 import se.carlsmeister.strive.data.LocalAppGraph
 import strive.shared.generated.resources.Res
-import strive.shared.generated.resources.tab_home
 import strive.shared.generated.resources.tab_start
 import kotlin.test.Test
 
@@ -27,7 +25,7 @@ import kotlin.test.Test
 class ShellShotTest {
     /** Main's tab bar: no workout open, Home current. The Home behind it is #71's (R3). */
     @Test
-    fun mainInDarkAndDarkHc() = boardShots("Main", DarkModes, waitFor = text(Res.string.tab_home),
+    fun mainInDarkAndDarkHc() = boardShots("Main", DarkModes, waitFor = "Home",
         arrange = { graph ->
             graph.sessions.discard(graph.sessions.open().first()!!.id)
             val start = getString(Res.string.tab_start)
@@ -38,9 +36,6 @@ class ShellShotTest {
         },
     ) { ShellBoard() }
 }
-
-/** [res] in the simulator's language, which need not be the boards' English. */
-private fun text(res: StringResource) = runBlocking { getString(res) }
 
 /** The app as a board frames it: under the board's 54 pt `.safe` band (`--safe-top`), which the test window does not have. */
 @Composable

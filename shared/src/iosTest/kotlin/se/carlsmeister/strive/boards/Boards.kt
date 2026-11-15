@@ -26,6 +26,7 @@ import se.carlsmeister.strive.theme.LocalReduceTransparency
 import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.workout.wallClock
 import kotlin.time.Clock
+import platform.Foundation.NSUserDefaults
 
 /** The four modes a board is drawn in, named as the boards' `data-theme` names them. */
 internal enum class Mode(val id: String, val dark: Boolean, val highContrast: Boolean) {
@@ -43,6 +44,7 @@ internal const val BOARD_SHOTS = "/tmp/strive-board-shots"
  * [arrange] runs once after the first idle, before the first shot: a tap or a write that brings the board's state on screen.
  * [waitFor] is a text the board shows once arranged and its data has arrived, in every mode: reads run on Dispatchers.IO, which
  * waitForIdle does not wait for. In the first mode it is awaited after [arrange], so it may name what only [arrange] brings.
+ * Shots are drawn in English, as the boards are, whatever the simulator's language; the flow tests keep the simulator's own.
  */
 @OptIn(ExperimentalTestApi::class)
 internal fun boardShots(
@@ -53,6 +55,10 @@ internal fun boardShots(
     arrange: suspend ComposeUiTest.(AppGraph) -> Unit = {},
     content: @Composable () -> Unit,
 ) {
+    // Compose resources reads NSLocale.preferredLanguages, which follows AppleLanguages in this process.
+    val defaults = NSUserDefaults.standardUserDefaults
+    val languages = defaults.objectForKey(APPLE_LANGUAGES)
+    defaults.setObject(listOf("en"), APPLE_LANGUAGES)
     try {
         runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
             val graph = AppGraph(memoryDriver())
@@ -78,6 +84,9 @@ internal fun boardShots(
             }
         }
     } finally {
+        if (languages == null) defaults.removeObjectForKey(APPLE_LANGUAGES) else defaults.setObject(languages, APPLE_LANGUAGES)
         wallClock = Clock.System
     }
 }
+
+private const val APPLE_LANGUAGES = "AppleLanguages"
