@@ -40,8 +40,9 @@ internal const val BOARD_SHOTS = "/tmp/strive-board-shots"
 
 /**
  * Shoots [content] on Carl's sample data at 390 × 844 pt and density 3 (R9), once per mode, as `[BOARD_SHOTS]/[id]-<mode>.png`.
- * [waitFor] is a text the content shows once its data arrives: reads run on Dispatchers.IO, which waitForIdle does not wait for.
  * [arrange] runs once after the first idle, before the first shot: a tap or a write that brings the board's state on screen.
+ * [waitFor] is a text the board shows once arranged and its data has arrived, in every mode: reads run on Dispatchers.IO, which
+ * waitForIdle does not wait for. In the first mode it is awaited after [arrange], so it may name what only [arrange] brings.
  */
 @OptIn(ExperimentalTestApi::class)
 internal fun boardShots(
@@ -67,12 +68,12 @@ internal fun boardShots(
             }
             for ((i, m) in modes.withIndex()) {
                 mode = m
+                if (i == 0) {
+                    waitForIdle()
+                    arrange(graph)
+                }
                 if (waitFor != null) waitUntil("see '$waitFor'", 10_000) { onAllNodes(hasText(waitFor, substring = true)).fetchSemanticsNodes().isNotEmpty() }
                 waitForIdle()
-                if (i == 0) {
-                    arrange(graph)
-                    waitForIdle()
-                }
                 savePng(BOARD_SHOTS, "$id-${m.id}")
             }
         }

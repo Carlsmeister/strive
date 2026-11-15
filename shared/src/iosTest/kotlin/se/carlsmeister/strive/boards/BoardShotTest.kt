@@ -85,6 +85,13 @@ class BoardShotTest {
     @Test
     fun titleBarsInDarkAndDarkHc() = boardShots("TitleBars", DarkModes, waitFor = "Push A") { TitleBarsBoard() }
 
+    /** A board's `waitFor` names what it shows once arranged, so a text only `arrange` brings on screen is waited for, not timed out on. */
+    @Test
+    fun boardShotsWaitsForWhatTheBoardShowsOnceArranged() {
+        var arranged by mutableStateOf(false)
+        boardShots("ArrangeProbe", DarkModes, waitFor = "Arranged", arrange = { arranged = true }) { if (arranged) Text("Arranged") }
+    }
+
     /**
      * A switch row toggles from a tap on its text; a switch on its own draws 32 dp but is a touch (44 dp) tall. A switch row alone
      * takes taps across a touch too, yet keeps its 32 dp of layout, so nothing drawn moves.
