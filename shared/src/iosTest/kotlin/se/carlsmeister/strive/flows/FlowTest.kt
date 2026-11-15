@@ -134,6 +134,7 @@ import strive.shared.generated.resources.superset_rest
 import androidx.compose.ui.graphics.Color
 import se.carlsmeister.strive.workout.wallClock
 import se.carlsmeister.strive.workout.now
+import androidx.compose.ui.test.hasAnyAncestor
 import se.carlsmeister.strive.data.Rest
 import strive.shared.generated.resources.bar_left_open
 import strive.shared.generated.resources.tap_to_continue
@@ -543,6 +544,7 @@ class FlowTest {
         see(s(Res.string.what_today))
     }
 
+    /** The rest's time in the bar while it runs, and both gone at zero. The ring is a drawing with no text: the WO-17-rest shot shows it. */
     @Test
     fun theBarShowsTheRestAsARingAndTimeAndDropsThemAtZero() = flow {
         startWorkout()
@@ -551,7 +553,9 @@ class FlowTest {
         // Unmerged: the bar is one button, and a test tag inside it does not merge up into the button's node.
         fun restShows() = test.onAllNodes(hasTestTag("bar-rest"), useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
         graph.rest.value = Rest(now() - 17_000, 120)
-        wait("the rest in the bar") { restShows() }
+        // 1:43 as it starts; the clock ticks on, so only the minute and the tens.
+        val time = hasText("1:4", substring = true) and hasAnyAncestor(hasTestTag("bar-rest"))
+        wait("the rest's time in the bar") { test.onAllNodes(time, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
         graph.rest.value = Rest(now() - 121_000, 120)
         wait("the rest to leave the bar") { !restShows() }
     }

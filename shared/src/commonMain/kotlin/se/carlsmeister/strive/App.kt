@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.IntOffset
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.theme.Motion
@@ -150,12 +151,22 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
         val stacks = remember { Tab.entries.associateWith { mutableStateListOf<Screen>(Stub(it, 1)) } }
         var selected by remember { mutableStateOf(Tab.Home) }
         val sessions = graph.sessions
-        // A workout left open, by ⌄ or by the app being killed, is offered in the bar above the tabs.
-        val open by remember { sessions.open() }.collectAsState(null)
         // A workout already open as the app starts was left open by the app being killed (R5): its id, until it is opened once.
         var leftOpen by remember { mutableStateOf<Long?>(null) }
-        LaunchedEffect(graph) { leftOpen = sessions.open().first()?.id }
+        // Whether the first read of the open workout has come in, or a workout was shown before it did.
+        var started by remember { mutableStateOf(false) }
+        // A workout left open, by ⌄ or by the app being killed, is offered in the bar above the tabs. The first read sets leftOpen
+        // in the same step as open, so the bar never shows a frame of the open state before the left-open one.
+        val open by remember {
+            sessions.open().onEach {
+                if (!started) {
+                    started = true
+                    leftOpen = it?.id
+                }
+            }
+        }.collectAsState(null)
         fun showWorkout() {
+            started = true
             leftOpen = null
             root += ActiveWorkout
         }
