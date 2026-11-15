@@ -75,7 +75,7 @@ internal fun NavBar(
                 }
             },
             middle = {
-                // `.nav h1`, `.back`, `.navtext`, `.lt h1` and `.wtb .mid` set `font:`, which resets `.strive`'s tabular-nums.
+                // `.nav h1`, `.back`, `.navtext`, `.lt h1`, `.wtb .mid .wn` and `small` set `font:`, which resets `.strive`'s tabular-nums.
                 Text(title, style = type.titleMedium.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox), textAlign = TextAlign.Center,
                     maxLines = 1, overflow = TextOverflow.Ellipsis)
             },

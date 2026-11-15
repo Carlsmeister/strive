@@ -63,7 +63,7 @@ internal fun StatTiles(stats: List<Stat>, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
     val type = MaterialTheme.typography
     val space = StriveTheme.spacing
-    // Each `.stat` rule sets `font:`, which resets `.strive`'s tabular-nums: the card's figures are proportional.
+    // Each `.stat` text's rule sets `font:`, which resets `.strive`'s tabular-nums: the card's figures are proportional.
     val muted = type.labelMedium.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox)
     Row(modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(space.s8)) {
         stats.forEach { stat ->
