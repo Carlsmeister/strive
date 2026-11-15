@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -55,7 +56,6 @@ internal fun NavBar(
     glassed: Boolean = false,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-    val colors = MaterialTheme.colorScheme
     val type = MaterialTheme.typography
     val space = StriveTheme.spacing
     val touch = StriveTheme.sizes.touch
@@ -64,14 +64,7 @@ internal fun NavBar(
             space.s8, Modifier.fillMaxWidth().heightIn(min = touch).padding(horizontal = space.s8),
             start = {
                 Row(horizontalArrangement = Arrangement.spacedBy(space.s4), verticalAlignment = Alignment.CenterVertically) {
-                    if (back != null) Row(
-                        Modifier.heightIn(min = touch).pressable(true, onBack).padding(end = space.s8),
-                        horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(StriveIcons.Back, contentDescription = null, Modifier.size(22.dp), tint = colors.primary)
-                        Text(back, color = colors.primary, style = type.bodyLarge.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox),
-                            softWrap = false)
-                    }
+                    if (back != null) BackLabel(back, onBack)
                 }
             },
             middle = {
@@ -86,6 +79,18 @@ internal fun NavBar(
         if (glassed) Hairline()
     }
 }
+
+/** `.back`: a teal chevron and the [parent]'s name, the screen it goes back to. Tagged `back`, so a flow finds it apart from a tab of the same name. */
+@Composable
+internal fun BackLabel(parent: String, onBack: () -> Unit, modifier: Modifier = Modifier) =
+    Row(
+        modifier.testTag("back").heightIn(min = StriveTheme.sizes.touch).pressable(true, onBack).padding(end = StriveTheme.spacing.s8),
+        horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(StriveIcons.Back, contentDescription = null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary)
+        Text(parent, color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.bodyLarge.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox), softWrap = false)
+    }
 
 /** `.navtext`, a bar's text action: teal, [bold] for the confirming one (`.b`), [dim] when it cannot act yet (`.dim`). */
 @Composable

@@ -56,7 +56,6 @@ import strive.shared.generated.resources.add_count
 import strive.shared.generated.resources.add_exercises
 import strive.shared.generated.resources.add_set
 import strive.shared.generated.resources.all_activities
-import strive.shared.generated.resources.back
 import strive.shared.generated.resources.back_to_workout
 import strive.shared.generated.resources.cancel
 import strive.shared.generated.resources.close
@@ -879,9 +878,11 @@ class FlowTest {
         see("640 kg", substring = true)
         shot("08-history")
         tap(s(Res.string.workout))
-        see(s(Res.string.back))
+        backReads(s(Res.string.all_activities))
         shot("09-session-detail")
-        tap(s(Res.string.back))
+        tapBack()
+        backReads(s(Res.string.tab_you))
+        tapBack()
         see(s(Res.string.all_activities))
     }
 
@@ -1354,6 +1355,20 @@ class FlowTest {
     }
 
     @Test
+    fun backNamesTheParentInTheLibrary() = flow {
+        tap(s(Res.string.tab_plan)); tap(s(Res.string.library))
+        backReads(s(Res.string.tab_plan))
+        shot("22-library")
+        search("Bench Press BB"); tap("Bench Press BB")
+        backReads(s(Res.string.library))
+        shot("23-exercise-detail")
+        tapBack()
+        backReads(s(Res.string.tab_plan))
+        tapBack()
+        gone(hasTestTag("back"))            // Plan's first screen has no parent
+    }
+
+    @Test
     fun aWorkoutLeftOpenComesBackAfterTheAppIsKilled() {
         val file = "flow-test.db"
         deleteFileDatabase(file)
@@ -1468,6 +1483,13 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
 
     /** The last clickable node with exactly this text, such as a button in a dialog drawn over a row with the same word. */
     fun tapLastText(text: String) = tapLast(hasText(text) and hasClickAction())
+
+    /** The back label on screen reads [parent]. */
+    fun backReads(parent: String) = wait("back to read '$parent'") {
+        test.onAllNodes(hasTestTag("back") and hasText(parent)).fetchSemanticsNodes().isNotEmpty()
+    }
+
+    fun tapBack() = tapLast(hasTestTag("back"))
 
     /** The tab bar's tab labelled [label]. */
     fun tab(label: String) = test.onNode(hasText(label) and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab))

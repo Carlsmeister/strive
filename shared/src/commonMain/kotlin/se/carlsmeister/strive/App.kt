@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import se.carlsmeister.strive.ui.BackLabel
 import se.carlsmeister.strive.ui.BubbleItem
 import se.carlsmeister.strive.ui.StartBubbles
 import se.carlsmeister.strive.ui.StartChoice
@@ -83,7 +84,6 @@ import se.carlsmeister.strive.library.LibraryScreen
 import se.carlsmeister.strive.theme.StriveTheme
 import org.jetbrains.compose.resources.stringResource
 import strive.shared.generated.resources.Res
-import strive.shared.generated.resources.back
 import strive.shared.generated.resources.close
 import strive.shared.generated.resources.library
 import strive.shared.generated.resources.next_screen
@@ -221,12 +221,12 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
                                 open?.let { sessions.add(it.id, ids, superset) }
                                 root.pop()
                             }
-                            LibraryScreen(safe, onOpen = {}, onBack = { root.pop() }, pick = { add(it, false) }, onSuperset = { add(it, true) })
+                            LibraryScreen(safe, null, onOpen = {}, onBack = { root.pop() }, pick = { add(it, false) }, onSuperset = { add(it, true) })
                         }
                     }
                     is SwapExercise -> NavEntry(route, metadata = rise(reduceMotion)) {
                         Page {
-                            LibraryScreen(safe, onOpen = {}, onBack = { root.pop() }, swapFor = route.exerciseId, pick = { ids ->
+                            LibraryScreen(safe, null, onOpen = {}, onBack = { root.pop() }, swapFor = route.exerciseId, pick = { ids ->
                                 scope.launch {
                                     sessions.swap(route.sessionExerciseId, ids.single())
                                     root.pop()
@@ -234,7 +234,7 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
                             })
                         }
                     }
-                    is Finished -> NavEntry(route) { Page { SummaryScreen(route.id, safe, after = true, onClose = { root.pop() }) } }
+                    is Finished -> NavEntry(route) { Page { SummaryScreen(route.id, safe, after = true, parent = null, onClose = { root.pop() }) } }
                 }
             },
         )
@@ -285,16 +285,17 @@ private fun TabsScreen(
                                     Placeholder(
                                         if (screen.depth == 1) title else "$title ${screen.depth}",
                                         Modifier.padding(padding),
-                                        back = if (screen.depth > 1) ({ stack.pop() }) else null,
+                                        back = if (screen.depth > 1) title else null,
+                                        onBack = { stack.pop() },
                                         next = { stack += Stub(screen.tab, screen.depth + 1) },
                                         library = if (screen.tab == Tab.Plan && screen.depth == 1) ({ stack += Library }) else null,
                                         activities = if (screen.tab == Tab.You && screen.depth == 1) ({ stack += History }) else null,
                                     )
                                 }
-                                Library -> LibraryScreen(padding, onOpen = { stack += ExerciseDetail(it) }, onBack = { stack.pop() })
-                                is ExerciseDetail -> ExerciseScreen(screen.id, padding, onBack = { stack.pop() })
-                                History -> HistoryScreen(padding, onOpen = { stack += SessionDetail(it) }, onBack = { stack.pop() }, onStart = onStartWorkout)
-                                is SessionDetail -> SummaryScreen(screen.id, padding, after = false, onClose = { stack.pop() })
+                                Library -> LibraryScreen(padding, stringResource(Res.string.tab_plan), onOpen = { stack += ExerciseDetail(it) }, onBack = { stack.pop() })
+                                is ExerciseDetail -> ExerciseScreen(screen.id, padding, stringResource(Res.string.library), onBack = { stack.pop() })
+                                History -> HistoryScreen(padding, stringResource(Res.string.tab_you), onOpen = { stack += SessionDetail(it) }, onBack = { stack.pop() }, onStart = onStartWorkout)
+                                is SessionDetail -> SummaryScreen(screen.id, padding, after = false, parent = stringResource(Res.string.all_activities), onClose = { stack.pop() })
                             }
                         } }
                     },
@@ -368,7 +369,8 @@ private fun Page(content: @Composable () -> Unit) {
 private fun Placeholder(
     title: String,
     modifier: Modifier = Modifier,
-    back: (() -> Unit)? = null,
+    back: String? = null,
+    onBack: () -> Unit = {},
     close: (() -> Unit)? = null,
     next: (() -> Unit)? = null,
     library: (() -> Unit)? = null,
@@ -379,7 +381,7 @@ private fun Placeholder(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s16, Alignment.CenterVertically),
     ) {
-        back?.let { TextButton(it) { Text(stringResource(Res.string.back)) } }
+        back?.let { BackLabel(it, onBack) }
         Text(title, style = MaterialTheme.typography.headlineMedium)
         next?.let { Button(it) { Text(stringResource(Res.string.next_screen)) } }
         library?.let { Button(it) { Text(stringResource(Res.string.library)) } }

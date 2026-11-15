@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import se.carlsmeister.strive.ui.BackLabel
 import se.carlsmeister.strive.ui.GlassMenu
 import se.carlsmeister.strive.ui.MenuRow
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +41,6 @@ import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.data.Mark
 import se.carlsmeister.strive.theme.StriveTheme
 import strive.shared.generated.resources.Res
-import strive.shared.generated.resources.back
 import strive.shared.generated.resources.bar_weight
 import strive.shared.generated.resources.equipment
 import strive.shared.generated.resources.in_my_programmes
@@ -64,12 +64,12 @@ private val Tabs = listOf(Res.string.tab_about, Res.string.tab_history, Res.stri
 
 /** Exercise detail (#17 X1): Om · Historik · Diagram · Rekord, Om first. The last three fill with #42 and #46. */
 @Composable
-internal fun ExerciseScreen(id: Long, padding: PaddingValues, onBack: () -> Unit) {
+internal fun ExerciseScreen(id: Long, padding: PaddingValues, parent: String, onBack: () -> Unit) {
     val exercise by LocalAppGraph.current.exercises.byId(id).collectAsState(null)
     var tab by remember { mutableIntStateOf(0) }
     val space = StriveTheme.spacing
     Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-        TextButton(onBack, Modifier.padding(start = space.s8)) { Text(stringResource(Res.string.back)) }
+        BackLabel(parent, onBack, Modifier.padding(start = space.s8))
         val e = exercise ?: return@Column
         Text(e.name, Modifier.padding(horizontal = space.s16), style = MaterialTheme.typography.headlineMedium)
         SegmentedTabs(Tabs.map { stringResource(it) }, tab, { tab = it }, Modifier.fillMaxWidth().padding(horizontal = space.s16, vertical = space.s8))

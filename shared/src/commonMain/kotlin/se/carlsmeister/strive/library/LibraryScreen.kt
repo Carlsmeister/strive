@@ -52,12 +52,12 @@ import dev.chrisbanes.haze.rememberHazeState
 import se.carlsmeister.strive.theme.LocalGlassSource
 import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.StriveTheme
+import se.carlsmeister.strive.ui.BackLabel
 import se.carlsmeister.strive.ui.HeaderSheet
 import se.carlsmeister.strive.workout.Btn
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.add_count
 import strive.shared.generated.resources.add_exercises
-import strive.shared.generated.resources.back
 import strive.shared.generated.resources.cancel
 import strive.shared.generated.resources.chip_conditioning
 import strive.shared.generated.resources.chip_mobility
@@ -76,11 +76,12 @@ import strive.shared.generated.resources.superset_count
  * The exercise library (#17 L1): one list with a sticky heading per muscle, search, pattern chips and a filter sheet. Given [pick] it
  * is the add-exercise picker (Q19): rows tick in the order tapped, and the bar at the bottom hands them over with Lägg till, or as one
  * superset with Superset given [onSuperset] (queue item 7). Given [swapFor] as well it swaps that exercise (Q8): one tap picks, and
- * the exercises marked Byt (SUB) with the same movement pattern come first.
+ * the exercises marked Byt (SUB) with the same movement pattern come first. [parent] names the screen back goes to; the picker has
+ * none, as it ends in Avbryt.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBack: () -> Unit, pick: ((List<Long>) -> Unit)? = null,
+internal fun LibraryScreen(padding: PaddingValues, parent: String?, onOpen: (Long) -> Unit, onBack: () -> Unit, pick: ((List<Long>) -> Unit)? = null,
                            swapFor: Long? = null, onSuperset: ((List<Long>) -> Unit)? = null) {
     var picked by rememberSaveable { mutableStateOf(listOf<Long>()) }
     // Null until the first read, so the saved scroll position is not spent on an empty list.
@@ -105,7 +106,7 @@ internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBac
     Box(Modifier.fillMaxSize().then(if (shell == null) Modifier.hazeSource(own).background(MaterialTheme.colorScheme.background) else Modifier)) {
         Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()).then(sides)) {
             if (pick == null) {
-                TextButton(onBack, Modifier.padding(start = space.s8)) { Text(stringResource(Res.string.back)) }
+                parent?.let { BackLabel(it, onBack, Modifier.padding(start = space.s8)) }
                 Text(stringResource(Res.string.library), Modifier.padding(horizontal = space.s16), style = MaterialTheme.typography.headlineMedium)
             } else {
                 // Avbryt and the title, as queue item 7 draws the picker; Lägg till lives in the bar at the bottom.
