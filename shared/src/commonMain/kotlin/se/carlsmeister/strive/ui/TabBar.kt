@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -58,7 +59,7 @@ internal fun TabBar(
     Row(
         // Border-box, as CSS: the hairline edge takes its room inside the capsule, before the 4 dp padding.
         modifier.fillMaxWidth().glass(LocalGlassSource.current, StriveTheme.glass, shape = ShapeFull)
-            .padding(StriveTheme.spacing.s4 + StriveTheme.borders.hairline),
+            .padding(StriveTheme.spacing.s4 + StriveTheme.borders.hairline).selectableGroup(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         before.forEach { Tab(it) }

@@ -9,6 +9,8 @@ import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SkikoComposeUiTest
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
@@ -86,6 +88,7 @@ import strive.shared.generated.resources.save_without
 import strive.shared.generated.resources.session_note
 import strive.shared.generated.resources.start_a_workout
 import strive.shared.generated.resources.start_workout
+import strive.shared.generated.resources.tab_home
 import strive.shared.generated.resources.tab_plan
 import strive.shared.generated.resources.tab_start
 import strive.shared.generated.resources.tab_you
@@ -1022,6 +1025,8 @@ class FlowTest {
     @Test
     fun theLibraryStillOpensFromPlan() = flow {
         tap(s(Res.string.tab_plan))
+        tab(s(Res.string.tab_plan)).assertIsSelected()
+        tab(s(Res.string.tab_home)).assertIsNotSelected()
         tap(s(Res.string.library))
         see("Bench Press BB")
     }
@@ -1107,7 +1112,10 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
     /** The last clickable node with exactly this text, such as a button in a dialog drawn over a row with the same word. */
     fun tapLastText(text: String) = tapLast(hasText(text) and hasClickAction())
 
-    fun tapSegment(label: String) = tapLast(hasText(label) and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab))
+    /** The tab bar's tab labelled [label]. */
+    fun tab(label: String) = test.onNode(hasText(label) and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab))
+
+    fun tapSegment(label: String) =tapLast(hasText(label) and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab))
 
     fun keys(typed: String) = typed.forEach {
         test.onNodeWithTag("key-$it").performClick()
