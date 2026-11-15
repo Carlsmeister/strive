@@ -33,6 +33,8 @@ import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
+import androidx.compose.material3.ButtonDefaults
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.StringResource
@@ -1373,7 +1375,35 @@ class FlowTest {
     }
 
     @Test
-    fun aLongWorkoutNameEllipsizesTheBackLabelInsteadOfCuttingIt() = flow {
+    fun aNameWiderThanTheBarKeepsDoneAndBackOnScreen() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8")
+        val name = "Överkropp tung med extra armar och lite till för säkerhets skull"
+        graph.sessions.rename(open().id, name)
+        tap(s(Res.string.finish))
+        see(s(Res.string.done))
+        shot("25-long-name-summary")
+        val touch = with(test.density) { 44.dp.toPx() }
+        // Done is a Material button: never squeezed below its own size, which Material pads out to a 48 dp touch.
+        val (minWidth, minHeight) = with(test.density) { ButtonDefaults.MinWidth.toPx() to ButtonDefaults.MinHeight.toPx() }
+        val done = test.onNode(hasText(s(Res.string.done)) and hasClickAction()).fetchSemanticsNode().boundsInRoot
+        assertTrue(done.width >= minWidth && done.height >= minHeight, "Done at its full size: $done")
+        tap(s(Res.string.done))
+        seeDesc(s(Res.string.tab_start))
+        tap(s(Res.string.tab_you))
+        tap(s(Res.string.all_activities))
+        tap(name)
+        backReads(s(Res.string.all_activities))
+        shot("26-long-name-detail")
+        val back = test.onNode(hasTestTag("back")).fetchSemanticsNode().boundsInRoot
+        assertTrue(back.width >= touch && back.height >= touch, "back a full touch in size: $back")
+        tapBack()
+        backReads(s(Res.string.tab_you))
+    }
+
+    @Test
+    fun aLongWorkoutNameLeavesTheBackLabelWhole() = flow {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
@@ -1391,8 +1421,8 @@ class FlowTest {
         val layouts = mutableListOf<TextLayoutResult>()
         text.config[SemanticsActions.GetTextLayoutResult].action!!(layouts)
         val layout = layouts.single()
-        // The title leaves the label less room than its text needs, so the label must end in an ellipsis, not be cut mid-word.
-        assertTrue(text.boundsInRoot.width < layout.multiParagraph.intrinsics.maxIntrinsicWidth, "'$parent' overflows: ${text.boundsInRoot}")
+        // The bar gives the label all it needs and the name what is left; a bar too narrow for even the label ends it in an ellipsis.
+        assertTrue(text.boundsInRoot.width >= layout.multiParagraph.intrinsics.maxIntrinsicWidth - 1, "'$parent' whole: ${text.boundsInRoot}")
         assertEquals(TextOverflow.Ellipsis, layout.layoutInput.overflow)
         assertEquals(1, layout.layoutInput.maxLines)
     }

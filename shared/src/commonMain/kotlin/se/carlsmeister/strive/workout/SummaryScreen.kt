@@ -55,6 +55,7 @@ import se.carlsmeister.strive.theme.Motion
 import se.carlsmeister.strive.theme.settle
 import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.ui.BackLabel
+import se.carlsmeister.strive.ui.CentredBar
 import se.carlsmeister.strive.ui.Segments
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.done
@@ -94,15 +95,13 @@ internal fun SummaryScreen(id: Long, padding: PaddingValues, after: Boolean, par
     val workout by remember(id) { sessions.workout(id) }.collectAsState(null)
     val space = StriveTheme.spacing
     Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = space.s8).heightIn(min = StriveTheme.sizes.touch), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.weight(1f)) {
-                parent?.let { BackLabel(it, onClose) }
-            }
-            Text(workout?.name ?: "", style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
-                if (after) Button(onClose) { Text(stringResource(Res.string.done)) }
-            }
-        }
+        // The sides keep their size and the name takes what is left, so a long name cannot squeeze out back or Done.
+        CentredBar(
+            space.s8, Modifier.fillMaxWidth().padding(horizontal = space.s8).heightIn(min = StriveTheme.sizes.touch),
+            start = { Box { parent?.let { BackLabel(it, onClose) } } },
+            middle = { Text(workout?.name ?: "", style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+            end = { Box { if (after) Button(onClose) { Text(stringResource(Res.string.done)) } } },
+        )
         val w = workout ?: return@Column
         Column(
             Modifier.verticalScroll(rememberScrollState()).padding(horizontal = space.s16)

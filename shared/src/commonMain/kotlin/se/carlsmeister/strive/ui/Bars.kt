@@ -193,7 +193,7 @@ internal fun WorkoutBar(
  * left once the wider side has its content, so a long title ends in an ellipsis and never squeezes a side's buttons.
  */
 @Composable
-private fun CentredBar(gap: Dp, modifier: Modifier, start: @Composable () -> Unit, middle: @Composable () -> Unit, end: @Composable () -> Unit) =
+internal fun CentredBar(gap: Dp, modifier: Modifier, start: @Composable () -> Unit, middle: @Composable () -> Unit, end: @Composable () -> Unit) =
     Layout(listOf(start, middle, end), modifier) { (s, m, e), c ->
         val loose = c.copy(minWidth = 0, minHeight = 0)
         val left = s.first().measure(loose)
