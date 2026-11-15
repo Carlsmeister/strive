@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -19,6 +20,7 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasTestTag
@@ -164,6 +166,29 @@ class BoardShotTest {
         val (drawnLeft, drawnRight) = pill.center.x - 16 * 3 to pill.center.x + 16 * 3
         assertTrue(pill.width >= 44 * 3 && pill.height >= 44 * 3 && pill.left >= rest.right && drawnRight <= finish.left, "the pill: $pill")
         assertEquals(name.right + 6 * 3, drawnLeft, .5f, "the pill beside the name: $pill, name $name")
+    }
+
+    /**
+     * A row's own chevron is `.chev`, a block holding `.row`'s 22 px line box, and its icon is `vertical-align: middle`: its
+     * middle sits half an x-height above the baseline, 1.53 px below the line box's middle, and Chrome paints the mask on whole
+     * pixels, so the Lists card draws it 2 pt below the row's middle. A value's chevron sits in `.val`, a flex box that centres it.
+     */
+    @Test
+    fun aRowsOwnChevronSitsTwoPointsLowAndAValuesChevronCentred() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        setContent { StriveTheme { Column {
+            ListRow("Profile", Modifier.testTag("chev"), leading = StriveIcons.You, chevron = true)
+            ListRow("Export", Modifier.testTag("val"), leading = StriveIcons.Share, value = "18 workouts", chevron = true)
+        } } }
+        // The chevron's middle below the row's, in px: the marks in the 16 dp before the row's 16 dp end padding.
+        fun chevronDrop(tag: String): Float {
+            val pixels = onNodeWithTag(tag).captureToImage().toPixelMap()
+            val blank = pixels[2, 2]
+            val xs = pixels.width - 32 * 3 until pixels.width - 16 * 3
+            val ys = (0 until pixels.height).filter { y -> xs.any { x -> pixels[x, y] != blank } }
+            return (ys.first() + ys.last() + 1) / 2f - pixels.height / 2f
+        }
+        assertEquals(2f * 3, chevronDrop("chev"), 1f, "Profile's chevron")
+        assertEquals(0f, chevronDrop("val"), 1f, "Export's chevron")
     }
 
     /** `.navtext` is a touch tall and acts; `.navtext.dim` cannot act yet. */

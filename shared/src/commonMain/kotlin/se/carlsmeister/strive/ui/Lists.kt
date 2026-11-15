@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -83,7 +84,9 @@ internal fun ListRow(
         if (value != null || chevron) {
             Row(horizontalArrangement = Arrangement.spacedBy(space.s4), verticalAlignment = Alignment.CenterVertically) {
                 if (value != null) Text(value, color = colors.onSurfaceVariant, style = style, maxLines = 1, softWrap = false)
-                if (chevron) Icon(StriveIcons.ChevR, contentDescription = null, Modifier.size(16.dp), tint = colors.onSurfaceVariant)
+                // Alone, it is `.chev`: `vertical-align: middle` in `.row`'s 22 px line box, which the card paints 2 pt low. `.val` centres it.
+                val drop = if (value == null) 2.dp else 0.dp
+                if (chevron) Icon(StriveIcons.ChevR, contentDescription = null, Modifier.offset(y = drop).size(16.dp), tint = colors.onSurfaceVariant)
             }
         }
     }
