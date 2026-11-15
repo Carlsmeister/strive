@@ -63,6 +63,8 @@ import strive.shared.generated.resources.discard_workout
 import strive.shared.generated.resources.done
 import strive.shared.generated.resources.empty_workout
 import strive.shared.generated.resources.exercise_options
+import strive.shared.generated.resources.workout_options
+import strive.shared.generated.resources.mark_none
 import strive.shared.generated.resources.field_reps
 import strive.shared.generated.resources.field_seconds
 import strive.shared.generated.resources.field_weight
@@ -432,6 +434,59 @@ class FlowTest {
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.remove_exercise))
         waitUntilTrue { open().exercises.isEmpty() }
+    }
+
+    /**
+     * Each of the five menus the built screens open, shot as `menu-<name>-dark` beside the Menus card: drawn in English, as the
+     * board is, while the flow still reads its texts from the app's strings.
+     */
+    @Test
+    fun everyMenuIsTheGlassPullDown() = inEnglish {
+        flow(dark = true) {
+            startWorkout(); addExercises("Bench Press BB")
+            for ((button, name) in listOf(Res.string.exercise_options to "exercise", Res.string.workout_options to "workout", Res.string.free_rest to "rest")) {
+                tapDesc(s(button)); openMenu(name)
+            }
+            tapDesc(s(Res.string.set_type, "1")); openMenu("set")          // the set badge
+            tapDesc(s(Res.string.minimise)); bar()
+            tap(s(Res.string.tab_plan)); tap(s(Res.string.library)); search("Bench Press BB"); tap("Bench Press BB")
+            tap(s(Res.string.mark_none)); openMenu("mark")                  // In my programmes; a fresh graph has no mark set
+        }
+    }
+
+    @Test
+    fun aMenuOpenedAtTheBottomOfTheScreenStaysOnIt() = flow {
+        startWorkout(); addExercises("Bench Press BB")
+        // Through the database: the Add set row is a lazy item that leaves the screen once the rows fill it.
+        repeat(12) { graph.sessions.addSet(open().exercises.single().id) }
+        waitUntilTrue { open().sets == 13 }
+        // Six rows, under the header and the focus card, reach the bottom of the flow's 926 dp screen.
+        wait("the rows to fill the screen") { setRows().fetchSemanticsNodes().size >= 6 }
+        // The lowest badge on screen: the last node described as a set's type that lies wholly inside the screen.
+        val screen = test.onAllNodes(isRoot())[0].fetchSemanticsNode().boundsInRoot
+        val badgePrefix = s(Res.string.set_type, "")
+        val badges = test.onAllNodes(SemanticsMatcher("set badge on screen") {
+            (it.config.getOrNull(SemanticsProperties.ContentDescription)?.firstOrNull() ?: "").startsWith(badgePrefix) && it.boundsInRoot.bottom <= screen.bottom
+        })
+        val lowest = badges[badges.fetchSemanticsNodes().lastIndex]
+        val badge = lowest.fetchSemanticsNode().boundsInRoot
+        lowest.performClick()
+        wait("the menu") { test.onAllNodes(hasTestTag("glass-menu")).fetchSemanticsNodes().size == 1 }
+        val menu = test.onNode(hasTestTag("glass-menu")).fetchSemanticsNode().boundsInRoot
+        val root = test.onAllNodes(isRoot())[0].fetchSemanticsNode().boundsInRoot   // the screen: a popup is a second root
+        assertTrue(menu.top >= root.top && menu.bottom <= root.bottom && menu.left >= root.left && menu.right <= root.right, "$menu inside $root")
+        // Opened above its badge: otherwise the badge sat high enough for the menu to fit below, and nothing here was at the bottom.
+        assertTrue(menu.bottom <= badge.top, "$menu above $badge")
+    }
+
+    @Test
+    fun backClosesAMenuAndLeavesTheScreenWhereItWas() = flow {
+        tap(s(Res.string.tab_plan)); tap(s(Res.string.library)); search("Bench Press BB"); tap("Bench Press BB")
+        tap(s(Res.string.mark_none))
+        wait("the menu") { test.onAllNodes(hasTestTag("glass-menu")).fetchSemanticsNodes().size == 1 }
+        back()
+        gone(hasTestTag("glass-menu"))
+        see(s(Res.string.mark_none))   // still the exercise, not the library behind it
     }
 
     @Test
@@ -905,6 +960,7 @@ class FlowTest {
         tapDesc(s(Res.string.exercise_options))
         shot("16-exercise-menu")
         tap(s(Res.string.rest_all))
+        shot("16b-rest-submenu")
         tap("1:30")
         waitUntilTrue { open().exercises.single().sets.all { it.rest == 90 } }
         see(s(Res.string.rest_row, "1:30"))
@@ -1438,6 +1494,19 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
         val before = open().logged
         tap(s(Res.string.log_next))
         waitUntilTrue { open().logged > before }
+    }
+
+    /** Waits for the one open menu, saves it as `menu-[name]-dark` beside the Menus card, and closes it. */
+    fun openMenu(name: String) {
+        wait("the $name menu") { test.onAllNodes(hasTestTag("glass-menu")).fetchSemanticsNodes().size == 1 }
+        test.savePng(BOARD_SHOTS, "menu-$name-dark")
+        closeMenu()
+    }
+
+    /** A tap on the screen outside the menu, at its top-left corner; the screen is the first root, as a popup adds a second. */
+    fun closeMenu() {
+        test.onAllNodes(isRoot())[0].performTouchInput { click(Offset(1f, 1f)) }
+        gone(hasTestTag("glass-menu"))
     }
 
     /** A picture of the screen for a person to look at; the tests never compare them. */

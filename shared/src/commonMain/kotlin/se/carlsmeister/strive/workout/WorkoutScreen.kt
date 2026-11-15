@@ -33,8 +33,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -69,6 +67,13 @@ import androidx.compose.ui.window.Dialog
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
+import androidx.compose.runtime.CompositionLocalProvider
+import se.carlsmeister.strive.theme.LocalGlassSource
+import se.carlsmeister.strive.theme.StriveIcons
+import se.carlsmeister.strive.ui.GlassMenu
+import se.carlsmeister.strive.ui.MenuRow
+import se.carlsmeister.strive.ui.MenuTile
+import se.carlsmeister.strive.ui.MenuTiles
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
@@ -214,7 +219,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
         }
     }
 
-    Box(Modifier.fillMaxSize()) {
+    Box(Modifier.fillMaxSize()) { CompositionLocalProvider(LocalGlassSource provides haze) {
         Column(Modifier.fillMaxSize()) {
             // The name rides in the bar only while the large header is out of sight (decision 40).
             val scrolled by remember { derivedStateOf { list.firstVisibleItemIndex > 0 } }
@@ -226,7 +231,9 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             }
             Box(Modifier.weight(1f)) {
                 LazyColumn(
-                    Modifier.fillMaxSize().hazeSource(haze), list,
+                    // Its own background inside the source: haze blurs only what the source draws, and glass over a transparent
+                    // source showed the list's text sharp through its tint.
+                    Modifier.fillMaxSize().hazeSource(haze).background(MaterialTheme.colorScheme.background), list,
                     contentPadding = PaddingValues(start = StriveTheme.spacing.s16, end = StriveTheme.spacing.s16, bottom = 320.dp),
                 ) {
                     if (w.exercises.isEmpty()) {
@@ -372,7 +379,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             Dock(e, set, badges(e.sets)[i], defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
                 field = editField, logs = !editRest)
         }
-    }
+    } }
 
     if (finishing) {
         val left = w.sets - w.logged
@@ -487,36 +494,31 @@ private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, let
                         .semantics { contentDescription = label },
                     contentAlignment = Alignment.Center,
                 ) { Text("⋯", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = colors.onPrimaryContainer) }
-                DropdownMenu(menu, { menu = false; restMenu = false }, containerColor = colors.surfaceContainerHigh) {
+                GlassMenu(menu, { menu = false; restMenu = false }) {
                     if (!restMenu) {
-                        Row(Modifier.padding(horizontal = 12.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
-                            MenuTile(Glyph.Note, stringResource(Res.string.note)) { menu = false; noteOpen = true }
-                            MenuTile(Glyph.Swap, stringResource(Res.string.swap)) { menu = false; onSwap() }
-                        }
-                        DropdownMenuItem({ Text(stringResource(Res.string.sticky_note)) }, onClick = { menu = false; dialog = "pin" },
-                            trailingIcon = { Glyph(Glyph.Pin, 18.dp, color = colors.onSurface) })
-                        DropdownMenuItem({ Text(stringResource(Res.string.rest_all)) }, onClick = { restMenu = true },
-                            trailingIcon = { Text("›", style = MaterialTheme.typography.titleMedium) })
+                        MenuTiles(
+                            MenuTile(StriveIcons.Note, stringResource(Res.string.note)) { menu = false; noteOpen = true },
+                            MenuTile(StriveIcons.Swap, stringResource(Res.string.swap)) { menu = false; onSwap() },
+                        )
+                        MenuRow(stringResource(Res.string.sticky_note), { menu = false; dialog = "pin" }, icon = StriveIcons.Pin)
+                        MenuRow(stringResource(Res.string.rest_all), { restMenu = true }, tail = "›")
                         // Choice 4's Skapa superset; in a superset, the way out of it.
                         if (letter != null) {
-                            DropdownMenuItem({ Text(stringResource(Res.string.superset_leave)) }, onClick = { menu = false; scope.launch { sessions.leaveSuperset(e.id) } })
+                            MenuRow(stringResource(Res.string.superset_leave), { menu = false; scope.launch { sessions.leaveSuperset(e.id) } })
                         } else if (w.exercises.size > 1) {
-                            DropdownMenuItem({ Text(stringResource(Res.string.superset_create)) }, onClick = { menu = false; dialog = "superset" })
+                            MenuRow(stringResource(Res.string.superset_create), { menu = false; dialog = "superset" })
                         }
-                        DropdownMenuItem({ Text(stringResource(Res.string.order_skip)) }, onClick = { menu = false; dialog = "order" })
+                        MenuRow(stringResource(Res.string.order_skip), { menu = false; dialog = "order" })
                         if (e.type == ExerciseType.WeightReps) {
-                            DropdownMenuItem({ Text(stringResource(Res.string.exercise_settings)) }, onClick = { menu = false; dialog = "settings" })
+                            MenuRow(stringResource(Res.string.exercise_settings), { menu = false; dialog = "settings" })
                         }
-                        HorizontalDivider(thickness = StriveTheme.borders.hairline, color = colors.outlineVariant)
-                        DropdownMenuItem({ Text(stringResource(Res.string.remove_exercise), color = colors.error) },
-                            onClick = { menu = false; scope.launch { sessions.removeExercise(e.id) } })
+                        MenuRow(stringResource(Res.string.remove_exercise), { menu = false; scope.launch { sessions.removeExercise(e.id) } },
+                            icon = StriveIcons.Trash, danger = true)
                     } else {
-                        DropdownMenuItem({ Text(stringResource(Res.string.rest_all), fontWeight = FontWeight.SemiBold) }, onClick = { restMenu = false },
-                            leadingIcon = { Glyph(Glyph.Back, 18.dp, color = colors.onSurface) })
+                        MenuRow(stringResource(Res.string.rest_all), { restMenu = false }, back = true)
                         val all = e.sets.map { restOf(it, defaultRest) }.distinct().singleOrNull()
                         for (r in listOf(60, 90, 120, 150, 180)) {
-                            DropdownMenuItem({ Text(clock(r.toLong())) }, onClick = { menu = false; restMenu = false; scope.launch { sessions.setRestAll(e.id, r) } },
-                                leadingIcon = { Box(Modifier.size(18.dp)) { if (all == r) Glyph(Glyph.Check, 18.dp, color = colors.primary) } })
+                            MenuRow(clock(r.toLong()), { menu = false; restMenu = false; scope.launch { sessions.setRestAll(e.id, r) } }, checked = all == r)
                         }
                     }
                 }
@@ -550,17 +552,6 @@ private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, let
         "superset" -> SupersetDialog(w, e) { dialog = null }
         "settings" -> SettingsDialog(e) { dialog = null }
     }
-}
-
-/** One of M2's two palette tiles on top of the exercise menu: Anteckning and Byt. */
-@Composable
-private fun MenuTile(glyph: Glyph, label: String, onClick: () -> Unit) = Column(
-    Modifier.size(128.dp, 64.dp).clip(MaterialTheme.shapes.large).background(MaterialTheme.colorScheme.surfaceContainerHighest)
-        .clickable(onClick = onClick).padding(horizontal = 12.dp, vertical = 10.dp),
-    verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4),
-) {
-    Glyph(glyph, 20.dp, color = MaterialTheme.colorScheme.onSurface, stroke = 1.8f)
-    Text(label, style = MaterialTheme.typography.titleSmall)
 }
 
 /** Ordning och hoppa över (Q8): move an exercise up or down, or skip it; a skipped exercise stays recorded. */

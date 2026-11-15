@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import se.carlsmeister.strive.ui.GlassMenu
+import se.carlsmeister.strive.ui.MenuRow
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -125,12 +125,12 @@ private fun MarkRow(e: Exercise) {
             Text(stringResource(Res.string.in_my_programmes), Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
             Box {
                 TextButton({ open = true }) { Text(stringResource(e.mark.label)) }
-                DropdownMenu(open, { open = false }) {
+                GlassMenu(open, { open = false }) {
                     for (mark in listOf(Mark.Yes, Mark.Sub, Mark.Test, Mark.No, null)) {
-                        DropdownMenuItem({ Text(stringResource(mark.label)) }, onClick = {
+                        MenuRow(stringResource(mark.label), {
                             open = false
                             scope.launch { exercises.setMark(e.id, mark) }
-                        })
+                        }, checked = mark == e.mark)
                     }
                 }
             }

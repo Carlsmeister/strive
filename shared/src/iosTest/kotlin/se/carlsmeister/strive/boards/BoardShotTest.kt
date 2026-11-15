@@ -96,6 +96,13 @@ class BoardShotTest {
     fun startBubblesInDarkAndDarkHc() = boardShots("StartBubbles", DarkModes) { StartBubblesBoard() }
 
     @Test
+    fun menusInDarkAndDarkHc() = boardShots("Menus", DarkModes, waitFor = "Remove exercise") { MenusBoard() }
+
+    /** P5: read by eye, the lines behind the panel in its popup must be blurred. */
+    @Test
+    fun aMenuBlursWhatIsBehindIt() = boardShots("MenuOverText", listOf(Mode.Dark), waitFor = "Change start time") { MenuOverTextBoard() }
+
+    @Test
     fun titleBarsInDarkAndDarkHc() = boardShots("TitleBars", DarkModes, waitFor = "Push A") { TitleBarsBoard() }
 
     /** A board's `waitFor` names what it shows once arranged, so a text only `arrange` brings on screen is waited for, not timed out on. */

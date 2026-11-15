@@ -58,6 +58,14 @@ import se.carlsmeister.strive.ui.ListGroup
 import se.carlsmeister.strive.ui.ListRow
 import se.carlsmeister.strive.ui.MomentNumber
 import se.carlsmeister.strive.ui.MomentTag
+import se.carlsmeister.strive.ui.GlassMenu
+import se.carlsmeister.strive.ui.MenuRow
+import se.carlsmeister.strive.ui.MenuTile
+import se.carlsmeister.strive.ui.MenuTiles
+import se.carlsmeister.strive.theme.LocalGlassSource
+import androidx.compose.runtime.CompositionLocalProvider
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import se.carlsmeister.strive.ui.MorePill
 import se.carlsmeister.strive.ui.NavBar
 import se.carlsmeister.strive.ui.RoundButton
@@ -268,4 +276,55 @@ private fun Modifier.bubbleAt(x: Dp, y: Dp) = layout { m, c ->
     val p = m.measure(c.copy(minWidth = 0, minHeight = 0))
     val half = 28.dp.roundToPx()
     layout(p.width, p.height) { p.place(x.roundToPx() - ((p.width - 2 * half) / 2f).roundToInt() - half, y.roundToPx() - half) }
+}
+
+/**
+ * The Menus card: its 390 x 400 box (border-box, as the TabBar card's) with the exercise menu open at top 16, right 16: anchored
+ * to a point 6 dp above that corner, so the card is also the menu's own placement.
+ */
+@Composable
+internal fun MenusBoard() {
+    val colors = MaterialTheme.colorScheme
+    val corner = RoundedCornerShape(16.dp)
+    Box(
+        Modifier.padding(top = 16.dp).fillMaxWidth().height(400.dp).clip(corner).background(colors.background)
+            .border(1.dp, colors.outlineVariant, corner).padding(1.dp),
+    ) {
+        Box(Modifier.align(Alignment.TopEnd).padding(top = 10.dp, end = 16.dp)) {
+            GlassMenu(expanded = true, onDismiss = {}) {
+                MenuTiles(MenuTile(StriveIcons.Note, "Note") {}, MenuTile(StriveIcons.Swap, "Swap") {})
+                MenuRow("Exercise details", {}, icon = StriveIcons.Info)
+                MenuRow("Sticky note", {}, icon = StriveIcons.Pin)
+                MenuRow("Rest for all sets", {}, tail = "\u203a")
+                MenuRow("Create superset", {})
+                MenuRow("Order and skip", {})
+                MenuRow("Exercise settings", {})
+                MenuRow("Remove exercise", {}, icon = StriveIcons.Trash, danger = true)
+            }
+        }
+    }
+}
+
+/**
+ * P5's probe: a menu, in its popup, open over 20 lines of text marked to blur; the lines behind the panel must come out blurred.
+ * The source paints its own background, as a screen's must: haze blurs only what the source draws, and over a transparent one
+ * the sharp text under it shows through the tint.
+ */
+@Composable
+internal fun MenuOverTextBoard() {
+    val haze = rememberHazeState()
+    CompositionLocalProvider(LocalGlassSource provides haze) {
+        Box(Modifier.fillMaxWidth()) {
+            Column(Modifier.fillMaxWidth().hazeSource(haze).background(MaterialTheme.colorScheme.background).padding(16.dp)) {
+                repeat(20) { Text("Line ${it + 1}: the quick brown fox jumps", style = MaterialTheme.typography.bodyLarge) }
+            }
+            Box(Modifier.align(Alignment.TopEnd).padding(top = 60.dp, end = 16.dp)) {
+                GlassMenu(expanded = true, onDismiss = {}) {
+                    MenuRow("Rename", {})
+                    MenuRow("Session note", {})
+                    MenuRow("Change start time", {})
+                }
+            }
+        }
+    }
 }
