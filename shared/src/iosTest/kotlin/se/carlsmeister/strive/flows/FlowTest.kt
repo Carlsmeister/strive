@@ -156,6 +156,8 @@ import strive.shared.generated.resources.hold_last_set
 import strive.shared.generated.resources.kind_failure
 import strive.shared.generated.resources.now_kind
 import strive.shared.generated.resources.rest_change
+import strive.shared.generated.resources.dock_rest_after
+import strive.shared.generated.resources.dock_set
 import strive.shared.generated.resources.superset_count
 import strive.shared.generated.resources.superset_create
 import strive.shared.generated.resources.superset_leave
@@ -1288,8 +1290,24 @@ class FlowTest {
         shot("drop-set-$palette")
     }
 
+    /** P7: the dock opened from the rest line after set 1 is titled for that rest, not for the set (WO-04-rest). */
     @Test
-    fun aRestLineChangesItsRestAndTheRestCardFollowsInDark() = flow(dark = true) { restLineShots("dark") }
+    fun theDockFromARestLineIsTitledRestAfterTheSet() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
+        tapContaining(s(Res.string.add_set))
+        waitUntilTrue { open().sets == 2 }
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
+        graph.rest.value = graph.rest.value!!.copy(seconds = 3_600)
+        tapDesc(s(Res.string.rest_change, "1"))
+        see(s(Res.string.dock_rest_after, "Bench Press BB", 1))
+        gone(hasText(s(Res.string.dock_set, "Bench Press BB", 1)))
+    }
+
+    @Test
+    fun aRestLineChangesItsRestAndTheRestCardFollowsInDark()= flow(dark = true) { restLineShots("dark") }
 
     @Test
     fun aRestLineChangesItsRestAndTheRestCardFollowsInDarkHighContrast() = flow(dark = true, highContrast = true) { restLineShots("darkhc") }

@@ -121,7 +121,6 @@
     <string name="field_seconds">Tid, s</string>
     <string name="field_metres">Distans, m</string>
     <string name="rir">RIR</string>
-    <string name="set_number">Set %1$s</string>
     <string name="time_sets">%1$s · %2$d/%3$d set</string>
     <string name="log_set">Logga set %1$s</string>
     <string name="logged">Loggat</string>
@@ -221,4 +220,8 @@
     <string name="note_previous">Förra</string>
     <string name="note_plan">Plan</string>
     <string name="note_today">Anteckning för idag</string>
+    <string name="dock_set">%1$s · Set %2$d</string>
+    <string name="dock_warmup">%1$s · Uppvärmning</string>
+    <string name="dock_drop">%1$s · Dropset</string>
+    <string name="dock_rest_after">%1$s · Vila efter set %2$d</string>
 </resources>

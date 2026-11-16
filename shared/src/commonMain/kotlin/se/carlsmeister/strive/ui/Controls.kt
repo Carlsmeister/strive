@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -212,8 +214,9 @@ internal fun Segments(options: List<String>, selected: Int?, onSelect: (Int?) ->
                       compact: Boolean = false) {
     val space = StriveTheme.spacing
     val gap = if (compact) 3.dp else 2.dp
+    // Its own height unless the caller sets a taller one, which the segments then fill (`.seg`'s grid stretches them).
     Row(
-        modifier.background(
+        modifier.height(IntrinsicSize.Min).background(
             if (compact) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surfaceContainerHighest,
             if (compact) RoundedCornerShape(12.dp) else MaterialTheme.shapes.medium,
         ).padding(gap),
@@ -222,7 +225,7 @@ internal fun Segments(options: List<String>, selected: Int?, onSelect: (Int?) ->
         options.forEachIndexed { i, label ->
             val on = i == selected
             Box(
-                Modifier.weight(1f).then(if (compact) Modifier.height(34.dp) else Modifier.heightIn(min = StriveTheme.sizes.touch - 4.dp))
+                Modifier.weight(1f).fillMaxHeight().then(if (compact) Modifier.height(34.dp) else Modifier.heightIn(min = StriveTheme.sizes.touch - 4.dp))
                     // Teal, what the tokens keep for chosen: the catalogue's surface is darker than the track in dark mode.
                     .background(if (on) MaterialTheme.colorScheme.primary else Color.Transparent, if (compact) RoundedCornerShape(9.dp) else MaterialTheme.shapes.small)
                     .clickable { onSelect(if (on && clearable) null else i) }

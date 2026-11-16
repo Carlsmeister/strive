@@ -25,8 +25,12 @@ import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.SqlExercises
 import se.carlsmeister.strive.workout.now
 import strive.shared.generated.resources.Res
+import androidx.compose.ui.test.hasClickAction
 import strive.shared.generated.resources.exercise_options
+import strive.shared.generated.resources.field_weight
+import strive.shared.generated.resources.next
 import strive.shared.generated.resources.note
+import strive.shared.generated.resources.rest_change
 import strive.shared.generated.resources.workout
 import kotlin.test.Test
 
@@ -227,6 +231,65 @@ class WorkoutShotTest {
         onNode(hasScrollToIndexAction()).performScrollToKey("end")
         waitForIdle()
     }
+
+    /** WO-02-s2 with the dock open on Bench Press BB's set 2, as a tap on its row opens it. */
+    @Test
+    fun wo04NewInDarkAndDarkHc() = workoutBoard("WO-04-new", waitFor = "Bench Press BB · Set 2") { benchDock(row = 3) }
+
+    /** The dock on the logged set 1. */
+    @Test
+    fun wo04LoggedInDarkAndDarkHc() = workoutBoard("WO-04-logged", waitFor = "Save change") { benchDock(row = 2) }
+
+    /** The dock opened from the rest line after set 2: the rest field focused with the keypad, and Save. */
+    @Test
+    fun wo04RestInDarkAndDarkHc() = workoutBoard("WO-04-rest", waitFor = "Rest after set 2") {
+        onAllNodes(hasContentDescription(getString(Res.string.rest_change, "2")))[0].performClick()
+        waitForIdle()
+    }
+
+    /** The dock on set 2 with 4+ tapped and 6 chosen: the 4 to 10 row open under the segments, the segment reading 6. */
+    @Test
+    fun wo04Rir4InDarkAndDarkHc() = workoutBoard("WO-04-rir4", waitFor = "Bench Press BB · Set 2") {
+        benchDock(row = 3)
+        val tab = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
+        onAllNodes(hasText("4+") and tab).let { it[it.fetchSemanticsNodes().size - 1] }.performClick()
+        waitForIdle()
+        onNode(hasText("6") and tab).performClick()
+        waitUntil(timeoutMillis = 10_000) { onAllNodes(hasText("6") and tab and isSelected()).fetchSemanticsNodes().size == 2 }
+    }
+
+    /** The keypad on the weight, 8 then 5 typed. */
+    @Test
+    fun wo05WeightInDarkAndDarkHc() = workoutBoard("WO-05-weight", waitFor = "85") { benchKeypad(nexts = 0) }
+
+    /** The keypad on the reps, fresh: 85 typed into the weight, then Next. */
+    @Test
+    fun wo05RepsInDarkAndDarkHc() = workoutBoard("WO-05-reps", waitFor = "Next") { benchKeypad(nexts = 1) }
+
+    /** The keypad on the rest, where the button reads Log ›. */
+    @Test
+    fun wo05RestInDarkAndDarkHc() = workoutBoard("WO-05-rest", waitFor = "Log ›") { benchKeypad(nexts = 2) }
+}
+
+/**
+ * Opens the dock on Bench Press BB's [row] (the warm-up is row 1) through the row's own action: a click at the row's centre lands on its
+ * weight cell, which opens the keypad instead.
+ */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.benchDock(row: Int) {
+    onNode(hasTestTag("set Bench Press BB $row")).performSemanticsAction(SemanticsActions.OnClick)
+    val weight = getString(Res.string.field_weight)
+    waitUntil(timeoutMillis = 10_000) { onAllNodes(hasText(weight)).fetchSemanticsNodes().isNotEmpty() }
+}
+
+/** The dock on set 2 with its weight typed as 8, 5 on the keypad, then Next tapped [nexts] times. */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.benchKeypad(nexts: Int) {
+    benchDock(row = 3)
+    onNode(hasContentDescription(getString(Res.string.field_weight))).performClick()
+    waitForIdle()
+    "85".forEach { onNode(hasTestTag("key-$it")).performClick(); waitForIdle() }
+    repeat(nexts) { onNode(hasText(getString(Res.string.next)) and hasClickAction()).performClick(); waitForIdle() }
 }
 
 /**

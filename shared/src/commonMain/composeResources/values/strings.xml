@@ -121,7 +121,6 @@
     <string name="field_seconds">Time, s</string>
     <string name="field_metres">Distance, m</string>
     <string name="rir">RIR</string>
-    <string name="set_number">Set %1$s</string>
     <string name="time_sets">%1$s · %2$d/%3$d sets</string>
     <string name="log_set">Log set %1$s</string>
     <string name="logged">Logged</string>
@@ -221,4 +220,8 @@
     <string name="note_previous">Previous</string>
     <string name="note_plan">Plan</string>
     <string name="note_today">Note for today</string>
+    <string name="dock_set">%1$s · Set %2$d</string>
+    <string name="dock_warmup">%1$s · Warm-up</string>
+    <string name="dock_drop">%1$s · Drop set</string>
+    <string name="dock_rest_after">%1$s · Rest after set %2$d</string>
 </resources>
