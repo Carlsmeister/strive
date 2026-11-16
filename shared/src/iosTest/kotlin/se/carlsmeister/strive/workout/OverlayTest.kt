@@ -1,11 +1,13 @@
 package se.carlsmeister.strive.workout
 
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -19,16 +21,20 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
 class OverlayTest {
     /**
-     * An `AnimatedVisibility` left in the composition asked for a frame for good when it hid exactly 1 240 snapshots after it showed,
-     * and a flow test that closed the dock at that count never went idle (#57). 1 240 is 31 times the 40 bytes between a state's two
-     * records on iOS; every multiple of 31 × 8 up to 31 × 72 is tried, eight to each side, in case that size changes.
+     * An `AnimatedVisibility` left in the composition asked for a frame for good when it hid at one count of snapshots after it
+     * showed, and a flow test that closed the dock at that count never went idle (#57). This test measures that gap, from the enter's
+     * end to the exit's end, as 1 238; Compose's hash makes it 1 240 = 31 × 40. That 40 is the bytes between a state's two records on
+     * iOS, and that the identity hash is the address, are inferred from the count, not read in Kotlin/Native's runtime. So every
+     * multiple of 31 × 8 up to 31 × 72 is tried, eight to each side, in case that size is another.
      */
     @Test
-    fun anOverlayHiddenAnyNumberOfSnapshotsAfterItShowedLeavesTheScreenIdle() = runSkikoComposeUiTest(Size(200f, 400f), Density(1f)) {
+    fun anOverlayHiddenNearTheFirstNineMultiplesOf248SnapshotsAfterItShowedLeavesTheScreenIdle() = runSkikoComposeUiTest(Size(200f, 400f), Density(1f)) {
         var visible by mutableStateOf(false)
         setContent {
             Box(Modifier.fillMaxSize()) {
@@ -62,5 +68,44 @@ class OverlayTest {
             hasPendingWork()
         }
         assertEquals(emptyList(), stillBusyAfter, "gaps in snapshot ids after which the hidden overlay still asks for frames")
+    }
+
+    /** Scrolled past row 1 and back inside the strip's spring, or a set tapped and the outside tapped as the dock rises. */
+    @Test
+    fun anOverlayHiddenWhileItEntersStaysUntilItsExitEnds() = runSkikoComposeUiTest(Size(200f, 400f), Density(1f)) {
+        var visible by mutableStateOf(false)
+        var inTree = false
+        setContent {
+            Box(Modifier.fillMaxSize()) {
+                Overlay(visible, Modifier.align(Alignment.BottomCenter), slideInVertically(tween(300)) { it }, slideOutVertically(tween(300)) { it }) {
+                    Box(Modifier.size(50.dp))
+                    DisposableEffect(Unit) {
+                        inTree = true
+                        onDispose { inTree = false }
+                    }
+                }
+            }
+        }
+        visible = true
+        repeat(3) { mainClock.advanceTimeByFrame() } // composed, then the enter under way
+        visible = false
+        mainClock.advanceTimeByFrame()
+        assertTrue(inTree, "an overlay hidden while it entered left at once instead of sliding back out")
+        var frames = 0
+        while (hasPendingWork() && frames++ < 60) mainClock.advanceTimeByFrame()
+        assertFalse(inTree, "an overlay whose exit ended stayed in the composition")
+    }
+
+    /** A workout screen re-entered already scrolled composes the strip shown. */
+    @Test
+    fun anOverlayShownFromTheStartIsInPlaceWithoutEntering() = runSkikoComposeUiTest(Size(200f, 400f), Density(1f)) {
+        var first: EnterExitState? = null
+        setContent {
+            Overlay(true, Modifier, slideInVertically(tween(300)) { it }, slideOutVertically(tween(300)) { it }) {
+                if (first == null) first = transition.currentState
+                Box(Modifier.size(50.dp))
+            }
+        }
+        assertEquals(EnterExitState.Visible, first)
     }
 }

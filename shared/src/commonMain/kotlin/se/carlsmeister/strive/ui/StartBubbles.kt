@@ -150,7 +150,7 @@ internal fun StartBubbles(
 ) {
     val state = remember { MutableTransitionState(false) }
     state.targetState = open
-    if (!state.currentState && !state.targetState) return
+    if (!state.showsOrMoves) return
     // Closing keeps the bubbles that were open, so the workout a bubble starts does not swap them while they fly back.
     val frozen = remember(open) { items }
     val shown = if (open) items else frozen

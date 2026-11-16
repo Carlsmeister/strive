@@ -79,6 +79,7 @@ import se.carlsmeister.strive.ui.Segments
 import se.carlsmeister.strive.ui.Alert
 import se.carlsmeister.strive.ui.AlertBox
 import se.carlsmeister.strive.ui.GlassMenu
+import se.carlsmeister.strive.ui.showsOrMoves
 import se.carlsmeister.strive.ui.HeaderSheet
 import se.carlsmeister.strive.ui.SheetAction
 import se.carlsmeister.strive.ui.TextPrompt
@@ -659,16 +660,16 @@ private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, rir
 }
 
 /**
- * `AnimatedVisibility` for the dock and the strip, which start hidden: in the composition only while it shows or moves. Left there
- * for good, its transition can go on asking for a frame, every frame, after it has ended. Compose keeps that loop by a
- * `derivedStateOf`, which trusts a hash of its inputs' records; on iOS the hash repeats when the overlay hides exactly 1 240
- * snapshots after it showed, and the loop is never taken away (#57). Out of the composition, the loop goes with it.
+ * `AnimatedVisibility` for the dock and the strip: in the composition only while it shows or moves, an enter cut short included.
+ * Left there for good, its transition can go on asking for a frame, every frame, after it has ended. Compose keeps that loop by a
+ * `derivedStateOf`, which trusts a hash of its inputs' records; on iOS the hash repeats when the overlay hides at one count of
+ * snapshots after it showed (`OverlayTest`), and the loop is never taken away (#57). Out of the composition, the loop goes with it.
  */
 @Composable
 internal fun Overlay(visible: Boolean, modifier: Modifier, enter: EnterTransition, exit: ExitTransition, content: @Composable AnimatedVisibilityScope.() -> Unit) {
-    val state = remember { MutableTransitionState(false) }
+    val state = remember { MutableTransitionState(visible) }
     state.targetState = visible
-    if (state.currentState || state.targetState) AnimatedVisibility(state, modifier, enter, exit, content = content)
+    if (state.showsOrMoves) AnimatedVisibility(state, modifier, enter, exit, content = content)
 }
 
 /** Quick picks for an empty workout: exercises marked Ja, else the ones done most recently, at most six (decision 40). */
