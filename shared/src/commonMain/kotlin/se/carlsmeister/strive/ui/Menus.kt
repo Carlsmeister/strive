@@ -21,6 +21,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -82,15 +84,20 @@ internal fun GlassMenu(expanded: Boolean, onDismiss: () -> Unit, modifier: Modif
         val progress by rememberTransition(shown).animateFloat({ Motion.fade() }) { if (it) 1f else 0f }
         // The corner is read as the layer draws, as Material's menu does: placement chooses it after composition, so a transition
         // built in composition scaled a menu that opens above from its top corner on its first frame.
-        MenuPanel(modifier.graphicsLayer {
-            alpha = progress
-            val scale = if (reduceMotion) 1f else .9f + .1f * progress
-            scaleX = scale
-            scaleY = scale
-            transformOrigin = origin
-        }, content)
+        CompositionLocalProvider(LocalMenuLive provides shown.targetState) {
+            MenuPanel(modifier.graphicsLayer {
+                alpha = progress
+                val scale = if (reduceMotion) 1f else .9f + .1f * progress
+                scaleX = scale
+                scaleY = scale
+                transformOrigin = origin
+            }, content)
+        }
     }
 }
+
+/** False while a [GlassMenu] fades out: its rows and tiles stay on screen but take no tap, so a second tap cannot act twice. */
+private val LocalMenuLive = compositionLocalOf { true }
 
 /** Where [GlassMenu] opens, 6 dp ([gap]) from its button and [margin] inside the window's sides; tells [onOrigin] the corner it grows from. */
 private class MenuPlacement(private val gap: Int, private val margin: Int, private val onOrigin: (TransformOrigin) -> Unit) : PopupPositionProvider {
@@ -169,7 +176,7 @@ internal fun MenuRow(
     Box(Modifier.layoutId(LINE).fillMaxWidth().height(line).background(colors.outlineVariant))
     Row(
         Modifier.layoutId(ROW).fillMaxWidth()
-            .clickable(source, indication = null, role = Role.Button, onClick = onClick)
+            .clickable(source, indication = null, enabled = LocalMenuLive.current, role = Role.Button, onClick = onClick)
             .then(if (checked != null) Modifier.semantics { selected = checked } else Modifier)
             .background(if (pressed) colors.surfaceContainerHighest else Color.Transparent)
             .heightIn(min = StriveTheme.sizes.touch).padding(start = if (lead) space.s12 else space.s16, end = space.s16, top = 11.dp, bottom = 11.dp),
@@ -213,7 +220,7 @@ internal fun MenuTiles(first: MenuTile, second: MenuTile) =
     Row(Modifier.fillMaxWidth().padding(StriveTheme.spacing.s8), horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
         for (tile in listOf(first, second)) {
             Column(
-                Modifier.weight(1f).pressable(true, tile.onClick)
+                Modifier.weight(1f).pressable(LocalMenuLive.current, tile.onClick)
                     .background(MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.shapes.medium)
                     .padding(horizontal = StriveTheme.spacing.s12, vertical = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4),
