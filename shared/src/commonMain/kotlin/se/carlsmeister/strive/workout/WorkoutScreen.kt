@@ -1,6 +1,5 @@
 package se.carlsmeister.strive.workout
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
@@ -32,8 +31,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -64,10 +61,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
+import androidx.compose.runtime.CompositionLocalProvider
+import se.carlsmeister.strive.theme.LocalGlassSource
+import se.carlsmeister.strive.theme.StriveIcons
+import se.carlsmeister.strive.ui.ActionSheet
+import se.carlsmeister.strive.ui.CentredBar
+import se.carlsmeister.strive.ui.Segments
+import se.carlsmeister.strive.ui.Alert
+import se.carlsmeister.strive.ui.AlertBox
+import se.carlsmeister.strive.ui.AlertButton
+import se.carlsmeister.strive.ui.GlassMenu
+import se.carlsmeister.strive.ui.Overlay
+import se.carlsmeister.strive.ui.HeaderSheet
+import se.carlsmeister.strive.ui.SheetAction
+import se.carlsmeister.strive.ui.TextPrompt
+import se.carlsmeister.strive.ui.MenuRow
+import se.carlsmeister.strive.ui.MenuTile
+import se.carlsmeister.strive.ui.MenuTiles
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
@@ -84,13 +97,11 @@ import se.carlsmeister.strive.library.kilos
 import se.carlsmeister.strive.theme.Motion
 import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.StriveTheme
-import se.carlsmeister.strive.theme.glass
 import se.carlsmeister.strive.theme.settle
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.add_exercises
 import strive.shared.generated.resources.add_set
 import strive.shared.generated.resources.add_set_rest
-import strive.shared.generated.resources.back_to_workout
 import strive.shared.generated.resources.bar
 import strive.shared.generated.resources.cancel
 import strive.shared.generated.resources.collapse
@@ -113,7 +124,6 @@ import strive.shared.generated.resources.order_skip
 import strive.shared.generated.resources.remove_exercise
 import strive.shared.generated.resources.rest_all
 import strive.shared.generated.resources.rest_change
-import strive.shared.generated.resources.rest_row
 import strive.shared.generated.resources.save_without
 import strive.shared.generated.resources.skip
 import strive.shared.generated.resources.step
@@ -216,7 +226,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
         }
     }
 
-    Box(Modifier.fillMaxSize()) {
+    Box(Modifier.fillMaxSize()) { CompositionLocalProvider(LocalGlassSource provides haze) {
         Column(Modifier.fillMaxSize()) {
             // The name rides in the bar only while the large header is out of sight (decision 40).
             val scrolled by remember { derivedStateOf { list.firstVisibleItemIndex > 0 } }
@@ -228,7 +238,9 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             }
             Box(Modifier.weight(1f)) {
                 LazyColumn(
-                    Modifier.fillMaxSize().hazeSource(haze), list,
+                    // Its own background inside the source: haze blurs only what the source draws, and glass over a transparent
+                    // source showed the list's text sharp through its tint.
+                    Modifier.fillMaxSize().hazeSource(haze).background(MaterialTheme.colorScheme.background), list,
                     contentPadding = PaddingValues(start = StriveTheme.spacing.s16, end = StriveTheme.spacing.s16, bottom = 320.dp),
                 ) {
                     if (w.exercises.isEmpty()) {
@@ -361,7 +373,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             // A tap anywhere outside the dock closes it (#17 D3).
             Box(Modifier.fillMaxSize().clickable(remember { MutableInteractionSource() }, indication = null) { edit(null) })
         }
-        AnimatedVisibility(
+        Overlay(
             open != null, Modifier.align(Alignment.BottomCenter),
             enter = if (reduceMotion) fadeIn(Motion.fade()) else slideInVertically(Motion.settle(IntOffset.VisibilityThreshold)) { it },
             exit = if (reduceMotion) fadeOut(Motion.fade()) else slideOutVertically(Motion.settle(IntOffset.VisibilityThreshold)) { it },
@@ -369,32 +381,33 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             // Keeps showing the set it closed on while it slides away.
             val shown = remember { mutableStateOf(open) }
             if (open != null) shown.value = open
-            val (e, i) = shown.value ?: return@AnimatedVisibility
-            val set = e.sets.getOrNull(i) ?: return@AnimatedVisibility
+            val (e, i) = shown.value ?: return@Overlay
+            val set = e.sets.getOrNull(i) ?: return@Overlay
             Dock(e, set, badges(e.sets)[i], defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
                 field = editField, logs = !editRest)
         }
-    }
 
-    if (finishing) {
-        val left = w.sets - w.logged
-        ActionSheet(
-            pluralStringResource(Res.plurals.unlogged, left, left),
-            listOf(
-                SheetAction(stringResource(Res.string.log_and_save)) { finishing = false; scope.launch { sessions.finish(w.id, Finish.LogAsTheyStand, now()); onFinished(w.id) } },
-                SheetAction(stringResource(Res.string.save_without)) { finishing = false; scope.launch { sessions.finish(w.id, Finish.WithoutThem, now()); onFinished(w.id) } },
-                // Red, with no alert after it: Avsluta was the intentional action, not discarding (#16).
-                SheetAction(stringResource(Res.string.discard_workout), destructive = true) { finishing = false; scope.launch { sessions.discard(w.id); onMinimise() } },
-            ),
-            stringResource(Res.string.keep_going), onDismiss = { finishing = false },
-        )
-    }
-    if (discarding) {
-        Alert(
-            stringResource(Res.string.discard_question), stringResource(Res.string.discard_body), stringResource(Res.string.discard_workout),
-            onConfirm = { discarding = false; scope.launch { sessions.discard(w.id); onMinimise() } }, onDismiss = { discarding = false },
-        )
-    }
+        // In the screen's glass source, so the sheet and the alert blur the list behind them.
+        if (finishing) {
+            val left = w.sets - w.logged
+            ActionSheet(
+                pluralStringResource(Res.plurals.unlogged, left, left),
+                listOf(
+                    SheetAction(stringResource(Res.string.log_and_save)) { finishing = false; scope.launch { sessions.finish(w.id, Finish.LogAsTheyStand, now()); onFinished(w.id) } },
+                    SheetAction(stringResource(Res.string.save_without)) { finishing = false; scope.launch { sessions.finish(w.id, Finish.WithoutThem, now()); onFinished(w.id) } },
+                    // Red, with no alert after it: Avsluta was the intentional action, not discarding (#16).
+                    SheetAction(stringResource(Res.string.discard_workout), destructive = true) { finishing = false; scope.launch { sessions.discard(w.id); onMinimise() } },
+                ),
+                stringResource(Res.string.keep_going), onDismiss = { finishing = false },
+            )
+        }
+        if (discarding) {
+            Alert(
+                stringResource(Res.string.discard_question), stringResource(Res.string.discard_body), stringResource(Res.string.discard_workout),
+                onConfirm = { discarding = false; scope.launch { sessions.discard(w.id); onMinimise() } }, onDismiss = { discarding = false },
+            )
+        }
+    } }
 }
 
 /** D's add button: a dark surface with a teal +, for "Lägg till set (2:00)" and "Lägg till övningar"; in a superset, with its letter. */
@@ -418,22 +431,26 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
     val alpha by animateFloatAsState(if (showTitle) 1f else 0f, Motion.fade())
     val colors = MaterialTheme.colorScheme
     Column(Modifier.fillMaxWidth().background(if (glassed) StriveTheme.glass.thick else colors.background)) {
-        Row(
+        // `.nav`'s `1fr auto 1fr` with its 8 dp gap: the buttons keep their size and the name takes the room left between them.
+        CentredBar(
+            StriveTheme.spacing.s8,
             Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
                 .padding(start = 12.dp, end = 12.dp, bottom = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                IconTarget(stringResource(Res.string.minimise), onMinimise) { Glyph(Glyph.Down, 22.dp, stroke = 2.2f, color = colors.onSurface) }
-                RestButton(onRest)
-            }
-            Column(Modifier.alpha(alpha), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                if (alpha > 0f) {
-                    WorkoutMenu(w, large = false, nowMs = nowMs)
-                    Text(progress(w, nowMs), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+            start = {
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    IconTarget(stringResource(Res.string.minimise), onMinimise) { Glyph(Glyph.Down, 22.dp, stroke = 2.2f, color = colors.onSurface) }
+                    RestButton(onRest)
                 }
-            }
-            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
+            },
+            middle = {
+                Column(Modifier.alpha(alpha), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    if (alpha > 0f) {
+                        WorkoutMenu(w, large = false, nowMs = nowMs)
+                        Text(progress(w, nowMs), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                    }
+                }
+            },
+            end = {
                 val all = w.sets > 0 && w.logged == w.sets
                 Box(Modifier.height(StriveTheme.sizes.touch), contentAlignment = Alignment.Center) {
                     Btn(onFinish, Modifier.height(40.dp), container = if (all) colors.primary else colors.surfaceContainerHigh,
@@ -441,8 +458,8 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
                         Text(stringResource(Res.string.finish), Modifier.padding(horizontal = 16.dp), style = MaterialTheme.typography.titleSmall)
                     }
                 }
-            }
-        }
+            },
+        )
         if (glassed && hairline) HorizontalDivider(thickness = 0.5.dp, color = colors.outlineVariant)
     }
 }
@@ -475,36 +492,31 @@ private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, let
                         .semantics { contentDescription = label },
                     contentAlignment = Alignment.Center,
                 ) { Text("⋯", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = colors.onPrimaryContainer) }
-                DropdownMenu(menu, { menu = false; restMenu = false }, containerColor = colors.surfaceContainerHigh) {
+                GlassMenu(menu, { menu = false; restMenu = false }) {
                     if (!restMenu) {
-                        Row(Modifier.padding(horizontal = 12.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
-                            MenuTile(Glyph.Note, stringResource(Res.string.note)) { menu = false; noteOpen = true }
-                            MenuTile(Glyph.Swap, stringResource(Res.string.swap)) { menu = false; onSwap() }
-                        }
-                        DropdownMenuItem({ Text(stringResource(Res.string.sticky_note)) }, onClick = { menu = false; dialog = "pin" },
-                            trailingIcon = { Glyph(Glyph.Pin, 18.dp, color = colors.onSurface) })
-                        DropdownMenuItem({ Text(stringResource(Res.string.rest_all)) }, onClick = { restMenu = true },
-                            trailingIcon = { Text("›", style = MaterialTheme.typography.titleMedium) })
+                        MenuTiles(
+                            MenuTile(StriveIcons.Note, stringResource(Res.string.note)) { menu = false; noteOpen = true },
+                            MenuTile(StriveIcons.Swap, stringResource(Res.string.swap)) { menu = false; onSwap() },
+                        )
+                        MenuRow(stringResource(Res.string.sticky_note), { menu = false; dialog = "pin" }, icon = StriveIcons.Pin)
+                        MenuRow(stringResource(Res.string.rest_all), { restMenu = true }, tail = "›")
                         // Choice 4's Skapa superset; in a superset, the way out of it.
                         if (letter != null) {
-                            DropdownMenuItem({ Text(stringResource(Res.string.superset_leave)) }, onClick = { menu = false; scope.launch { sessions.leaveSuperset(e.id) } })
+                            MenuRow(stringResource(Res.string.superset_leave), { menu = false; scope.launch { sessions.leaveSuperset(e.id) } })
                         } else if (w.exercises.size > 1) {
-                            DropdownMenuItem({ Text(stringResource(Res.string.superset_create)) }, onClick = { menu = false; dialog = "superset" })
+                            MenuRow(stringResource(Res.string.superset_create), { menu = false; dialog = "superset" })
                         }
-                        DropdownMenuItem({ Text(stringResource(Res.string.order_skip)) }, onClick = { menu = false; dialog = "order" })
+                        MenuRow(stringResource(Res.string.order_skip), { menu = false; dialog = "order" })
                         if (e.type == ExerciseType.WeightReps) {
-                            DropdownMenuItem({ Text(stringResource(Res.string.exercise_settings)) }, onClick = { menu = false; dialog = "settings" })
+                            MenuRow(stringResource(Res.string.exercise_settings), { menu = false; dialog = "settings" })
                         }
-                        HorizontalDivider(thickness = StriveTheme.borders.hairline, color = colors.outlineVariant)
-                        DropdownMenuItem({ Text(stringResource(Res.string.remove_exercise), color = colors.error) },
-                            onClick = { menu = false; scope.launch { sessions.removeExercise(e.id) } })
+                        MenuRow(stringResource(Res.string.remove_exercise), { menu = false; scope.launch { sessions.removeExercise(e.id) } },
+                            icon = StriveIcons.Trash, danger = true)
                     } else {
-                        DropdownMenuItem({ Text(stringResource(Res.string.rest_all), fontWeight = FontWeight.SemiBold) }, onClick = { restMenu = false },
-                            leadingIcon = { Glyph(Glyph.Back, 18.dp, color = colors.onSurface) })
+                        MenuRow(stringResource(Res.string.rest_all), { restMenu = false }, back = true)
                         val all = e.sets.map { restOf(it, defaultRest) }.distinct().singleOrNull()
                         for (r in listOf(60, 90, 120, 150, 180)) {
-                            DropdownMenuItem({ Text(clock(r.toLong())) }, onClick = { menu = false; restMenu = false; scope.launch { sessions.setRestAll(e.id, r) } },
-                                leadingIcon = { Box(Modifier.size(18.dp)) { if (all == r) Glyph(Glyph.Check, 18.dp, color = colors.primary) } })
+                            MenuRow(clock(r.toLong()), { menu = false; restMenu = false; scope.launch { sessions.setRestAll(e.id, r) } }, checked = all == r)
                         }
                     }
                 }
@@ -540,17 +552,6 @@ private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, let
     }
 }
 
-/** One of M2's two palette tiles on top of the exercise menu: Anteckning and Byt. */
-@Composable
-private fun MenuTile(glyph: Glyph, label: String, onClick: () -> Unit) = Column(
-    Modifier.size(128.dp, 64.dp).clip(MaterialTheme.shapes.large).background(MaterialTheme.colorScheme.surfaceContainerHighest)
-        .clickable(onClick = onClick).padding(horizontal = 12.dp, vertical = 10.dp),
-    verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4),
-) {
-    Glyph(glyph, 20.dp, color = MaterialTheme.colorScheme.onSurface, stroke = 1.8f)
-    Text(label, style = MaterialTheme.typography.titleSmall)
-}
-
 /** Ordning och hoppa över (Q8): move an exercise up or down, or skip it; a skipped exercise stays recorded. */
 @Composable
 private fun OrderDialog(w: Workout, onDone: () -> Unit) {
@@ -565,13 +566,8 @@ private fun OrderDialog(w: Workout, onDone: () -> Unit) {
         ids[i] = ids[j].also { ids[j] = ids[i] }
         scope.launch { sessions.reorder(ids) }
     }
-    Dialog(onDismissRequest = onDone) {
-        Column(
-            Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.extraLarge).padding(StriveTheme.spacing.s16),
-            verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4),
-        ) {
-            Text(stringResource(Res.string.order_skip), Modifier.fillMaxWidth().padding(bottom = StriveTheme.spacing.s8),
-                style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+    HeaderSheet(stringResource(Res.string.order_skip), onDone, done = stringResource(Res.string.done)) {
+        Column(verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4)) {
             exercises.forEachIndexed { i, e ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(e.name, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge,
@@ -583,7 +579,6 @@ private fun OrderDialog(w: Workout, onDone: () -> Unit) {
                     }
                 }
             }
-            TextButton(onDone, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.done)) }
         }
     }
 }
@@ -593,21 +588,15 @@ private fun OrderDialog(w: Workout, onDone: () -> Unit) {
 private fun SupersetDialog(w: Workout, e: SessionExercise, onDone: () -> Unit) {
     val sessions = LocalAppGraph.current.sessions
     val scope = rememberCoroutineScope()
-    Dialog(onDismissRequest = onDone) {
-        Column(
-            Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.extraLarge).padding(StriveTheme.spacing.s16),
-            verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4),
-        ) {
-            Text(stringResource(Res.string.superset_create), Modifier.fillMaxWidth().padding(bottom = StriveTheme.spacing.s8),
-                style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-            for (other in w.exercises.filter { it.id != e.id && !it.skipped }) {
-                Text(other.name, Modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium)
-                    .clickable { scope.launch { sessions.superset(e.id, other.id) }; onDone() }
-                    .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = StriveTheme.spacing.s8, vertical = 12.dp),
-                    style = MaterialTheme.typography.bodyLarge)
-            }
-            TextButton(onDone, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.cancel)) }
+    AlertBox(onDone) {
+        Text(stringResource(Res.string.superset_create), Modifier.fillMaxWidth(), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+        for (other in w.exercises.filter { it.id != e.id && !it.skipped }) {
+            Text(other.name, Modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium)
+                .clickable { scope.launch { sessions.superset(e.id, other.id) }; onDone() }
+                .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = StriveTheme.spacing.s8, vertical = 12.dp),
+                style = MaterialTheme.typography.bodyLarge)
         }
+        AlertButton(stringResource(Res.string.cancel), MaterialTheme.colorScheme.primary, onDone, Modifier.fillMaxWidth())
     }
 }
 
@@ -621,21 +610,14 @@ private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
     var bar by remember { mutableStateOf(e.bar) }
     val steps = listOf(1.0, 1.25, 2.0, 2.5, 4.0, 5.0)
     val bars = listOf(null, 7.5, 15.0, 20.0, 25.0)
-    Dialog(onDismissRequest = onDone) {
-        Column(
-            Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.extraLarge).padding(StriveTheme.spacing.s20),
-            verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s12),
-        ) {
-            Text(stringResource(Res.string.exercise_settings), Modifier.fillMaxWidth(), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-            Text(stringResource(Res.string.step), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Segments(steps.map { kilos(it, swedish) }, steps.indexOf(step).takeIf { it >= 0 }, { i -> i?.let { step = steps[it] } }, clearable = false)
-            Text(stringResource(Res.string.bar), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            val none = stringResource(Res.string.no_bar)
-            Segments(bars.map { it?.let { b -> kilos(b, swedish) } ?: none }, bars.indexOf(bar).takeIf { it >= 0 }, { i -> i?.let { bar = bars[it] } }, clearable = false)
-            TextButton({ scope.launch { exercises.setSettings(e.exerciseId, step, bar) }; onDone() }, Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.done))
-            }
-        }
+    // A tap on the scrim closes without saving, as dismissing the dialog did.
+    HeaderSheet(stringResource(Res.string.exercise_settings), onDismiss = onDone, done = stringResource(Res.string.done),
+        onDone = { scope.launch { exercises.setSettings(e.exerciseId, step, bar) }; onDone() }) {
+        Text(stringResource(Res.string.step), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Segments(steps.map { kilos(it, swedish) }, steps.indexOf(step).takeIf { it >= 0 }, { i -> i?.let { step = steps[it] } }, clearable = false)
+        Text(stringResource(Res.string.bar), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        val none = stringResource(Res.string.no_bar)
+        Segments(bars.map { it?.let { b -> kilos(b, swedish) } ?: none }, bars.indexOf(bar).takeIf { it >= 0 }, { i -> i?.let { bar = bars[it] } }, clearable = false)
     }
 }
 
@@ -643,7 +625,7 @@ private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
 @Composable
 private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, rir: Int?, tag: String?, modifier: Modifier, onBack: () -> Unit) {
     val reduceMotion = StriveTheme.reduceMotion
-    AnimatedVisibility(
+    Overlay(
         shown, modifier,
         enter = if (reduceMotion) fadeIn(Motion.fade()) else fadeIn(Motion.fade()) + slideInVertically(Motion.settle(IntOffset.VisibilityThreshold)) { -it },
         exit = if (reduceMotion) fadeOut(Motion.fade()) else fadeOut(Motion.fade()) + slideOutVertically(Motion.settle(IntOffset.VisibilityThreshold)) { -it },
@@ -671,26 +653,4 @@ private fun quickPicks(): Pair<List<Pair<Long, String>>, Boolean> {
     val marked = all.filter { it.mark == se.carlsmeister.strive.data.Mark.Yes }.map { it.id to it.name }
     if (marked.isNotEmpty()) return marked.take(6) to true
     return history.flatMap { w -> w.exercises.map { it.exerciseId to it.name } }.distinctBy { it.first }.take(6) to false
-}
-
-/** The bar a minimised workout sits in above the tabs: its name, progress and the rest left; a tap brings it back (Q19). */
-@Composable
-internal fun MiniBar(w: Workout, haze: HazeState, onClick: () -> Unit) {
-    val space = StriveTheme.spacing
-    val now = rememberNow()
-    val rest by LocalAppGraph.current.rest.collectAsState()
-    val left = rest?.left(now) ?: 0
-    Row(
-        Modifier.padding(horizontal = space.s20, vertical = space.s8).fillMaxWidth().clip(ShapeFull)
-            .glass(haze, StriveTheme.glass)
-            .clickable(onClickLabel = stringResource(Res.string.back_to_workout), onClick = onClick)
-            .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = space.s20, vertical = space.s8),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column {
-            Text(w.name, style = MaterialTheme.typography.titleSmall)
-            Text(progress(w, now) + if (left > 0) " · " + stringResource(Res.string.rest_row, clock(left.toLong())) else "",
-                style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
 }

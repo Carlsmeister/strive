@@ -22,7 +22,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -55,8 +54,10 @@ import se.carlsmeister.strive.library.kilos
 import se.carlsmeister.strive.theme.Motion
 import se.carlsmeister.strive.theme.settle
 import se.carlsmeister.strive.theme.StriveTheme
+import se.carlsmeister.strive.ui.BackLabel
+import se.carlsmeister.strive.ui.CentredBar
+import se.carlsmeister.strive.ui.Segments
 import strive.shared.generated.resources.Res
-import strive.shared.generated.resources.back
 import strive.shared.generated.resources.done
 import strive.shared.generated.resources.ended
 import strive.shared.generated.resources.min_unit
@@ -86,23 +87,21 @@ internal fun dayHeading(t: LocalDateTime) =
 /**
  * The summary after a workout and the session detail from History, one screen (Q29; #17 choice 7, U1's top with U3's exercises):
  * the date, four tiles, RPE and the note, then the exercises folded to their best set, then the times. After a workout it ends in
- * Klar. Redigera comes when there is something to edit a past workout with.
+ * Klar; from History, back names [parent]. Redigera comes when there is something to edit a past workout with.
  */
 @Composable
-internal fun SummaryScreen(id: Long, padding: PaddingValues, after: Boolean, onClose: () -> Unit) {
+internal fun SummaryScreen(id: Long, padding: PaddingValues, after: Boolean, parent: String?, onClose: () -> Unit) {
     val sessions = LocalAppGraph.current.sessions
     val workout by remember(id) { sessions.workout(id) }.collectAsState(null)
     val space = StriveTheme.spacing
     Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = space.s8).heightIn(min = StriveTheme.sizes.touch), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.weight(1f)) {
-                if (!after) TextButton(onClose) { Text(stringResource(Res.string.back)) }
-            }
-            Text(workout?.name ?: "", style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
-                if (after) Button(onClose) { Text(stringResource(Res.string.done)) }
-            }
-        }
+        // The sides keep their size and the name takes what is left, so a long name cannot squeeze out back or Done.
+        CentredBar(
+            space.s8, Modifier.fillMaxWidth().padding(horizontal = space.s8).heightIn(min = StriveTheme.sizes.touch),
+            start = { Box { parent?.let { BackLabel(it, onClose) } } },
+            middle = { Text(workout?.name ?: "", style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+            end = { Box { if (after) Button(onClose) { Text(stringResource(Res.string.done)) } } },
+        )
         val w = workout ?: return@Column
         Column(
             Modifier.verticalScroll(rememberScrollState()).padding(horizontal = space.s16)

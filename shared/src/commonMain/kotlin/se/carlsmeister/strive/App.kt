@@ -15,12 +15,26 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.IntOffset
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import se.carlsmeister.strive.ui.BackLabel
+import se.carlsmeister.strive.ui.BubbleItem
+import se.carlsmeister.strive.ui.StartBubbles
+import se.carlsmeister.strive.ui.StartChoice
+import se.carlsmeister.strive.ui.startChoices
+import strive.shared.generated.resources.bubble_continue
+import strive.shared.generated.resources.bubble_empty
+import strive.shared.generated.resources.bubble_empty_desc
+import strive.shared.generated.resources.name_time
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.theme.Motion
 import se.carlsmeister.strive.theme.settle
 import se.carlsmeister.strive.workout.HistoryScreen
-import se.carlsmeister.strive.workout.MiniBar
+import se.carlsmeister.strive.workout.BarState
+import se.carlsmeister.strive.workout.barState
+import se.carlsmeister.strive.workout.progress
 import se.carlsmeister.strive.workout.SummaryScreen
 import se.carlsmeister.strive.workout.WorkoutScreen
 import se.carlsmeister.strive.workout.clock
@@ -37,14 +51,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -60,7 +68,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigationevent.NavigationEventInfo
@@ -74,23 +81,35 @@ import se.carlsmeister.strive.data.AppGraph
 import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.library.ExerciseScreen
 import se.carlsmeister.strive.library.LibraryScreen
-import se.carlsmeister.strive.theme.FixedTextSize
-import se.carlsmeister.strive.theme.ShapeFull
-import se.carlsmeister.strive.theme.glass
 import se.carlsmeister.strive.theme.StriveTheme
 import org.jetbrains.compose.resources.stringResource
 import strive.shared.generated.resources.Res
-import strive.shared.generated.resources.back
 import strive.shared.generated.resources.close
 import strive.shared.generated.resources.library
 import strive.shared.generated.resources.next_screen
 import strive.shared.generated.resources.start_run
-import strive.shared.generated.resources.start_workout
 import strive.shared.generated.resources.tab_food
 import strive.shared.generated.resources.tab_home
 import strive.shared.generated.resources.tab_plan
 import strive.shared.generated.resources.tab_start
 import strive.shared.generated.resources.tab_you
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.vector.ImageVector
+import se.carlsmeister.strive.theme.LocalGlassSource
+import se.carlsmeister.strive.theme.StriveIcons
+import se.carlsmeister.strive.ui.TabBar
+import se.carlsmeister.strive.ui.RestRing
+import se.carlsmeister.strive.ui.TabItem
+import se.carlsmeister.strive.ui.WorkoutMiniBar
+import se.carlsmeister.strive.ui.barBottom
+import strive.shared.generated.resources.close_start
+import strive.shared.generated.resources.back_to_workout
+import strive.shared.generated.resources.bar_left_open
+import strive.shared.generated.resources.tap_to_continue
 
 // The navigation from #14: four tabs around a Start button. Every screen is a placeholder until its feature exists.
 private enum class Tab(val title: StringResource) {
@@ -129,7 +148,9 @@ internal fun <T> MutableList<T>.pop() {
 
 // shortcut: back stacks are plain lists, so Android loses them when it recreates the activity (rotation,
 // a language change) or kills the process; switch to rememberNavBackStack with serializable keys when a
-// feature has state worth restoring.
+// feature has state worth restoring. Known case: leftOpen and started are plain remember too, so after a recreation a
+// workout the user had minimised reads as left open; rememberSaveable fixes that, but a restore after process death must
+// still show it as left open.
 @Composable
 fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph) {
     LaunchedEffect(graph) { graph.prepare() }
@@ -139,15 +160,37 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
         val stacks = remember { Tab.entries.associateWith { mutableStateListOf<Screen>(Stub(it, 1)) } }
         var selected by remember { mutableStateOf(Tab.Home) }
         val sessions = graph.sessions
-        // A workout left open, by ⌄ or by the app being killed, is offered in the bar above the tabs.
-        val open by remember { sessions.open() }.collectAsState(null)
+        // A workout already open as the app starts was left open by the app being killed (R5): its id, until it is opened once.
+        var leftOpen by remember { mutableStateOf<Long?>(null) }
+        // Whether the first read of the open workout has come in, or a workout was shown before it did.
+        var started by remember { mutableStateOf(false) }
+        // A workout left open, by ⌄ or by the app being killed, is offered in the bar above the tabs. The first read sets leftOpen
+        // in the same step as open, so the bar never shows a frame of the open state before the left-open one.
+        val open by remember {
+            sessions.open().onEach {
+                if (!started) {
+                    started = true
+                    leftOpen = it?.id
+                }
+            }
+        }.collectAsState(null)
+        // Pushed once, however many taps reach it (the bar, Continue, Start).
+        fun showWorkout() {
+            started = true
+            leftOpen = null
+            if (root.last() != ActiveWorkout) root += ActiveWorkout
+        }
         val scope = rememberCoroutineScope()
         val name = stringResource(Res.string.workout)
-        // Two workouts cannot run at once (Q46): Start continues the open one.
+        // Two workouts cannot run at once (Q46): Start continues the open one. Under the lock, so two quick taps start one workout
+        // and push it once.
+        val starting = remember { Mutex() }
         fun startWorkout() {
             scope.launch {
-                if (sessions.open().first() == null) sessions.start(name, now())
-                root += ActiveWorkout
+                starting.withLock {
+                    if (sessions.open().first() == null) sessions.start(name, now())
+                    showWorkout()
+                }
             }
         }
         val safe = WindowInsets.safeDrawing.asPaddingValues()
@@ -158,8 +201,8 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
             entryProvider = { route ->
                 when (route) {
                     Tabs -> NavEntry(route) {
-                        TabsScreen(stacks, selected, open, onSelect = { selected = it }, onStartWorkout = ::startWorkout,
-                            onStartRun = { root += Session(Res.string.start_run) }, onRestore = { root += ActiveWorkout })
+                        TabsScreen(stacks, selected, open, leftOpen = leftOpen != null && leftOpen == open?.id, onSelect = { selected = it },
+                            onStartWorkout = ::startWorkout, onStartRun = { root += Session(Res.string.start_run) }, onRestore = ::showWorkout)
                     }
                     is Session -> NavEntry(route) {
                         Page { Placeholder(stringResource(route.title), Modifier.safeContentPadding(), close = { root.pop() }) }
@@ -180,12 +223,12 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
                                 open?.let { sessions.add(it.id, ids, superset) }
                                 root.pop()
                             }
-                            LibraryScreen(safe, onOpen = {}, onBack = { root.pop() }, pick = { add(it, false) }, onSuperset = { add(it, true) })
+                            LibraryScreen(safe, null, onOpen = {}, onBack = { root.pop() }, pick = { add(it, false) }, onSuperset = { add(it, true) })
                         }
                     }
                     is SwapExercise -> NavEntry(route, metadata = rise(reduceMotion)) {
                         Page {
-                            LibraryScreen(safe, onOpen = {}, onBack = { root.pop() }, swapFor = route.exerciseId, pick = { ids ->
+                            LibraryScreen(safe, null, onOpen = {}, onBack = { root.pop() }, swapFor = route.exerciseId, pick = { ids ->
                                 scope.launch {
                                     sessions.swap(route.sessionExerciseId, ids.single())
                                     root.pop()
@@ -193,52 +236,39 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
                             })
                         }
                     }
-                    is Finished -> NavEntry(route) { Page { SummaryScreen(route.id, safe, after = true, onClose = { root.pop() }) } }
+                    is Finished -> NavEntry(route) { Page { SummaryScreen(route.id, safe, after = true, parent = null, onClose = { root.pop() }) } }
                 }
             },
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TabsScreen(
     stacks: Map<Tab, SnapshotStateList<Screen>>,
     selected: Tab,
     open: Workout?,
+    leftOpen: Boolean,
     onSelect: (Tab) -> Unit,
     onStartWorkout: () -> Unit,
     onStartRun: () -> Unit,
     onRestore: () -> Unit,
 ) {
-    var sheet by remember { mutableStateOf(false) }
+    // Open, Start shows its bubbles over the screen.
+    var startOpen by remember { mutableStateOf(false) }
     val tabState = rememberSaveableStateHolder()
     val haze = rememberHazeState()
+    val density = LocalDensity.current
+    val gap = barBottom(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())
+    var stackHeight by remember { mutableStateOf(0.dp) }
+    var tabBarHeight by remember { mutableStateOf(0.dp) }
+    // Screens run on under the floating bottom stack; each pads its own content clear of it.
+    val padding = PaddingValues(top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding(), bottom = stackHeight + gap)
+    // The shell's one clock, ticking only while a workout is open; a second one kept UI tests from going idle.
+    val now = if (open != null) rememberNow() else 0L
+    val rest by LocalAppGraph.current.rest.collectAsState()
 
-    Scaffold(
-        bottomBar = { Column {
-            open?.let { MiniBar(it, haze, onRestore) }
-            FixedTextSize { NavigationBar(Modifier.glass(haze, StriveTheme.glass), containerColor = Color.Transparent) {
-                @Composable
-                fun item(tab: Tab) = NavigationBarItem(
-                    selected = tab == selected,
-                    onClick = { onSelect(tab) },
-                    icon = {},
-                    label = { Text(stringResource(tab.title), maxLines = 1) },
-                )
-                item(Tab.Home)
-                item(Tab.Food)
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { sheet = true },
-                    icon = { Box(Modifier.size(StriveTheme.sizes.touch).background(MaterialTheme.colorScheme.primary, ShapeFull)) },
-                    label = { Text(stringResource(Res.string.tab_start), maxLines = 1) },
-                )
-                item(Tab.Plan)
-                item(Tab.You)
-            } }
-        } },
-    ) { padding ->
+    Box(Modifier.fillMaxSize()) { CompositionLocalProvider(LocalGlassSource provides haze) {
         val stack: SnapshotStateList<Screen> = stacks.getValue(selected)
         // A fresh display per tab, so switching tabs swaps stacks instead of animating as a push; the holder
         // keeps each tab's saved screen state (scroll, drafts) while its display is gone.
@@ -246,49 +276,83 @@ private fun TabsScreen(
             tabState.SaveableStateProvider(selected.name) {
                 NavDisplay(
                     backStack = stack,
-                    // Screens run on under the glass bar; each pads its own content clear of it.
-                    modifier = Modifier.hazeSource(haze),
+                    modifier = Modifier.fillMaxSize().hazeSource(haze),
                     onBack = { stack.pop() },
                     entryProvider = { screen ->
                         NavEntry(screen) { Page {
                             when (screen) {
+                                Stub(Tab.Food, 1) -> FoodScreen(padding)
                                 is Stub -> {
                                     val title = stringResource(screen.tab.title)
+                                    fun named(depth: Int) = if (depth == 1) title else "$title $depth"
                                     Placeholder(
-                                        if (screen.depth == 1) title else "$title ${screen.depth}",
+                                        named(screen.depth),
                                         Modifier.padding(padding),
-                                        back = if (screen.depth > 1) ({ stack.pop() }) else null,
+                                        back = if (screen.depth > 1) named(screen.depth - 1) else null,
+                                        onBack = { stack.pop() },
                                         next = { stack += Stub(screen.tab, screen.depth + 1) },
                                         library = if (screen.tab == Tab.Plan && screen.depth == 1) ({ stack += Library }) else null,
                                         activities = if (screen.tab == Tab.You && screen.depth == 1) ({ stack += History }) else null,
                                     )
                                 }
-                                Library -> LibraryScreen(padding, onOpen = { stack += ExerciseDetail(it) }, onBack = { stack.pop() })
-                                is ExerciseDetail -> ExerciseScreen(screen.id, padding, onBack = { stack.pop() })
-                                History -> HistoryScreen(padding, onOpen = { stack += SessionDetail(it) }, onBack = { stack.pop() }, onStart = onStartWorkout)
-                                is SessionDetail -> SummaryScreen(screen.id, padding, after = false, onClose = { stack.pop() })
+                                Library -> LibraryScreen(padding, stringResource(Res.string.tab_plan), onOpen = { stack += ExerciseDetail(it) }, onBack = { stack.pop() })
+                                is ExerciseDetail -> ExerciseScreen(screen.id, padding, stringResource(Res.string.library), onBack = { stack.pop() })
+                                History -> HistoryScreen(padding, stringResource(Res.string.tab_you), onOpen = { stack += SessionDetail(it) }, onBack = { stack.pop() }, onStart = onStartWorkout)
+                                is SessionDetail -> SummaryScreen(screen.id, padding, after = false, parent = stringResource(Res.string.all_activities), onClose = { stack.pop() })
                             }
                         } }
                     },
                 )
             }
         }
-    }
-
-    if (sheet) {
-        ModalBottomSheet(onDismissRequest = { sheet = false }) {
-            Column(Modifier.fillMaxWidth().padding(StriveTheme.spacing.s16), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
-                if (open != null) {
-                    // With a workout in progress Start offers only to continue it (Q46).
-                    val label = stringResource(Res.string.continue_workout, open.name, clock((rememberNow() - open.startedAt) / 1_000))
-                    Button(onClick = { sheet = false; onRestore() }, Modifier.fillMaxWidth()) { Text(label) }
-                } else {
-                    Button(onClick = { sheet = false; onStartWorkout() }, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.start_workout)) }
-                    Button(onClick = { sheet = false; onStartRun() }, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.start_run)) }
+        // Back closes Start before it reaches the tab's stack; added after the tab's display, so it is asked first.
+        NavigationBackHandler(rememberNavigationEventState(NavigationEventInfo.None), isBackEnabled = startOpen, onBackCompleted = { startOpen = false })
+        val items = startChoices(open != null).map { choice ->
+            when (choice) {
+                StartChoice.Continue -> {
+                    val w = open!!
+                    val time = clock((now - w.startedAt) / 1_000)
+                    BubbleItem(StriveIcons.Lift, stringResource(Res.string.bubble_continue), stringResource(Res.string.name_time, w.name, time), filled = true,
+                        description = stringResource(Res.string.continue_workout, w.name, time)) { startOpen = false; onRestore() }
                 }
+                StartChoice.Empty -> BubbleItem(StriveIcons.Plus, stringResource(Res.string.bubble_empty), description = stringResource(Res.string.bubble_empty_desc)) {
+                    startOpen = false
+                    onStartWorkout()
+                }
+                StartChoice.Run -> BubbleItem(StriveIcons.Run, stringResource(Res.string.start_run)) { startOpen = false; onStartRun() }
             }
         }
-    }
+        // Under the bottom stack, as the board's panel (z 4) is under the tab bar (z 5); the arc rises over the workout bar.
+        StartBubbles(startOpen, items, startAbove = gap + tabBarHeight / 2, lift = if (open != null) stackHeight - tabBarHeight else 0.dp,
+            closeLabel = stringResource(Res.string.close_start), onDismiss = { startOpen = false })
+        Column(
+            Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = gap)
+                .onSizeChanged { stackHeight = with(density) { it.height.toDp() } },
+            verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8),
+        ) {
+            open?.let { w ->
+                val back = stringResource(Res.string.back_to_workout)
+                val r = rest
+                val left = r?.left(now) ?: 0
+                when (barState(leftOpen, left)) {
+                    BarState.LeftOpen -> WorkoutMiniBar(stringResource(Res.string.bar_left_open, w.name, clock((now - w.startedAt) / 1_000)),
+                        stringResource(Res.string.tap_to_continue), back, onRestore)
+                    BarState.Resting -> WorkoutMiniBar(w.name, progress(w, now), back, onRestore, rest = RestRing(left, r!!.seconds))
+                    BarState.Open -> WorkoutMiniBar(w.name, progress(w, now), back, onRestore)
+                }
+            }
+            @Composable
+            fun item(tab: Tab, icon: ImageVector) = TabItem(icon, stringResource(tab.title), tab == selected) { onSelect(tab) }
+            TabBar(
+                before = listOf(item(Tab.Home, StriveIcons.Home), item(Tab.Food, StriveIcons.Food)),
+                after = listOf(item(Tab.Plan, StriveIcons.Plan), item(Tab.You, StriveIcons.You)),
+                startLabel = stringResource(if (startOpen) Res.string.close_start else Res.string.tab_start),
+                startOpen = startOpen,
+                onStart = { startOpen = !startOpen },
+                modifier = Modifier.onSizeChanged { tabBarHeight = with(density) { it.height.toDp() } },
+            )
+        }
+    } }
 }
 
 // Opaque, so the screen sliding in covers the one it leaves instead of showing both at once.
@@ -308,7 +372,8 @@ private fun Page(content: @Composable () -> Unit) {
 private fun Placeholder(
     title: String,
     modifier: Modifier = Modifier,
-    back: (() -> Unit)? = null,
+    back: String? = null,
+    onBack: () -> Unit = {},
     close: (() -> Unit)? = null,
     next: (() -> Unit)? = null,
     library: (() -> Unit)? = null,
@@ -319,7 +384,7 @@ private fun Placeholder(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s16, Alignment.CenterVertically),
     ) {
-        back?.let { TextButton(it) { Text(stringResource(Res.string.back)) } }
+        back?.let { BackLabel(it, onBack) }
         Text(title, style = MaterialTheme.typography.headlineMedium)
         next?.let { Button(it) { Text(stringResource(Res.string.next_screen)) } }
         library?.let { Button(it) { Text(stringResource(Res.string.library)) } }

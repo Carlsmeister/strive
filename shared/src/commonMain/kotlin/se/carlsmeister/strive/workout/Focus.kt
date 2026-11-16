@@ -20,13 +20,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import se.carlsmeister.strive.ui.GlassMenu
+import se.carlsmeister.strive.ui.HeaderSheet
+import se.carlsmeister.strive.ui.MenuRow
+import se.carlsmeister.strive.ui.TextPrompt
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -53,7 +54,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.isoDayNumber
@@ -210,10 +210,10 @@ internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
         )
         Box {
             MorePill(stringResource(Res.string.workout_options), large) { menu = true }
-            DropdownMenu(menu, { menu = false }, containerColor = MaterialTheme.colorScheme.surfaceContainerHigh) {
-                DropdownMenuItem({ Text(stringResource(Res.string.rename)) }, onClick = { menu = false; prompt = "name" })
-                DropdownMenuItem({ Text(stringResource(Res.string.session_note)) }, onClick = { menu = false; prompt = "note" })
-                DropdownMenuItem({ Text(stringResource(Res.string.change_start)) }, onClick = { menu = false; prompt = "start" })
+            GlassMenu(menu, { menu = false }) {
+                MenuRow(stringResource(Res.string.rename), { menu = false; prompt = "name" })
+                MenuRow(stringResource(Res.string.session_note), { menu = false; prompt = "note" })
+                MenuRow(stringResource(Res.string.change_start), { menu = false; prompt = "start" })
             }
         }
     }
@@ -239,18 +239,9 @@ internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
 private fun StartPrompt(startedAt: Long, onSave: (Int, Int) -> Unit, onDismiss: () -> Unit) {
     val start = local(startedAt)
     val state = rememberTimePickerState(start.hour, start.minute, is24Hour = true)
-    Dialog(onDismissRequest = onDismiss) {
-        Column(
-            Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.extraLarge).padding(StriveTheme.spacing.s20),
-            verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s12), horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(stringResource(Res.string.change_start), style = MaterialTheme.typography.titleMedium)
-            TimeInput(state)
-            Row {
-                TextButton(onDismiss, Modifier.weight(1f)) { Text(stringResource(Res.string.cancel)) }
-                TextButton({ onSave(state.hour, state.minute) }, Modifier.weight(1f)) { Text(stringResource(Res.string.save)) }
-            }
-        }
+    HeaderSheet(stringResource(Res.string.change_start), onDismiss, cancel = stringResource(Res.string.cancel), done = stringResource(Res.string.save),
+        onDone = { onSave(state.hour, state.minute) }) {
+        TimeInput(state, Modifier.align(Alignment.CenterHorizontally))
     }
 }
 
@@ -439,13 +430,10 @@ internal fun SetRow(
                 Text(badge, style = MaterialTheme.typography.bodyMedium, fontWeight = if (current) FontWeight.Bold else FontWeight.SemiBold,
                     color = if (current) colors.onPrimary else set.kind.tint)
             }
-            DropdownMenu(menu, { menu = false }, containerColor = colors.surfaceContainerHigh) {
+            GlassMenu(menu, { menu = false }) {
                 for (kind in SetKind.entries) {
-                    DropdownMenuItem(
-                        { Text(stringResource(kind.label)) }, onClick = { menu = false; onKind(kind) },
-                        leadingIcon = { Box(Modifier.size(18.dp)) { if (kind == set.kind) Glyph(Glyph.Check, 18.dp, color = colors.primary) } },
-                        trailingIcon = { Text(kind.letter ?: "1", color = if (kind == SetKind.Normal) colors.onSurfaceVariant else kind.tint) },
-                    )
+                    MenuRow(stringResource(kind.label), { menu = false; onKind(kind) }, checked = kind == set.kind, tail = kind.letter ?: "1",
+                        tailColor = if (kind == SetKind.Normal) colors.onSurfaceVariant else kind.tint)
                 }
             }
         }

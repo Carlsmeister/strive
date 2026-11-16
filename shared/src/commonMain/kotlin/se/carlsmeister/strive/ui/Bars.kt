@@ -1,6 +1,5 @@
 package se.carlsmeister.strive.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -26,6 +25,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -37,6 +37,7 @@ import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.StriveIcons
 import se.carlsmeister.strive.theme.StriveTheme
 import strive.shared.generated.resources.Res
+import strive.shared.generated.resources.back
 import strive.shared.generated.resources.finish
 import strive.shared.generated.resources.free_rest
 import strive.shared.generated.resources.minimise
@@ -55,7 +56,6 @@ internal fun NavBar(
     glassed: Boolean = false,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-    val colors = MaterialTheme.colorScheme
     val type = MaterialTheme.typography
     val space = StriveTheme.spacing
     val touch = StriveTheme.sizes.touch
@@ -64,14 +64,7 @@ internal fun NavBar(
             space.s8, Modifier.fillMaxWidth().heightIn(min = touch).padding(horizontal = space.s8),
             start = {
                 Row(horizontalArrangement = Arrangement.spacedBy(space.s4), verticalAlignment = Alignment.CenterVertically) {
-                    if (back != null) Row(
-                        Modifier.heightIn(min = touch).pressable(true, onBack).padding(end = space.s8),
-                        horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(StriveIcons.Back, contentDescription = null, Modifier.size(22.dp), tint = colors.primary)
-                        Text(back, color = colors.primary, style = type.bodyLarge.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox),
-                            softWrap = false)
-                    }
+                    if (back != null) BackLabel(back, onBack)
                 }
             },
             middle = {
@@ -86,6 +79,23 @@ internal fun NavBar(
         if (glassed) Hairline()
     }
 }
+
+/**
+ * `.back`: a teal chevron and the [parent]'s name, the screen it goes back to, ending in an ellipsis only on a bar narrower than the
+ * label itself. VoiceOver reads the name and says a tap goes back. Tagged `back`, so a flow finds it apart from a tab of the same name.
+ */
+@Composable
+internal fun BackLabel(parent: String, onBack: () -> Unit, modifier: Modifier = Modifier) =
+    Row(
+        modifier.testTag("back").heightIn(min = StriveTheme.sizes.touch).pressable(true, onBack, label = stringResource(Res.string.back))
+            .padding(end = StriveTheme.spacing.s8),
+        horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(StriveIcons.Back, contentDescription = null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary)
+        Text(parent, color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.bodyLarge.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox),
+            softWrap = false, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    }
 
 /** `.navtext`, a bar's text action: teal, [bold] for the confirming one (`.b`), [dim] when it cannot act yet (`.dim`). */
 @Composable
@@ -142,7 +152,7 @@ internal fun WorkoutBar(
                 }
             },
             middle = {
-                AnimatedVisibility(title != null, enter = fadeIn(Motion.fade()), exit = fadeOut(Motion.fade())) {
+                Overlay(title != null, Modifier, fadeIn(Motion.fade()), fadeOut(Motion.fade())) {
                     // Keeps showing the name it had while it fades away.
                     val shown = remember { mutableStateOf(title to progress) }
                     if (title != null) shown.value = title to progress
@@ -178,25 +188,32 @@ internal fun WorkoutBar(
 }
 
 /**
- * `1fr auto 1fr`: [start] and [end] at the bar's edges, [middle] on the bar's centre, [gap] from each side. The middle gets only what is
- * left once the wider side has its content, so a long title ends in an ellipsis and never squeezes a side's buttons.
+ * `1fr auto 1fr`: [start] and [end] at the bar's edges, [middle] on the bar's centre, [gap] from each side. The sides keep their size;
+ * the middle may take all the room between them, sits centred when it fits there, and otherwise moves off centre towards the narrower
+ * side, ending in an ellipsis only when even that room is too small.
  */
 @Composable
-private fun CentredBar(gap: Dp, modifier: Modifier, start: @Composable () -> Unit, middle: @Composable () -> Unit, end: @Composable () -> Unit) =
+internal fun CentredBar(gap: Dp, modifier: Modifier, start: @Composable () -> Unit, middle: @Composable () -> Unit, end: @Composable () -> Unit) =
     Layout(listOf(start, middle, end), modifier) { (s, m, e), c ->
         val loose = c.copy(minWidth = 0, minHeight = 0)
         val left = s.first().measure(loose)
         val right = e.first().measure(loose)
-        val room = c.maxWidth - 2 * (maxOf(left.width, right.width) + gap.roundToPx())
-        val title = m.firstOrNull()?.measure(loose.copy(maxWidth = room.coerceAtLeast(0))) // none once AnimatedVisibility has faded out
+        val g = gap.roundToPx()
+        val between = c.maxWidth - left.width - right.width - 2 * g
+        val title = m.firstOrNull()?.measure(loose.copy(maxWidth = between.coerceAtLeast(0))) // none once Overlay has faded out
         val height = maxOf(left.height, right.height, title?.height ?: 0).coerceIn(c.minHeight, c.maxHeight)
         val centre = Alignment.CenterVertically
+        // Relative, so a right-to-left language mirrors the bar.
         layout(c.maxWidth, height) {
-            left.place(0, centre.align(left.height, height))
-            right.place(c.maxWidth - right.width, centre.align(right.height, height))
-            title?.place((c.maxWidth - title.width) / 2, centre.align(title.height, height))
+            left.placeRelative(0, centre.align(left.height, height))
+            right.placeRelative(c.maxWidth - right.width, centre.align(right.height, height))
+            title?.placeRelative(centredBetween(c.maxWidth, title.width, left.width + g, right.width + g), centre.align(title.height, height))
         }
     }
+
+/** The x that centres [width] on [total], moved just enough to keep [before] clear at the start and [after] clear at the end. */
+internal fun centredBetween(total: Int, width: Int, before: Int, after: Int) =
+    ((total - width) / 2).coerceIn(before, maxOf(before, total - after - width))
 
 /** A bar's bottom edge: `border-bottom: hairline solid outline-variant`, below the bar as a border-box adds it. */
 @Composable

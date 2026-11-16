@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,9 +30,9 @@ import org.jetbrains.compose.resources.stringResource
 import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.theme.StriveTheme
+import se.carlsmeister.strive.ui.BackLabel
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.all_activities
-import strive.shared.generated.resources.back
 import strive.shared.generated.resources.history_sets
 import strive.shared.generated.resources.minutes
 import strive.shared.generated.resources.no_workouts
@@ -47,12 +46,12 @@ import kotlin.math.roundToLong
  * Löpning joins when runs exist (#5); record counts when records do (#46).
  */
 @Composable
-internal fun HistoryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBack: () -> Unit, onStart: () -> Unit) {
+internal fun HistoryScreen(padding: PaddingValues, parent: String, onOpen: (Long) -> Unit, onBack: () -> Unit, onStart: () -> Unit) {
     val sessions = LocalAppGraph.current.sessions
     val history by remember { sessions.history() }.collectAsState(null)
     val space = StriveTheme.spacing
     Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-        TextButton(onBack, Modifier.padding(start = space.s8)) { Text(stringResource(Res.string.back)) }
+        BackLabel(parent, onBack, Modifier.padding(start = space.s8))
         Text(stringResource(Res.string.all_activities), Modifier.padding(horizontal = space.s16), style = MaterialTheme.typography.headlineMedium)
         val all = history ?: return@Column
         if (all.isEmpty()) {

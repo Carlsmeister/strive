@@ -1,10 +1,17 @@
 <resources>
     <string name="tab_home">Home</string>
     <string name="tab_food">Food</string>
+    <string name="food_later_title">Nutrition comes later</string>
+    <string name="food_later_body">Calories and protein against a daily target, logged from what you eat. It lands here, and nothing else moves.</string>
+    <string name="food_log_later">See the food log (later)</string>
     <string name="tab_start">Start</string>
+    <string name="close_start">Close Start</string>
     <string name="tab_plan">Plan</string>
     <string name="tab_you">You</string>
-    <string name="start_workout">Workout</string>
+    <string name="bubble_continue">Continue</string>
+    <string name="name_time">%1$s · %2$s</string>
+    <string name="bubble_empty">Empty</string>
+    <string name="bubble_empty_desc">Empty workout</string>
     <string name="start_run">Run</string>
     <string name="next_screen">Next screen</string>
     <string name="back">Back</string>
@@ -133,6 +140,8 @@
     <string name="start_a_workout">Start a workout</string>
     <string name="back_to_workout">Back to the workout</string>
     <string name="continue_workout">Continue %1$s · %2$s</string>
+    <string name="bar_left_open">%1$s · left open · %2$s</string>
+    <string name="tap_to_continue">Tap to continue</string>
     <string name="history_sets">%1$d sets</string>
     <plurals name="unlogged"><item quantity="one">%1$d set not logged</item><item quantity="other">%1$d sets not logged</item></plurals>
     <plurals name="week_workouts"><item quantity="one">Week %1$d · %2$d workout</item><item quantity="other">Week %1$d · %2$d workouts</item></plurals>

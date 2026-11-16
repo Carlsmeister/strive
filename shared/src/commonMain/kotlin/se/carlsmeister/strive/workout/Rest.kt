@@ -13,8 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import se.carlsmeister.strive.ui.GlassMenu
+import se.carlsmeister.strive.ui.MenuRow
+import se.carlsmeister.strive.ui.TextPrompt
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -118,9 +119,9 @@ internal fun RestButton(onStart: (Int) -> Unit) {
                 .clickable(onClickLabel = label) { menu = true }.semantics { contentDescription = label },
             contentAlignment = Alignment.Center,
         ) { Glyph(Glyph.Timer, 20.dp, color = MaterialTheme.colorScheme.onSurface) }
-        DropdownMenu(menu, { menu = false }, containerColor = MaterialTheme.colorScheme.surfaceContainerHigh) {
-            for (s in listOf(30, 60, 120, 180)) DropdownMenuItem({ Text(clock(s.toLong())) }, onClick = { menu = false; onStart(s) })
-            DropdownMenuItem({ Text(stringResource(Res.string.custom_time)) }, onClick = { menu = false; custom = true })
+        GlassMenu(menu, { menu = false }) {
+            for (s in listOf(30, 60, 120, 180)) MenuRow(clock(s.toLong()), { menu = false; onStart(s) })
+            MenuRow(stringResource(Res.string.custom_time), { menu = false; custom = true })
         }
     }
     if (custom) {

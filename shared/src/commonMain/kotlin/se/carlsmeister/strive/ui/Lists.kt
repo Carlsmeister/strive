@@ -124,9 +124,9 @@ internal fun ListBlock(rows: List<@Composable () -> Unit>, modifier: Modifier = 
     }
 }
 
-/** `.group`: lists under a title (`h4`), 8 dp apart. */
+/** `.group`: lists under a title (`h4`), 8 dp apart, and a [footnote] (`.foot`) under them. */
 @Composable
-internal fun ListGroup(title: String, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+internal fun ListGroup(title: String, modifier: Modifier = Modifier, footnote: String? = null, content: @Composable () -> Unit) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
         Text(
             title, Modifier.padding(horizontal = StriveTheme.spacing.s16).semantics { heading() },
@@ -134,5 +134,10 @@ internal fun ListGroup(title: String, modifier: Modifier = Modifier, content: @C
             style = MaterialTheme.typography.titleSmall.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox),
         )
         content()
+        if (footnote != null) Text(
+            footnote, Modifier.padding(horizontal = StriveTheme.spacing.s16),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodySmall.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox),
+        )
     }
 }

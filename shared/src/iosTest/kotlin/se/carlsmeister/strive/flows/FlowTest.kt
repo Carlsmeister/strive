@@ -4,11 +4,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.runtime.Recomposer
+import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SkikoComposeUiTest
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
@@ -23,10 +29,16 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToString
 import androidx.compose.ui.test.isRoot
+import androidx.compose.ui.test.onLast
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
+import androidx.compose.material3.ButtonDefaults
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.StringResource
@@ -37,6 +49,7 @@ import se.carlsmeister.strive.App
 import se.carlsmeister.strive.boards.savePng
 import se.carlsmeister.strive.theme.LocalDarkTheme
 import se.carlsmeister.strive.theme.LocalHighContrast
+import se.carlsmeister.strive.theme.LocalReduceMotionSetting
 import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.theme.Scheme
 import se.carlsmeister.strive.data.AppGraph
@@ -46,6 +59,7 @@ import se.carlsmeister.strive.data.fileDriver
 import se.carlsmeister.strive.data.memoryDriver
 import se.carlsmeister.strive.db.StriveDatabase
 import strive.shared.generated.resources.Res
+import strive.shared.generated.resources.exercise_settings
 import strive.shared.generated.resources.add_count
 import strive.shared.generated.resources.add_exercises
 import strive.shared.generated.resources.add_set
@@ -60,6 +74,8 @@ import strive.shared.generated.resources.discard_workout
 import strive.shared.generated.resources.done
 import strive.shared.generated.resources.empty_workout
 import strive.shared.generated.resources.exercise_options
+import strive.shared.generated.resources.workout_options
+import strive.shared.generated.resources.mark_none
 import strive.shared.generated.resources.field_reps
 import strive.shared.generated.resources.field_seconds
 import strive.shared.generated.resources.field_weight
@@ -84,7 +100,21 @@ import strive.shared.generated.resources.save_change
 import strive.shared.generated.resources.save_without
 import strive.shared.generated.resources.session_note
 import strive.shared.generated.resources.start_a_workout
-import strive.shared.generated.resources.start_workout
+import strive.shared.generated.resources.bubble_continue
+import strive.shared.generated.resources.bubble_empty_desc
+import strive.shared.generated.resources.close_start
+import strive.shared.generated.resources.start_run
+import strive.shared.generated.resources.tab_food
+import strive.shared.generated.resources.food_later_title
+import strive.shared.generated.resources.food_log_later
+import se.carlsmeister.strive.boards.BOARD_SHOTS
+import se.carlsmeister.strive.boards.inEnglish
+import se.carlsmeister.strive.boards.clearLeftOverLanguage
+import strive.shared.generated.resources.next_screen
+import androidx.compose.runtime.DisposableEffect
+import androidx.navigationevent.DirectNavigationEventInput
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
+import strive.shared.generated.resources.tab_home
 import strive.shared.generated.resources.tab_plan
 import strive.shared.generated.resources.tab_start
 import strive.shared.generated.resources.tab_you
@@ -129,6 +159,11 @@ import strive.shared.generated.resources.superset_leave
 import strive.shared.generated.resources.superset_rest
 import androidx.compose.ui.graphics.Color
 import se.carlsmeister.strive.workout.wallClock
+import se.carlsmeister.strive.workout.now
+import androidx.compose.ui.test.hasAnyAncestor
+import se.carlsmeister.strive.data.Rest
+import strive.shared.generated.resources.bar_left_open
+import strive.shared.generated.resources.tap_to_continue
 import kotlin.time.Clock
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -141,12 +176,24 @@ import kotlin.test.assertTrue
  */
 @OptIn(ExperimentalTestApi::class)
 class FlowTest {
-    private fun flow(graph: AppGraph = AppGraph(memoryDriver()), dark: Boolean? = null, highContrast: Boolean? = null, block: suspend Flow.() -> Unit) {
+    private fun flow(graph: AppGraph = AppGraph(memoryDriver()), dark: Boolean? = null, highContrast: Boolean? = null, reduceMotion: Boolean? = null, block: suspend Flow.() -> Unit) {
         // iOS runs every test class in one process: a clock another test left pinned would freeze this flow's rest timers.
         check(wallClock === Clock.System) { "a test left the clock pinned" }
+        clearLeftOverLanguage()
         runSkikoComposeUiTest(Size(1284f, 2778f), Density(3f)) {
-            setContent { CompositionLocalProvider(LocalDarkTheme provides dark, LocalHighContrast provides highContrast) { App(graph) } }
-            Flow(this, graph).block()
+            val back = DirectNavigationEventInput()
+            setContent {
+                // The system's back, as a gesture or button sends it, through the host's own dispatcher.
+                val dispatcher = LocalNavigationEventDispatcherOwner.current!!.navigationEventDispatcher
+                DisposableEffect(dispatcher) {
+                    dispatcher.addInput(back)
+                    onDispose { dispatcher.removeInput(back) }
+                }
+                CompositionLocalProvider(LocalDarkTheme provides dark, LocalHighContrast provides highContrast, LocalReduceMotionSetting provides reduceMotion) {
+                    App(graph)
+                }
+            }
+            Flow(this, graph, back).block()
         }
     }
 
@@ -400,12 +447,66 @@ class FlowTest {
         waitUntilTrue { open().exercises.isEmpty() }
     }
 
+    /**
+     * Each of the five menus the built screens open, shot as `menu-<name>-dark` beside the Menus card: drawn in English, as the
+     * board is, while the flow still reads its texts from the app's strings.
+     */
+    @Test
+    fun everyMenuIsTheGlassPullDown() = inEnglish {
+        flow(dark = true) {
+            startWorkout(); addExercises("Bench Press BB")
+            for ((button, name) in listOf(Res.string.exercise_options to "exercise", Res.string.workout_options to "workout", Res.string.free_rest to "rest")) {
+                tapDesc(s(button)); openMenu(name)
+            }
+            tapDesc(s(Res.string.set_type, "1")); openMenu("set")          // the set badge
+            tapDesc(s(Res.string.minimise)); bar()
+            tap(s(Res.string.tab_plan)); tap(s(Res.string.library)); search("Bench Press BB"); tap("Bench Press BB")
+            tap(s(Res.string.mark_none)); openMenu("mark")                  // In my programmes; a fresh graph has no mark set
+        }
+    }
+
+    @Test
+    fun aMenuOpenedAtTheBottomOfTheScreenStaysOnIt() = flow {
+        startWorkout(); addExercises("Bench Press BB")
+        // Through the database: the Add set row is a lazy item that leaves the screen once the rows fill it.
+        repeat(12) { graph.sessions.addSet(open().exercises.single().id) }
+        waitUntilTrue { open().sets == 13 }
+        // Six rows, under the header and the focus card, reach the bottom of the flow's 926 dp screen.
+        wait("the rows to fill the screen") { setRows().fetchSemanticsNodes().size >= 6 }
+        // The lowest badge on screen: the last node described as a set's type that lies wholly inside the screen.
+        val screen = test.onAllNodes(isRoot())[0].fetchSemanticsNode().boundsInRoot
+        val badgePrefix = s(Res.string.set_type, "")
+        val badges = test.onAllNodes(SemanticsMatcher("set badge on screen") {
+            (it.config.getOrNull(SemanticsProperties.ContentDescription)?.firstOrNull() ?: "").startsWith(badgePrefix) && it.boundsInRoot.bottom <= screen.bottom
+        })
+        val lowest = badges[badges.fetchSemanticsNodes().lastIndex]
+        val badge = lowest.fetchSemanticsNode().boundsInRoot
+        lowest.performClick()
+        wait("the menu") { test.onAllNodes(hasTestTag("glass-menu")).fetchSemanticsNodes().size == 1 }
+        val menu = test.onNode(hasTestTag("glass-menu")).fetchSemanticsNode().boundsInRoot
+        val root = test.onAllNodes(isRoot())[0].fetchSemanticsNode().boundsInRoot   // the screen: a popup is a second root
+        assertTrue(menu.top >= root.top && menu.bottom <= root.bottom && menu.left >= root.left && menu.right <= root.right, "$menu inside $root")
+        // Opened above its badge: otherwise the badge sat high enough for the menu to fit below, and nothing here was at the bottom.
+        assertTrue(menu.bottom <= badge.top, "$menu above $badge")
+    }
+
+    @Test
+    fun backClosesAMenuAndLeavesTheScreenWhereItWas() = flow {
+        tap(s(Res.string.tab_plan)); tap(s(Res.string.library)); search("Bench Press BB"); tap("Bench Press BB")
+        tap(s(Res.string.mark_none))
+        wait("the menu") { test.onAllNodes(hasTestTag("glass-menu")).fetchSemanticsNodes().size == 1 }
+        back()
+        gone(hasTestTag("glass-menu"))
+        see(s(Res.string.mark_none))   // still the exercise, not the library behind it
+    }
+
     @Test
     fun theWorkoutMenuRenamesAndKeepsANote() = flow {
         startWorkout()
         tap(s(Res.string.workout))
         tap(s(Res.string.rename))
         type("Push A")
+        shot("18-rename-prompt")
         tap(s(Res.string.save))
         see("Push A")
         tap("Push A")
@@ -429,7 +530,7 @@ class FlowTest {
         test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasText("80 × 8")).fetchSemanticsNodes().size >= 2 }
         shot("05b-summary-open")
         tap(s(Res.string.done))
-        see(s(Res.string.tab_start))
+        seeDesc(s(Res.string.tab_start))
         assertNull(graph.sessions.open().first())
     }
 
@@ -468,7 +569,7 @@ class FlowTest {
         tap(s(Res.string.finish))
         see(s(Res.string.keep_going))
         tap(s(Res.string.discard_workout)) // the sheet's row is drawn last, over the list's own button
-        see(s(Res.string.tab_start))
+        seeDesc(s(Res.string.tab_start))
         assertNull(graph.sessions.open().first())
         assertEquals(0, graph.sessions.history().first().size)
     }
@@ -493,18 +594,74 @@ class FlowTest {
         open()
     }
 
+    /** A tap on a prompt's title is a tap on its panel, not on the scrim: the prompt stays open with what was typed. */
+    @Test
+    fun aTapOnAPromptsTitleKeepsWhatWasTyped() = flow {
+        startWorkout()
+        tap(s(Res.string.workout))
+        tap(s(Res.string.rename))
+        type("Push A")
+        tapOnText(s(Res.string.rename))
+        assertTrue(test.onAllNodes(hasSetTextAction() and hasText("Push A")).fetchSemanticsNodes().isNotEmpty(), "the prompt, still holding Push A")
+    }
+
+    /** A tap on a header sheet's title leaves the sheet open, its choice unsaved but still chosen. */
+    @Test
+    fun aTapOnASheetsTitleKeepsItsChoice() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.exercise_settings))
+        tapSegment("5")
+        tapOnText(s(Res.string.exercise_settings))
+        test.onAllNodes(hasText("5") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)).onLast().assertIsSelected()
+    }
+
+    /** A tap on an action sheet's header row leaves the sheet open. */
+    @Test
+    fun aTapOnAnActionSheetsHeaderKeepsItOpen() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        tap(s(Res.string.finish))
+        val header = getPluralString(Res.plurals.unlogged, 1, 1)
+        see(header)
+        tapOnText(header)
+        assertTrue(test.onAllNodes(hasText(s(Res.string.keep_going))).fetchSemanticsNodes().isNotEmpty(), "the sheet, still open")
+    }
+
+    /** In the simulator's language, the discard alert's two labels are each one line and inside their buttons: stacked if need be. */
+    @Test
+    fun theDiscardAlertsLabelsStayOnOneLine() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        tap(s(Res.string.discard_workout))
+        see(s(Res.string.discard_question))
+        val inAlert = hasAnyAncestor(hasTestTag("glass-alert"))
+        for (label in listOf(s(Res.string.cancel), s(Res.string.discard_workout))) {
+            val text = test.onNode(hasText(label) and inAlert, useUnmergedTree = true).fetchSemanticsNode()
+            val layouts = mutableListOf<TextLayoutResult>()
+            text.config[SemanticsActions.GetTextLayoutResult].action!!(layouts)
+            val button = test.onNode(hasText(label) and hasClickAction() and inAlert).fetchSemanticsNode().boundsInRoot
+            // Its drawn height, not the layout's line count: the layout the action hands back measured the label at its widest.
+            val oneLine = layouts.single().layoutInput.let { with(it.density) { it.style.lineHeight.toPx() } }
+            assertTrue(text.boundsInRoot.height <= oneLine + 1, "'$label' one line (${oneLine}px) tall: ${text.boundsInRoot}")
+            assertTrue(text.boundsInRoot.width <= button.width, "'$label' (${text.boundsInRoot}) inside its button ($button)")
+        }
+    }
+
     @Test
     fun discardFromTheListAsksFirst() = flow {
         startWorkout()
         addExercises("Bench Press BB")
         tap(s(Res.string.discard_workout))
         see(s(Res.string.discard_question))
+        shot("19-discard-alert")
         tap(s(Res.string.cancel))
         open()
         tap(s(Res.string.discard_workout))
         see(s(Res.string.discard_question))
         tap(s(Res.string.discard_workout)) // the alert's button is drawn last
-        see(s(Res.string.tab_start))
+        seeDesc(s(Res.string.tab_start))
         assertNull(graph.sessions.open().first())
     }
 
@@ -515,10 +672,11 @@ class FlowTest {
         tapDesc(s(Res.string.minimise))
         bar()
         shot("07-minimised")
-        tap(s(Res.string.tab_start))
-        // Two workouts cannot run at once: the sheet only continues this one.
-        gone(hasText(s(Res.string.start_workout)))
-        tapContaining(s(Res.string.workout))
+        tapDesc(s(Res.string.tab_start))
+        // Two workouts cannot run at once: Start only continues this one.
+        gone(hasContentDescription(s(Res.string.bubble_empty_desc)))
+        gone(hasContentDescription(s(Res.string.start_run)))
+        tapDescContaining(s(Res.string.bubble_continue))
         see(s(Res.string.add_set), substring = true)
     }
 
@@ -531,6 +689,175 @@ class FlowTest {
         see(s(Res.string.what_today))
     }
 
+    /** The rest's time in the bar while it runs, and both gone at zero. The ring is a drawing with no text: the WO-17-rest shot shows it. */
+    @Test
+    fun theBarShowsTheRestAsARingAndTimeAndDropsThemAtZero() = flow {
+        startWorkout()
+        tapDesc(s(Res.string.minimise))
+        bar()
+        // Unmerged: the bar is one button, and a test tag inside it does not merge up into the button's node.
+        fun restShows() = test.onAllNodes(hasTestTag("bar-rest"), useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
+        graph.rest.value = Rest(now() - 17_000, 120)
+        // 1:43 as it starts; the clock ticks on, so only the minute and the tens.
+        val time = hasText("1:4", substring = true) and hasAnyAncestor(hasTestTag("bar-rest"))
+        wait("the rest's time in the bar") { test.onAllNodes(time, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
+        graph.rest.value = Rest(now() - 121_000, 120)
+        wait("the rest to leave the bar") { !restShows() }
+    }
+
+    @Test
+    fun aLongWorkoutNameKeepsTheBarOneLineTall() = flow {
+        startWorkout()
+        val short = barHeightAfterRenaming("Push A")
+        assertEquals(short, barHeightAfterRenaming("Överkropp tung med extra armar och lite till för säkerhets skull"))
+    }
+
+    @Test
+    fun aLongNameEndsInAnEllipsisUnderTheContinueBubble() = flow {
+        startWorkout()
+        val name = "Överkropp tung med extra armar och lite till för säkerhets skull"
+        graph.sessions.rename(open().id, name)
+        tapDesc(s(Res.string.minimise)); bar()
+        tapDesc(s(Res.string.tab_start))
+        val label = test.onNode(hasText(name.take(10), substring = true) and hasAnyAncestor(hasTestTag("start-bubbles"))).fetchSemanticsNode().boundsInRoot
+        val root = test.onAllNodes(isRoot())[0].fetchSemanticsNode().boundsInRoot
+        assertTrue(label.left >= root.left && label.right <= root.right, "$label inside $root")
+        assertTrue(label.width <= 160 * 3 + 1, "the label is capped at 160 dp")
+        assertTrue(label.height <= 13 * 3 + 1, "one line of label-small (13 dp), not wrapped")
+    }
+
+    /** Centre of the node with [desc], in px. */
+    private fun Flow.centre(desc: String) = test.onNode(hasContentDescription(desc)).fetchSemanticsNode().boundsInRoot.center
+
+    @Test
+    fun twoBubblesSitInTheArcOverStart() = flow {
+        tapDesc(s(Res.string.tab_start))
+        val start = centre(s(Res.string.close_start))
+        val empty = centre(s(Res.string.bubble_empty_desc))
+        val run = centre(s(Res.string.start_run))
+        // P2: (−47, −157) and (47, −157) dp from Start's centre, at density 3, within a pixel.
+        assertEquals(-141f, empty.x - start.x, 1f); assertEquals(-471f, empty.y - start.y, 1f)
+        assertEquals(141f, run.x - start.x, 1f); assertEquals(-471f, run.y - start.y, 1f)
+    }
+
+    @Test
+    fun aTapOutsideOrOnTheCrossClosesStart() = flow {
+        tapDesc(s(Res.string.tab_start)); seeDesc(s(Res.string.bubble_empty_desc))
+        test.onNode(clickLabel(s(Res.string.close_start))).performClick()   // the scrim
+        gone(hasContentDescription(s(Res.string.bubble_empty_desc)))
+        tapDesc(s(Res.string.tab_start)); tapDesc(s(Res.string.close_start)) // the ×
+        gone(hasContentDescription(s(Res.string.bubble_empty_desc)))
+    }
+
+    @Test
+    fun anEmptyWorkoutOrARunStartsInTwoTapsFromAnyTab() = flow {
+        for (tab in listOf(Res.string.tab_home, Res.string.tab_food, Res.string.tab_plan, Res.string.tab_you)) {
+            tap(s(tab))
+            tapDesc(s(Res.string.tab_start)); tapDesc(s(Res.string.start_run))                 // two taps
+            see(s(Res.string.close)); tap(s(Res.string.close))
+            tapDesc(s(Res.string.tab_start)); tapDesc(s(Res.string.bubble_empty_desc))         // two taps
+            see(s(Res.string.what_today))
+            tapDesc(s(Res.string.minimise)); bar()
+            runBlocking { graph.sessions.discard(open().id) }
+            gone(clickLabel(s(Res.string.back_to_workout)))
+        }
+    }
+
+    @Test
+    fun aDoubleTapOnEmptyStartsOneWorkout() = flow {
+        tapDesc(s(Res.string.tab_start))
+        test.onNode(hasContentDescription(s(Res.string.bubble_empty_desc))).performTouchInput { click(); click() }
+        see(s(Res.string.what_today))
+        runBlocking { graph.sessions.discard(open().id) }
+        waitUntilTrue { graph.sessions.open().first() == null }   // a second workout would still be open
+    }
+
+    @Test
+    fun underReduceMotionTheBubblesAppearInPlace() = flow(reduceMotion = true) { assertTrue(bubbleMovesAfterTheTap() == 0f) }
+
+    @Test
+    fun theBubblesSpringUpFromStart() = flow { assertTrue(bubbleMovesAfterTheTap() > 0f) }
+
+    /** How far the Empty workout and Run bubbles move between 16 ms after Start's tap and settling: the larger, in px. */
+    private suspend fun Flow.bubbleMovesAfterTheTap(): Float {
+        test.mainClock.autoAdvance = false
+        test.onNode(hasContentDescription(s(Res.string.tab_start))).performClick()
+        test.mainClock.advanceTimeBy(16)
+        val early = listOf(centre(s(Res.string.bubble_empty_desc)), centre(s(Res.string.start_run)))
+        test.mainClock.autoAdvance = true
+        idle()
+        val settled = listOf(centre(s(Res.string.bubble_empty_desc)), centre(s(Res.string.start_run)))
+        return early.zip(settled) { a, b -> (a - b).getDistance() }.max()
+    }
+
+    /**
+     * MO-start's three key frames, 0, 120 and 470 ms after Start's tap, at the flow tests' size: compared by eye with the motion board
+     * (P11), so drawn in English as the board is.
+     */
+    @Test
+    fun moStartFramesInDarkAndDarkHc() = inEnglish {
+        for ((highContrast, mode) in listOf(false to "dark", true to "dark-hc")) flow(dark = true, highContrast = highContrast) {
+            test.mainClock.autoAdvance = false
+            test.onNode(hasContentDescription(s(Res.string.tab_start))).performClick()
+            test.savePng(BOARD_SHOTS, "MO-start-0-$mode")
+            test.mainClock.advanceTimeBy(120)
+            test.savePng(BOARD_SHOTS, "MO-start-120-$mode")
+            test.mainClock.advanceTimeBy(350)
+            test.savePng(BOARD_SHOTS, "MO-start-470-$mode")
+            seeDesc(s(Res.string.bubble_empty_desc)); seeDesc(s(Res.string.start_run))
+            test.mainClock.autoAdvance = true
+        }
+    }
+
+    @Test
+    fun aDoubleTapOnContinueOpensTheWorkoutOnce() = flow {
+        startWorkout()
+        tapDesc(s(Res.string.minimise)); bar()
+        tapDesc(s(Res.string.tab_start))
+        test.onNode(descContains(s(Res.string.bubble_continue))).performTouchInput { click(); click() }
+        see(s(Res.string.what_today))
+        tapDesc(s(Res.string.minimise))
+        gone(hasContentDescription(s(Res.string.minimise)))   // a second copy of the workout would still show
+        bar()
+    }
+
+    @Test
+    fun aDoubleTapOnRunOpensItOnce() = flow {
+        tapDesc(s(Res.string.tab_start))
+        test.onNode(hasContentDescription(s(Res.string.start_run))).performTouchInput { click(); click() }
+        see(s(Res.string.close)); tap(s(Res.string.close))
+        gone(hasText(s(Res.string.close)))   // a second run page would still show
+        seeDesc(s(Res.string.tab_start))
+    }
+
+    @Test
+    fun aTapOnABubblesLabelActsAsTheBubble() = flow {
+        tapDesc(s(Res.string.tab_start))
+        test.onNode(hasText(s(Res.string.start_run)) and hasAnyAncestor(hasTestTag("start-bubbles"))).performClick()
+        see(s(Res.string.close))
+    }
+
+    @Test
+    fun aTapOnThePanelBetweenTheBubblesLeavesStartOpen() = flow {
+        tapDesc(s(Res.string.tab_start))
+        val empty = centre(s(Res.string.bubble_empty_desc))
+        val run = centre(s(Res.string.start_run))
+        test.onAllNodes(isRoot())[0].performTouchInput { click(Offset((empty.x + run.x) / 2, empty.y)) }
+        idle()
+        seeDesc(s(Res.string.bubble_empty_desc)); seeDesc(s(Res.string.close_start))
+    }
+
+    @Test
+    fun backClosesStartAndLeavesTheTabWhereItWas() = flow {
+        tap(s(Res.string.next_screen))
+        val second = "${s(Res.string.tab_home)} 2"
+        see(second)
+        tapDesc(s(Res.string.tab_start)); seeDesc(s(Res.string.bubble_empty_desc))
+        back()
+        gone(hasContentDescription(s(Res.string.bubble_empty_desc)))
+        see(second)
+    }
+
     @Test
     fun historyStartsEmptyAndOffersAWorkout() = flow {
         tap(s(Res.string.tab_you))
@@ -538,6 +865,14 @@ class FlowTest {
         see(s(Res.string.no_workouts))
         tap(s(Res.string.start_a_workout))
         see(s(Res.string.what_today))
+    }
+
+    @Test
+    fun foodSaysNutritionComesLaterAndItsButtonGoesNowhere() = flow {
+        tap(s(Res.string.tab_food))
+        see(s(Res.string.food_later_title))
+        tap(s(Res.string.food_log_later))
+        see(s(Res.string.food_later_title))
     }
 
     @Test
@@ -552,9 +887,11 @@ class FlowTest {
         see("640 kg", substring = true)
         shot("08-history")
         tap(s(Res.string.workout))
-        see(s(Res.string.back))
+        backReads(s(Res.string.all_activities))
         shot("09-session-detail")
-        tap(s(Res.string.back))
+        tapBack()
+        backReads(s(Res.string.tab_you))
+        tapBack()
         see(s(Res.string.all_activities))
     }
 
@@ -693,6 +1030,7 @@ class FlowTest {
         tapDesc(s(Res.string.exercise_options))
         shot("16-exercise-menu")
         tap(s(Res.string.rest_all))
+        shot("16b-rest-submenu")
         tap("1:30")
         waitUntilTrue { open().exercises.single().sets.all { it.rest == 90 } }
         see(s(Res.string.rest_row, "1:30"))
@@ -711,6 +1049,7 @@ class FlowTest {
         tap(s(Res.string.order_skip))
         tapLastText(s(Res.string.skip)) // Squat's, the last row
         waitUntilTrue { open().exercises[1].skipped && open().sets == 1 }
+        shot("20-order-sheet")
         tap(s(Res.string.done))
         see(s(Res.string.skipped))
         // Swap Bench Press, the one still open, for another exercise.
@@ -991,6 +1330,7 @@ class FlowTest {
         addExercises("Bench Press BB", "Squat BB", "Incline Press DB")
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.superset_create))
+        shot("21-superset-alert")
         tapLastText("Incline Press DB")
         // Incline Press moves up to follow Bench Press, and the two are one superset.
         waitUntilTrue {
@@ -1017,8 +1357,104 @@ class FlowTest {
     @Test
     fun theLibraryStillOpensFromPlan() = flow {
         tap(s(Res.string.tab_plan))
+        tab(s(Res.string.tab_plan)).assertIsSelected()
+        tab(s(Res.string.tab_home)).assertIsNotSelected()
         tap(s(Res.string.library))
         see("Bench Press BB")
+    }
+
+    @Test
+    fun backNamesTheParentInTheLibrary() = flow {
+        tap(s(Res.string.tab_plan)); tap(s(Res.string.library))
+        backReads(s(Res.string.tab_plan))
+        test.onNode(hasTestTag("back")).assert(clickLabel(s(Res.string.back))) // VoiceOver: "Plan", and a tap goes back
+        shot("22-library")
+        search("Bench Press BB"); tap("Bench Press BB")
+        backReads(s(Res.string.library))
+        shot("23-exercise-detail")
+        tapBack()
+        backReads(s(Res.string.tab_plan))
+        tapBack()
+        gone(hasTestTag("back"))            // Plan's first screen has no parent
+    }
+
+    @Test
+    fun aNameWiderThanTheBarKeepsDoneAndBackOnScreen() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8")
+        val name = "Överkropp tung med extra armar och lite till för säkerhets skull"
+        graph.sessions.rename(open().id, name)
+        tap(s(Res.string.finish))
+        see(s(Res.string.done))
+        shot("25-long-name-summary")
+        val touch = with(test.density) { 44.dp.toPx() }
+        // Done is a Material button: never squeezed below its own size, which Material pads out to a 48 dp touch.
+        val (minWidth, minHeight) = with(test.density) { ButtonDefaults.MinWidth.toPx() to ButtonDefaults.MinHeight.toPx() }
+        val done = test.onNode(hasText(s(Res.string.done)) and hasClickAction()).fetchSemanticsNode().boundsInRoot
+        assertTrue(done.width >= minWidth && done.height >= minHeight, "Done at its full size: $done")
+        tap(s(Res.string.done))
+        seeDesc(s(Res.string.tab_start))
+        tap(s(Res.string.tab_you))
+        tap(s(Res.string.all_activities))
+        tap(name)
+        backReads(s(Res.string.all_activities))
+        shot("26-long-name-detail")
+        val back = test.onNode(hasTestTag("back")).fetchSemanticsNode().boundsInRoot
+        assertTrue(back.width >= touch && back.height >= touch, "back a full touch in size: $back")
+        tapBack()
+        backReads(s(Res.string.tab_you))
+    }
+
+    @Test
+    fun aNameThatFitsBesideTheBackLabelIsDrawnWhole() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8")
+        tap(s(Res.string.finish))
+        tap(s(Res.string.done))
+        tap(s(Res.string.tab_you))
+        tap(s(Res.string.all_activities))
+        tap(s(Res.string.workout))
+        backReads(s(Res.string.all_activities))
+        val id = graph.sessions.history().first().single().id
+        // Each name has room between the back label and the bar's end, so none is cut to the room a centred title would have.
+        val drawn = listOf("Workout", "Överkropp A", "Överkropp tung A").associateWith { name ->
+            graph.sessions.rename(id, name)
+            see(name)
+            shot("27-title-${name.length}")
+            val title = test.onNode(hasText(name), useUnmergedTree = true).fetchSemanticsNode()
+            val back = test.onNode(hasTestTag("back")).fetchSemanticsNode().boundsInRoot
+            assertTrue(title.boundsInRoot.left >= back.right, "'$name' (${title.boundsInRoot}) clear of the back label ($back)")
+            drawnWidthAndRoom(title)
+        }
+        assertTrue(drawn.values.all { (width, room) -> width < room }, "every name drawn whole: $drawn")
+    }
+
+    @Test
+    fun aLongWorkoutNameLeavesTheBackLabelWhole() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8")
+        val name = "Push A, heavy upper body"
+        graph.sessions.rename(open().id, name)
+        tap(s(Res.string.finish))
+        tap(s(Res.string.done))
+        tap(s(Res.string.tab_you))
+        tap(s(Res.string.all_activities))
+        tap(name)
+        val parent = s(Res.string.all_activities)
+        backReads(parent)
+        shot("24-long-name-detail")
+        val text = test.onNode(hasText(parent) and hasAnyAncestor(hasTestTag("back")), useUnmergedTree = true).fetchSemanticsNode()
+        val layouts = mutableListOf<TextLayoutResult>()
+        text.config[SemanticsActions.GetTextLayoutResult].action!!(layouts)
+        val layout = layouts.single()
+        // The bar gives the label all it needs and the name what is left; a bar too narrow for even the label ends it in an ellipsis.
+        val (width, room) = drawnWidthAndRoom(text)
+        assertTrue(width < room, "'$parent' whole: drawn $width px of $room px")
+        assertEquals(TextOverflow.Ellipsis, layout.layoutInput.overflow)
+        assertEquals(1, layout.layoutInput.maxLines)
     }
 
     @Test
@@ -1036,9 +1472,15 @@ class FlowTest {
         try {
             flow(AppGraph(again)) {
                 bar()
-                see("1/1", substring = true)
+                see(s(Res.string.tap_to_continue))
+                see(s(Res.string.bar_left_open, s(Res.string.workout), ""), substring = true) // the title up to its time
                 test.onNode(clickLabel(s(Res.string.back_to_workout))).performClick()
                 seeDesc(s(Res.string.logged, 1))
+                // Opened once, it reads as any open workout again.
+                tapDesc(s(Res.string.minimise))
+                bar()
+                see("1/1", substring = true)
+                gone(hasText(s(Res.string.tap_to_continue)))
             }
         } finally {
             again.close()
@@ -1048,13 +1490,75 @@ class FlowTest {
 }
 
 private const val TIMEOUT = 10_000L
+private const val IDLE_TIMEOUT = 60_000L
 
-private fun clickLabel(label: String) =
+/**
+ * A one-line text's drawn width and the width it was allowed. A text cut short fills its allowance exactly; one drawn whole is
+ * narrower. Skia reports neither the ellipsis (`isLineEllipsized`) nor the overflow, and its intrinsic width runs about a tenth
+ * under what it draws, so neither tells a cut text from a whole one.
+ */
+private fun drawnWidthAndRoom(text: SemanticsNode): Pair<Int, Int> {
+    val layouts = mutableListOf<TextLayoutResult>()
+    text.config[SemanticsActions.GetTextLayoutResult].action!!(layouts)
+    return layouts.single().let { it.size.width to it.layoutInput.constraints.maxWidth }
+}
+
+internal fun clickLabel(label: String) =
     SemanticsMatcher("click label $label") { it.config.getOrNull(SemanticsActions.OnClick)?.label == label }
+
+/** A node whose content description contains [text]: for a description that carries a running time. */
+private fun descContains(text: String) = SemanticsMatcher("description contains $text") {
+    it.config.getOrNull(SemanticsProperties.ContentDescription)?.any { d -> text in d } == true
+}
 
 /** The steps a person takes and what they check, in the words of the app. */
 @OptIn(ExperimentalTestApi::class)
-private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
+private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private val backInput: DirectNavigationEventInput) {
+    /** The system's back: a completed back gesture. */
+    fun back() {
+        test.runOnIdle { backInput.backCompleted() }
+        idle()
+    }
+
+    /**
+     * Waits for the screen to settle, a frame at a time as `waitForIdle` does. That wait has no limit of its own, so a screen that
+     * never settled spun for an hour (#57); this one fails after [IDLE_TIMEOUT] and says how busy the screen was, which state it
+     * still writes and what is on it.
+     */
+    fun idle() {
+        val from = test.mainClock.currentTime
+        val applied = changesApplied()
+        var frames = -1
+        try {
+            test.waitUntil("the screen to settle", IDLE_TIMEOUT) { frames++; !test.hasPendingWork() }
+        } catch (e: ComposeTimeoutException) {
+            println("NEVER IDLE: $frames frames and ${test.mainClock.currentTime - from} ms on the test's clock in ${IDLE_TIMEOUT / 1_000} s, " +
+                "${changesApplied() - applied} of them recomposed; one more frame writes ${writtenInAFrame()}; on screen:")
+            dump()
+            throw e
+        }
+        // No waitForIdle after it: it has no bound either. What it added comes later: the next node lookup or the test's end rethrows
+        // what the screen threw, and shot() waits for its own last frame.
+    }
+
+    /** How many times recomposition has changed the screen; an animation alone draws frames without one. */
+    private fun changesApplied() = Recomposer.runningRecomposers.value.sumOf { it.changeCount }
+
+    /** The state written while one more frame runs: what an animation that never ends keeps changing. */
+    private fun writtenInAFrame(): List<String> {
+        val written = mutableListOf<String>()
+        val observer = Snapshot.registerApplyObserver { changed, _ -> changed.mapTo(written) { it.toString().take(120) } }
+        test.mainClock.advanceTimeByFrame()
+        observer.dispose()
+        return written
+    }
+
+    /** Prints what is on screen and saves a picture of it, without waiting for a screen that may never settle. */
+    private fun dump() {
+        test.runWithoutImplicitWait { println(test.onAllNodes(isRoot()).printToString(maxDepth = 40)) }
+        if (!test.hasPendingWork()) runCatching { shot("failure") }
+    }
+
     suspend fun s(res: StringResource, vararg args: Any) = getString(res, *args)
 
     suspend fun open(): Workout = graph.sessions.open().first()!!
@@ -1069,8 +1573,7 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
             test.waitUntil(what, TIMEOUT, condition)
         } catch (e: Throwable) {
             println("FAILED waiting to $what; on screen:")
-            println(test.onAllNodes(isRoot()).printToString(maxDepth = 40))
-            runCatching { shot("failure") }
+            dump()
             throw e
         }
     }
@@ -1083,13 +1586,23 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
         test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(clickLabel(label)).fetchSemanticsNodes().isNotEmpty() }
     }
 
+    /** Renames the open workout, minimises it if it shows, and returns the bar's height once the bar shows the new name. */
+    suspend fun barHeightAfterRenaming(name: String): Int {
+        graph.sessions.rename(open().id, name)
+        val minimise = s(Res.string.minimise)
+        if (test.onAllNodes(hasContentDescription(minimise)).fetchSemanticsNodes().isNotEmpty()) tapDesc(minimise)
+        bar()
+        see(name.take(10), substring = true)
+        return test.onNode(clickLabel(s(Res.string.back_to_workout))).fetchSemanticsNode().size.height
+    }
+
     fun gone(matcher: SemanticsMatcher) = wait("${matcher.description} to go") { test.onAllNodes(matcher).fetchSemanticsNodes().isEmpty() }
 
     /** Taps the last clickable node that matches: what is drawn last lies on top. */
     private fun tapLast(m: SemanticsMatcher) {
         wait("tap ${m.description}") { test.onAllNodes(m).fetchSemanticsNodes().isNotEmpty() }
         test.onAllNodes(m).let { it[it.fetchSemanticsNodes().size - 1] }.performClick()
-        test.waitForIdle()
+        idle()
     }
 
     // Not a text field that happens to hold the same words, such as the search field after a search.
@@ -1099,20 +1612,38 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
 
     fun tapDesc(desc: String) = tapLast(hasContentDescription(desc))
 
+    /** A tap where [text] is drawn, on something that is not a button: the last such text, as what is drawn last lies on top. */
+    fun tapOnText(text: String) {
+        test.onAllNodes(hasText(text) and !hasClickAction()).onLast().performTouchInput { click() }
+        idle()
+    }
+
+    fun tapDescContaining(text: String) = tapLast(descContains(text))
+
     /** The last clickable node with exactly this text, such as a button in a dialog drawn over a row with the same word. */
     fun tapLastText(text: String) = tapLast(hasText(text) and hasClickAction())
+
+    /** The back label on screen reads [parent]. */
+    fun backReads(parent: String) = wait("back to read '$parent'") {
+        test.onAllNodes(hasTestTag("back") and hasText(parent)).fetchSemanticsNodes().isNotEmpty()
+    }
+
+    fun tapBack() = tapLast(hasTestTag("back"))
+
+    /** The tab bar's tab labelled [label]. */
+    fun tab(label: String) = test.onNode(hasText(label) and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab))
 
     fun tapSegment(label: String) = tapLast(hasText(label) and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab))
 
     fun keys(typed: String) = typed.forEach {
         test.onNodeWithTag("key-$it").performClick()
-        test.waitForIdle()
+        idle()
     }
 
     fun type(text: String) {
         test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasSetTextAction()).fetchSemanticsNodes().isNotEmpty() }
         test.onAllNodes(hasSetTextAction()).let { it[it.fetchSemanticsNodes().size - 1] }.performTextReplacement(text)
-        test.waitForIdle()
+        idle()
     }
 
     /** The set rows on screen, in order; each carries the tag "set <exercise> <number>". */
@@ -1124,7 +1655,7 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
     fun openSet(index: Int) {
         test.waitUntil(timeoutMillis = TIMEOUT) { setRows().fetchSemanticsNodes().size > index }
         setRows()[index].performClick()
-        test.waitForIdle()
+        idle()
     }
 
     fun search(name: String) {
@@ -1133,8 +1664,8 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
     }
 
     suspend fun startWorkout() {
-        tap(s(Res.string.tab_start))
-        tap(s(Res.string.start_workout))
+        tapDesc(s(Res.string.tab_start))
+        tapDesc(s(Res.string.bubble_empty_desc))
         see(s(Res.string.finish))
     }
 
@@ -1166,13 +1697,13 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
         val add = hasText(s(Res.string.add_set), substring = true) and hasClickAction()
         wait("add set $index") { test.onAllNodes(add).fetchSemanticsNodes().size > index }
         test.onAllNodes(add)[index].performClick()
-        test.waitForIdle()
+        idle()
     }
 
     /** Opens the set row tagged [tag] and logs it through the dock. */
     suspend fun logSet(tag: String, weight: String, reps: String) {
         test.onNodeWithTag(tag).performClick()
-        test.waitForIdle()
+        idle()
         tapDesc(s(Res.string.field_weight))
         keys(weight)
         tap(s(Res.string.next))
@@ -1192,6 +1723,19 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph) {
         val before = open().logged
         tap(s(Res.string.log_next))
         waitUntilTrue { open().logged > before }
+    }
+
+    /** Waits for the one open menu, saves it as `menu-[name]-dark` beside the Menus card, and closes it. */
+    fun openMenu(name: String) {
+        wait("the $name menu") { test.onAllNodes(hasTestTag("glass-menu")).fetchSemanticsNodes().size == 1 }
+        test.savePng(BOARD_SHOTS, "menu-$name-dark")
+        closeMenu()
+    }
+
+    /** A tap on the screen outside the menu, at its top-left corner; the screen is the first root, as a popup adds a second. */
+    fun closeMenu() {
+        test.onAllNodes(isRoot())[0].performTouchInput { click(Offset(1f, 1f)) }
+        gone(hasTestTag("glass-menu"))
     }
 
     /** A picture of the screen for a person to look at; the tests never compare them. */

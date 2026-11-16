@@ -1,6 +1,23 @@
 package se.carlsmeister.strive.boards
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
+import se.carlsmeister.strive.theme.LocalDarkTheme
+import kotlin.math.abs
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isRoot
+import se.carlsmeister.strive.ui.MenuRow
+import se.carlsmeister.strive.ui.GlassMenu
+import se.carlsmeister.strive.ui.HeaderSheet
+import se.carlsmeister.strive.theme.StriveMaterials
+import se.carlsmeister.strive.theme.LocalGlass
+import se.carlsmeister.strive.theme.ShapeFull
+import se.carlsmeister.strive.theme.glass
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -12,13 +29,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.PixelMap
 import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.test.ComposeUiTest
+import se.carlsmeister.strive.ui.AlertBox
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
+import se.carlsmeister.strive.ui.SegmentedTabs
+import se.carlsmeister.strive.ui.Toast
+import se.carlsmeister.strive.ui.Hint
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.hasAnyAncestor
@@ -64,6 +90,8 @@ import kotlin.test.assertTrue
 /** The system's galleries, shot in every mode at 390 × 844 pt into [BOARD_SHOTS] for a person to set beside the cards. */
 @OptIn(ExperimentalTestApi::class)
 class BoardShotTest {
+    private companion object { const val DP = 3f }
+
     @Test
     fun iconsInFourModes() = boardShots("Icons", Mode.entries) { IconsBoard() }
 
@@ -83,7 +111,184 @@ class BoardShotTest {
     fun listsInDarkAndDarkHc() = boardShots("Lists", DarkModes) { ListsBoard() }
 
     @Test
+    fun tabBarInDarkAndDarkHc() = boardShots("TabBar", DarkModes) { TabBarBoard() }
+
+    @Test
+    fun startBubblesInDarkAndDarkHc() = boardShots("StartBubbles", DarkModes) { StartBubblesBoard() }
+
+    @Test
+    fun menusInDarkAndDarkHc() = boardShots("Menus", DarkModes, waitFor = "Remove exercise") { MenusBoard() }
+
+    @Test
+    fun dialogsInDarkAndDarkHc() = boardShots("Dialogs", DarkModes, waitFor = "Continue workout") { DialogsBoard() }
+
+    /**
+     * P5: a menu in its popup blurs the screen behind it. On one scanline through a line of text, the largest luminance step between
+     * neighbouring pixels behind the panel must be under a quarter of the same step beside it: a glyph's edge is a step of most of
+     * the range, a blur leaves gentle slopes. The largest step, not a count of transitions, because a count hangs on a threshold and
+     * on which glyphs the line holds, while the largest step is set by the sharpest edge alone. The panel's tint is lowered to .3
+     * here so that what shows through decides it: at the real .8, a sharp glyph behind the panel is still a step of about a fifth of
+     * the range, too close to a blur's to call. The shot is saved for a person to look at.
+     */
+    @Test
+    fun aMenuBlursWhatIsBehindIt() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        setLowTintContent { MenuOverTextBoard() }
+        savePng(BOARD_SHOTS, "MenuOverText-dark")
+        val panel = onNodeWithTag("glass-menu").fetchSemanticsNode().boundsInRoot
+        // A line of text through the panel's middle row, its centre clear of the row's hairlines.
+        val line = textLines().first { it.center.y in (panel.top + panel.height / 3 + 6 * DP)..(panel.bottom - panel.height / 3 - 6 * DP) }
+        val pixels = onAllNodes(isRoot())[0].captureToImage().toPixelMap()
+        // Beside: the line's start, clear of the panel's shadow. Behind: the panel's right part, clear of the row's own label.
+        assertBlurred(
+            behind = pixels.largestStep(line.center.y, panel.left + 140 * DP, panel.right - 20 * DP),
+            beside = pixels.largestStep(line.center.y, line.left, panel.left - 32 * DP),
+        )
+    }
+
+    /**
+     * P6 with P5: a panel in a dialog's window blurs the screen behind it as a menu's does, measured the same way. The alert sits
+     * in the middle of the screen with no room beside it, so "beside" is the nearest line above the panel and its shadow, across
+     * the same columns.
+     */
+    @Test
+    fun aDialogBlursWhatIsBehindIt() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        setLowTintContent { DialogOverTextBoard() }
+        savePng(BOARD_SHOTS, "DialogOverText-dark")
+        val panel = onNodeWithTag("glass-alert").fetchSemanticsNode().boundsInRoot
+        val lines = textLines()
+        val inside = lines.first { it.center.y in (panel.top + panel.height / 3)..(panel.bottom - panel.height / 3) }
+        val above = lines.last { it.bottom < panel.top - 32 * DP }
+        val pixels = onAllNodes(isRoot())[0].captureToImage().toPixelMap()
+        val (from, to) = panel.left + 20 * DP to panel.right - 20 * DP
+        assertBlurred(behind = pixels.largestStep(inside.center.y, from, to), beside = pixels.largestStep(above.center.y, from, to))
+    }
+
+    /** A dialog dims the screen with the card's one scrim, black at `scrimOpacity`: the window's own, and no second one of ours. */
+    @Test
+    fun aDialogDimsTheScreenOnceAtTheScrimOpacity() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        var expected = Color.Unspecified
+        setContent {
+            CompositionLocalProvider(LocalDarkTheme provides true) { StriveTheme {
+                expected = Color.Black.copy(alpha = StriveTheme.states.scrimOpacity).compositeOver(Color.Gray)
+                Box(Modifier.fillMaxSize().background(Color.Gray))
+                AlertBox(onDismiss = {}) { Text("Dim") }
+            } }
+        }
+        waitForIdle()
+        val corner = onAllNodes(isRoot())[0].captureToImage().toPixelMap()[30, 30]
+        for ((name, got, want) in listOf(Triple("red", corner.red, expected.red), Triple("green", corner.green, expected.green), Triple("blue", corner.blue, expected.blue)))
+            assertEquals(want, got, 2f / 255, "$name: the screen's corner $corner, one scrim over grey $expected")
+    }
+
+    /** A dark board with the panels' thick tint lowered to .3, so what shows through them decides whether it is blurred. */
+    private fun ComposeUiTest.setLowTintContent(content: @Composable () -> Unit) {
+        setContent {
+            CompositionLocalProvider(LocalDarkTheme provides true) { StriveTheme {
+                val glass = StriveTheme.glass
+                CompositionLocalProvider(LocalGlass provides StriveMaterials(glass.regular, glass.thick.copy(alpha = .3f), glass.edge, glass.shadow)) {
+                    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { content() }
+                }
+            } }
+        }
+        waitForIdle()
+    }
+
+    private fun ComposeUiTest.textLines() = onAllNodes(hasText("Line ", substring = true)).fetchSemanticsNodes().map { it.boundsInRoot }
+
+    /** The largest luminance step between neighbouring pixels on the scanline at [y], from [from] to [to]. */
+    private fun PixelMap.largestStep(y: Float, from: Float, to: Float): Float {
+        fun luminance(x: Int) = this[x, y.toInt()].let { (it.red + it.green + it.blue) / 3 }
+        return (from.toInt() until to.toInt()).maxOf { x -> abs(luminance(x + 1) - luminance(x)) }
+    }
+
+    private fun assertBlurred(behind: Float, beside: Float) {
+        assertTrue(beside > .5f, "the scanline crosses glyphs beside the panel: largest step $behind behind, $beside beside")
+        assertTrue(behind < beside / 4, "glyph edges gone behind the panel: largest step $behind behind, $beside beside")
+    }
+
+    /**
+     * A menu that opens above its button grows from its bottom corner from its first frame: the corner is chosen where the popup is
+     * placed, after composition, so it must be read when the layer draws.
+     */
+    @Test
+    fun aMenuThatOpensAboveItsButtonGrowsFromItsBottomCorner() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        var open by mutableStateOf(false)
+        setContent {
+            CompositionLocalProvider(LocalDarkTheme provides true) { StriveTheme {
+                Box(Modifier.fillMaxSize()) {
+                    Box(Modifier.align(Alignment.BottomEnd).padding(end = 16.dp, bottom = 40.dp).size(44.dp)) {
+                        GlassMenu(open, {}) { MenuRow("One", {}); MenuRow("Two", {}); MenuRow("Three", {}) }
+                    }
+                }
+            } }
+        }
+        waitForIdle()
+        mainClock.autoAdvance = false
+        open = true
+        // The first frame the panel is on screen, as it draws: its bounds carry the layer's scale.
+        var frames = 0
+        while (onAllNodes(hasTestTag("glass-menu")).fetchSemanticsNodes().isEmpty() && frames++ < 5) mainClock.advanceTimeByFrame()
+        val first = onNodeWithTag("glass-menu").fetchSemanticsNode().boundsInRoot
+        mainClock.autoAdvance = true
+        waitForIdle()
+        val settled = onNodeWithTag("glass-menu").fetchSemanticsNode().boundsInRoot
+        assertTrue(first.height < settled.height - 3, "still growing on its first frame: $first, settled $settled")
+        assertEquals(settled.bottom, first.bottom, 1.5f, "grows from its bottom: first $first, settled $settled")
+    }
+
+    @Test
     fun titleBarsInDarkAndDarkHc() = boardShots("TitleBars", DarkModes, waitFor = "Push A") { TitleBarsBoard() }
+
+    @Test
+    fun hintsAndToastsInDarkAndDarkHc() = boardShots("HintsAndToasts", DarkModes) { HintsAndToastsBoard() }
+
+    @Test
+    fun aSegmentedTabTellsWhichIsChosenAndIsATouchTall() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        var chosen by mutableStateOf(0)
+        setContent { StriveTheme { SegmentedTabs(listOf("About", "History"), chosen, { chosen = it }, Modifier.testTag("segc")) } }
+        onNodeWithText("History").performClick()
+        assertEquals(1, chosen)
+        onNodeWithText("History").assertIsSelected()
+        onNodeWithText("About").assertIsNotSelected()
+        assertTrue(onNodeWithText("History").fetchSemanticsNode().size.height >= 44 * 3)
+    }
+
+    @Test
+    fun aGroupsFootnoteSitsUnderItsList() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        setContent { StriveTheme { ListGroup("Account", footnote = "Kept on this phone.") { ListBlock(listOf({ ListRow("Profile", Modifier.testTag("row")) })) } } }
+        val row = onNodeWithTag("row").fetchSemanticsNode().boundsInRoot
+        assertTrue(onNodeWithText("Kept on this phone.").fetchSemanticsNode().boundsInRoot.top >= row.bottom)
+    }
+
+    @Test
+    fun aToastsActionIsTappedAndATouchTall() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        var undone = false
+        setContent { StriveTheme { Toast("Bench Press BB removed", action = "Undo", onAction = { undone = true }) } }
+        onNodeWithText("Undo").performClick()
+        assertTrue(undone)
+        assertTrue(onNodeWithText("Undo").fetchSemanticsNode().size.height >= 44 * 3)
+    }
+
+    /**
+     * A hint's dismiss label calls back and is a touch (44 dp) tall, while the hint keeps the card's drawn 102 dp: 12 padding, the
+     * title's 20, a 4 gap, the text's 18, a 4 gap, `.got`'s 32, 12 padding.
+     */
+    @Test
+    fun aHintsDismissIsTappedAndATouchTall() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        var dismissed = false
+        setContent { StriveTheme { Box(Modifier.testTag("hintFootprint")) { Hint("Log in one tap", "Tap ✓ to log the set.", "Got it", onDismiss = { dismissed = true }) } } }
+        onNodeWithText("Got it").performClick()
+        assertTrue(dismissed)
+        assertTrue(onNodeWithText("Got it").fetchSemanticsNode().size.height >= 44 * 3)
+        assertEquals(102 * 3, onNodeWithTag("hintFootprint").fetchSemanticsNode().size.height, "the hint's layout")
+    }
+
+    /** A board's `waitFor` names what it shows once arranged, so a text only `arrange` brings on screen is waited for, not timed out on. */
+    @Test
+    fun boardShotsWaitsForWhatTheBoardShowsOnceArranged() {
+        var arranged by mutableStateOf(false)
+        boardShots("ArrangeProbe", DarkModes, waitFor = "Arranged", arrange = { arranged = true }) { if (arranged) Text("Arranged") }
+    }
 
     /**
      * A switch row toggles from a tap on its text; a switch on its own draws 32 dp but is a touch (44 dp) tall. A switch row alone
@@ -191,6 +396,29 @@ class BoardShotTest {
         assertEquals(0f, chevronDrop("val"), 1f, "Export's chevron")
     }
 
+    /**
+     * `.glass`'s box-shadow paints only outside the box, as CSS does: over content, a glass capsule's middle is its tint over that
+     * content, not darkened by its own shadow underneath.
+     */
+    @Test
+    fun glassPaintsItsShadowOnlyOutsideItsShape() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        var expected = Color.Unspecified
+        setContent {
+            CompositionLocalProvider(LocalDarkTheme provides true) { StriveTheme {
+                expected = StriveTheme.glass.regular.compositeOver(Color.Gray)
+                Box(Modifier.testTag("behind").background(Color.Gray).padding(48.dp)) {
+                    Box(Modifier.size(200.dp, 100.dp).glass(null, StriveTheme.glass, shape = ShapeFull))
+                }
+            } }
+        }
+        val pixels = onNodeWithTag("behind").captureToImage().toPixelMap()
+        val middle = pixels[pixels.width / 2, pixels.height / 2]
+        for ((name, got, want) in listOf(Triple("red", middle.red, expected.red), Triple("green", middle.green, expected.green), Triple("blue", middle.blue, expected.blue)))
+            assertEquals(want, got, 2f / 255, "$name: the middle $middle, the tint over grey $expected")
+        val below = pixels[pixels.width / 2, (48 + 100 + 6) * 3] // 6 dp under the capsule, where its 8 dp offset shadow falls
+        assertTrue(below.red < Color.Gray.red - 0.05f, "the shadow under the capsule: $below")
+    }
+
     /** `.navtext` is a touch tall and acts; `.navtext.dim` cannot act yet. */
     @Test
     fun aNavTextIsATouchTallAndADimOneIsDisabled() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
@@ -201,6 +429,24 @@ class BoardShotTest {
         onNodeWithText("Edit").assertIsEnabled().assertHasClickAction()
         onNodeWithText("Save").assertIsNotEnabled()
         assertTrue(onNodeWithText("Edit").fetchSemanticsNode().size.height >= 44 * 3)
+    }
+
+    /** A sheet's head keeps Cancel and Done a touch wide and tappable however long its title runs, as large text makes one (#57 F1). */
+    @Test
+    fun aLongSheetTitleLeavesCancelAndDoneATouchWide() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        val taps = mutableListOf<String>()
+        val title = "Change when this workout started and every set logged after it, in this long title"
+        setContent { StriveTheme {
+            HeaderSheet(title, {}, cancel = "Cancel", onCancel = { taps += "cancel" }, done = "Done", onDone = { taps += "done" }) {}
+        } }
+        waitForIdle()
+        for (label in listOf("Cancel", "Done")) {
+            val b = onNodeWithText(label).fetchSemanticsNode().boundsInRoot
+            assertTrue(b.width >= 44 * DP && b.left >= 0f && b.right <= 1170f, "$label: $b")
+            onNodeWithText(label).performClick()
+        }
+        assertEquals(listOf("cancel", "done"), taps)
+        assertTrue(onNodeWithText(title).fetchSemanticsNode().boundsInRoot.width > 0, "the title is still drawn")
     }
 
     /** .moment draws its edge inset: a marked card takes exactly the room an unmarked one does (moments.css). */

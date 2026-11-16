@@ -22,16 +22,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,13 +47,17 @@ import se.carlsmeister.strive.data.Category
 import se.carlsmeister.strive.data.Exercise
 import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.data.Mark
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
+import se.carlsmeister.strive.theme.LocalGlassSource
 import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.StriveTheme
+import se.carlsmeister.strive.ui.BackLabel
+import se.carlsmeister.strive.ui.HeaderSheet
 import se.carlsmeister.strive.workout.Btn
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.add_count
 import strive.shared.generated.resources.add_exercises
-import strive.shared.generated.resources.back
 import strive.shared.generated.resources.cancel
 import strive.shared.generated.resources.chip_conditioning
 import strive.shared.generated.resources.chip_mobility
@@ -73,11 +76,12 @@ import strive.shared.generated.resources.superset_count
  * The exercise library (#17 L1): one list with a sticky heading per muscle, search, pattern chips and a filter sheet. Given [pick] it
  * is the add-exercise picker (Q19): rows tick in the order tapped, and the bar at the bottom hands them over with Lägg till, or as one
  * superset with Superset given [onSuperset] (queue item 7). Given [swapFor] as well it swaps that exercise (Q8): one tap picks, and
- * the exercises marked Byt (SUB) with the same movement pattern come first.
+ * the exercises marked Byt (SUB) with the same movement pattern come first. [parent] names the screen back goes to; the picker has
+ * none, as it ends in Avbryt.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBack: () -> Unit, pick: ((List<Long>) -> Unit)? = null,
+internal fun LibraryScreen(padding: PaddingValues, parent: String?, onOpen: (Long) -> Unit, onBack: () -> Unit, pick: ((List<Long>) -> Unit)? = null,
                            swapFor: Long? = null, onSuperset: ((List<Long>) -> Unit)? = null) {
     var picked by rememberSaveable { mutableStateOf(listOf<Long>()) }
     // Null until the first read, so the saved scroll position is not spent on an empty list.
@@ -96,10 +100,13 @@ internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBac
     val sides = Modifier.padding(start = padding.calculateStartPadding(direction), end = padding.calculateEndPadding(direction))
 
     val picking = pick != null && swapFor == null && picked.isNotEmpty()
-    Box(Modifier.fillMaxSize()) {
+    // In a tab the shell's source is this screen; the picker routes have none, so the screen is its own, for the filter sheet's glass.
+    val own = rememberHazeState()
+    val shell = LocalGlassSource.current
+    Box(Modifier.fillMaxSize().then(if (shell == null) Modifier.hazeSource(own).background(MaterialTheme.colorScheme.background) else Modifier)) {
         Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()).then(sides)) {
             if (pick == null) {
-                TextButton(onBack, Modifier.padding(start = space.s8)) { Text(stringResource(Res.string.back)) }
+                parent?.let { BackLabel(it, onBack, Modifier.padding(start = space.s8)) }
                 Text(stringResource(Res.string.library), Modifier.padding(horizontal = space.s16), style = MaterialTheme.typography.headlineMedium)
             } else {
                 // Avbryt and the title, as queue item 7 draws the picker; Lägg till lives in the bar at the bottom.
@@ -159,12 +166,14 @@ internal fun LibraryScreen(padding: PaddingValues, onOpen: (Long) -> Unit, onBac
                 content = colors.primary, shape = ShapeFull, enabled = picked.size > 1 && onSuperset != null) {
                 Text(stringResource(Res.string.superset_count, picked.size), style = MaterialTheme.typography.titleSmall)
             }
-            Btn({ pick?.invoke(picked) }, Modifier.weight(1f).height(StriveTheme.sizes.touch), container = colors.primary, content = colors.onPrimary, shape = ShapeFull) {
+            Btn({ pick(picked) }, Modifier.weight(1f).height(StriveTheme.sizes.touch), container = colors.primary, content = colors.onPrimary, shape = ShapeFull) {
                 Text(stringResource(Res.string.add_count, picked.size), style = MaterialTheme.typography.titleSmall)
             }
         }
     }
-    if (sheet) FilterSheet(filter, onChange = ::change, onDone = { sheet = false })
+    if (sheet) CompositionLocalProvider(LocalGlassSource provides (shell ?: own)) {
+        FilterSheet(filter, onChange = ::change, onDone = { sheet = false })
+    }
 }
 
 @Composable
@@ -206,25 +215,22 @@ private fun ExerciseRow(exercise: Exercise, picked: Boolean?, onClick: () -> Uni
 @Composable
 private fun FilterSheet(filter: LibraryFilter, onChange: (LibraryFilter) -> Unit, onDone: () -> Unit) {
     val space = StriveTheme.spacing
-    ModalBottomSheet(onDismissRequest = onDone) {
-        Column(Modifier.padding(horizontal = space.s16).padding(bottom = space.s24), verticalArrangement = Arrangement.spacedBy(space.s12)) {
-            Text(stringResource(Res.string.equipment), style = MaterialTheme.typography.titleSmall)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(space.s8)) {
-                for ((value, label) in Equipment) {
-                    val on = value in filter.equipment
-                    FilterChip(on, { onChange(filter.copy(equipment = if (on) filter.equipment - value else filter.equipment + value)) },
-                        label = { Text(stringResource(label)) })
-                }
+    HeaderSheet(stringResource(Res.string.filter), onDone, done = stringResource(Res.string.done)) {
+        Text(stringResource(Res.string.equipment), style = MaterialTheme.typography.titleSmall)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(space.s8)) {
+            for ((value, label) in Equipment) {
+                val on = value in filter.equipment
+                FilterChip(on, { onChange(filter.copy(equipment = if (on) filter.equipment - value else filter.equipment + value)) },
+                    label = { Text(stringResource(label)) })
             }
-            Text(stringResource(Res.string.in_my_programmes), style = MaterialTheme.typography.titleSmall)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(space.s8)) {
-                for (mark in listOf(Mark.Yes, Mark.Sub, Mark.Test, null, Mark.No)) {
-                    val on = mark in filter.marks
-                    FilterChip(on, { onChange(filter.copy(marks = if (on) filter.marks - mark else filter.marks + mark)) },
-                        label = { Text(stringResource(mark.label)) })
-                }
+        }
+        Text(stringResource(Res.string.in_my_programmes), style = MaterialTheme.typography.titleSmall)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(space.s8)) {
+            for (mark in listOf(Mark.Yes, Mark.Sub, Mark.Test, null, Mark.No)) {
+                val on = mark in filter.marks
+                FilterChip(on, { onChange(filter.copy(marks = if (on) filter.marks - mark else filter.marks + mark)) },
+                    label = { Text(stringResource(mark.label)) })
             }
-            Button(onDone, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.done)) }
         }
     }
 }

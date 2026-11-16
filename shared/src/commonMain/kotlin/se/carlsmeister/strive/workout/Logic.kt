@@ -189,3 +189,13 @@ internal fun withTime(at: Long, hour: Int, minute: Int, zone: TimeZone, now: Lon
     val day = Instant.fromEpochMilliseconds(at).toLocalDateTime(zone).date
     return minOf(kotlinx.datetime.LocalDateTime(day, kotlinx.datetime.LocalTime(hour, minute)).toInstant(zone).toEpochMilliseconds(), now)
 }
+
+/** The workout bar's three faces: WO-17-plan, WO-17-rest and WO-17-killed. */
+internal enum class BarState { Open, Resting, LeftOpen }
+
+/** A workout left open when the app was killed reads so even while a rest runs (WO-17-killed); then a running rest (WO-17-rest). */
+internal fun barState(leftOpen: Boolean, restLeft: Int) = when {
+    leftOpen -> BarState.LeftOpen
+    restLeft > 0 -> BarState.Resting
+    else -> BarState.Open
+}
