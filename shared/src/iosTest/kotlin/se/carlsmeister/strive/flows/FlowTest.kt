@@ -7,6 +7,9 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.runtime.Recomposer
+import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SkikoComposeUiTest
@@ -782,7 +785,7 @@ class FlowTest {
         test.mainClock.advanceTimeBy(16)
         val early = listOf(centre(s(Res.string.bubble_empty_desc)), centre(s(Res.string.start_run)))
         test.mainClock.autoAdvance = true
-        test.waitForIdle()
+        idle()
         val settled = listOf(centre(s(Res.string.bubble_empty_desc)), centre(s(Res.string.start_run)))
         return early.zip(settled) { a, b -> (a - b).getDistance() }.max()
     }
@@ -840,7 +843,7 @@ class FlowTest {
         val empty = centre(s(Res.string.bubble_empty_desc))
         val run = centre(s(Res.string.start_run))
         test.onAllNodes(isRoot())[0].performTouchInput { click(Offset((empty.x + run.x) / 2, empty.y)) }
-        test.waitForIdle()
+        idle()
         seeDesc(s(Res.string.bubble_empty_desc)); seeDesc(s(Res.string.close_start))
     }
 
@@ -1487,6 +1490,7 @@ class FlowTest {
 }
 
 private const val TIMEOUT = 10_000L
+private const val IDLE_TIMEOUT = 60_000L
 
 /**
  * A one-line text's drawn width and the width it was allowed. A text cut short fills its allowance exactly; one drawn whole is
@@ -1513,7 +1517,45 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
     /** The system's back: a completed back gesture. */
     fun back() {
         test.runOnIdle { backInput.backCompleted() }
-        test.waitForIdle()
+        idle()
+    }
+
+    /**
+     * Waits for the screen to settle, a frame at a time as `waitForIdle` does. That wait has no limit of its own, so a screen that
+     * never settled spun for an hour (#57); this one fails after [IDLE_TIMEOUT] and says how busy the screen was, which state it
+     * still writes and what is on it.
+     */
+    fun idle() {
+        val from = test.mainClock.currentTime
+        val applied = changesApplied()
+        var frames = -1
+        try {
+            test.waitUntil("the screen to settle", IDLE_TIMEOUT) { frames++; !test.hasPendingWork() }
+        } catch (e: ComposeTimeoutException) {
+            println("NEVER IDLE: $frames frames and ${test.mainClock.currentTime - from} ms on the test's clock in ${IDLE_TIMEOUT / 1_000} s, " +
+                "${changesApplied() - applied} of them recomposed; one more frame writes ${writtenInAFrame()}; on screen:")
+            dump()
+            throw e
+        }
+        test.waitForIdle() // settled already: rethrows what the screen threw and draws the last frame
+    }
+
+    /** How many times recomposition has changed the screen; an animation alone draws frames without one. */
+    private fun changesApplied() = Recomposer.runningRecomposers.value.sumOf { it.changeCount }
+
+    /** The state written while one more frame runs: what an animation that never ends keeps changing. */
+    private fun writtenInAFrame(): List<String> {
+        val written = mutableListOf<String>()
+        val observer = Snapshot.registerApplyObserver { changed, _ -> changed.mapTo(written) { it.toString().take(120) } }
+        test.mainClock.advanceTimeByFrame()
+        observer.dispose()
+        return written
+    }
+
+    /** Prints what is on screen and saves a picture of it, without waiting for a screen that may never settle. */
+    private fun dump() {
+        test.runWithoutImplicitWait { println(test.onAllNodes(isRoot()).printToString(maxDepth = 40)) }
+        if (!test.hasPendingWork()) runCatching { shot("failure") }
     }
 
     suspend fun s(res: StringResource, vararg args: Any) = getString(res, *args)
@@ -1530,8 +1572,7 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
             test.waitUntil(what, TIMEOUT, condition)
         } catch (e: Throwable) {
             println("FAILED waiting to $what; on screen:")
-            println(test.onAllNodes(isRoot()).printToString(maxDepth = 40))
-            runCatching { shot("failure") }
+            dump()
             throw e
         }
     }
@@ -1560,7 +1601,7 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
     private fun tapLast(m: SemanticsMatcher) {
         wait("tap ${m.description}") { test.onAllNodes(m).fetchSemanticsNodes().isNotEmpty() }
         test.onAllNodes(m).let { it[it.fetchSemanticsNodes().size - 1] }.performClick()
-        test.waitForIdle()
+        idle()
     }
 
     // Not a text field that happens to hold the same words, such as the search field after a search.
@@ -1573,7 +1614,7 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
     /** A tap where [text] is drawn, on something that is not a button: the last such text, as what is drawn last lies on top. */
     fun tapOnText(text: String) {
         test.onAllNodes(hasText(text) and !hasClickAction()).onLast().performTouchInput { click() }
-        test.waitForIdle()
+        idle()
     }
 
     fun tapDescContaining(text: String) = tapLast(descContains(text))
@@ -1595,13 +1636,13 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
 
     fun keys(typed: String) = typed.forEach {
         test.onNodeWithTag("key-$it").performClick()
-        test.waitForIdle()
+        idle()
     }
 
     fun type(text: String) {
         test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasSetTextAction()).fetchSemanticsNodes().isNotEmpty() }
         test.onAllNodes(hasSetTextAction()).let { it[it.fetchSemanticsNodes().size - 1] }.performTextReplacement(text)
-        test.waitForIdle()
+        idle()
     }
 
     /** The set rows on screen, in order; each carries the tag "set <exercise> <number>". */
@@ -1613,7 +1654,7 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
     fun openSet(index: Int) {
         test.waitUntil(timeoutMillis = TIMEOUT) { setRows().fetchSemanticsNodes().size > index }
         setRows()[index].performClick()
-        test.waitForIdle()
+        idle()
     }
 
     fun search(name: String) {
@@ -1655,13 +1696,13 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
         val add = hasText(s(Res.string.add_set), substring = true) and hasClickAction()
         wait("add set $index") { test.onAllNodes(add).fetchSemanticsNodes().size > index }
         test.onAllNodes(add)[index].performClick()
-        test.waitForIdle()
+        idle()
     }
 
     /** Opens the set row tagged [tag] and logs it through the dock. */
     suspend fun logSet(tag: String, weight: String, reps: String) {
         test.onNodeWithTag(tag).performClick()
-        test.waitForIdle()
+        idle()
         tapDesc(s(Res.string.field_weight))
         keys(weight)
         tap(s(Res.string.next))
