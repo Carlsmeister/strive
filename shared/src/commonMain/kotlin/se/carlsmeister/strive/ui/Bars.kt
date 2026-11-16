@@ -1,6 +1,5 @@
 package se.carlsmeister.strive.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -153,8 +152,7 @@ internal fun WorkoutBar(
                 }
             },
             middle = {
-                // shortcut: an AnimatedVisibility always composed can ask for frames for good after it hides (#57); route it through Overlay's showsOrMoves gate when a screen adopts WorkoutBar.
-                AnimatedVisibility(title != null, enter = fadeIn(Motion.fade()), exit = fadeOut(Motion.fade())) {
+                Overlay(title != null, Modifier, fadeIn(Motion.fade()), fadeOut(Motion.fade())) {
                     // Keeps showing the name it had while it fades away.
                     val shown = remember { mutableStateOf(title to progress) }
                     if (title != null) shown.value = title to progress
@@ -202,7 +200,7 @@ internal fun CentredBar(gap: Dp, modifier: Modifier, start: @Composable () -> Un
         val right = e.first().measure(loose)
         val g = gap.roundToPx()
         val between = c.maxWidth - left.width - right.width - 2 * g
-        val title = m.firstOrNull()?.measure(loose.copy(maxWidth = between.coerceAtLeast(0))) // none once AnimatedVisibility has faded out
+        val title = m.firstOrNull()?.measure(loose.copy(maxWidth = between.coerceAtLeast(0))) // none once Overlay has faded out
         val height = maxOf(left.height, right.height, title?.height ?: 0).coerceIn(c.minHeight, c.maxHeight)
         val centre = Alignment.CenterVertically
         // Relative, so a right-to-left language mirrors the bar.

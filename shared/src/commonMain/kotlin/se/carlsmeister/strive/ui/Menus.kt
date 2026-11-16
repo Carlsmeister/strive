@@ -57,12 +57,6 @@ import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.theme.glass
 
 /**
- * Whether a transition driven by this state belongs in the composition: while it shows, and while it moves, an enter cut short
- * included. Out of it once its exit ends, so its frame loop goes with it: one left there can ask for a frame for good (#57).
- */
-internal val MutableTransitionState<Boolean>.showsOrMoves: Boolean get() = currentState || targetState || !isIdle
-
-/**
  * `.menu` (the Menus card, choice 4): a 264 dp panel of thick glass under the button that opened it, 6 dp below with the right
  * edges aligned; above the button if it would pass the bottom of the window, and 8 dp inside the window's sides. Call it inside
  * the Box that holds its button. It fades in and out, scaling from .9 at its anchored corner unless Reduce Motion; a tap outside

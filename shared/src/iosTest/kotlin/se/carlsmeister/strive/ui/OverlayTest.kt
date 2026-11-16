@@ -1,4 +1,4 @@
-package se.carlsmeister.strive.workout
+package se.carlsmeister.strive.ui
 
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.core.tween
@@ -15,10 +15,12 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import se.carlsmeister.strive.theme.StriveTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -43,31 +45,48 @@ class OverlayTest {
                 }
             }
         }
+        assertEquals(emptyList(), busyGapsNearMultiplesOf248 { visible = it }, "gaps in snapshot ids after which the hidden overlay still asks for frames")
+    }
+
+    /** WorkoutBar's name and progress fade out through the same gate, so the next screen that adopts the bar cannot hang (#57). */
+    @Test
+    fun aWorkoutBarsTitleHiddenNearTheFirstNineMultiplesOf248SnapshotsAfterItShowedLeavesTheScreenIdle() = runSkikoComposeUiTest(Size(390f, 200f), Density(1f)) {
+        var scrolled by mutableStateOf(false)
+        setContent {
+            StriveTheme { WorkoutBar({}, {}, {}, title = if (scrolled) "Push B" else null, progress = if (scrolled) "24:13 · 1/14 sets" else null) }
+        }
+        assertEquals(emptyList(), busyGapsNearMultiplesOf248 { scrolled = it }, "gaps in snapshot ids after which the bar's hidden title still asks for frames")
+    }
+
+    /**
+     * Shows and hides through [show], using up snapshot ids in between near every multiple of 31 × 8 up to 31 × 72, eight to each
+     * side; the gaps after which the screen still asks for frames.
+     */
+    private fun ComposeUiTest.busyGapsNearMultiplesOf248(show: (Boolean) -> Unit): List<Long> {
         val spare = mutableStateOf(0)
         fun settle() {
             var frames = 0
             while (hasPendingWork() && frames++ < 60) mainClock.advanceTimeByFrame()
         }
 
-        /** Shows the overlay, uses up [snapshots] snapshot ids and hides it; the ids used from shown to hidden. */
+        /** Shows, uses up [snapshots] snapshot ids and hides; the ids used from shown to hidden. */
         fun showAndHide(snapshots: Long): Long {
-            visible = true
+            show(true)
             settle()
             val shown = Snapshot.current.snapshotId
             for (i in 0 until snapshots) {
                 spare.value++
                 Snapshot.sendApplyNotifications()
             }
-            visible = false
+            show(false)
             settle()
             return Snapshot.current.snapshotId - shown
         }
         val least = showAndHide(0)
-        val stillBusyAfter = (1..9).flatMap { size -> (-8L..8L).map { 248L * size + it } }.filter { gap ->
+        return (1..9).flatMap { size -> (-8L..8L).map { 248L * size + it } }.filter { gap ->
             showAndHide(gap - least)
             hasPendingWork()
         }
-        assertEquals(emptyList(), stillBusyAfter, "gaps in snapshot ids after which the hidden overlay still asks for frames")
     }
 
     /** Scrolled past row 1 and back inside the strip's spring, or a set tapped and the outside tapped as the dock rises. */
