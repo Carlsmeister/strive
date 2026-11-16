@@ -3,6 +3,7 @@ package se.carlsmeister.strive.boards
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -13,18 +14,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.getString
+import se.carlsmeister.strive.App
 import se.carlsmeister.strive.data.AppGraph
 import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.data.memoryDriver
 import se.carlsmeister.strive.fixture.SampleData
+import se.carlsmeister.strive.flows.clickLabel
 import se.carlsmeister.strive.theme.LocalDarkTheme
 import se.carlsmeister.strive.theme.LocalHighContrast
 import se.carlsmeister.strive.theme.LocalReduceTransparency
 import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.workout.wallClock
+import strive.shared.generated.resources.Res
+import strive.shared.generated.resources.back_to_workout
+import strive.shared.generated.resources.finish
+import strive.shared.generated.resources.minimise
 import kotlin.time.Clock
 import platform.Foundation.NSUserDefaults
 
@@ -55,9 +66,11 @@ internal fun boardShots(
     arrange: suspend ComposeUiTest.(AppGraph) -> Unit = {},
     content: @Composable () -> Unit,
 ) = inEnglish {
+    val graph = AppGraph(memoryDriver())
+    // A toast stays up through both modes' shots, and a removal it defers never lands (#42 P5).
+    graph.toastHoldMillis = Long.MAX_VALUE
     try {
         runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
-            val graph = AppGraph(memoryDriver())
             SampleData.load(graph)
             var mode by mutableStateOf(modes.first())
             setContent {
@@ -80,6 +93,7 @@ internal fun boardShots(
             }
         }
     } finally {
+        graph.close()
         wallClock = Clock.System
     }
 }
@@ -109,3 +123,27 @@ private val leftOverCleared by lazy { NSUserDefaults.standardUserDefaults.remove
 internal fun clearLeftOverLanguage() = leftOverCleared
 
 private const val APPLE_LANGUAGES = "AppleLanguages"
+
+/** The app as a board frames it: under the board's 54 pt `.safe` band (`--safe-top`), which the test window does not have. */
+@Composable
+internal fun ShellBoard() = Box(Modifier.padding(top = 54.dp)) { App(LocalAppGraph.current) }
+
+/** Into the left-open workout through its bar, until its Finish shows. */
+@OptIn(ExperimentalTestApi::class)
+internal suspend fun ComposeUiTest.openTheWorkout() {
+    val back = clickLabel(getString(Res.string.back_to_workout))
+    waitUntil(timeoutMillis = 10_000) { onAllNodes(back).fetchSemanticsNodes().isNotEmpty() }
+    onNode(back).performClick()
+    val finish = getString(Res.string.finish)
+    waitUntil(timeoutMillis = 10_000) { onAllNodes(hasText(finish)).fetchSemanticsNodes().isNotEmpty() }
+}
+
+/** Into the left-open workout through its bar and back, so the bar reads as an open workout's. */
+@OptIn(ExperimentalTestApi::class)
+internal suspend fun ComposeUiTest.backOnTheTabs() {
+    openTheWorkout()
+    onNode(hasContentDescription(getString(Res.string.minimise))).performClick()
+    val back = clickLabel(getString(Res.string.back_to_workout))
+    waitUntil(timeoutMillis = 10_000) { onAllNodes(back).fetchSemanticsNodes().isNotEmpty() }
+    waitForIdle()
+}

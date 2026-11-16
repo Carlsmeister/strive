@@ -150,6 +150,8 @@ import strive.shared.generated.resources.sticky_note
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.up_by
 import strive.shared.generated.resources.rest_after
+import strive.shared.generated.resources.last_set
+import strive.shared.generated.resources.hold_last_set
 import strive.shared.generated.resources.kind_failure
 import strive.shared.generated.resources.now_kind
 import strive.shared.generated.resources.rest_change
@@ -971,8 +973,9 @@ class FlowTest {
         addExercises("Bench Press BB", "Chest Dips", "Squat BB", "Pull Up", "Incline Press DB")
         logFirstSet("80", "8")
         tap(s(Res.string.skip)) // the rest card
-        // Folded exercises are short; open three so the list is long enough to scroll the card away.
-        for (name in listOf("Squat BB", "Pull Up", "Incline Press DB")) tapDesc(s(Res.string.expand, name))
+        // Folded exercises are short; open three so the list is long enough to scroll the card away. Bottom up, so an opened
+        // exercise never pushes the next one to open below the window, where the list does not draw it.
+        for (name in listOf("Incline Press DB", "Pull Up", "Squat BB")) tapDesc(s(Res.string.expand, name))
         test.onNode(hasScrollToIndexAction()).performScrollToKey("end")
         wait("the strip") { test.onAllNodes(hasTestTag("focus-strip")).fetchSemanticsNodes().isNotEmpty() }
         shot("11-strip")
@@ -987,12 +990,28 @@ class FlowTest {
     fun theFocusCardShowsLastTimeTheChangeAndTheRest() = flow {
         designD()
         see(s(Res.string.up_by, "5"))
-        see(s(Res.string.rest_after, "2:00"))
+        // Set 2 of 2 is Bench Press's last, so the meta row says so where it said the rest (#42 P6).
+        see(s(Res.string.last_set))
         see("80 × 8 @3", substring = true)
         // A logged set shows its RIR after the reps (point 2), and a rest line sits between the sets (point 8).
         see("8 @2")
         see(s(Res.string.rest_row, "2:00"))
         shot("14-d-pass")
+    }
+
+    /** The meta row: "last set" on an exercise's last set, "hold · last set" on it while a rest runs, otherwise the rest after it (#42 P6). */
+    @Test
+    fun theFocusCardReadsLastSetAndHoldLastSetWhileResting() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        see(s(Res.string.last_set))
+        tapContaining(s(Res.string.add_set))
+        waitUntilTrue { open().sets == 2 }
+        see(s(Res.string.rest_after, "2:00"))
+        // Logging set 1 starts its rest, with set 2, the last, in focus.
+        logFirstSet("80", "8")
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
+        see(s(Res.string.hold_last_set))
     }
 
     @Test

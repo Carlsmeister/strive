@@ -33,7 +33,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import se.carlsmeister.strive.ui.InputField
+import strive.shared.generated.resources.note_plan
+import strive.shared.generated.resources.note_previous
+import strive.shared.generated.resources.note_today
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -241,7 +247,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                     // Its own background inside the source: haze blurs only what the source draws, and glass over a transparent
                     // source showed the list's text sharp through its tint.
                     Modifier.fillMaxSize().hazeSource(haze).background(MaterialTheme.colorScheme.background), list,
-                    contentPadding = PaddingValues(start = StriveTheme.spacing.s16, end = StriveTheme.spacing.s16, bottom = 320.dp),
+                    contentPadding = PaddingValues(StriveTheme.spacing.s16, StriveTheme.spacing.s8, StriveTheme.spacing.s16, 320.dp),
                 ) {
                     if (w.exercises.isEmpty()) {
                         item(key = "empty") {
@@ -251,8 +257,11 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                         item(key = "header") { LargeHeader(w, nowMs) }
                         focus?.let { (e, i) ->
                             item(key = "focus") {
-                                Box(Modifier.padding(top = 14.dp)) {
-                                    FocusCard(e, e.sets[i], badges(e.sets)[i], previous[e.exerciseId]?.getOrNull(i), focusRest,
+                                Box(Modifier.padding(top = StriveTheme.spacing.s16)) {
+                                    // Resting: the rest running now began on one of this exercise's sets.
+                                    val resting = rest?.setId?.let { id -> e.sets.any { it.id == id } } == true
+                                    val meta = focusMeta(e, e.sets[i].id, inSuperset = tags[e.id] != null, resting, focusRest)
+                                    FocusCard(e, e.sets[i], badges(e.sets)[i], previous[e.exerciseId]?.getOrNull(i), meta,
                                         focusRir, focusMore, { focusRir = it }, { focusMore = it },
                                         onEdit = { edit(e.sets[i].id) }, onLog = { logFocus() }, tag = tags[e.id])
                                 }
@@ -292,7 +301,9 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                         for (e in members) {
                             item(key = "h${e.id}") {
                                 ExerciseHeader(w, e, defaultRest, tags[e.id], onFold = { folds[b.first().id] = true }, onSwap = { onSwap(e) },
-                                    Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place).edge(superset))
+                                    // A lone exercise is its own section: the `.body`'s 16 gap comes before its header's own 16.
+                                    Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place).edge(superset)
+                                        .then(if (superset) Modifier else Modifier.padding(top = StriveTheme.spacing.s16)))
                             }
                         }
                         // One row of column labels over a superset whose exercises record the same values.
@@ -465,11 +476,15 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
 }
 
 /**
- * The exercise's name, which folds it (Carl, point 3), with its ⋯ (choice 4's M2 with two tiles) and a chevron; under them the sticky
- * note in grey and today's note once one is opened (choice 6).
+ * The exercise's name, which folds it (Carl, point 3), with its ⋯ (choice 4's M2 with two tiles) and a chevron; under them the notes in
+ * grey, pin, Plan and Previous (last time's note, #42 P2), and today's note once one is opened (choice 6). [plan] is the template's
+ * cue, which nothing writes until #44 (P3).
  */
 @Composable
-private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, letter: String?, onFold: () -> Unit, onSwap: () -> Unit, modifier: Modifier) {
+private fun ExerciseHeader(
+    w: Workout, e: SessionExercise, defaultRest: Int, letter: String?, onFold: () -> Unit, onSwap: () -> Unit, modifier: Modifier,
+    plan: String? = null,
+) {
     val graph = LocalAppGraph.current
     val sessions = graph.sessions
     val scope = rememberCoroutineScope()
@@ -479,12 +494,13 @@ private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, let
     var dialog by remember { mutableStateOf<String?>(null) }
     var noteOpen by remember { mutableStateOf(false) }
     var note by remember(e.id) { mutableStateOf(e.note) }
+    val previousNote by remember(e.exerciseId, w.id) { sessions.previousNote(e.exerciseId, w.id) }.collectAsState(null)
     val fold = stringResource(Res.string.collapse, e.name)
     Column(modifier.padding(top = StriveTheme.spacing.s16), verticalArrangement = Arrangement.spacedBy(3.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
             letter?.let { Tag(it) }
             Text(e.name, Modifier.weight(1f).clickable(onClickLabel = fold, onClick = onFold).padding(vertical = 6.dp),
-                style = MaterialTheme.typography.titleMedium, color = colors.primary)
+                style = MaterialTheme.typography.titleMedium.board(), color = colors.primary)
             Box {
                 val label = stringResource(Res.string.exercise_options)
                 Box(
@@ -530,15 +546,21 @@ private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, let
         if (e.pinned.isNotEmpty()) {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
                 Glyph(Glyph.Pin, 14.dp, color = colors.onSurfaceVariant, stroke = 1.8f)
-                Text(e.pinned, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                Text(e.pinned, style = MaterialTheme.typography.bodySmall.board(), color = colors.onSurfaceVariant)
             }
         }
+        plan?.let { ExerciseNote(stringResource(Res.string.note_plan), it) }
+        previousNote?.let { ExerciseNote(stringResource(Res.string.note_previous), it) }
         if (noteOpen || note.isNotEmpty()) {
-            OutlinedTextField(
-                note, { note = it; scope.launch { sessions.setExerciseNote(e.id, it) } }, Modifier.fillMaxWidth(),
-                placeholder = { Text(stringResource(Res.string.note)) }, textStyle = MaterialTheme.typography.bodyMedium,
+            val focus = remember { FocusRequester() }
+            InputField(
+                note, { note = it; scope.launch { sessions.setExerciseNote(e.id, it) } },
+                Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 4.dp).focusRequester(focus),
+                placeholder = stringResource(Res.string.note_today),
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             )
+            // Opened from the menu, the field takes the caret at once (WO-02-note).
+            LaunchedEffect(noteOpen) { if (noteOpen) focus.requestFocus() }
         }
     }
     when (dialog) {
@@ -549,6 +571,17 @@ private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, let
         "order" -> OrderDialog(w) { dialog = null }
         "superset" -> SupersetDialog(w, e) { dialog = null }
         "settings" -> SettingsDialog(e) { dialog = null }
+    }
+}
+
+/** `.exnote` with its bold label: "Plan Skulderbladen ihop.", "Previous Kändes stark idag." */
+@Composable
+private fun ExerciseNote(label: String, text: String) {
+    val grey = MaterialTheme.colorScheme.onSurfaceVariant
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        val style = MaterialTheme.typography.bodySmall.board()
+        Text(label, Modifier.alignByBaseline(), style = style.copy(fontSize = 12.sp, lineHeight = 16.sp), fontWeight = FontWeight.SemiBold, color = grey)
+        Text(text, Modifier.alignByBaseline(), style = style, color = grey)
     }
 }
 

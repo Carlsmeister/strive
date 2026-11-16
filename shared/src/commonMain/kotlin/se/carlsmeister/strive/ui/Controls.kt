@@ -21,6 +21,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.style.TextAlign
 import se.carlsmeister.strive.theme.Scheme
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -80,6 +81,7 @@ internal fun InputField(
     modifier: Modifier = Modifier,
     placeholder: String = "",
     leading: ImageVector? = null,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
 ) {
     val colors = MaterialTheme.colorScheme
     val shape = MaterialTheme.shapes.medium
@@ -93,7 +95,7 @@ internal fun InputField(
         if (edit.text == value) edit else TextFieldValue(value, TextRange(value.length)),
         { edit = it; if (it.text != value) onValueChange(it.text) },
         modifier.onFocusChanged { focused = it.isFocused },
-        textStyle = style, singleLine = true, cursorBrush = SolidColor(colors.primary),
+        textStyle = style, singleLine = true, cursorBrush = SolidColor(colors.primary), keyboardOptions = keyboardOptions,
     ) { field ->
         // Border-box, as CSS: the 2 dp ring sits inside the 44 dp and the 12 dp padding starts inside the ring.
         Row(

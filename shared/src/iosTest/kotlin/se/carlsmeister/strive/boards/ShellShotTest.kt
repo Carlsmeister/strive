@@ -1,28 +1,17 @@
 package se.carlsmeister.strive.boards
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
-import se.carlsmeister.strive.App
-import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.data.Rest
 import se.carlsmeister.strive.fixture.SampleData
-import se.carlsmeister.strive.flows.clickLabel
 import strive.shared.generated.resources.Res
-import strive.shared.generated.resources.back_to_workout
-import strive.shared.generated.resources.finish
-import strive.shared.generated.resources.minimise
 import strive.shared.generated.resources.tab_food
 import strive.shared.generated.resources.tab_plan
 import strive.shared.generated.resources.tab_start
@@ -72,23 +61,6 @@ class ShellShotTest {
     @Test
     fun sh05InDarkAndDarkHc() = boardShots("SH-05", DarkModes, waitFor = "Nutrition comes later",
         arrange = { graph -> graph.sessions.discard(graph.sessions.open().first()!!.id); tapTab(Res.string.tab_food) }) { ShellBoard() }
-}
-
-/** The app as a board frames it: under the board's 54 pt `.safe` band (`--safe-top`), which the test window does not have. */
-@Composable
-private fun ShellBoard() = Box(Modifier.padding(top = 54.dp)) { App(LocalAppGraph.current) }
-
-/** Into the left-open workout through its bar and back, so the bar reads as an open workout's. */
-@OptIn(ExperimentalTestApi::class)
-private suspend fun ComposeUiTest.backOnTheTabs() {
-    val back = clickLabel(getString(Res.string.back_to_workout))
-    waitUntil(timeoutMillis = 10_000) { onAllNodes(back).fetchSemanticsNodes().isNotEmpty() }
-    onNode(back).performClick()
-    val finish = getString(Res.string.finish)
-    waitUntil(timeoutMillis = 10_000) { onAllNodes(hasText(finish)).fetchSemanticsNodes().isNotEmpty() }
-    onNode(hasContentDescription(getString(Res.string.minimise))).performClick()
-    waitUntil(timeoutMillis = 10_000) { onAllNodes(back).fetchSemanticsNodes().isNotEmpty() }
-    waitForIdle()
 }
 
 /** Taps the tab labelled [tab]. */

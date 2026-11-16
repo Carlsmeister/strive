@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.text.TextStyle
+import se.carlsmeister.strive.theme.CssLineBox
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -102,6 +104,11 @@ import strive.shared.generated.resources.quick_picks
 import strive.shared.generated.resources.quick_recent
 import strive.shared.generated.resources.rename
 import strive.shared.generated.resources.rest_after
+import strive.shared.generated.resources.rest_after_round
+import strive.shared.generated.resources.last_set
+import strive.shared.generated.resources.hold_last_set
+import strive.shared.generated.resources.log_warmup
+import strive.shared.generated.resources.log_drop
 import strive.shared.generated.resources.rest_row
 import strive.shared.generated.resources.save
 import strive.shared.generated.resources.session_note
@@ -184,11 +191,15 @@ private fun cellWidth(count: Int, i: Int) = if (count == 1) 88.dp else if (i == 
 
 private val swedish @Composable get() = androidx.compose.ui.text.intl.Locale.current.language == "sv"
 
+/** Text as a board's CSS `font:` shorthand sets it: the shorthand resets `.strive`'s tabular figures, and the line box is CSS's. */
+internal fun TextStyle.board() = copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox)
+
 /** The ⋯ pill D draws beside a name: teal container, the glyph bold. */
 @Composable
 internal fun MorePill(label: String, large: Boolean, onClick: () -> Unit) = Box(
-    Modifier.height(if (large) 30.dp else 28.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer)
-        .clickable(onClickLabel = label, onClick = onClick).semantics { contentDescription = label }.padding(horizontal = if (large) 12.dp else 10.dp),
+    // Large, it is `.pill`: 40 × 32.
+    (if (large) Modifier.size(40.dp, 32.dp) else Modifier.height(28.dp)).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer)
+        .clickable(onClickLabel = label, onClick = onClick).semantics { contentDescription = label }.padding(horizontal = if (large) 0.dp else 10.dp),
     contentAlignment = Alignment.Center,
 ) {
     Text("⋯", style = MaterialTheme.typography.titleMedium.copy(fontSize = if (large) 18.sp else 17.sp, lineHeight = 18.sp),
@@ -202,10 +213,11 @@ internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
     val scope = rememberCoroutineScope()
     var menu by remember { mutableStateOf(false) }
     var prompt by remember { mutableStateOf<String?>(null) }
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(if (large) 10.dp else 6.dp)) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(if (large) 8.dp else 6.dp)) {
         Text(
             w.name, Modifier.weight(1f, fill = false).clickable(onClickLabel = stringResource(Res.string.workout_options)) { menu = true },
-            style = if (large) MaterialTheme.typography.headlineMedium.copy(letterSpacing = (-0.4).sp) else MaterialTheme.typography.titleMedium,
+            // `.whead .name`: 700 28/34, no tracking.
+            style = if (large) MaterialTheme.typography.headlineMedium.board() else MaterialTheme.typography.titleMedium,
             fontWeight = if (large) FontWeight.Bold else FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis,
         )
         Box {
@@ -252,7 +264,7 @@ internal fun LargeHeader(w: Workout, now: Long) {
     val day = "${stringArrayResource(Res.array.weekdays_short)[start.dayOfWeek.isoDayNumber - 1]} ${start.day} ${
         stringArrayResource(Res.array.months_short)[start.month.number - 1]}" // "Mån 2 nov", as D draws it
     val grey = MaterialTheme.colorScheme.onSurfaceVariant
-    val style = MaterialTheme.typography.bodyMedium
+    val style = MaterialTheme.typography.bodyMedium.board()
     Column(Modifier.padding(top = StriveTheme.spacing.s4), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4)) {
         WorkoutMenu(w, large = true, nowMs = now)
         Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -300,11 +312,11 @@ internal fun changeText(set: WorkoutSet, prev: WorkoutSet?, swedish: Boolean): S
 }
 
 /**
- * C's focus card as Carl drew it in D: the label, the next set large with "upp 2,5 kg" under it, the rest after it and last time's
- * set, RIR, Ändra for the dock, and one tap to log it.
+ * C's focus card as WO-02-s2 draws it: the label, the next set large with "upp 2,5 kg" under it, [meta] (the rest after it, or
+ * "last set") and last time's set, RIR, Ändra for the dock, and one tap to log it.
  */
 @Composable
-internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev: WorkoutSet?, rest: Int, rir: Int?, more: Boolean,
+internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev: WorkoutSet?, meta: FocusMeta, rir: Int?, more: Boolean,
                        onRir: (Int?) -> Unit, onMore: (Boolean) -> Unit, onEdit: () -> Unit, onLog: () -> Unit, tag: String? = null) {
     val colors = MaterialTheme.colorScheme
     val type = MaterialTheme.typography
@@ -313,29 +325,41 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
         Modifier.fillMaxWidth().background(colors.surface, ShapeLargeIncreased).padding(StriveTheme.spacing.s16).testTag("focus"),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text(nowLabel(e, set, badge, strip = false, tag), style = type.bodySmall.copy(letterSpacing = 0.3.sp), fontWeight = FontWeight.SemiBold,
+        // The board's CSS line boxes: `.now` 13/18, `.fv` 38/44, `.fchange` 13/18 pulled up 8 under the values, `.fmeta` 4 below.
+        Text(nowLabel(e, set, badge, strip = false, tag), style = type.bodySmall.copy(letterSpacing = 0.3.sp).board(), fontWeight = FontWeight.SemiBold,
             color = colors.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Column {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                val big = type.displaySmall.copy(fontSize = 38.sp, lineHeight = 44.sp, letterSpacing = (-1).sp, fontWeight = FontWeight.Bold)
+                val big = type.displaySmall.copy(fontSize = 38.sp, lineHeight = 44.sp, letterSpacing = (-1).sp, fontWeight = FontWeight.Bold).board()
                 val units = columns(e.type)
                 cells(set, e.type, sv).forEachIndexed { i, v ->
-                    if (i > 0) Text("×", Modifier.alignByBaseline(), style = type.headlineMedium.copy(fontSize = 26.sp), color = colors.onSurfaceVariant)
+                    if (i > 0) Text("×", Modifier.alignByBaseline(), style = type.headlineMedium.copy(fontSize = 26.sp, lineHeight = 32.sp).board(), color = colors.onSurfaceVariant)
                     Text(v ?: "–", Modifier.alignByBaseline(), style = big)
-                    Text(stringResource(units[i]).lowercase(), Modifier.alignByBaseline(), style = type.bodyMedium, color = colors.onSurfaceVariant)
+                    Text(stringResource(units[i]).lowercase(), Modifier.alignByBaseline(), style = type.bodyMedium.board(), color = colors.onSurfaceVariant)
                 }
             }
             changeText(set, prev, sv)?.let {
-                Text(it, Modifier.offset(y = (-2).dp), style = type.bodySmall, fontWeight = FontWeight.SemiBold, color = colors.primary)
+                Text(it, Modifier.layout { m, c ->
+                    val p = m.measure(c)
+                    val up = 8.dp.roundToPx()
+                    layout(p.width, p.height - up) { p.place(0, -up) }
+                }, style = type.bodySmall.board(), fontWeight = FontWeight.SemiBold, color = colors.primary)
             }
-            Row(Modifier.fillMaxWidth().padding(top = 14.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(stringResource(Res.string.rest_after, clock(rest.toLong())), Modifier.alignByBaseline(), style = type.bodySmall, color = colors.onSurfaceVariant)
+            Row(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                val words = when (meta) {
+                    is FocusMeta.RestAfter -> stringResource(Res.string.rest_after, clock(meta.seconds.toLong()))
+                    is FocusMeta.RestAfterRound -> stringResource(Res.string.rest_after_round, clock(meta.seconds.toLong()))
+                    FocusMeta.LastSet -> stringResource(Res.string.last_set)
+                    FocusMeta.HoldLastSet -> stringResource(Res.string.hold_last_set)
+                }
+                Text(words, Modifier.alignByBaseline(), style = type.bodySmall.board(), color = colors.onSurfaceVariant)
                 Text(
                     buildAnnotatedString {
                         withStyle(SpanStyle(color = colors.onSurfaceVariant)) { append(stringResource(Res.string.col_previous) + " ") }
                         withStyle(SpanStyle(color = colors.onSurface, fontSize = 15.sp)) { append(prev?.let { setText(it, e.type, sv) } ?: "–") }
                     },
-                    Modifier.alignByBaseline(), style = type.bodySmall,
+                    // `.fmeta b`'s 15/20 sets the row's line box.
+                    Modifier.alignByBaseline(), style = type.bodySmall.copy(lineHeight = 20.sp).board(),
                 )
             }
         }
@@ -346,7 +370,12 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
             }
             Btn(onLog, Modifier.weight(2f).height(50.dp), container = colors.primary, content = colors.onPrimary, shape = RoundedCornerShape(14.dp)) {
                 Glyph(Glyph.Check, 20.dp, stroke = 2.8f)
-                Text(stringResource(Res.string.log_set, badge), Modifier.padding(start = 8.dp), style = type.titleMedium, fontWeight = FontWeight.Bold)
+                val log = when (set.kind) {
+                    SetKind.Warmup -> stringResource(Res.string.log_warmup)
+                    SetKind.Drop -> stringResource(Res.string.log_drop)
+                    else -> stringResource(Res.string.log_set, badge)
+                }
+                Text(log, Modifier.padding(start = 8.dp), style = type.titleMedium, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -386,7 +415,7 @@ internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, badge: String, rir:
 @Composable
 internal fun ColumnLabels(type: ExerciseType) {
     val cols = columns(type)
-    val style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold)
+    val style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold).board()
     val grey = MaterialTheme.colorScheme.onSurfaceVariant
     Row(Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 2.dp), horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
         Text(stringResource(Res.string.col_set), Modifier.width(SetColumn), style = style, color = grey, textAlign = TextAlign.Center)
@@ -427,7 +456,7 @@ internal fun SetRow(
                     .clickable(onClickLabel = label) { guard { menu = true } }.semantics { contentDescription = desc },
                 contentAlignment = Alignment.Center,
             ) {
-                Text(badge, style = MaterialTheme.typography.bodyMedium, fontWeight = if (current) FontWeight.Bold else FontWeight.SemiBold,
+                Text(badge, style = MaterialTheme.typography.bodyMedium.board(), fontWeight = if (current) FontWeight.Bold else FontWeight.SemiBold,
                     color = if (current) colors.onPrimary else set.kind.tint)
             }
             GlassMenu(menu, { menu = false }) {
@@ -439,7 +468,7 @@ internal fun SetRow(
         }
         Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
             letter?.let { Tag(it, Modifier.padding(end = 8.dp)) }
-            Text(prev?.let { setText(it, type, sv) } ?: "–", style = MaterialTheme.typography.bodyMedium,
+            Text(prev?.let { setText(it, type, sv) } ?: "–", style = MaterialTheme.typography.bodyMedium.board(),
                 color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         values.forEachIndexed { i, v ->
@@ -455,7 +484,7 @@ internal fun SetRow(
                         append(v ?: "–")
                         if (reps) set.rir?.let { withStyle(SpanStyle(fontSize = 12.sp, color = colors.onSurfaceVariant)) { append(" @$it") } }
                     },
-                    style = MaterialTheme.typography.bodyLarge, maxLines = 1,
+                    style = MaterialTheme.typography.bodyLarge.board(), maxLines = 1,
                     color = if (set.done || current) colors.onSurface else colors.onSurfaceVariant,
                 )
             }
