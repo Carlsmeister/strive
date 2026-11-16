@@ -23,7 +23,7 @@ class WorkoutToastsTest {
     private class Setup(val sessions: SqlSessions, val toasts: WorkoutToasts, val benchSe: Long, val pullSe: Long)
 
     /** A workout holding Bench (two logged sets) and Pull Up, on the test's one scheduler. */
-    private suspend fun TestScope.setup(): Setup {
+    private suspend fun TestScope.setup(hold: (WorkoutToast) -> Long = { 4_000 }): Setup {
         val db = StriveDatabase(memoryDriver())
         val sessions = SqlSessions(db, StandardTestDispatcher(testScheduler))
         fun exercise(name: String, type: String): Long {
@@ -36,7 +36,7 @@ class WorkoutToastsTest {
         sessions.saveSet(bench.sets.single().copy(weight = 80.0, reps = 8, done = true))
         sessions.addSet(bench.id)
         sessions.saveSet(sessions.open().first()!!.exercises.first().sets[1].copy(done = true))
-        return Setup(sessions, WorkoutToasts(backgroundScope, sessions::removeExercise) { 4_000 }, bench.id, pull.id)
+        return Setup(sessions, WorkoutToasts(backgroundScope, sessions::removeExercise, hold), bench.id, pull.id)
     }
 
     private suspend fun TestScope.names(s: Setup): List<String> {
@@ -156,6 +156,28 @@ class WorkoutToastsTest {
         runCurrent()
         assertTrue(settling.isCompleted)
         assertEquals(listOf(1L), gated.removed)
+    }
+
+    /** With VoiceOver on, a Removed toast holds until acted on, past any hold, while Restored and Swapped keep theirs (#42 review). */
+    @Test
+    fun withAScreenReaderARemovedToastHoldsUntilUndo() = runTest {
+        val s = setup { holdFor(it, 4_000, screenReader = true) }
+        val removed = WorkoutToast.Removed("Bench Press BB", s.benchSe)
+        s.toasts.show(removed)
+        advanceTimeBy(10_001)
+        assertEquals(removed, s.toasts.shown.value)
+        assertEquals(setOf(s.benchSe), s.toasts.hidden.value)
+        assertEquals(listOf("Bench Press BB", "Pull Up"), names(s))
+
+        s.toasts.undo()
+        runCurrent()
+        assertNull(s.toasts.shown.value)
+        assertTrue(s.toasts.hidden.value.isEmpty())
+
+        s.toasts.show(WorkoutToast.Swapped("Chest Press Machine"))
+        advanceTimeBy(4_001)
+        assertNull(s.toasts.shown.value)
+        assertEquals(4_000, holdFor(removed, 4_000, screenReader = false))
     }
 
     @Test

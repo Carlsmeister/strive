@@ -20,6 +20,16 @@ internal sealed interface WorkoutToast {
 }
 
 /**
+ * How long [toast] holds: [millis], except a Removed toast while a screen reader runs, which holds until Undo, another toast or
+ * `settle`. VoiceOver cannot reach Undo within a few seconds, and the removal deletes logged sets for good.
+ */
+internal fun holdFor(toast: WorkoutToast, millis: Long, screenReader: Boolean) =
+    if (screenReader && toast is WorkoutToast.Removed) Long.MAX_VALUE else millis
+
+/** Whether VoiceOver (iOS) or TalkBack (Android) is running, read as a toast is shown. */
+internal expect fun screenReaderRunning(): Boolean
+
+/**
  * The workout screen's one toast and its hold (P4, P5). A removed exercise is only hidden while its
  * toast shows; its rows are deleted when the toast ends, is replaced, or is settled, so Undo and a
  * killed app both bring it back.
@@ -27,7 +37,7 @@ internal sealed interface WorkoutToast {
 internal class WorkoutToasts(
     private val scope: CoroutineScope,
     private val remove: suspend (Long) -> Unit,
-    private val hold: () -> Long,
+    private val hold: (WorkoutToast) -> Long,
 ) {
     private val toast = MutableStateFlow<WorkoutToast?>(null)
     val shown: StateFlow<WorkoutToast?> = toast.asStateFlow()
@@ -56,7 +66,7 @@ internal class WorkoutToasts(
             pending.value = Pending(token, next.sessionExerciseId)
         }
         toast.value = next
-        val millis = hold()
+        val millis = hold(next)
         job = scope.launch {
             delay(millis)
             // shortcut: check-then-set, so a show in the instants between can still lose an equal toast; harmless, as only the toast's timing is at stake.

@@ -174,6 +174,8 @@ import se.carlsmeister.strive.fixture.SampleData
 import strive.shared.generated.resources.bar_left_open
 import strive.shared.generated.resources.tap_to_continue
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.TimeSource
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -493,23 +495,41 @@ class FlowTest {
         waitUntilTrue { open().exercises.isEmpty() }
     }
 
-    /** Criterion 3: Undo on the removed toast puts the exercise back where it was, with the sets it had logged (P4). */
+    /**
+     * Criterion 4: Undo on the removed toast puts the exercise back on screen where it was, its logged sets shown and the focus on its
+     * set 2 again; and once the toast's hold has passed, the exercise is still in the database, so Undo cancelled the removal (P4).
+     */
     @Test
     fun undoBringsARemovedExerciseBackInPlace() = pushA {
-        graph.toastHoldMillis = Long.MAX_VALUE // only Undo ends this toast
+        // A hold that ends, read at the show: long enough to tap Undo, short enough to wait past.
+        val hold = 5_000.milliseconds
+        graph.toastHoldMillis = hold.inWholeMilliseconds
         tapDesc(s(Res.string.exercise_options)) // Bench's, the one exercise standing open
         tap(s(Res.string.remove_exercise))
+        val shown = TimeSource.Monotonic.markNow()
         see(s(Res.string.exercise_removed, "Bench Press BB"))
         gone(hasText("Bench Press BB"))
         tap(s(Res.string.undo))
         gone(hasText(s(Res.string.exercise_removed, "Bench Press BB")))
-        see("Bench Press BB")
+
+        // On screen: Bench's header first, above every other exercise; its warm-up and set 1 logged; the focus on its set 2.
+        val header = hasText("Bench Press BB") and hasClickAction()
+        wait("Bench's header") { test.onAllNodes(header).fetchSemanticsNodes().isNotEmpty() }
+        val top = test.onNode(header).fetchSemanticsNode().boundsInRoot.top
+        assertTrue(test.onAllNodes(hasText("Incline Press DB", substring = true)).fetchSemanticsNodes().all { it.boundsInRoot.top > top })
+        for (row in 1..2) test.onNode(hasContentDescription(s(Res.string.logged)) and hasAnyAncestor(hasTestTag("set Bench Press BB $row"))).assertExists()
+        test.onNode(hasText(s(Res.string.log_set, "2")) and hasAnyAncestor(hasTestTag("focus"))).assertExists()
+        test.onNode(hasText("Bench Press BB", substring = true, ignoreCase = true) and hasAnyAncestor(hasTestTag("focus"))).assertExists()
+
+        // Past the hold, the removal it would have made never lands.
+        wait("the toast's hold to pass") { shown.elapsedNow() > hold + 1_000.milliseconds }
         val bench = open().exercises.first()
         assertEquals("Bench Press BB", bench.name)
         assertEquals(2, bench.sets.count { it.done }) // the warm-up and set 1
+        see("Bench Press BB")
     }
 
-    /** Criterion 4: finishing while the removed toast still holds settles the removal first, so the summary leaves the exercise out. */
+    /** Review Focus 1 (P4): finishing while the removed toast still holds settles the removal first, so the summary leaves the exercise out. */
     @Test
     fun finishingDuringTheUndoToastLeavesTheExerciseOut() = pushA {
         graph.toastHoldMillis = Long.MAX_VALUE // only the finish ends this toast
