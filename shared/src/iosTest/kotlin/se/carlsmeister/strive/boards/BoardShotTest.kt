@@ -13,6 +13,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isRoot
 import se.carlsmeister.strive.ui.MenuRow
 import se.carlsmeister.strive.ui.GlassMenu
+import se.carlsmeister.strive.ui.HeaderSheet
 import se.carlsmeister.strive.theme.StriveMaterials
 import se.carlsmeister.strive.theme.LocalGlass
 import se.carlsmeister.strive.theme.ShapeFull
@@ -428,6 +429,24 @@ class BoardShotTest {
         onNodeWithText("Edit").assertIsEnabled().assertHasClickAction()
         onNodeWithText("Save").assertIsNotEnabled()
         assertTrue(onNodeWithText("Edit").fetchSemanticsNode().size.height >= 44 * 3)
+    }
+
+    /** A sheet's head keeps Cancel and Done a touch wide and tappable however long its title runs, as large text makes one (#57 F1). */
+    @Test
+    fun aLongSheetTitleLeavesCancelAndDoneATouchWide() = runSkikoComposeUiTest(Size(1170f, 2532f), Density(3f)) {
+        val taps = mutableListOf<String>()
+        val title = "Change when this workout started and every set logged after it, in this long title"
+        setContent { StriveTheme {
+            HeaderSheet(title, {}, cancel = "Cancel", onCancel = { taps += "cancel" }, done = "Done", onDone = { taps += "done" }) {}
+        } }
+        waitForIdle()
+        for (label in listOf("Cancel", "Done")) {
+            val b = onNodeWithText(label).fetchSemanticsNode().boundsInRoot
+            assertTrue(b.width >= 44 * DP && b.left >= 0f && b.right <= 1170f, "$label: $b")
+            onNodeWithText(label).performClick()
+        }
+        assertEquals(listOf("cancel", "done"), taps)
+        assertTrue(onNodeWithText(title).fetchSemanticsNode().boundsInRoot.width > 0, "the title is still drawn")
     }
 
     /** .moment draws its edge inset: a marked card takes exactly the room an unmarked one does (moments.css). */

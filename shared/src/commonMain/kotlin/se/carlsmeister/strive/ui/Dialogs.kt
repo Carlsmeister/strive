@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -50,6 +49,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -248,12 +248,16 @@ internal fun HeaderSheet(
         verticalArrangement = Arrangement.spacedBy(space.s12),
     ) {
         Box(Modifier.align(Alignment.CenterHorizontally).size(36.dp, 5.dp).background(MaterialTheme.colorScheme.outline, ShapeFull))
-        // `1fr auto 1fr`: the title takes what it needs and the sides share the rest, so it sits on the sheet's centre.
-        Row(Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.weight(1f)) { cancel?.let { NavText(it, onCancel) } }
-            Text(title, style = MaterialTheme.typography.titleMedium.css(), textAlign = TextAlign.Center)
-            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) { done?.let { NavText(it, onDone, bold = true) } }
-        }
+        // `1fr auto 1fr`: Cancel and Done keep their size, however long the title runs; the title sits on the sheet's centre.
+        CentredBar(
+            0.dp, Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch),
+            start = { Box { cancel?.let { NavText(it, onCancel) } } },
+            middle = {
+                Text(title, style = MaterialTheme.typography.titleMedium.css(), textAlign = TextAlign.Center,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis)
+            },
+            end = { Box { done?.let { NavText(it, onDone, bold = true) } } },
+        )
         content()
     }
 }
