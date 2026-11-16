@@ -147,7 +147,8 @@ internal interface Sessions {
 
     /**
      * Each exercise joins the end of the workout; as one superset if [superset] (#17 queue item 7). With [lastTime] it comes with the
-     * sets of its latest finished workout, unlogged and without RIR, or one empty set if it has none; otherwise with one empty set.
+     * sets of the latest finished workout where it has sets, a skipped time passed over as the hints pass it over, unlogged and without
+     * RIR, or one empty set if it was never done; otherwise with one empty set.
      */
     suspend fun add(sessionId: Long, exerciseIds: List<Long>, superset: Boolean = false, lastTime: Boolean = false)
 

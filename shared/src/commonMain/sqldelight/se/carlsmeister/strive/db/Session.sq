@@ -130,18 +130,19 @@ lastSet:
 SELECT * FROM workout_set WHERE session_exercise_id = ? ORDER BY position DESC LIMIT 1;
 
 -- The exercise's note in the most recently ended finished workout that does it, other than :session_id; the first non-blank note by
--- position where it is done twice. None when that workout's note is blank: an older note does not count (#42 P2).
+-- position where it is done twice. None when that workout's note is blank: an older note does not count (#42 P2). Blank includes
+-- tabs and line breaks, which the note field stores as typed.
 previousNote:
 SELECT se.note FROM session_exercise se
-WHERE se.exercise_id = :exercise_id AND trim(se.note) != '' AND se.session_id = (
+WHERE se.exercise_id = :exercise_id AND trim(se.note, ' ' || char(9) || char(10) || char(13)) != '' AND se.session_id = (
     SELECT s.id FROM session s JOIN session_exercise x ON x.session_id = s.id
     WHERE s.ended_at IS NOT NULL AND s.id != :session_id AND x.exercise_id = :exercise_id
     ORDER BY s.ended_at DESC, s.id DESC LIMIT 1
 )
 ORDER BY se.position LIMIT 1;
 
--- Copies the sets of the exercise's first time in its most recently ended finished workout to :session_exercise_id, unlogged and
--- without RIR (#42 P14).
+-- Copies to :session_exercise_id, unlogged and without RIR, the sets of the exercise's first time with sets in the most recently ended
+-- finished workout where it has any, so a skipped time is passed over as previous() passes it over for the hints (#42 P14).
 copyLastTime:
 INSERT INTO workout_set(session_exercise_id, position, kind, weight, reps, seconds, metres, rest_seconds)
 SELECT :session_exercise_id, ws.position, ws.kind, ws.weight, ws.reps, ws.seconds, ws.metres, ws.rest_seconds
@@ -149,6 +150,7 @@ FROM workout_set ws
 WHERE ws.session_exercise_id = (
     SELECT se.id FROM session_exercise se JOIN session s ON s.id = se.session_id
     WHERE s.ended_at IS NOT NULL AND se.exercise_id = :exercise_id
+        AND EXISTS (SELECT 1 FROM workout_set w WHERE w.session_exercise_id = se.id)
     ORDER BY s.ended_at DESC, s.id DESC, se.position LIMIT 1
 );
 
