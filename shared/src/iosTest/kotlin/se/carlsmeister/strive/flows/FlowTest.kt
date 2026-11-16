@@ -132,6 +132,7 @@ import strive.shared.generated.resources.now_set
 import strive.shared.generated.resources.now_set_kind
 import strive.shared.generated.resources.quick_picks
 import strive.shared.generated.resources.sets_progress
+import strive.shared.generated.resources.time_sets
 import strive.shared.generated.resources.what_today
 import strive.shared.generated.resources.back_to_focus
 import strive.shared.generated.resources.change_start
@@ -164,6 +165,7 @@ import se.carlsmeister.strive.workout.wallClock
 import se.carlsmeister.strive.workout.now
 import androidx.compose.ui.test.hasAnyAncestor
 import se.carlsmeister.strive.data.Rest
+import se.carlsmeister.strive.fixture.SampleData
 import strive.shared.generated.resources.bar_left_open
 import strive.shared.generated.resources.tap_to_continue
 import kotlin.time.Clock
@@ -236,7 +238,8 @@ class FlowTest {
     fun aNewWorkoutStartsEmpty() = flow {
         startWorkout()
         see(s(Res.string.what_today))
-        see("0/0", substring = true)
+        // With no working sets the bar reads the time alone (P10), not "0:00 · 0/0 sets".
+        gone(hasText("0/0", substring = true))
         shot("01-empty-workout")
     }
 
@@ -1375,6 +1378,70 @@ class FlowTest {
         test.onNode(clickLabel(s(Res.string.add_named, "Bench Press BB"))).performClick()
         waitUntilTrue { open().exercises.map { it.name } == listOf("Bench Press BB") }
         see(s(Res.string.sets_progress, 0, 1))
+    }
+
+    /**
+     * Acceptance criterion 2: two exercises with last time's sets, three working sets each, at most three taps a set. Inside a set's block
+     * every click goes through the local `countedTap` and no other clicking helper. Adding the exercises and bringing an exercise's rows
+     * into view (unfolding Incline Press DB, scrolling past the rest card) come between the blocks. Each set is logged by its own row's
+     * check, so Bench Press BB's warm-up stays unlogged and uncounted (O-25).
+     */
+    @Test
+    fun twoExercisesThreeSetsEachTakeAtMostThreeTapsASet() = flow {
+        try {
+            SampleData.load(graph)
+            graph.sessions.discard(open().id)
+            startWorkout()
+            // Quick picks show only while the workout is empty, so the second exercise comes through the picker.
+            test.onNode(clickLabel(s(Res.string.add_named, "Bench Press BB"))).performClick()
+            waitUntilTrue { open().exercises.size == 1 }
+            addExercises("Incline Press DB")
+            // Last time's sets come with them (P14): Bench Press BB's warm-up and three, Incline Press DB's three.
+            assertEquals(listOf(4, 3), open().exercises.map { it.sets.size })
+
+            var taps = 0
+            fun countedTap(matcher: SemanticsMatcher) {
+                test.onNode(matcher).performClick()
+                taps++
+                idle()
+            }
+            var logged = 0
+            suspend fun inView(name: String) {
+                test.onNode(hasScrollToIndexAction()).performScrollToKey("h${open().exercises.first { it.name == name }.id}")
+                idle()
+            }
+            // The header's count, or the bar's while the header is scrolled away.
+            suspend fun countReads(n: Int) {
+                val header = s(Res.string.sets_progress, n, 6)
+                val bar = s(Res.string.time_sets, "", n, 6)
+                wait("the count to read $n of 6") {
+                    test.onAllNodes(hasText(header)).fetchSemanticsNodes().isNotEmpty() ||
+                        test.onAllNodes(hasText(bar, substring = true)).fetchSemanticsNodes().isNotEmpty()
+                }
+            }
+            suspend fun workingSet(name: String, row: Int, number: Int) {
+                inView(name)
+                val check = hasContentDescription(s(Res.string.log_set, "$number")) and hasAnyAncestor(hasTestTag("set $name $row"))
+                wait("$name's set $number") { test.onAllNodes(check).fetchSemanticsNodes().isNotEmpty() }
+                // The block: taps on screen from here until the set is logged.
+                taps = 0
+                countedTap(check)
+                assertTrue(taps <= 3, "$name's set $number took $taps taps")
+                countReads(++logged)
+            }
+
+            for (n in 1..3) workingSet("Bench Press BB", row = n + 1, number = n)
+            // Bench Press BB's warm-up is still the next set, so Incline Press DB waits folded.
+            tapDesc(s(Res.string.expand, "Incline Press DB"))
+            for (n in 1..3) workingSet("Incline Press DB", row = n, number = n)
+
+            test.onNode(hasScrollToIndexAction()).performScrollToKey("header")
+            idle()
+            see(s(Res.string.sets_progress, 6, 6))
+            assertEquals(false, open().exercises.first().sets.first().done)
+        } finally {
+            wallClock = Clock.System
+        }
     }
 
     @Test

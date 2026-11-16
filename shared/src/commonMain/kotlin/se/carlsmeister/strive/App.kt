@@ -220,7 +220,8 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
                     PickExercises -> NavEntry(route, metadata = rise(reduceMotion)) {
                         Page {
                             fun add(ids: List<Long>, superset: Boolean) = scope.launch {
-                                open?.let { sessions.add(it.id, ids, superset) }
+                                // Picked exercises come with last time's sets, so each first set logs in one tap (P14).
+                                open?.let { sessions.add(it.id, ids, superset, lastTime = true) }
                                 root.pop()
                             }
                             LibraryScreen(safe, null, onOpen = {}, onBack = { root.pop() }, pick = { add(it, false) }, onSuperset = { add(it, true) })

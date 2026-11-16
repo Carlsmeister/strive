@@ -23,6 +23,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.wrapContentHeight
+import se.carlsmeister.strive.theme.StriveIcons
+import se.carlsmeister.strive.ui.touchTall
 import se.carlsmeister.strive.ui.GlassMenu
 import se.carlsmeister.strive.ui.HeaderSheet
 import se.carlsmeister.strive.ui.MenuRow
@@ -480,8 +484,8 @@ internal fun SetRow(
             val label = stringResource(Res.string.set_type, badge)
             // VoiceOver reads a failure set's number with its type, since the colour alone says nothing: "Set 2, till failure".
             val desc = if (set.kind == SetKind.Failure) stringResource(Res.string.set_failure, badge) else label
-            // The next set's badge is filled: teal, or a failure or drop set's own colour (WO-02-s9f, s9d).
-            val tinted = set.kind == SetKind.Failure || set.kind == SetKind.Drop
+            // The next set's badge is filled: teal, or a warm-up, failure or drop set's own colour (WO-01-picked, WO-02-s9f, s9d).
+            val tinted = set.kind != SetKind.Normal
             val fill = when { !current -> colors.surfaceContainerHigh; tinted -> set.kind.tint; else -> colors.primary }
             Box(
                 Modifier.width(SetColumn).height(28.dp).clip(MaterialTheme.shapes.small).background(fill)
@@ -635,37 +639,40 @@ internal fun ExerciseOverview(e: SessionExercise, first: Boolean, last: Boolean,
 internal fun QuickStart(picks: List<Pair<Long, String>>, fromMarks: Boolean, onLibrary: () -> Unit, onPick: (Long) -> Unit) {
     val space = StriveTheme.spacing
     val colors = MaterialTheme.colorScheme
-    Column(verticalArrangement = Arrangement.spacedBy(space.s24), modifier = Modifier.padding(top = space.s16)) {
+    // `.qs`'s margin-top 8 under `.body`'s own 8, which the list's top padding draws (WO-01-marks, WO-01-none).
+    Column(verticalArrangement = Arrangement.spacedBy(space.s24), modifier = Modifier.padding(top = space.s8)) {
         Column(
             Modifier.fillMaxWidth().background(colors.surface, ShapeLargeIncreased).padding(horizontal = space.s20, vertical = space.s24),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(space.s12),
         ) {
             Box(Modifier.size(72.dp).background(colors.primaryContainer, CircleShape), contentAlignment = Alignment.Center) {
-                Text("+", style = MaterialTheme.typography.displaySmall, color = colors.onPrimaryContainer)
+                Icon(StriveIcons.Plus, null, Modifier.size(32.dp), tint = colors.onPrimaryContainer)
             }
-            Text(stringResource(Res.string.what_today), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-            Text(stringResource(Res.string.what_today_body), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, textAlign = TextAlign.Center)
+            Text(stringResource(Res.string.what_today), style = MaterialTheme.typography.headlineSmall.board(), fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+            Text(stringResource(Res.string.what_today_body), style = MaterialTheme.typography.bodyMedium.board(), color = colors.onSurfaceVariant,
+                textAlign = TextAlign.Center)
             Button(onLibrary, Modifier.fillMaxWidth().heightIn(min = 50.dp), shape = MaterialTheme.shapes.large) { Text(stringResource(Res.string.add_exercises)) }
         }
         if (picks.isNotEmpty()) {
             Column(verticalArrangement = Arrangement.spacedBy(space.s12)) {
-                Row(verticalAlignment = Alignment.Bottom) {
-                    Text(stringResource(Res.string.quick_picks), Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
-                    Text(stringResource(if (fromMarks) Res.string.quick_marked else Res.string.quick_recent), style = MaterialTheme.typography.labelMedium,
-                        color = colors.onSurfaceVariant)
+                Row {
+                    Text(stringResource(Res.string.quick_picks), Modifier.weight(1f).alignByBaseline(), style = MaterialTheme.typography.titleSmall.board())
+                    Text(stringResource(if (fromMarks) Res.string.quick_marked else Res.string.quick_recent), Modifier.alignByBaseline(),
+                        style = MaterialTheme.typography.labelMedium.board(), color = colors.onSurfaceVariant)
                 }
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(space.s8), verticalArrangement = Arrangement.spacedBy(space.s8)) {
                     for ((id, name) in picks) {
                         val label = stringResource(Res.string.add_named, name)
+                        // `.chip.qp` is drawn 40 tall; it takes taps across 44, over the 8 between the rows.
                         Row(
-                            Modifier.heightIn(min = StriveTheme.sizes.touch - 4.dp).background(colors.surfaceContainerHigh, RoundedCornerShape(50))
-                                .clickable(onClickLabel = label) { onPick(id) }.padding(start = space.s12, end = space.s16),
+                            Modifier.touchTall().clickable(onClickLabel = label) { onPick(id) }.wrapContentHeight().heightIn(min = 40.dp)
+                                .background(colors.surfaceContainerHigh, RoundedCornerShape(50)).padding(start = space.s12, end = space.s16),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                         ) {
-                            Text("+", style = MaterialTheme.typography.titleMedium, color = colors.primary)
-                            Text(name, style = MaterialTheme.typography.bodyMedium)
+                            Text("+", style = MaterialTheme.typography.bodyMedium.board().copy(fontSize = 18.sp, lineHeight = 18.sp), color = colors.primary)
+                            Text(name, style = MaterialTheme.typography.bodyMedium.board())
                         }
                     }
                 }

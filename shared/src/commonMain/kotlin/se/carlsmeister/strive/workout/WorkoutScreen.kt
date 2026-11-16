@@ -156,9 +156,15 @@ internal fun rememberNow(): Long {
     return t
 }
 
-/** "12:34 · 3/9 set", the progress line under the workout's name in the title bar and the bar it minimises to. */
+/**
+ * "12:34 · 3/9 sets", the progress line under the workout's name in the title bar and the bar it minimises to; the time alone while the
+ * workout has no working sets (P10, WO-01: "0:12").
+ */
 @Composable
-internal fun progress(w: Workout, now: Long) = stringResource(Res.string.time_sets, clock((now - w.startedAt) / 1_000), w.countedLogged, w.countedSets)
+internal fun progress(w: Workout, now: Long): String {
+    val time = clock((now - w.startedAt) / 1_000)
+    return if (w.countedSets == 0) time else stringResource(Res.string.time_sets, time, w.countedLogged, w.countedSets)
+}
 
 /**
  * The active workout as design D draws it (decision 39, #17 choices 1–6, F1): one bar on top, the large title, the focus card, then
@@ -263,7 +269,8 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                 ) {
                     if (w.exercises.isEmpty()) {
                         item(key = "empty") {
-                            QuickStart(picks.first, picks.second, onAddExercises) { id -> scope.launch { sessions.add(w.id, listOf(id)) } }
+                            // A quick pick comes with last time's sets, so its first set logs in one tap (P14).
+                            QuickStart(picks.first, picks.second, onAddExercises) { id -> scope.launch { sessions.add(w.id, listOf(id), lastTime = true) } }
                         }
                     } else {
                         item(key = "header") { LargeHeader(w, nowMs) }
@@ -285,6 +292,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                     val shown = blocks(w.exercises)
                     // With every set logged nothing is being done, so every exercise folds into the overview (WO-02-s13); a workout
                     // of one exercise stays open, its rows and Add set in reach, since an overview of one row sums up nothing.
+                    // WO-01-logged draws it folded: listed in deviations-42.md for Carl.
                     fun folded(b: List<SessionExercise>) = b.all { it.skipped } ||
                         (folds[b.first().id] ?: if (focus == null) shown.size > 1 else b.none { it.id == focus.first.id })
                     shown.forEachIndexed { index, b ->
@@ -379,7 +387,9 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                         }
                     }
                     item(key = "end") {
-                        Column(Modifier.fillMaxWidth().padding(top = 28.dp), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
+                        // `.vstack`'s 12 over `.body`'s 16 gap under the exercises; the empty workout's Discard follows on the gap alone.
+                        val top = if (w.exercises.isEmpty()) StriveTheme.spacing.s16 else 28.dp
+                        Column(Modifier.fillMaxWidth().padding(top = top), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
                             if (w.exercises.isNotEmpty()) AddButton(stringResource(Res.string.add_exercises), 50.dp, MaterialTheme.shapes.large, onClick = onAddExercises)
                             TextButton({ discarding = true }, Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch)) {
                                 Text(stringResource(Res.string.discard_workout), style = MaterialTheme.typography.titleMedium.board(), color = MaterialTheme.colorScheme.error)

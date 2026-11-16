@@ -27,6 +27,7 @@ import se.carlsmeister.strive.workout.now
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.exercise_options
 import strive.shared.generated.resources.note
+import strive.shared.generated.resources.workout
 import kotlin.test.Test
 
 /** The workout's boards (#42), shot from Carl's sample data into [BOARD_SHOTS] for a person to set beside the boards. */
@@ -171,6 +172,44 @@ class WorkoutShotTest {
         repeat(2) { graph.sessions.addSet(copenhagen.id) }
     }
 
+    /** A new empty workout at 0:12, Push A discarded: the quick picks are the exercises marked Yes. */
+    @Test
+    fun wo01MarksInDarkAndDarkHc() = emptyWorkoutBoard("WO-01-marks", "What are you training today?", at = 12)
+
+    /** The same with no marks, so the quick picks are the exercises done most recently, from a pull day two days back. */
+    @Test
+    fun wo01RecentInDarkAndDarkHc() = emptyWorkoutBoard("WO-01-recent", "Recently done", at = 12) { graph ->
+        unmarkAll(graph)
+        val day = 86_400_000L
+        val pull = graph.sessions.start("Pull", now() - 2 * day)
+        val names = listOf("Curl DB", "Hammer Curl DB", "Tricep Pushdown", "Deadlift BB", "Lat Pulldown Cable", "Seated Row Cable")
+        graph.sessions.add(pull, names.map { exerciseId(graph, it) })
+        graph.sessions.workout(pull).first()!!.exercises.flatMap { it.sets }.forEach { graph.sessions.saveSet(it.copy(weight = 20.0, reps = 10, done = true)) }
+        graph.sessions.finish(pull, Finish.WithoutThem, now() - 2 * day + 60 * 60_000L)
+    }
+
+    /** No marks and no history: the card alone, no quick picks. */
+    @Test
+    fun wo01NoneInDarkAndDarkHc() = emptyWorkoutBoard("WO-01-none", "What are you training today?", at = 12) { graph ->
+        unmarkAll(graph)
+        graph.sessions.history().first().forEach { graph.sessions.discard(it.id) }
+        // The card's question shows before and after, so the first mode waits for the picks to go.
+        waitUntil(timeoutMillis = 10_000) { onAllNodes(hasText("Quick picks")).fetchSemanticsNodes().isEmpty() }
+    }
+
+    /** Bench Press BB from its quick pick at 0:31, with last time's sets (P14): the warm-up in focus. */
+    @Test
+    fun wo01PickedInDarkAndDarkHc() = emptyWorkoutBoard("WO-01-picked", "Log warm-up", at = 31) { graph ->
+        graph.sessions.add(today(graph).id, listOf(exerciseId(graph, "Bench Press BB")), lastTime = true)
+    }
+
+    /** WO-01-picked at 31:40 with every set logged, and Finish filled. */
+    @Test
+    fun wo01LoggedInDarkAndDarkHc() = emptyWorkoutBoard("WO-01-logged", "3 of 3 sets", at = 31 * 60 + 40) { graph ->
+        graph.sessions.add(today(graph).id, listOf(exerciseId(graph, "Bench Press BB")), lastTime = true)
+        logAll(graph, at = 31 * 60 + 40, "Bench Press BB")
+    }
+
     /** WO-02-s2 scrolled past the focus card: the bar on glass with the progress line, and the strip under it. */
     @Test
     fun wo03StripInDarkAndDarkHc() = workoutBoard("WO-03-strip", waitFor = "24:13 · 1/14 sets") { graph -> pastTheFocusCard(graph) }
@@ -235,3 +274,21 @@ private suspend fun logFirst(graph: AppGraph, name: String) {
 @OptIn(ExperimentalTestApi::class)
 private fun workoutBoard(id: String, waitFor: String, dismissToast: Boolean = true, arrange: suspend ComposeUiTest.(AppGraph) -> Unit = {}) =
     boardShots(id, DarkModes, waitFor, arrange = { g -> openTheWorkout(); if (dismissToast) g.toasts.dismiss(); arrange(g) }) { ShellBoard() }
+
+/** Takes every exercise's mark away, so the quick picks fall back to history. */
+private suspend fun unmarkAll(graph: AppGraph) =
+    graph.exercises.all().first().filter { it.mark != null }.forEach { graph.exercises.setMark(it.id, null) }
+
+/**
+ * An empty-workout board (WO-01): the fixture's Push A discarded and a new workout started [at] seconds ago, opened from its bar with the
+ * restore toast dismissed, then [arrange].
+ */
+@OptIn(ExperimentalTestApi::class)
+private fun emptyWorkoutBoard(id: String, waitFor: String, at: Int, arrange: suspend ComposeUiTest.(AppGraph) -> Unit = {}) =
+    boardShots(id, DarkModes, waitFor, arrange = { g ->
+        g.sessions.discard(today(g).id)
+        g.sessions.start(getString(Res.string.workout), now() - at * 1_000L)
+        openTheWorkout()
+        g.toasts.dismiss()
+        arrange(g)
+    }) { ShellBoard() }
