@@ -22,6 +22,8 @@ import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
@@ -1011,6 +1013,54 @@ class FlowTest {
         idle()
         waitUntilTrue { open().exercises.first().sets[2].done }
         assertEquals(setTwosCheck().size, early.size)
+    }
+
+    /**
+     * MO-log on the log that completes Push A: the count still rolls, now in P11's lime with its check. Compared in pixels, since the
+     * count reads as one text: 100 ms in, the roll is drawn mid-way, unlike the settled count.
+     */
+    @Test
+    fun theCountRollsOnTheLogThatCompletesTheWorkout() = inEnglish {
+        pushA(dark = true, highContrast = true) {
+            val last = open().exercises.first().sets.last()
+            for (set in open().exercises.flatMap { it.sets }) if (!set.done && set.id != last.id) graph.sessions.saveSet(set.copy(done = true))
+            see(s(Res.string.sets_progress, 13, 14))
+            test.mainClock.autoAdvance = false
+            test.onNode(hasContentDescription(s(Res.string.log_set, "3")) and hasAnyAncestor(hasTestTag("set Bench Press BB 4"))).performClick()
+            test.mainClock.advanceTimeBy(100)
+            val count = hasText(s(Res.string.sets_progress, 14, 14))
+            val rolling = test.onNode(count).captureToImage().toPixelMap()
+            test.savePng(BOARD_SHOTS, "MO-log-complete-100-dark-hc")
+            test.mainClock.autoAdvance = true
+            idle()
+            val settled = test.onNode(count).captureToImage().toPixelMap()
+            assertTrue(rolling.width != settled.width || rolling.height != settled.height || !rolling.buffer.contentEquals(settled.buffer),
+                "the count at 100 ms is drawn as it settles: it did not roll")
+        }
+    }
+
+    /** MO-log's rise belongs to the log: the rest card coming back as the dock closes stands where it was from its first frame. */
+    @Test
+    fun theRestCardDoesNotRiseAgainWhenTheDockCloses() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
+        tapContaining(s(Res.string.add_set))
+        waitUntilTrue { open().sets == 2 }
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
+        // The card counts in real time; stretched, it cannot run out on a slow machine.
+        graph.rest.value = graph.rest.value!!.copy(seconds = 3_600)
+        idle()
+        val settled = test.onNodeWithTag("rest-card").fetchSemanticsNode().boundsInRoot
+        tapDesc(s(Res.string.rest_change, "1"))
+        gone(hasTestTag("rest-card"))
+        test.mainClock.autoAdvance = false
+        test.onNode(hasText(s(Res.string.save)) and hasClickAction()).performClick()
+        test.mainClock.advanceTimeByFrame()
+        val back = test.onNodeWithTag("rest-card").fetchSemanticsNode().boundsInRoot
+        test.mainClock.autoAdvance = true
+        assertEquals(settled, back)
     }
 
     /** Bench Press BB's set 2 ✓ in Push A (its third row, after the warm-up), before and after it is logged. */

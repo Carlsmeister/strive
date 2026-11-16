@@ -482,9 +482,10 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
         val restNow = rest
         if (open == null && restNow != null) {
             // MO-log: the card rises 16 pt and fades in on the calm spring from 150 ms after the log; under Reduce Motion it fades in
-            // where it sits. One delay that ends, on the frame clock, so the UI tests still go idle.
-            val rise = remember(restNow.startedAt) { Animatable(0f) }
-            LaunchedEffect(rise) { delay(150); rise.animateTo(1f, if (reduceMotion) Motion.fade() else Motion.calm()) }
+            // where it sits. One delay that ends, on the frame clock, so the UI tests still go idle. Only a rest just started rises: back
+            // after the dock or with the workout reopened from the bar, the card stands where it was.
+            val rise = remember(restNow.startedAt) { Animatable(if (now() - restNow.startedAt < RISE_WINDOW_MS) 0f else 1f) }
+            LaunchedEffect(rise) { if (rise.value < 1f) { delay(150); rise.animateTo(1f, if (reduceMotion) Motion.fade() else Motion.calm()) } }
             RestCard(restNow, nowMs, haze, onChange = { graph.rest.value = it },
                 Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = StriveTheme.spacing.s16).graphicsLayer {
                     alpha = rise.value.coerceIn(0f, 1f)
@@ -798,6 +799,12 @@ private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
  * it if the strip's type or padding change.
  */
 private val StripHeight = 66.dp
+
+/**
+ * How new a rest must be for its card to rise. A log shows the card within a frame, so this only has to be shorter than reopening the
+ * dock takes.
+ */
+private const val RISE_WINDOW_MS = 500L
 
 /** The focus strip under the bar while the focus card is out of sight (D-scroll), on the bar's glass. */
 @Composable

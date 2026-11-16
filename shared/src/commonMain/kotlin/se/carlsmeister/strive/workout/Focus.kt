@@ -335,13 +335,12 @@ internal fun LargeHeader(w: Workout, now: Long) {
                 Text(clock((now - w.startedAt) / 1_000), style = style)
             }
             val count = stringResource(Res.string.sets_progress, w.countedLogged, w.countedSets)
-            if (w.complete) {
-                // P11: every working set logged turns the count lime with a check (WO-02-s13's `.m-lime`).
-                Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Glyph(Glyph.Check, 16.dp, color = StriveTheme.moments.lime)
-                    RollingCount(w.countedLogged, count, style, StriveTheme.moments.text(Accent.Lime))
-                }
-            } else RollingCount(w.countedLogged, count, style, grey)
+            // P11: every working set logged turns the count lime with a check (WO-02-s13's `.m-lime`). One RollingCount for both, so the
+            // log that completes the workout still rolls.
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
+                if (w.complete) Glyph(Glyph.Check, 16.dp, color = StriveTheme.moments.lime)
+                RollingCount(w.countedLogged, count, style, if (w.complete) StriveTheme.moments.text(Accent.Lime) else grey)
+            }
         }
     }
 }
@@ -418,7 +417,8 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
         // Motion). A value changed on the same set changes in place.
         AnimatedContent(FocusShown(e, set, badge, prev, meta, tag), contentKey = { it.set.id }, transitionSpec = {
             fadeIn(Motion.fade()) togetherWith fadeOut(Motion.fade()) using
-                SizeTransform(clip = false) { _, _ -> if (reduceMotion) snap() else Motion.calm(IntSize.VisibilityThreshold) }
+                // Under Reduce Motion the height snaps, so the taller outgoing values are clipped rather than drawn over the RIR row.
+                SizeTransform(clip = reduceMotion) { _, _ -> if (reduceMotion) snap() else Motion.calm(IntSize.VisibilityThreshold) }
         }) { FocusValues(it.e, it.set, it.badge, it.prev, it.meta, it.tag) }
         if (e.type.hasRir()) RirRow(rir, more, onRir, onMore, label = false, compact = true)
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
