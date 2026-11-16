@@ -2,7 +2,9 @@ package se.carlsmeister.strive.workout
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,25 +37,31 @@ internal class WorkoutToasts(
     val hidden: StateFlow<Set<Long>> = hiddenIds.asStateFlow()
 
     // The hold ends on a worker thread while the UI calls show and undo, so whoever clears the pending
-    // id atomically owns it: the hold removes it, Undo un-hides it, never both.
-    private val pending = MutableStateFlow<Long?>(null)
+    // slot atomically owns it: the hold removes it, Undo un-hides it, never both. The slot carries its
+    // show's token, so a stale hold never matches a newer show of the same exercise.
+    private data class Pending(val token: Long, val id: Long)
+    private val pending = MutableStateFlow<Pending?>(null)
+    private val current = MutableStateFlow(0L)
     private var job: Job? = null
+    private val removals = MutableStateFlow(emptyList<Job>())
 
     /** Ends the current toast first, removing a pending exercise, then shows [next] for the hold. */
     fun show(next: WorkoutToast) {
         job?.cancel()
-        pending.getAndUpdate { null }?.let { id -> scope.launch { drop(id) } }
+        val token = current.value + 1
+        current.value = token
+        pending.getAndUpdate { null }?.let { launchDrop(it.id) }
         if (next is WorkoutToast.Removed) {
             hiddenIds.update { it + next.sessionExerciseId }
-            pending.value = next.sessionExerciseId
+            pending.value = Pending(token, next.sessionExerciseId)
         }
         toast.value = next
         val millis = hold()
         job = scope.launch {
             delay(millis)
-            toast.compareAndSet(next, null)
-            // Launched apart from the hold, so a show that cancels the hold cannot cancel a removal already claimed.
-            if (next is WorkoutToast.Removed && pending.compareAndSet(next.sessionExerciseId, null)) scope.launch { drop(next.sessionExerciseId) }
+            // shortcut: check-then-set, so a show in the instants between can still lose an equal toast; harmless, as only the toast's timing is at stake.
+            if (current.value == token) toast.compareAndSet(next, null)
+            if (next is WorkoutToast.Removed && pending.compareAndSet(Pending(token, next.sessionExerciseId), null)) launchDrop(next.sessionExerciseId)
         }
     }
 
@@ -61,7 +69,7 @@ internal class WorkoutToasts(
     fun undo() {
         job?.cancel()
         toast.value = null
-        pending.getAndUpdate { null }?.let { id -> hiddenIds.update { it - id } }
+        pending.getAndUpdate { null }?.let { p -> hiddenIds.update { it - p.id } }
     }
 
     /** Clears a toast that has no pending removal; one that has waits for its hold, Undo or [settle]. */
@@ -71,11 +79,21 @@ internal class WorkoutToasts(
         toast.value = null
     }
 
-    /** Removes a pending exercise now and clears the toast, before the workout is finished or discarded. */
+    /**
+     * Removes a pending exercise now, clears the toast, and returns only once every removal already
+     * started has finished too, so a finish or discard that follows never sees a removed exercise.
+     */
     suspend fun settle() {
-        job?.cancel()
+        job?.cancelAndJoin() // a hold past its delay finishes, so a removal it claimed is in [removals]
         toast.value = null
-        pending.getAndUpdate { null }?.let { drop(it) }
+        pending.getAndUpdate { null }?.let { drop(it.id) }
+        removals.getAndUpdate { emptyList() }.joinAll()
+    }
+
+    // Launched apart from the hold, so a show that cancels the hold cannot cancel a removal already claimed.
+    private fun launchDrop(id: Long) {
+        val removal = scope.launch { drop(id) }
+        removals.update { it + removal }
     }
 
     private suspend fun drop(id: Long) {

@@ -1,7 +1,9 @@
 package se.carlsmeister.strive.workout
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
@@ -12,7 +14,9 @@ import se.carlsmeister.strive.data.memoryDriver
 import se.carlsmeister.strive.db.StriveDatabase
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class) // runCurrent and advanceTimeBy drive the hold
 class WorkoutToastsTest {
@@ -105,5 +109,68 @@ class WorkoutToastsTest {
 
         assertNull(s.toasts.shown.value)
         assertEquals(listOf("Bench Press BB", "Pull Up"), names(s))
+    }
+
+    /** A remove that waits until its gate opens, so a test can hold a removal in flight. */
+    private class Gated {
+        val gates = mutableMapOf<Long, CompletableDeferred<Unit>>()
+        val removed = mutableListOf<Long>()
+        suspend fun remove(id: Long) {
+            gates.getOrPut(id) { CompletableDeferred() }.await()
+            removed += id
+        }
+        fun open(id: Long) = gates.getOrPut(id) { CompletableDeferred() }.complete(Unit)
+    }
+
+    @Test
+    fun settleWaitsForARemovalAnEarlierToastStarted() = runTest {
+        val gated = Gated()
+        val toasts = WorkoutToasts(backgroundScope, gated::remove) { 4_000 }
+        toasts.show(WorkoutToast.Removed("A", 1))
+        toasts.show(WorkoutToast.Removed("B", 2)) // starts A's removal, which waits on its gate
+        val settling = launch { toasts.settle() }
+        runCurrent()
+
+        gated.open(2)
+        runCurrent()
+        assertFalse(settling.isCompleted, "settle returned before A's removal finished")
+
+        gated.open(1)
+        runCurrent()
+        assertTrue(settling.isCompleted)
+        assertEquals(setOf(1L, 2L), gated.removed.toSet())
+        assertEquals(emptySet(), toasts.hidden.value)
+    }
+
+    @Test
+    fun settleWaitsForARemovalTheHoldStarted() = runTest {
+        val gated = Gated()
+        val toasts = WorkoutToasts(backgroundScope, gated::remove) { 4_000 }
+        toasts.show(WorkoutToast.Removed("A", 1))
+        advanceTimeBy(4_001) // the hold ends and starts A's removal
+        val settling = launch { toasts.settle() }
+        runCurrent()
+        assertFalse(settling.isCompleted, "settle returned before the hold's removal finished")
+
+        gated.open(1)
+        runCurrent()
+        assertTrue(settling.isCompleted)
+        assertEquals(listOf(1L), gated.removed)
+    }
+
+    @Test
+    fun eachToastHoldsForTheHoldReadWhenItIsShown() = runTest {
+        var hold = 1_000L
+        val toasts = WorkoutToasts(backgroundScope, {}) { hold }
+        toasts.show(WorkoutToast.Restored)
+        advanceTimeBy(1_001)
+        assertNull(toasts.shown.value)
+
+        hold = 5_000
+        toasts.show(WorkoutToast.Swapped("Chest Press Machine"))
+        advanceTimeBy(1_001)
+        assertEquals(WorkoutToast.Swapped("Chest Press Machine"), toasts.shown.value)
+        advanceTimeBy(4_000)
+        assertNull(toasts.shown.value)
     }
 }
