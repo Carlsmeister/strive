@@ -148,7 +148,9 @@ internal fun <T> MutableList<T>.pop() {
 
 // shortcut: back stacks are plain lists, so Android loses them when it recreates the activity (rotation,
 // a language change) or kills the process; switch to rememberNavBackStack with serializable keys when a
-// feature has state worth restoring.
+// feature has state worth restoring. Known case: leftOpen and started are plain remember too, so after a recreation a
+// workout the user had minimised reads as left open; rememberSaveable fixes that, but a restore after process death must
+// still show it as left open.
 @Composable
 fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph) {
     LaunchedEffect(graph) { graph.prepare() }
