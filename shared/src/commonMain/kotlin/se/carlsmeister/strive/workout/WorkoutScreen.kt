@@ -290,11 +290,10 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                     }
                     // Each exercise alone, or a superset's together in one list in the order you lift (#17 choice 6, G2 with G1's edge line).
                     val shown = blocks(w.exercises)
-                    // With every set logged nothing is being done, so every exercise folds into the overview (WO-02-s13); a workout
-                    // of one exercise stays open, its rows and Add set in reach, since an overview of one row sums up nothing.
-                    // WO-01-logged draws it folded: listed in deviations-42.md for Carl.
+                    // With every set logged nothing is being done, so every exercise folds into the overview, a workout of one
+                    // exercise too (WO-02-s13, WO-01-logged).
                     fun folded(b: List<SessionExercise>) = b.all { it.skipped } ||
-                        (folds[b.first().id] ?: if (focus == null) shown.size > 1 else b.none { it.id == focus.first.id })
+                        (folds[b.first().id] ?: (focus == null || b.none { it.id == focus.first.id }))
                     shown.forEachIndexed { index, b ->
                         if (folded(b)) {
                             // Folded, a superset's exercises are rows in the card the folded exercises share.

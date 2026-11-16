@@ -222,6 +222,8 @@ class FlowTest {
         keys("8")
         tap(s(Res.string.next))
         tap(s(Res.string.log_next))
+        // Its only set logged, the workout is complete and Bench Press folds into the overview (WO-01-logged).
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         shot("dark-05-sets")
@@ -236,11 +238,21 @@ class FlowTest {
 
     @Test
     fun aNewWorkoutStartsEmpty() = flow {
-        startWorkout()
-        see(s(Res.string.what_today))
-        // With no working sets the bar reads the time alone (P10), not "0:00 · 0/0 sets".
-        gone(hasText("0/0", substring = true))
-        shot("01-empty-workout")
+        // A clock that stands still, so the bar's time reads "0:00" for as long as the test looks.
+        val start = Clock.System.now()
+        wallClock = object : Clock {
+            override fun now() = start
+        }
+        try {
+            startWorkout()
+            see(s(Res.string.what_today))
+            // With no working sets the bar reads the time alone (P10), not "0:00 · 0/0 sets".
+            see("0:00")
+            gone(hasText("0/0", substring = true))
+            shot("01-empty-workout")
+        } finally {
+            wallClock = Clock.System
+        }
     }
 
     @Test
@@ -353,6 +365,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().exercises.single().sets.size == 2 }
         tapDesc(s(Res.string.log_set, 2))
@@ -369,6 +382,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         openSet(0)
         tapDesc("${s(Res.string.field_reps)} +")
         tap(s(Res.string.save_change))
@@ -544,6 +558,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         tap(s(Res.string.finish))
@@ -559,6 +574,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         tap(s(Res.string.finish))
@@ -1036,6 +1052,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
         tap(s(Res.string.skip))
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         repeat(2) { tapContaining(s(Res.string.add_set)) }
         waitUntilTrue { open().sets == 3 }
         tapDesc(s(Res.string.set_type, "3"))
@@ -1149,6 +1166,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8", rir = "3")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         openSet(1)
@@ -1159,10 +1177,10 @@ class FlowTest {
         tap(s(Res.string.done))
         startWorkout()
         addExercises("Bench Press BB")
-        logFirstSet("85", "8", rir = "2")
-        // Added while Bench Press is the only exercise, so the new set copies 85 × 8 there.
-        tapContaining(s(Res.string.add_set))
+        // Picked, Bench Press comes with last time's two sets (P14); D draws today's set 2 at 85, so it is written there.
         waitUntilTrue { open().exercises.first().sets.size == 2 }
+        logFirstSet("85", "8", rir = "2")
+        graph.sessions.saveSet(open().exercises.first().sets[1].copy(weight = 85.0))
         addExercises("Incline Press DB", "Lateral Raise DB")
         tap(s(Res.string.skip)) // the rest card; D draws the top of the workout without it
         gone(hasTestTag("rest-card"))
@@ -1181,6 +1199,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         logFirstSet("40", "10")
         tap(s(Res.string.skip)) // the rest card
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         tapDesc(s(Res.string.set_type, "1"))
         tap(s(Res.string.kind_warmup))
         waitUntilTrue { open().exercises.single().sets[0].kind == SetKind.Warmup }
@@ -1217,6 +1236,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
         tap(s(Res.string.skip))
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         repeat(2) { tapContaining(s(Res.string.add_set)) }
         waitUntilTrue { open().sets == 3 }
         tapDesc(s(Res.string.set_type, "2"))
@@ -1249,6 +1269,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
         tap(s(Res.string.skip))
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         repeat(2) { tapContaining(s(Res.string.add_set)) }
         waitUntilTrue { open().sets == 3 }
         tapDesc(s(Res.string.set_type, "2"))
@@ -1278,6 +1299,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
@@ -1382,9 +1404,9 @@ class FlowTest {
 
     /**
      * Acceptance criterion 2: two exercises with last time's sets, three working sets each, at most three taps a set. Inside a set's block
-     * every click goes through the local `countedTap` and no other clicking helper. Adding the exercises and bringing an exercise's rows
-     * into view (unfolding Incline Press DB, scrolling past the rest card) come between the blocks. Each set is logged by its own row's
-     * check, so Bench Press BB's warm-up stays unlogged and uncounted (O-25).
+     * every click goes through the local `countedTap` and no other clicking helper; unfolding Incline Press DB is a tap of its set 1.
+     * Adding the exercises and scrolling an exercise into view come between the blocks. Each set is logged by its own row's check, so
+     * Bench Press BB's warm-up stays unlogged and uncounted (O-25).
      */
     @Test
     fun twoExercisesThreeSetsEachTakeAtMostThreeTapsASet() = flow {
@@ -1419,21 +1441,34 @@ class FlowTest {
                         test.onAllNodes(hasText(bar, substring = true)).fetchSemanticsNodes().isNotEmpty()
                 }
             }
-            suspend fun workingSet(name: String, row: Int, number: Int) {
-                inView(name)
+            /** Logs one working set by its row's check; a [folded] exercise is unfolded first, and that tap counts too. */
+            suspend fun workingSet(name: String, row: Int, number: Int, folded: Boolean = false) {
+                val id = open().exercises.first { it.name == name }.id
                 val check = hasContentDescription(s(Res.string.log_set, "$number")) and hasAnyAncestor(hasTestTag("set $name $row"))
-                wait("$name's set $number") { test.onAllNodes(check).fetchSemanticsNodes().isNotEmpty() }
-                // The block: taps on screen from here until the set is logged.
+                if (folded) {
+                    // Its overview row 100 pt down the list, clear of the strip on top and the rest card below.
+                    test.onNode(hasScrollToIndexAction()).performScrollToKey("o$id")
+                    test.onNode(hasScrollToIndexAction()).performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, -100f * 3) }
+                    idle()
+                } else {
+                    inView(name)
+                    wait("$name's set $number") { test.onAllNodes(check).fetchSemanticsNodes().isNotEmpty() }
+                }
+                // The block: every tap on screen from here until the set is logged. Scrolling is not a tap.
                 taps = 0
+                if (folded) {
+                    countedTap(hasContentDescription(s(Res.string.expand, name)))
+                    inView(name)
+                    wait("$name's set $number") { test.onAllNodes(check).fetchSemanticsNodes().isNotEmpty() }
+                }
                 countedTap(check)
                 assertTrue(taps <= 3, "$name's set $number took $taps taps")
                 countReads(++logged)
             }
 
             for (n in 1..3) workingSet("Bench Press BB", row = n + 1, number = n)
-            // Bench Press BB's warm-up is still the next set, so Incline Press DB waits folded.
-            tapDesc(s(Res.string.expand, "Incline Press DB"))
-            for (n in 1..3) workingSet("Incline Press DB", row = n, number = n)
+            // Bench Press BB's warm-up is still the next set, so Incline Press DB waits folded: its set 1 takes the unfold and the check.
+            for (n in 1..3) workingSet("Incline Press DB", row = n, number = n, folded = n == 1)
 
             test.onNode(hasScrollToIndexAction()).performScrollToKey("header")
             idle()
