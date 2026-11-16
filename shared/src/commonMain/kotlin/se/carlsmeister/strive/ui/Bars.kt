@@ -82,8 +82,8 @@ internal fun NavBar(
 }
 
 /**
- * `.back`: a teal chevron and the [parent]'s name, the screen it goes back to, ending in an ellipsis where a title leaves it too little
- * room. VoiceOver reads the name and says a tap goes back. Tagged `back`, so a flow finds it apart from a tab of the same name.
+ * `.back`: a teal chevron and the [parent]'s name, the screen it goes back to, ending in an ellipsis only on a bar narrower than the
+ * label itself. VoiceOver reads the name and says a tap goes back. Tagged `back`, so a flow finds it apart from a tab of the same name.
  */
 @Composable
 internal fun BackLabel(parent: String, onBack: () -> Unit, modifier: Modifier = Modifier) =
@@ -204,10 +204,11 @@ internal fun CentredBar(gap: Dp, modifier: Modifier, start: @Composable () -> Un
         val title = m.firstOrNull()?.measure(loose.copy(maxWidth = between.coerceAtLeast(0))) // none once AnimatedVisibility has faded out
         val height = maxOf(left.height, right.height, title?.height ?: 0).coerceIn(c.minHeight, c.maxHeight)
         val centre = Alignment.CenterVertically
+        // Relative, so a right-to-left language mirrors the bar.
         layout(c.maxWidth, height) {
-            left.place(0, centre.align(left.height, height))
-            right.place(c.maxWidth - right.width, centre.align(right.height, height))
-            title?.place(centredBetween(c.maxWidth, title.width, left.width + g, right.width + g), centre.align(title.height, height))
+            left.placeRelative(0, centre.align(left.height, height))
+            right.placeRelative(c.maxWidth - right.width, centre.align(right.height, height))
+            title?.placeRelative(centredBetween(c.maxWidth, title.width, left.width + g, right.width + g), centre.align(title.height, height))
         }
     }
 

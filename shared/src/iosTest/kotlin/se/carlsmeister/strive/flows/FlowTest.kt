@@ -1420,7 +1420,10 @@ class FlowTest {
             graph.sessions.rename(id, name)
             see(name)
             shot("27-title-${name.length}")
-            drawnWidthAndRoom(test.onNode(hasText(name), useUnmergedTree = true).fetchSemanticsNode())
+            val title = test.onNode(hasText(name), useUnmergedTree = true).fetchSemanticsNode()
+            val back = test.onNode(hasTestTag("back")).fetchSemanticsNode().boundsInRoot
+            assertTrue(title.boundsInRoot.left >= back.right, "'$name' (${title.boundsInRoot}) clear of the back label ($back)")
+            drawnWidthAndRoom(title)
         }
         assertTrue(drawn.values.all { (width, room) -> width < room }, "every name drawn whole: $drawn")
     }
