@@ -44,9 +44,12 @@ rendered boards.**
   instead of clamping it. CI reruns both scripts and fails on any diff.
 - **Unbounded 700 is bundled** for celebration numbers (`theme/Celebrate.kt`), never fetched.
 - **Components live in `se.carlsmeister.strive.ui`, one file per system card:** `Buttons.kt`,
-  `Cards.kt`, `Controls.kt`, `Lists.kt` and `Bars.kt` (TitleBars), with `Moments.kt` for
-  `moments.css`. Each screen adopts them in its own issue (R7); the built workout keeps its own
-  title bar, `Btn` and `Segments`.
+  `Cards.kt`, `Controls.kt`, `Lists.kt`, `Bars.kt` (TitleBars), `TabBar.kt`, `StartBubbles.kt`,
+  `Menus.kt`, `Dialogs.kt` and `HintsAndToasts.kt`, with `Moments.kt` for `moments.css`. Each
+  screen adopts them in its own issue (R7); the built workout keeps its own title bar and `Btn`,
+  and `Segments` lives in `ui/Controls.kt`.
+- **The shell and every menu, dialog, sheet, segmented control and back label on the built
+  screens adopted the components in #57.**
 - **Every text a component draws keeps CSS's line box** (`CssLineBox` in `theme/Theme.kt`,
   Material 3's own default). The generated type scale stays trimmed, so built screens do not
   move (R7).
@@ -85,14 +88,22 @@ font noise.
 - **Easier:** a design change to a moment, a role or an icon is an edit to `tokens.py` or
   `bundle.css` and a script rerun. Every later issue shoots its boards with `boardShots` and
   pairs them with `compare.py`.
-- **Harder:** until the screens adopt them, the built workout draws its own bar, buttons and
-  segments, so two looks for the same part coexist. No screen uses the components, the icons
-  or the moments yet.
-- **Not built:** segmented controls (`.segc`, `.seg`) are #57's (R4). The 10 Canvas glyphs in
-  `workout/Parts.kt` stay until a screen swaps them for icons.
-- **Two questions go to Carl as issue drafts.** First, the type scale's trimmed line box:
+- **Harder:** the built workout still draws its own title bar and `Btn`, so two looks for a title
+  bar and a button coexist until a screen's issue swaps them. The shell, Food's placeholder and
+  the built screens' menus, dialogs, sheets, segmented controls and back labels use the
+  components and the icons since #57. No screen uses the moments yet.
+- **A menu is a Compose `Popup` (P5).** Glass blurs in a popup, in the tree and in a `Dialog`
+  alike, provided the screen's haze source paints its own background; `BoardShotTest` proves it
+  from pixels for a menu and for an alert.
+- **Dialogs keep Compose's `Dialog` window (P6),** so alerts and sheets blur what is behind
+  them. iOS dims with the card's one scrim at .32; Android keeps its platform dim.
+- **Not built:** `.glass`'s `saturate(1.6)`, which shows in no shot of today's screens. The 10
+  Canvas glyphs in `workout/Parts.kt` stay until a screen swaps them for icons.
+- **Three questions go to Carl as issue drafts.** First, the type scale's trimmed line box:
   system components keep CSS's line box while built screens keep the trimmed one, and the whole
   theme should pick one. Second, `bundle.css`'s `.center`: the dialog class also matches
-  `.row.center`, so the approved Lists card renders "Add gear" as a full-page overlay.
+  `.row.center`, so the approved Lists card renders "Add gear" as a full-page overlay. Third,
+  letter spacing: the type scale carries none, so text from 13 pt up runs wider than on the
+  boards, which Chrome draws with San Francisco's tracking per size.
 - **Revisit when** a screen's issue adopts the components: delete its private part, and
   re-shoot that screen beside its board.

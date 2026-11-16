@@ -8,9 +8,13 @@ text in Swedish and English (#31), themed from the design tokens and following t
 mode, contrast, transparency and text size (#30), on a local database (#33). Built so far: the
 exercise library with 553 exercises (#41), and logging a workout from Start, with its summary
 and History (#42). The system layer from the approved design (#56) is built: moment accents,
-Unbounded for celebration numbers, 79 icons, buttons, cards, controls, lists and title bars. No
-screen uses it yet. Not yet: the rest timer, templates, hints, records, plates, programmes, runs
-and export. Home and Food are placeholders; Plan and Du only lead to the library and History.
+Unbounded for celebration numbers, 79 icons, buttons, cards, controls, lists and title bars. The
+shell is built to the boards SH-01, SH-03, SH-05 and WO-17 (#57): the floating tab bar, Start's
+bubbles, the minimised workout's bar and Food's placeholder. The built screens' menus, dialogs,
+sheets, segmented controls and back labels are the system's components. Not yet: the rest timer's
+lock-screen notification and Live Activity (#43), templates, hints, records, plates, programmes, runs and export.
+Home, Plan and You remain placeholders, Plan and You only leading to the library and History, and
+Run still opens a placeholder.
 CI checks every pull request (#32). The design is prototyped in `docs/design/`.
 Beside those, this repository holds the plan: issue templates, the
 Definition of Done and the architecture decision records.
