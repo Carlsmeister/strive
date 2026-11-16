@@ -134,6 +134,16 @@ class FormatTest {
         assertEquals("–", setText(WorkoutSet(0), ExerciseType.WeightReps, swedish = true))
     }
 
+    /** The focus card leaves out a bodyweight set's added weight when there is none: "8 reps", not "– kg × 8 reps". */
+    @Test
+    fun aBodyweightSetWithoutAddedWeightShowsItsRepsAloneOnTheCard() {
+        assertEquals(listOf(IndexedValue(1, "8")), cardCells(WorkoutSet(0, reps = 8), ExerciseType.BodyweightReps, swedish = false))
+        assertEquals(listOf(IndexedValue(0, "+10"), IndexedValue(1, "9")),
+            cardCells(WorkoutSet(0, weight = 10.0, reps = 9), ExerciseType.BodyweightReps, swedish = false))
+        // A weight exercise keeps its empty weight, which Log waits for.
+        assertEquals(listOf(IndexedValue(0, null), IndexedValue(1, "8")), cardCells(WorkoutSet(0, reps = 8), ExerciseType.WeightReps, swedish = false))
+    }
+
     @Test
     fun aClockShowsHoursOnlyWhenThereAreAny() {
         assertEquals("0:07", clock(7))
@@ -404,6 +414,19 @@ class ProgressCountTest {
     @Test
     fun aSkippedExercisesSetsAreLeftOut() =
         assertEquals(0 to 0, workout(WorkoutSet(1, done = true), WorkoutSet(2), skipped = true).let { it.countedLogged to it.countedSets })
+
+    /**
+     * P11: the workout is complete once every working set is logged. Warm-ups and skipped exercises do not count either way, so an
+     * unlogged warm-up or a skipped exercise's unlogged sets leave it complete; a workout with no working sets is not.
+     */
+    @Test
+    fun aWorkoutIsCompleteWhenEveryWorkingSetIsLogged() {
+        val skipped = SessionExercise(2, 2, "Tricep Dips", ExerciseType.BodyweightReps, null, "", listOf(WorkoutSet(9)), skipped = true)
+        val done = workout(WorkoutSet(1, kind = SetKind.Warmup), WorkoutSet(2, done = true), WorkoutSet(3, done = true, kind = SetKind.Drop))
+        assertTrue(done.copy(exercises = done.exercises + skipped).complete)
+        assertFalse(workout(WorkoutSet(1, done = true), WorkoutSet(2)).complete)
+        assertFalse(workout(WorkoutSet(1, done = true, kind = SetKind.Warmup)).complete)
+    }
 
     @Test
     fun aWorkoutOfOnlyWarmUpsCountsZeroOfZero() =

@@ -160,6 +160,10 @@ internal fun cells(s: WorkoutSet, type: ExerciseType, swedish: Boolean): List<St
     ExerciseType.Distance -> listOf(s.metres?.let { kilos(it, swedish) })
 }
 
+/** The focus card's values with their column: added weight is optional, so a bodyweight set without it reads "8 reps". */
+internal fun cardCells(s: WorkoutSet, type: ExerciseType, swedish: Boolean): List<IndexedValue<String?>> =
+    cells(s, type, swedish).withIndex().filterNot { type == ExerciseType.BodyweightReps && it.index == 0 && it.value == null }
+
 internal val SetKind.label get() = when (this) {
     SetKind.Normal -> Res.string.kind_normal
     SetKind.Warmup -> Res.string.kind_warmup
@@ -353,8 +357,8 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 val big = type.displaySmall.copy(fontSize = 38.sp, lineHeight = 44.sp, letterSpacing = (-1).sp, fontWeight = FontWeight.Bold).board()
                 val units = units(e.type, e.perSide)
-                cells(set, e.type, sv).forEachIndexed { i, v ->
-                    if (i > 0) Text("×", Modifier.alignByBaseline(), style = type.headlineMedium.copy(fontSize = 26.sp, lineHeight = 32.sp).board(), color = colors.onSurfaceVariant)
+                cardCells(set, e.type, sv).forEachIndexed { n, (i, v) ->
+                    if (n > 0) Text("×", Modifier.alignByBaseline(), style = type.headlineMedium.copy(fontSize = 26.sp, lineHeight = 32.sp).board(), color = colors.onSurfaceVariant)
                     Text(v ?: "–", Modifier.alignByBaseline(), style = big)
                     units[i]?.let { Text(stringResource(it).lowercase(), Modifier.alignByBaseline(), style = type.bodyMedium.board(), color = colors.onSurfaceVariant) }
                 }
@@ -414,7 +418,7 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
  * stays on the card and the rows, so a tap meant for the bar never logs a set (Carl, point 7).
  */
 @Composable
-internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, badge: String, onBack: () -> Unit, tag: String? = null) {
+internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, badge: String, rir: Int?, onBack: () -> Unit, tag: String? = null) {
     val colors = MaterialTheme.colorScheme
     val sv = swedish
     val main = when (e.type) {
@@ -429,8 +433,10 @@ internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, badge: String, onBa
     ) {
         Text(nowLabel(e, set, badge, strip = true, tag), style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 0.3.sp).board(),
             fontWeight = FontWeight.SemiBold, color = colors.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        // No RIR on the strip (design-1 item 7): it names the set, the card picks its RIR.
-        Text(main, style = MaterialTheme.typography.titleMedium.board())
+        // No RIR drawn on the strip (design-1 item 7), but VoiceOver still hears the one picked on the card, as it did before.
+        val spoken = rir?.let { "$main RIR $it" }
+        Text(main, if (spoken != null) Modifier.semantics { contentDescription = spoken } else Modifier,
+            style = MaterialTheme.typography.titleMedium.board())
     }
 }
 
@@ -508,7 +514,8 @@ internal fun SetRow(
                 val reps = type.hasRir() && i == values.lastIndex
                 Text(
                     buildAnnotatedString {
-                        append(v ?: "–")
+                        // An optional added weight not given is left blank, not a dash waiting for a value.
+                        append(v ?: if (type == ExerciseType.BodyweightReps && i == 0) "" else "–")
                         if (reps) set.rir?.let {
                             // A 7 sp space is about 2 pt, `.cell small`'s margin; the text keeps its space so it still reads "8 @2".
                             withStyle(SpanStyle(fontSize = 7.sp)) { append(" ") }

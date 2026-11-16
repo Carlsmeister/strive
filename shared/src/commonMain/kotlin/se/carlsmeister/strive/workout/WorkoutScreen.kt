@@ -387,7 +387,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                         }
                     }
                 }
-                StripOverlay(strip, focus, focus?.let { tags[it.first.id] }, Modifier.align(Alignment.TopCenter)) {
+                StripOverlay(strip, focus, focusRir, focus?.let { tags[it.first.id] }, Modifier.align(Alignment.TopCenter)) {
                     scope.launch { if (reduceMotion) list.scrollToItem(0) else list.animateScrollToItem(0) }
                 }
             }
@@ -677,7 +677,7 @@ private val StripHeight = 66.dp
 
 /** The focus strip under the bar while the focus card is out of sight (D-scroll), on the bar's glass. */
 @Composable
-private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, tag: String?, modifier: Modifier, onBack: () -> Unit) {
+private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, rir: Int?, tag: String?, modifier: Modifier, onBack: () -> Unit) {
     val reduceMotion = StriveTheme.reduceMotion
     Overlay(
         shown, modifier,
@@ -690,7 +690,7 @@ private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, tag
         Column(Modifier.fillMaxWidth().background(StriveTheme.glass.thick)) {
             shownFocus.value?.let { (e, i) ->
                 e.sets.getOrNull(i)?.let {
-                    Box(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 10.dp)) { FocusStrip(e, it, badges(e.sets)[i], onBack, tag) }
+                    Box(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 10.dp)) { FocusStrip(e, it, badges(e.sets)[i], rir, onBack, tag) }
                 }
             }
             HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)

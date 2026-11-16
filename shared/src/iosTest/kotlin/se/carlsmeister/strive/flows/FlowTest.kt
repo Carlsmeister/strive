@@ -973,12 +973,16 @@ class FlowTest {
         addExercises("Bench Press BB", "Chest Dips", "Squat BB", "Pull Up", "Incline Press DB")
         logFirstSet("80", "8")
         tap(s(Res.string.skip)) // the rest card
+        tapSegment("2") // RIR picked on the card, which the strip does not draw but VoiceOver reads
         // Folded exercises are short; open three so the list is long enough to scroll the card away. Bottom up, so an opened
         // exercise never pushes the next one to open below the window, where the list does not draw it.
         for (name in listOf("Incline Press DB", "Pull Up", "Squat BB")) tapDesc(s(Res.string.expand, name))
         test.onNode(hasScrollToIndexAction()).performScrollToKey("end")
         wait("the strip") { test.onAllNodes(hasTestTag("focus-strip")).fetchSemanticsNodes().isNotEmpty() }
         shot("11-strip")
+        wait("the strip's RIR for VoiceOver") {
+            test.onAllNodes(hasTestTag("focus-strip") and hasContentDescription("RIR 2", substring = true)).fetchSemanticsNodes().isNotEmpty()
+        }
         // No Logga on the strip (point 7): the whole strip scrolls back up to the card.
         gone(hasText(s(Res.string.log_set, 1), substring = true) and hasClickAction() and !hasContentDescription(s(Res.string.log_set, 1)))
         test.onNode(clickLabel(s(Res.string.back_to_focus))).performClick()
