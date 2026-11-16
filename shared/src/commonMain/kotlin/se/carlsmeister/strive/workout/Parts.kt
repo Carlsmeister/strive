@@ -40,6 +40,10 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -123,10 +127,19 @@ internal fun SwipeToDelete(shape: Shape, onDelete: () -> Unit, content: @Composa
     val scope = rememberCoroutineScope()
     val row = remember { SwipeRow(moved = { offset != 0f }, shut = { scope.launch { animate(offset, 0f, 0f, Motion.settle()) { v, _ -> offset = v } } }) }
     val haptics = LocalHapticFeedback.current
-    Box(Modifier.fillMaxWidth().onSizeChanged { width = it.width }.clip(shape)) {
+    // The finger's speed, tracked on the box that does not move. Draggable's own velocity is taken on the row, which moves with the
+    // finger, so a quick short flick read about 0 and never opened (as on the title bar, #42 Task 10).
+    val finger = remember { VelocityTracker() }
+    Box(
+        Modifier.fillMaxWidth().onSizeChanged { width = it.width }.clip(shape).pointerInput(Unit) {
+            // Watches every touch on its way in and consumes none, so the row under it works as before.
+            awaitPointerEventScope { while (true) awaitPointerEvent(PointerEventPass.Initial).changes.firstOrNull()?.let(finger::addPointerInputChange) }
+        },
+    ) {
         Box(
             Modifier.offset { IntOffset(offset.roundToInt(), 0) }
-                .draggable(drag, Orientation.Horizontal, onDragStopped = { velocity ->
+                .draggable(drag, Orientation.Horizontal, onDragStopped = {
+                    val velocity = finger.calculateVelocity().x
                     val target = swipeTarget(offset, velocity, width.toFloat(), open, flick)
                     // The finger's speed carries into the spring, so letting go has no seam (apple-motion).
                     animate(offset, target, velocity, Motion.settle()) { value, _ -> offset = value }

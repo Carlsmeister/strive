@@ -469,6 +469,19 @@ class FlowTest {
         waitUntilTrue { open().exercises.single().sets.isEmpty() }
     }
 
+    /**
+     * A quick flick left shorter than 88 pt rests open on Delete: 150 px (50 pt) in 50 ms is about 3 000 px/s, past the 300 pt/s
+     * (900 px/s) flick, and short of the 88 pt that opens on distance alone. Only the release velocity can open it.
+     */
+    @Test
+    fun aQuickShortFlickLeftShowsDelete() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        setRows()[0].performTouchInput { swipeLeft(startX = centerX, endX = centerX - 150f, durationMillis = 50) }
+        idle() // settled: shut, or open on Delete
+        see(s(Res.string.delete))
+    }
+
     @Test
     fun aTapOnARowSwipedOpenShutsItInsteadOfOpeningTheDock() = flow {
         startWorkout()
