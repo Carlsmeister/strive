@@ -37,6 +37,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import se.carlsmeister.strive.ui.InputField
+import se.carlsmeister.strive.ui.MorePill
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.wrapContentSize
 import strive.shared.generated.resources.note_plan
 import strive.shared.generated.resources.note_previous
 import strive.shared.generated.resources.note_today
@@ -258,8 +261,9 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                         focus?.let { (e, i) ->
                             item(key = "focus") {
                                 Box(Modifier.padding(top = StriveTheme.spacing.s16)) {
-                                    // Resting: the rest running now began on one of this exercise's sets.
-                                    val resting = rest?.setId?.let { id -> e.sets.any { it.id == id } } == true
+                                    // Resting: a rest with time left began on one of this exercise's sets. The rest card clears an
+                                    // ended rest only while it shows, so a rest under the dock can outlive its time.
+                                    val resting = rest?.takeIf { it.left(nowMs) > 0 }?.setId?.let { id -> e.sets.any { it.id == id } } == true
                                     val meta = focusMeta(e, e.sets[i].id, inSuperset = tags[e.id] != null, resting, focusRest)
                                     FocusCard(e, e.sets[i], badges(e.sets)[i], previous[e.exerciseId]?.getOrNull(i), meta,
                                         focusRir, focusMore, { focusRir = it }, { focusMore = it },
@@ -502,12 +506,7 @@ private fun ExerciseHeader(
             Text(e.name, Modifier.weight(1f).clickable(onClickLabel = fold, onClick = onFold).padding(vertical = 6.dp),
                 style = MaterialTheme.typography.titleMedium.board(), color = colors.primary)
             Box {
-                val label = stringResource(Res.string.exercise_options)
-                Box(
-                    Modifier.size(40.dp, 32.dp).clip(CircleShape).background(colors.primaryContainer).clickable(onClickLabel = label) { menu = true }
-                        .semantics { contentDescription = label },
-                    contentAlignment = Alignment.Center,
-                ) { Text("⋯", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = colors.onPrimaryContainer) }
+                MorePill(stringResource(Res.string.exercise_options), { menu = true })
                 GlassMenu(menu, { menu = false; restMenu = false }) {
                     if (!restMenu) {
                         MenuTiles(
@@ -537,9 +536,10 @@ private fun ExerciseHeader(
                     }
                 }
             }
+            // `.fold` draws 32 × 32; taps land across 44 pt centred on it, hanging over its neighbours as the house ⋯ pill's do.
             Box(
-                Modifier.size(32.dp).clip(CircleShape).background(colors.surfaceContainerHigh).clickable(onClickLabel = fold, onClick = onFold)
-                    .semantics { contentDescription = fold },
+                Modifier.size(32.dp).requiredSize(StriveTheme.sizes.touch).clickable(onClickLabel = fold, onClick = onFold)
+                    .semantics { contentDescription = fold }.wrapContentSize().size(32.dp).clip(CircleShape).background(colors.surfaceContainerHigh),
                 contentAlignment = Alignment.Center,
             ) { Glyph(Glyph.Up, 14.dp, color = colors.onSurface, stroke = 2.6f) }
         }

@@ -46,10 +46,10 @@ class WorkoutShotTest {
         waitForIdle()
         onNode(hasText(getString(Res.string.note))).performClick()
         waitForIdle()
-        // The board's `.body` starts 72 pt under the bar, past the strip: the header's item, with its 16 gap, 46 pt below the list's top.
-        // The app shows the strip only once the card has scrolled wholly away, so the card's foot shows there instead (a deviation).
+        // The board's `.body` starts 72 pt under the bar, past the strip. 50 pt back from the header's item puts the name where the
+        // board draws it, measured. The strip shows only once the card has scrolled wholly away, so the card's foot shows there instead.
         onNode(hasScrollToIndexAction()).performScrollToKey("h${bench.id}")
-        onNode(hasScrollToIndexAction()).performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, -46f * 3) }
+        onNode(hasScrollToIndexAction()).performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, -50f * 3) }
         waitForIdle()
     }
 }

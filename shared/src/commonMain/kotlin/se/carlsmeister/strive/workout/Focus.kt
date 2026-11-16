@@ -25,6 +25,7 @@ import androidx.compose.material3.Button
 import se.carlsmeister.strive.ui.GlassMenu
 import se.carlsmeister.strive.ui.HeaderSheet
 import se.carlsmeister.strive.ui.MenuRow
+import se.carlsmeister.strive.ui.MorePill
 import se.carlsmeister.strive.ui.TextPrompt
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -194,18 +195,6 @@ private val swedish @Composable get() = androidx.compose.ui.text.intl.Locale.cur
 /** Text as a board's CSS `font:` shorthand sets it: the shorthand resets `.strive`'s tabular figures, and the line box is CSS's. */
 internal fun TextStyle.board() = copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox)
 
-/** The ⋯ pill D draws beside a name: teal container, the glyph bold. */
-@Composable
-internal fun MorePill(label: String, large: Boolean, onClick: () -> Unit) = Box(
-    // Large, it is `.pill`: 40 × 32.
-    (if (large) Modifier.size(40.dp, 32.dp) else Modifier.height(28.dp)).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer)
-        .clickable(onClickLabel = label, onClick = onClick).semantics { contentDescription = label }.padding(horizontal = if (large) 0.dp else 10.dp),
-    contentAlignment = Alignment.Center,
-) {
-    Text("⋯", style = MaterialTheme.typography.titleMedium.copy(fontSize = if (large) 18.sp else 17.sp, lineHeight = 18.sp),
-        fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
-}
-
 /** The workout's name with ⋯: Byt namn, Passanteckning and Ändra starttid (Q19). */
 @Composable
 internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
@@ -221,7 +210,8 @@ internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
             fontWeight = if (large) FontWeight.Bold else FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis,
         )
         Box {
-            MorePill(stringResource(Res.string.workout_options), large) { menu = true }
+            // `.pill` 40 × 32 in the header, the bar's 32 × 24, each tapped across 44 pt.
+            MorePill(stringResource(Res.string.workout_options), { menu = true }, small = !large)
             GlassMenu(menu, { menu = false }) {
                 MenuRow(stringResource(Res.string.rename), { menu = false; prompt = "name" })
                 MenuRow(stringResource(Res.string.session_note), { menu = false; prompt = "note" })
