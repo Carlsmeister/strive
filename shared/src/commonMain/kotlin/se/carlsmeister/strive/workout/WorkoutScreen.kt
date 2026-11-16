@@ -70,6 +70,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import se.carlsmeister.strive.theme.LocalGlassSource
 import se.carlsmeister.strive.theme.StriveIcons
 import se.carlsmeister.strive.ui.ActionSheet
+import se.carlsmeister.strive.ui.centredBetween
 import se.carlsmeister.strive.ui.Segments
 import se.carlsmeister.strive.ui.Alert
 import se.carlsmeister.strive.ui.AlertBox
@@ -430,9 +431,9 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
     val alpha by animateFloatAsState(if (showTitle) 1f else 0f, Motion.fade())
     val colors = MaterialTheme.colorScheme
     Column(Modifier.fillMaxWidth().background(if (glassed) StriveTheme.glass.thick else colors.background)) {
-        // `.nav`'s `1fr auto 1fr` with its 8 dp gap: the buttons keep their size and the name, centred, takes the room left between
-        // the wider side and its mirror, less the gaps, ending in an ellipsis. In a Row the unweighted name was measured first and
-        // squeezed the buttons to nothing.
+        // `.nav`'s `1fr auto 1fr` with its 8 dp gap: the buttons keep their size and the name may take all the room between them,
+        // centred when it fits there and otherwise moved off centre, ending in an ellipsis only when even that room is too small. In
+        // a Row the unweighted name was measured first and squeezed the buttons to nothing.
         Layout(
             content = {
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -459,13 +460,13 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
             val loose = constraints.copy(minWidth = 0, minHeight = 0)
             val left = start.measure(loose)
             val right = end.measure(loose)
-            val side = maxOf(left.width, right.width) + StriveTheme.spacing.s8.roundToPx()
-            val middle = name.measure(loose.copy(maxWidth = (constraints.maxWidth - 2 * side).coerceAtLeast(0)))
+            val gap = StriveTheme.spacing.s8.roundToPx()
+            val middle = name.measure(loose.copy(maxWidth = (constraints.maxWidth - left.width - right.width - 2 * gap).coerceAtLeast(0)))
             val height = maxOf(left.height, middle.height, right.height)
             // Relative, so a right-to-left language mirrors the bar as the Row did.
             layout(constraints.maxWidth, height) {
                 left.placeRelative(0, (height - left.height) / 2)
-                middle.placeRelative((constraints.maxWidth - middle.width) / 2, (height - middle.height) / 2)
+                middle.placeRelative(centredBetween(constraints.maxWidth, middle.width, left.width + gap, right.width + gap), (height - middle.height) / 2)
                 right.placeRelative(constraints.maxWidth - right.width, (height - right.height) / 2)
             }
         }

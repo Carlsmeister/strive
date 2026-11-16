@@ -189,8 +189,9 @@ internal fun WorkoutBar(
 }
 
 /**
- * `1fr auto 1fr`: [start] and [end] at the bar's edges, [middle] on the bar's centre, [gap] from each side. The middle gets only what is
- * left once the wider side has its content, so a long title ends in an ellipsis and never squeezes a side's buttons.
+ * `1fr auto 1fr`: [start] and [end] at the bar's edges, [middle] on the bar's centre, [gap] from each side. The sides keep their size;
+ * the middle may take all the room between them, sits centred when it fits there, and otherwise moves off centre towards the narrower
+ * side, ending in an ellipsis only when even that room is too small.
  */
 @Composable
 internal fun CentredBar(gap: Dp, modifier: Modifier, start: @Composable () -> Unit, middle: @Composable () -> Unit, end: @Composable () -> Unit) =
@@ -198,16 +199,21 @@ internal fun CentredBar(gap: Dp, modifier: Modifier, start: @Composable () -> Un
         val loose = c.copy(minWidth = 0, minHeight = 0)
         val left = s.first().measure(loose)
         val right = e.first().measure(loose)
-        val room = c.maxWidth - 2 * (maxOf(left.width, right.width) + gap.roundToPx())
-        val title = m.firstOrNull()?.measure(loose.copy(maxWidth = room.coerceAtLeast(0))) // none once AnimatedVisibility has faded out
+        val g = gap.roundToPx()
+        val between = c.maxWidth - left.width - right.width - 2 * g
+        val title = m.firstOrNull()?.measure(loose.copy(maxWidth = between.coerceAtLeast(0))) // none once AnimatedVisibility has faded out
         val height = maxOf(left.height, right.height, title?.height ?: 0).coerceIn(c.minHeight, c.maxHeight)
         val centre = Alignment.CenterVertically
         layout(c.maxWidth, height) {
             left.place(0, centre.align(left.height, height))
             right.place(c.maxWidth - right.width, centre.align(right.height, height))
-            title?.place((c.maxWidth - title.width) / 2, centre.align(title.height, height))
+            title?.place(centredBetween(c.maxWidth, title.width, left.width + g, right.width + g), centre.align(title.height, height))
         }
     }
+
+/** The x that centres [width] on [total], moved just enough to keep [before] clear at the start and [after] clear at the end. */
+internal fun centredBetween(total: Int, width: Int, before: Int, after: Int) =
+    ((total - width) / 2).coerceIn(before, maxOf(before, total - after - width))
 
 /** A bar's bottom edge: `border-bottom: hairline solid outline-variant`, below the bar as a border-box adds it. */
 @Composable

@@ -4,6 +4,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -1403,6 +1404,28 @@ class FlowTest {
     }
 
     @Test
+    fun aNameThatFitsBesideTheBackLabelIsDrawnWhole() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8")
+        tap(s(Res.string.finish))
+        tap(s(Res.string.done))
+        tap(s(Res.string.tab_you))
+        tap(s(Res.string.all_activities))
+        tap(s(Res.string.workout))
+        backReads(s(Res.string.all_activities))
+        val id = graph.sessions.history().first().single().id
+        // Each name has room between the back label and the bar's end, so none is cut to the room a centred title would have.
+        val drawn = listOf("Workout", "Överkropp A", "Överkropp tung A").associateWith { name ->
+            graph.sessions.rename(id, name)
+            see(name)
+            shot("27-title-${name.length}")
+            drawnWidthAndRoom(test.onNode(hasText(name), useUnmergedTree = true).fetchSemanticsNode())
+        }
+        assertTrue(drawn.values.all { (width, room) -> width < room }, "every name drawn whole: $drawn")
+    }
+
+    @Test
     fun aLongWorkoutNameLeavesTheBackLabelWhole() = flow {
         startWorkout()
         addExercises("Bench Press BB")
@@ -1422,7 +1445,8 @@ class FlowTest {
         text.config[SemanticsActions.GetTextLayoutResult].action!!(layouts)
         val layout = layouts.single()
         // The bar gives the label all it needs and the name what is left; a bar too narrow for even the label ends it in an ellipsis.
-        assertTrue(text.boundsInRoot.width >= layout.multiParagraph.intrinsics.maxIntrinsicWidth - 1, "'$parent' whole: ${text.boundsInRoot}")
+        val (width, room) = drawnWidthAndRoom(text)
+        assertTrue(width < room, "'$parent' whole: drawn $width px of $room px")
         assertEquals(TextOverflow.Ellipsis, layout.layoutInput.overflow)
         assertEquals(1, layout.layoutInput.maxLines)
     }
@@ -1460,6 +1484,17 @@ class FlowTest {
 }
 
 private const val TIMEOUT = 10_000L
+
+/**
+ * A one-line text's drawn width and the width it was allowed. A text cut short fills its allowance exactly; one drawn whole is
+ * narrower. Skia reports neither the ellipsis (`isLineEllipsized`) nor the overflow, and its intrinsic width runs about a tenth
+ * under what it draws, so neither tells a cut text from a whole one.
+ */
+private fun drawnWidthAndRoom(text: SemanticsNode): Pair<Int, Int> {
+    val layouts = mutableListOf<TextLayoutResult>()
+    text.config[SemanticsActions.GetTextLayoutResult].action!!(layouts)
+    return layouts.single().let { it.size.width to it.layoutInput.constraints.maxWidth }
+}
 
 internal fun clickLabel(label: String) =
     SemanticsMatcher("click label $label") { it.config.getOrNull(SemanticsActions.OnClick)?.label == label }
