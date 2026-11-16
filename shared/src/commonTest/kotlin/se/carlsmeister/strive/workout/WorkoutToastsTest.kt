@@ -1,0 +1,109 @@
+package se.carlsmeister.strive.workout
+
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+import se.carlsmeister.strive.data.SqlSessions
+import se.carlsmeister.strive.data.memoryDriver
+import se.carlsmeister.strive.db.StriveDatabase
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+
+@OptIn(ExperimentalCoroutinesApi::class) // runCurrent and advanceTimeBy drive the hold
+class WorkoutToastsTest {
+    private class Setup(val sessions: SqlSessions, val toasts: WorkoutToasts, val benchSe: Long, val pullSe: Long)
+
+    /** A workout holding Bench (two logged sets) and Pull Up, on the test's one scheduler. */
+    private suspend fun TestScope.setup(): Setup {
+        val db = StriveDatabase(memoryDriver())
+        val sessions = SqlSessions(db, StandardTestDispatcher(testScheduler))
+        fun exercise(name: String, type: String): Long {
+            db.exerciseQueries.insertSeed(name, "", "chest", "", "", "", type, false, 2.5, 20.0, "strength", "", "", "", "")
+            return db.exerciseQueries.all().executeAsList().first { it.name == name }.id
+        }
+        val id = sessions.start("Pass", 0)
+        sessions.add(id, listOf(exercise("Bench Press BB", "weight_reps"), exercise("Pull Up", "bodyweight_reps")))
+        val (bench, pull) = sessions.open().first()!!.exercises
+        sessions.saveSet(bench.sets.single().copy(weight = 80.0, reps = 8, done = true))
+        sessions.addSet(bench.id)
+        sessions.saveSet(sessions.open().first()!!.exercises.first().sets[1].copy(done = true))
+        return Setup(sessions, WorkoutToasts(backgroundScope, sessions::removeExercise) { 4_000 }, bench.id, pull.id)
+    }
+
+    private suspend fun TestScope.names(s: Setup): List<String> {
+        runCurrent()
+        return s.sessions.open().first()!!.exercises.map { it.name }
+    }
+
+    @Test
+    fun undoBeforeTheToastEndsKeepsTheExerciseAndItsSets() = runTest {
+        val s = setup()
+        s.toasts.show(WorkoutToast.Removed("Bench Press BB", s.benchSe))
+        runCurrent()
+        assertEquals(setOf(s.benchSe), s.toasts.hidden.value)
+
+        advanceTimeBy(3_000)
+        s.toasts.undo()
+        advanceTimeBy(10_000)
+        runCurrent()
+
+        val bench = s.sessions.open().first()!!.exercises.first()
+        assertEquals("Bench Press BB", bench.name)
+        assertEquals(listOf(true, true), bench.sets.map { it.done })
+        assertEquals(emptySet(), s.toasts.hidden.value)
+        assertNull(s.toasts.shown.value)
+    }
+
+    @Test
+    fun whenTheToastEndsTheExerciseIsRemoved() = runTest {
+        val s = setup()
+        s.toasts.show(WorkoutToast.Removed("Bench Press BB", s.benchSe))
+        advanceTimeBy(4_001)
+
+        assertEquals(listOf("Pull Up"), names(s))
+        assertNull(s.toasts.shown.value)
+        assertEquals(emptySet(), s.toasts.hidden.value)
+    }
+
+    @Test
+    fun aSecondToastRemovesTheFirstAtOnce() = runTest {
+        val s = setup()
+        s.toasts.show(WorkoutToast.Removed("Bench Press BB", s.benchSe))
+        advanceTimeBy(1_000)
+        s.toasts.show(WorkoutToast.Removed("Pull Up", s.pullSe))
+
+        assertEquals(listOf("Pull Up"), names(s))
+        assertEquals(WorkoutToast.Removed("Pull Up", s.pullSe), s.toasts.shown.value)
+        assertEquals(setOf(s.pullSe), s.toasts.hidden.value)
+    }
+
+    @Test
+    fun settleRemovesAPendingRemovalAtOnce() = runTest {
+        val s = setup()
+        s.toasts.show(WorkoutToast.Removed("Bench Press BB", s.benchSe))
+        s.toasts.settle()
+
+        assertEquals(listOf("Pull Up"), names(s))
+        assertNull(s.toasts.shown.value)
+        assertEquals(emptySet(), s.toasts.hidden.value)
+    }
+
+    @Test
+    fun aToastEndsByItselfAfterItsHold() = runTest {
+        val s = setup()
+        s.toasts.show(WorkoutToast.Restored)
+        runCurrent()
+        assertEquals(WorkoutToast.Restored, s.toasts.shown.value)
+
+        advanceTimeBy(4_001)
+        runCurrent()
+
+        assertNull(s.toasts.shown.value)
+        assertEquals(listOf("Bench Press BB", "Pull Up"), names(s))
+    }
+}
