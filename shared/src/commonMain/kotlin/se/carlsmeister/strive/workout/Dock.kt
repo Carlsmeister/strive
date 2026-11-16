@@ -279,13 +279,15 @@ private fun NumberField(label: String, text: String, focused: Boolean, fresh: Bo
         Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch + 8.dp)
             .background(colors.surfaceContainerHighest, MaterialTheme.shapes.medium)
             .border(StriveTheme.borders.focus, if (focused) colors.primary else Color.Transparent, MaterialTheme.shapes.medium)
+            // The whole 52 tall field takes the tap and carries the label; − and + inside it keep their own targets.
+            .clickable(onClick = onTap).semantics { contentDescription = label }
             // CSS's 2 border sits outside the 4 padding, transparent while not focused.
             .padding(space.s4 + StriveTheme.borders.focus),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (steppers) StepKey("−", "$label −") { onStep(-1) }
         Row(
-            Modifier.weight(1f).clickable(onClick = onTap).semantics { contentDescription = label }
+            Modifier.weight(1f)
                 .then(if (focused && fresh) Modifier.padding(horizontal = 6.dp).background(colors.primary.copy(alpha = .28f), RoundedCornerShape(6.dp)) else Modifier)
                 .padding(vertical = space.s4),
             horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,

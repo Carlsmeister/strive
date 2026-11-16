@@ -1307,7 +1307,7 @@ class FlowTest {
     }
 
     @Test
-    fun aRestLineChangesItsRestAndTheRestCardFollowsInDark()= flow(dark = true) { restLineShots("dark") }
+    fun aRestLineChangesItsRestAndTheRestCardFollowsInDark() = flow(dark = true) { restLineShots("dark") }
 
     @Test
     fun aRestLineChangesItsRestAndTheRestCardFollowsInDarkHighContrast() = flow(dark = true, highContrast = true) { restLineShots("darkhc") }

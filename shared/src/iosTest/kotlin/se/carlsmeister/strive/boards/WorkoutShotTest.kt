@@ -8,6 +8,7 @@ import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollToIndexAction
 import androidx.compose.ui.test.hasTestTag
@@ -25,7 +26,6 @@ import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.SqlExercises
 import se.carlsmeister.strive.workout.now
 import strive.shared.generated.resources.Res
-import androidx.compose.ui.test.hasClickAction
 import strive.shared.generated.resources.exercise_options
 import strive.shared.generated.resources.field_weight
 import strive.shared.generated.resources.next
