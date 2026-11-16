@@ -60,7 +60,7 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   screen); a pushed screen with the standard back chevron; Reduce Transparency (solid surface).
 - **Source:** #14 (chosen navigation, deviation: Start is an action in a tab bar); #31; ADR 0003
   (screens run under the glass bar).
-- **Built:** `App.kt` (TabsScreen; tabs as text, Start a plain primary circle).
+- **Built:** `ui/TabBar.kt` (`TabBar`: the glass capsule with icons and Start in the middle), `App.kt` (TabsScreen).
 
 **SH-02 · Home**
 - **Purpose:** today: what is planned, the week so far, food later.
@@ -87,7 +87,7 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   Motion (bubbles appear without moving); today is a rest or run day (open point O-08).
 - **Source:** #17 Q46, choice 14c (N4), tokens `motion-stagger`, `state-veil-opacity`; sketch
   choice 14c; components catalogue "Start bubbles".
-- **Built:** partly: `App.kt` opens a Material bottom sheet with Workout and Run, or Continue.
+- **Built:** partly: `ui/StartBubbles.kt` (StartBubbles) with Workout and Run, or Continue, wired in `App.kt`. From template and Create template not built.
 
 **SH-04 · Start › From template**
 - **Purpose:** start any other template in a third tap.
@@ -102,7 +102,7 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
 - **Shows / actions:** title "Food", a card "Nutrition comes later". No actions.
 - **States:** v1 placeholder only. The later screens are EL-17–EL-19.
 - **Source:** #14 (Food tab, deviation: empty tab), #9.
-- **Built:** placeholder (`App.kt`).
+- **Built:** `FoodScreen.kt` (the placeholder card; its food-log button goes nowhere yet).
 
 **SH-06 · Onboarding**
 - **Purpose:** a short welcome journey on first launch that leads straight into the app.
@@ -256,7 +256,7 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   "Custom time…", which opens a prompt ("Minutes and seconds, such as 1:30").
 - **States:** menu open; custom-time prompt; a rest already running (the choice replaces it).
 - **Source:** #17 Q17, choice 5.
-- **Built:** `workout/Rest.kt` (RestButton), `workout/Parts.kt` (TextPrompt).
+- **Built:** `workout/Rest.kt` (RestButton), `ui/Dialogs.kt` (TextPrompt).
 
 **WO-08 · Workout menu**
 - **Purpose:** the workout's own settings.
@@ -265,7 +265,7 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   opens a time picker.
 - **States:** menu open; rename prompt; note prompt (empty, filled); start-time picker.
 - **Source:** #17 Q11, Q19, choice 4.
-- **Built:** `workout/Focus.kt` (WorkoutMenu), `workout/Parts.kt` (TextPrompt).
+- **Built:** `workout/Focus.kt` (WorkoutMenu), `ui/Dialogs.kt` (TextPrompt).
 
 **WO-09 · Exercise menu**
 - **Purpose:** everything you do to one exercise mid-workout.
@@ -276,7 +276,7 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   Exercise settings (→ WO-12, weight exercises), and **Remove exercise** in red last.
 - **States:** menu open; rest submenu open; inside a superset; a non-weight exercise (no settings row).
 - **Source:** #17 Q15, choice 4 (M2 without the warm-up tile); commit 5226124.
-- **Built:** `workout/WorkoutScreen.kt` (ExerciseHeader, MenuTile).
+- **Built:** `workout/WorkoutScreen.kt` (ExerciseHeader), `ui/Menus.kt` (MenuTiles, MenuTile).
 
 **WO-10 · Create superset**
 - **Purpose:** pair this exercise with another in the workout.
@@ -326,14 +326,14 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   **Continue workout**. With every set logged, Finish saves and opens WO-21 directly.
 - **States:** one unlogged set (singular); several; all logged (no sheet).
 - **Source:** #17 Q12, Q20, choice 5.
-- **Built:** `workout/WorkoutScreen.kt` (ActionSheet).
+- **Built:** `ui/Dialogs.kt` (ActionSheet), opened from `workout/WorkoutScreen.kt`.
 
 **WO-16 · Discard workout alert**
 - **Purpose:** confirm discarding from the list's own Discard workout.
 - **Shows / actions:** "Discard the workout?" "Every set in it is deleted." Cancel, Discard (red).
 - **States:** from Discard workout; from Finish on a workout with no sets at all.
 - **Source:** #16 alerts rule; #17 Q19.
-- **Built:** `workout/WorkoutScreen.kt` (Alert).
+- **Built:** `ui/Dialogs.kt` (Alert), opened from `workout/WorkoutScreen.kt`.
 
 **WO-17 · Minimised workout bar**
 - **Purpose:** keep a workout running while Carl uses the rest of the app.
