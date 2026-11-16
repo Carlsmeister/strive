@@ -97,6 +97,10 @@
     <string name="rename">Byt namn</string>
     <string name="session_note">Passanteckning</string>
     <string name="remove_exercise">Ta bort övningen</string>
+    <string name="exercise_removed">%1$s borttagen</string>
+    <string name="swapped_for">Bytt mot %1$s</string>
+    <string name="restored">Återställt. Alla loggade set finns kvar.</string>
+    <string name="undo">Ångra</string>
     <string name="add_set">Lägg till set</string>
     <string name="add_exercises">Lägg till övningar</string>
     <string name="add_count">Lägg till (%1$d)</string>

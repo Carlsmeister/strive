@@ -97,6 +97,10 @@
     <string name="rename">Rename</string>
     <string name="session_note">Workout note</string>
     <string name="remove_exercise">Remove exercise</string>
+    <string name="exercise_removed">%1$s removed</string>
+    <string name="swapped_for">Swapped for %1$s</string>
+    <string name="restored">Restored. Every logged set is here.</string>
+    <string name="undo">Undo</string>
     <string name="add_set">Add set</string>
     <string name="add_exercises">Add exercises</string>
     <string name="add_count">Add (%1$d)</string>

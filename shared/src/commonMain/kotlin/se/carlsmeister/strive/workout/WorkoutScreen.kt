@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -91,6 +92,11 @@ import se.carlsmeister.strive.ui.TextPrompt
 import se.carlsmeister.strive.ui.MenuRow
 import se.carlsmeister.strive.ui.MenuTile
 import se.carlsmeister.strive.ui.MenuTiles
+import se.carlsmeister.strive.ui.Toast
+import strive.shared.generated.resources.exercise_removed
+import strive.shared.generated.resources.restored
+import strive.shared.generated.resources.swapped_for
+import strive.shared.generated.resources.undo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
@@ -176,10 +182,14 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     val graph = LocalAppGraph.current
     val sessions = graph.sessions
     val workout by remember { sessions.open() }.collectAsState(null)
+    // The graph's toasts, not the screen's: a removal still lands after the workout is minimised (P4, P5).
+    val toasts = graph.toasts
+    val hidden by toasts.hidden.collectAsState()
     // After Avsluta the open workout is gone while this screen is still sliding away; keep showing the last one.
     val last = remember { mutableStateOf<Workout?>(null) }
     workout?.let { last.value = it }
-    val w = last.value ?: return
+    // An exercise waiting on Undo is gone from everything the screen shows and counts.
+    val w = (last.value ?: return).without(hidden)
     val scope = rememberCoroutineScope()
     val haptics = LocalHapticFeedback.current
     val haze = rememberHazeState()
@@ -234,10 +244,14 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
         if (set.loggable(e.type)) log(set.copy(rir = focusRir, done = true)) else edit(set.id)
     }
 
+    // A removal waiting on Undo lands before the workout is finished or discarded, so neither sees the exercise (P4).
+    fun finishAs(how: Finish) = scope.launch { toasts.settle(); sessions.finish(w.id, how, now()); onFinished(w.id) }
+    fun discard() = scope.launch { toasts.settle(); sessions.discard(w.id); onMinimise() }
+
     fun finish() {
         when {
             w.sets == 0 -> discarding = true
-            w.logged == w.sets -> scope.launch { sessions.finish(w.id, Finish.WithoutThem, now()); onFinished(w.id) }
+            w.logged == w.sets -> finishAs(Finish.WithoutThem)
             else -> finishing = true
         }
     }
@@ -425,6 +439,8 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             Dock(e, set, defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
                 field = editField, logs = !editRest)
         }
+        val toast by toasts.shown.collectAsState()
+        ToastOverlay(toast, toasts::undo)
 
         // In the screen's glass source, so the sheet and the alert blur the list behind them.
         if (finishing) {
@@ -432,10 +448,10 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             ActionSheet(
                 pluralStringResource(Res.plurals.unlogged, left, left),
                 listOf(
-                    SheetAction(stringResource(Res.string.log_and_save)) { finishing = false; scope.launch { sessions.finish(w.id, Finish.LogAsTheyStand, now()); onFinished(w.id) } },
-                    SheetAction(stringResource(Res.string.save_without)) { finishing = false; scope.launch { sessions.finish(w.id, Finish.WithoutThem, now()); onFinished(w.id) } },
+                    SheetAction(stringResource(Res.string.log_and_save)) { finishing = false; finishAs(Finish.LogAsTheyStand) },
+                    SheetAction(stringResource(Res.string.save_without)) { finishing = false; finishAs(Finish.WithoutThem) },
                     // Red, with no alert after it: Avsluta was the intentional action, not discarding (#16).
-                    SheetAction(stringResource(Res.string.discard_workout), destructive = true) { finishing = false; scope.launch { sessions.discard(w.id); onMinimise() } },
+                    SheetAction(stringResource(Res.string.discard_workout), destructive = true) { finishing = false; discard() },
                 ),
                 stringResource(Res.string.keep_going), onDismiss = { finishing = false },
             )
@@ -443,10 +459,39 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
         if (discarding) {
             Alert(
                 stringResource(Res.string.discard_question), stringResource(Res.string.discard_body), stringResource(Res.string.discard_workout),
-                onConfirm = { discarding = false; scope.launch { sessions.discard(w.id); onMinimise() } }, onDismiss = { discarding = false },
+                onConfirm = { discarding = false; discard() }, onDismiss = { discarding = false },
             )
         }
     } }
+}
+
+/**
+ * The workout's one toast (P4): Restored under the bar (WO-02-s16), Removed with its Undo and Swapped 40 above the bottom (WO-02-removed,
+ * WO-02-swap). Its hold runs on the graph, so this only draws it.
+ */
+@Composable
+private fun BoxScope.ToastOverlay(toast: WorkoutToast?, onUndo: () -> Unit) {
+    // Keeps showing the toast it had while it fades away.
+    val shown = remember { mutableStateOf(toast) }
+    if (toast != null) shown.value = toast
+    val t = shown.value
+    // Composed with no toast too, so the first one fades in.
+    Overlay(
+        toast != null,
+        // Under the 52 pt bar, as the board's 106 is past its 54 pt status bar.
+        if (t is WorkoutToast.Restored) Modifier.align(Alignment.TopCenter).windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+            .padding(start = StriveTheme.spacing.s16, top = 52.dp, end = StriveTheme.spacing.s16).fillMaxWidth()
+        else Modifier.align(Alignment.BottomCenter).padding(bottom = 40.dp),
+        fadeIn(Motion.fade()), fadeOut(Motion.fade()),
+    ) {
+        when (t) {
+            null -> {}
+            WorkoutToast.Restored -> Toast(stringResource(Res.string.restored), Modifier.fillMaxWidth(), StriveIcons.Check, iconSize = 18.dp)
+            is WorkoutToast.Removed -> Toast(stringResource(Res.string.exercise_removed, t.name), icon = StriveIcons.Trash,
+                action = stringResource(Res.string.undo), onAction = onUndo)
+            is WorkoutToast.Swapped -> Toast(stringResource(Res.string.swapped_for, t.name), icon = StriveIcons.Swap)
+        }
+    }
 }
 
 /** D's add button: a dark surface with a teal +, for "Lägg till set (2:00)" and "Lägg till övningar"; in a superset, with its letter. */
@@ -549,7 +594,8 @@ private fun ExerciseHeader(
                         if (e.type == ExerciseType.WeightReps) {
                             MenuRow(stringResource(Res.string.exercise_settings), { menu = false; dialog = "settings" })
                         }
-                        MenuRow(stringResource(Res.string.remove_exercise), { menu = false; scope.launch { sessions.removeExercise(e.id) } },
+                        // Hidden behind a toast with Undo; the rows go when the toast ends (P4).
+                        MenuRow(stringResource(Res.string.remove_exercise), { menu = false; graph.toasts.show(WorkoutToast.Removed(e.name, e.id)) },
                             icon = StriveIcons.Trash, danger = true)
                     } else {
                         MenuRow(stringResource(Res.string.rest_all), { restMenu = false }, back = true)

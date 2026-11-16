@@ -30,7 +30,9 @@ import strive.shared.generated.resources.exercise_options
 import strive.shared.generated.resources.field_weight
 import strive.shared.generated.resources.next
 import strive.shared.generated.resources.note
+import strive.shared.generated.resources.remove_exercise
 import strive.shared.generated.resources.rest_change
+import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.workout
 import kotlin.test.Test
 
@@ -174,6 +176,33 @@ class WorkoutShotTest {
         graph.sessions.add(today(graph).id, listOf(exerciseId(graph, "Copenhagen Plank")), lastTime = true)
         val copenhagen = today(graph).exercises.first { it.name == "Copenhagen Plank" }
         repeat(2) { graph.sessions.addSet(copenhagen.id) }
+    }
+
+    /** WO-02-s2 as it opens from the left-open bar after the app was killed: the restore toast under the bar, not dismissed. */
+    @Test
+    fun wo02S16InDarkAndDarkHc() = workoutBoard("WO-02-s16", waitFor = "Restored.", dismissToast = false)
+
+    /** WO-02-s2 at 24:20 with Bench Press BB removed through its menu: Incline Press DB in focus, the toast with Undo at the bottom. */
+    @Test
+    fun wo02RemovedInDarkAndDarkHc() = workoutBoard("WO-02-removed", waitFor = "Undo") { graph ->
+        graph.sessions.setStart(today(graph).id, now() - (24 * 60 + 20) * 1_000L)
+        onAllNodes(hasContentDescription(getString(Res.string.exercise_options)))[0].performClick()
+        waitForIdle()
+        onNode(hasText(getString(Res.string.remove_exercise))).performClick()
+        waitForIdle()
+    }
+
+    /** WO-02-s2 at 24:31 with Bench Press BB swapped for Chest Press Machine through its menu and the picker (F-19, EX-04). */
+    @Test
+    fun wo02SwapInDarkAndDarkHc() = workoutBoard("WO-02-swap", waitFor = "Swapped for") { graph ->
+        graph.sessions.setStart(today(graph).id, now() - (24 * 60 + 31) * 1_000L)
+        onAllNodes(hasContentDescription(getString(Res.string.exercise_options)))[0].performClick()
+        waitForIdle()
+        onNode(hasText(getString(Res.string.swap))).performClick()
+        val machine = hasText("Chest Press Machine") and hasClickAction()
+        waitUntil(timeoutMillis = 10_000) { onAllNodes(machine).fetchSemanticsNodes().isNotEmpty() }
+        onAllNodes(machine)[0].performClick()
+        waitForIdle()
     }
 
     /** A new empty workout at 0:12, Push A discarded: the quick picks are the exercises marked Yes. */

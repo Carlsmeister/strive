@@ -92,8 +92,11 @@ import strive.shared.generated.resources.minimise
 import strive.shared.generated.resources.next
 import strive.shared.generated.resources.no_workouts
 import strive.shared.generated.resources.note
+import strive.shared.generated.resources.exercise_removed
 import strive.shared.generated.resources.remove_exercise
 import strive.shared.generated.resources.rename
+import strive.shared.generated.resources.restored
+import strive.shared.generated.resources.undo
 import strive.shared.generated.resources.rir
 import strive.shared.generated.resources.save
 import strive.shared.generated.resources.save_change
@@ -186,20 +189,40 @@ class FlowTest {
         // iOS runs every test class in one process: a clock another test left pinned would freeze this flow's rest timers.
         check(wallClock === Clock.System) { "a test left the clock pinned" }
         clearLeftOverLanguage()
-        runSkikoComposeUiTest(Size(1284f, 2778f), Density(3f)) {
-            val back = DirectNavigationEventInput()
-            setContent {
-                // The system's back, as a gesture or button sends it, through the host's own dispatcher.
-                val dispatcher = LocalNavigationEventDispatcherOwner.current!!.navigationEventDispatcher
-                DisposableEffect(dispatcher) {
-                    dispatcher.addInput(back)
-                    onDispose { dispatcher.removeInput(back) }
+        try {
+            runSkikoComposeUiTest(Size(1284f, 2778f), Density(3f)) {
+                val back = DirectNavigationEventInput()
+                setContent {
+                    // The system's back, as a gesture or button sends it, through the host's own dispatcher.
+                    val dispatcher = LocalNavigationEventDispatcherOwner.current!!.navigationEventDispatcher
+                    DisposableEffect(dispatcher) {
+                        dispatcher.addInput(back)
+                        onDispose { dispatcher.removeInput(back) }
+                    }
+                    CompositionLocalProvider(LocalDarkTheme provides dark, LocalHighContrast provides highContrast, LocalReduceMotionSetting provides reduceMotion) {
+                        App(graph)
+                    }
                 }
-                CompositionLocalProvider(LocalDarkTheme provides dark, LocalHighContrast provides highContrast, LocalReduceMotionSetting provides reduceMotion) {
-                    App(graph)
-                }
+                Flow(this, graph, back).block()
             }
-            Flow(this, graph, back).block()
+        } finally {
+            graph.close() // the toasts' timers run on the graph's scope (P5)
+        }
+    }
+
+    /**
+     * The sample's Push A (Bench Press BB's warm-up and set 1 logged, set 2 next, four exercises after it), opened from its bar. The
+     * sample pins the clock, so it is let go after.
+     */
+    private fun pushA(block: suspend Flow.() -> Unit) = flow {
+        try {
+            SampleData.load(graph)
+            bar()
+            test.onNode(clickLabel(s(Res.string.back_to_workout))).performClick()
+            see(s(Res.string.finish))
+            block()
+        } finally {
+            wallClock = Clock.System
         }
     }
 
@@ -457,6 +480,7 @@ class FlowTest {
 
     @Test
     fun theExerciseMenuAddsANoteAndRemovesTheExercise() = flow {
+        graph.toastHoldMillis = 300 // the removal lands when the toast ends
         startWorkout()
         addExercises("Bench Press BB")
         tapDesc(s(Res.string.exercise_options))
@@ -465,7 +489,38 @@ class FlowTest {
         waitUntilTrue { open().exercises.single().note == "Elbows in" }
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.remove_exercise))
+        see(s(Res.string.exercise_removed, "Bench Press BB"))
         waitUntilTrue { open().exercises.isEmpty() }
+    }
+
+    /** Criterion 3: Undo on the removed toast puts the exercise back where it was, with the sets it had logged (P4). */
+    @Test
+    fun undoBringsARemovedExerciseBackInPlace() = pushA {
+        graph.toastHoldMillis = Long.MAX_VALUE // only Undo ends this toast
+        tapDesc(s(Res.string.exercise_options)) // Bench's, the one exercise standing open
+        tap(s(Res.string.remove_exercise))
+        see(s(Res.string.exercise_removed, "Bench Press BB"))
+        gone(hasText("Bench Press BB"))
+        tap(s(Res.string.undo))
+        gone(hasText(s(Res.string.exercise_removed, "Bench Press BB")))
+        see("Bench Press BB")
+        val bench = open().exercises.first()
+        assertEquals("Bench Press BB", bench.name)
+        assertEquals(2, bench.sets.count { it.done }) // the warm-up and set 1
+    }
+
+    /** Criterion 4: finishing while the removed toast still holds settles the removal first, so the summary leaves the exercise out. */
+    @Test
+    fun finishingDuringTheUndoToastLeavesTheExerciseOut() = pushA {
+        graph.toastHoldMillis = Long.MAX_VALUE // only the finish ends this toast
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.remove_exercise))
+        see(s(Res.string.exercise_removed, "Bench Press BB"))
+        tap(s(Res.string.finish))
+        tap(s(Res.string.save_without)) // the other exercises' sets are not all logged
+        see(s(Res.string.done))
+        gone(hasText("Bench Press BB", substring = true))
+        assertTrue(graph.sessions.history().first().first().exercises.none { it.name == "Bench Press BB" })
     }
 
     /**
@@ -1618,6 +1673,7 @@ class FlowTest {
                 see(s(Res.string.tap_to_continue))
                 see(s(Res.string.bar_left_open, s(Res.string.workout), ""), substring = true) // the title up to its time
                 test.onNode(clickLabel(s(Res.string.back_to_workout))).performClick()
+                see(s(Res.string.restored))
                 seeDesc(s(Res.string.logged, 1))
                 // Opened once, it reads as any open workout again.
                 tapDesc(s(Res.string.minimise))

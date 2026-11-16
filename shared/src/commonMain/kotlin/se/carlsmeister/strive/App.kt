@@ -37,6 +37,8 @@ import se.carlsmeister.strive.workout.barState
 import se.carlsmeister.strive.workout.progress
 import se.carlsmeister.strive.workout.SummaryScreen
 import se.carlsmeister.strive.workout.WorkoutScreen
+import se.carlsmeister.strive.workout.WorkoutToast
+import se.carlsmeister.strive.workout.without
 import se.carlsmeister.strive.workout.clock
 import se.carlsmeister.strive.workout.now
 import se.carlsmeister.strive.workout.rememberNow
@@ -176,6 +178,8 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
         }.collectAsState(null)
         // Pushed once, however many taps reach it (the bar, Continue, Start).
         fun showWorkout() {
+            // The workout the app was killed in comes back with every logged set, and says so once (WO-17-killed → WO-02-s16).
+            if (leftOpen != null && leftOpen == open?.id) graph.toasts.show(WorkoutToast.Restored)
             started = true
             leftOpen = null
             if (root.last() != ActiveWorkout) root += ActiveWorkout
@@ -232,6 +236,8 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
                             LibraryScreen(safe, null, onOpen = {}, onBack = { root.pop() }, swapFor = route.exerciseId, pick = { ids ->
                                 scope.launch {
                                     sessions.swap(route.sessionExerciseId, ids.single())
+                                    sessions.open().first()?.exercises?.firstOrNull { it.id == route.sessionExerciseId }
+                                        ?.let { graph.toasts.show(WorkoutToast.Swapped(it.name)) }
                                     root.pop()
                                 }
                             })
@@ -268,6 +274,8 @@ private fun TabsScreen(
     // The shell's one clock, ticking only while a workout is open; a second one kept UI tests from going idle.
     val now = if (open != null) rememberNow() else 0L
     val rest by LocalAppGraph.current.rest.collectAsState()
+    // An exercise waiting on Undo is left out of the bar's count too.
+    val hidden by LocalAppGraph.current.toasts.hidden.collectAsState()
 
     Box(Modifier.fillMaxSize()) { CompositionLocalProvider(LocalGlassSource provides haze) {
         val stack: SnapshotStateList<Screen> = stacks.getValue(selected)
@@ -338,8 +346,8 @@ private fun TabsScreen(
                 when (barState(leftOpen, left)) {
                     BarState.LeftOpen -> WorkoutMiniBar(stringResource(Res.string.bar_left_open, w.name, clock((now - w.startedAt) / 1_000)),
                         stringResource(Res.string.tap_to_continue), back, onRestore)
-                    BarState.Resting -> WorkoutMiniBar(w.name, progress(w, now), back, onRestore, rest = RestRing(left, r!!.seconds))
-                    BarState.Open -> WorkoutMiniBar(w.name, progress(w, now), back, onRestore)
+                    BarState.Resting -> WorkoutMiniBar(w.name, progress(w.without(hidden), now), back, onRestore, rest = RestRing(left, r!!.seconds))
+                    BarState.Open -> WorkoutMiniBar(w.name, progress(w.without(hidden), now), back, onRestore)
                 }
             }
             @Composable
