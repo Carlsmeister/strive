@@ -3,6 +3,7 @@ package se.carlsmeister.strive.data
 import se.carlsmeister.strive.db.StriveDatabase
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -144,8 +145,17 @@ internal interface Sessions {
 
     suspend fun start(name: String, now: Long): Long
 
-    /** Each exercise joins the end of the workout with one empty set; as one superset if [superset] (#17 queue item 7). */
-    suspend fun add(sessionId: Long, exerciseIds: List<Long>, superset: Boolean = false)
+    /**
+     * Each exercise joins the end of the workout; as one superset if [superset] (#17 queue item 7). With [lastTime] it comes with the
+     * sets of its latest finished workout, unlogged and without RIR, or one empty set if it has none; otherwise with one empty set.
+     */
+    suspend fun add(sessionId: Long, exerciseIds: List<Long>, superset: Boolean = false, lastTime: Boolean = false)
+
+    /**
+     * The exercise's note in the latest finished workout that does it, other than [sessionId]; null when there is none or it is blank,
+     * even when an older one has a note (#42 P2).
+     */
+    fun previousNote(exerciseId: Long, sessionId: Long): Flow<String?>
 
     /** [partnerId] joins the exercise's superset, or starts one with it, right after it (choice 4's Skapa superset). */
     suspend fun superset(sessionExerciseId: Long, partnerId: Long)
@@ -211,11 +221,14 @@ internal class SqlSessions(private val database: StriveDatabase, private val io:
         }
     }
 
-    override suspend fun add(sessionId: Long, exerciseIds: List<Long>, superset: Boolean) = write {
+    override suspend fun add(sessionId: Long, exerciseIds: List<Long>, superset: Boolean, lastTime: Boolean) = write {
         queries.transaction {
             val added = exerciseIds.map { exerciseId ->
                 queries.insertExercise(sessionId, exerciseId)
-                queries.lastId().executeAsOne().also { queries.insertSet(it, null, null, null, null, null) }
+                queries.lastId().executeAsOne().also {
+                    if (lastTime) queries.copyLastTime(session_exercise_id = it, exercise_id = exerciseId)
+                    if (queries.lastSet(it).executeAsOneOrNull() == null) queries.insertSet(it, null, null, null, null, null)
+                }
             }
             if (superset && added.size > 1) {
                 val slots = slots(sessionId)
@@ -224,6 +237,9 @@ internal class SqlSessions(private val database: StriveDatabase, private val io:
             }
         }
     }
+
+    override fun previousNote(exerciseId: Long, sessionId: Long) =
+        queries.previousNote(exercise_id = exerciseId, session_id = sessionId).asFlow().mapToOneOrNull(io)
 
     override suspend fun superset(sessionExerciseId: Long, partnerId: Long) = write {
         queries.transaction { place(join(slots(sessionOf(sessionExerciseId)), sessionExerciseId, partnerId)) }

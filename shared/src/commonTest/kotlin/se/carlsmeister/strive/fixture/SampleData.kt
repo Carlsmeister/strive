@@ -61,6 +61,9 @@ internal object SampleData {
             done = true,
         )
         graph.sessions.finish(id, Finish.WithoutThem, at(2, 18, 3))
+        // The note is both the workout's and Bench Press's: the focus card's Previous row reads the exercise's (#42 P2).
+        val bench = graph.sessions.workout(id).first()!!.exercises.first { it.name == "Bench Press BB" }
+        graph.sessions.setExerciseNote(bench.id, "Kändes stark idag.")
         graph.sessions.setNote(id, "Kändes stark idag.")
         graph.sessions.setRpe(id, 7)
     }
