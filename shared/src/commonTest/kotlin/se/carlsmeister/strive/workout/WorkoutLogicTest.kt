@@ -483,6 +483,14 @@ class WorkoutLogicTest {
         assertEquals(listOf(11L, 12L, null, 13L, 14L), today.indices.map { previousOf(today, it, last)?.id })
     }
 
+    /** A failure set counts with the working sets; a drop set matches last time's drop sets in order. */
+    @Test
+    fun previousMatchesFailureByNumberAndDropSetsInOrder() {
+        val last = listOf(s(11), s(12, SetKind.Drop), s(13), s(14, SetKind.Drop))
+        val today = listOf(s(1), s(2, SetKind.Failure), s(3, SetKind.Drop), s(4, SetKind.Drop), s(5, SetKind.Drop))
+        assertEquals(listOf(11L, 13L, 12L, 14L, null), today.indices.map { previousOf(today, it, last)?.id })
+    }
+
     @Test
     fun aDragOfAThirdOfTheHeightMinimises() = assertTrue(minimises(281.4f, 844f, 0f, 1000f))
 
