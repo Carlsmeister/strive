@@ -153,6 +153,7 @@ internal fun WorkoutBar(
                 }
             },
             middle = {
+                // shortcut: an AnimatedVisibility always composed can ask for frames for good after it hides (#57); route it through Overlay's showsOrMoves gate when a screen adopts WorkoutBar.
                 AnimatedVisibility(title != null, enter = fadeIn(Motion.fade()), exit = fadeOut(Motion.fade())) {
                     // Keeps showing the name it had while it fades away.
                     val shown = remember { mutableStateOf(title to progress) }
