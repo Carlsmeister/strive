@@ -12,7 +12,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import se.carlsmeister.strive.workout.clock
 import androidx.compose.foundation.layout.Arrangement
@@ -116,8 +115,7 @@ internal fun WorkoutMiniBar(
     val colors = MaterialTheme.colorScheme
     val type = MaterialTheme.typography
     val edge = StriveTheme.borders.hairline
-    // Each of `.minibar`'s texts sets `font:`, which resets `.strive`'s tabular-nums.
-    fun TextStyle.css() = copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox)
+    // Each of `.minibar`'s texts sets `font:`, so each takes `.css()`.
     Row(
         // Border-box, as the tab bar: the hairline edge takes its room inside the capsule, before the padding.
         modifier.fillMaxWidth().pressable(true, onClick, label = clickLabel).heightIn(min = 52.dp)
