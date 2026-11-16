@@ -787,6 +787,34 @@ class FlowTest {
         see(s(Res.string.what_today))
     }
 
+    /** Past a third of the screen, a drag down the title bar minimises (criterion 8, P9). */
+    @Test
+    fun draggingTheTitleBarDownMinimises() = flow {
+        startWorkout()
+        val screen = test.onRoot().fetchSemanticsNode().size.height.toFloat()
+        test.onNodeWithTag("title-bar").performTouchInput { swipeDown(startY = centerY, endY = centerY + screen * 0.4f, durationMillis = 600) }
+        bar()
+    }
+
+    /** Short of a third and slow, the drag springs back and the workout stays. */
+    @Test
+    fun aShortDragOnTheTitleBarSpringsBack() = flow {
+        startWorkout()
+        val screen = test.onRoot().fetchSemanticsNode().size.height.toFloat()
+        test.onNodeWithTag("title-bar").performTouchInput { swipeDown(startY = centerY, endY = centerY + screen * 0.15f, durationMillis = 1500) }
+        idle()
+        seeDesc(s(Res.string.minimise))
+    }
+
+    /** Only the title bar minimises: the same drag on the list at its top scrolls, or bounces, and never minimises (Review Focus 4). */
+    @Test
+    fun aDownwardScrollOnTheListNeverMinimises() = pushA {
+        val screen = test.onRoot().fetchSemanticsNode().size.height.toFloat()
+        test.onNodeWithTag("focus").performTouchInput { swipeDown(startY = centerY, endY = centerY + screen * 0.4f, durationMillis = 600) }
+        idle()
+        seeDesc(s(Res.string.minimise))
+    }
+
     /** The rest's time in the bar while it runs, and both gone at zero. The ring is a drawing with no text: the WO-17-rest shot shows it. */
     @Test
     fun theBarShowsTheRestAsARingAndTimeAndDropsThemAtZero() = flow {

@@ -16,6 +16,9 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToKey
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeLeft
+import androidx.compose.ui.geometry.Offset
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.getString
 import se.carlsmeister.strive.data.AppGraph
@@ -298,6 +301,24 @@ class WorkoutShotTest {
     /** The keypad on the rest, where the button reads Log ›. */
     @Test
     fun wo05RestInDarkAndDarkHc() = workoutBoard("WO-05-rest", waitFor = "Log ›") { benchKeypad(nexts = 2) }
+
+    /** WO-03-strip's page with Bench Press BB's set 3 swiped open past 88 pt: it rests open on Delete. */
+    @Test
+    fun wo14RevealedInDarkAndDarkHc() = workoutBoard("WO-14-revealed", waitFor = "Delete") { graph ->
+        pastTheFocusCard(graph)
+        onNode(hasTestTag("set Bench Press BB 4")).performTouchInput { swipeLeft(startX = centerX, endX = centerX - 400f) }
+    }
+
+    /** The same set dragged past half and held there: the finger stays down, so the red fills the row and the set is not deleted yet. */
+    @Test
+    fun wo14FullInDarkAndDarkHc() = workoutBoard("WO-14-full", waitFor = "Delete") { graph ->
+        pastTheFocusCard(graph)
+        onNode(hasTestTag("set Bench Press BB 4")).performTouchInput {
+            down(center)
+            moveBy(Offset(-width * 0.3f, 0f))
+            moveBy(Offset(-width.toFloat(), 0f))
+        }
+    }
 }
 
 /**

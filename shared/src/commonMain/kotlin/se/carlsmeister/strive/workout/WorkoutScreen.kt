@@ -2,6 +2,17 @@ package se.carlsmeister.strive.workout
 
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animate
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -60,6 +71,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -256,13 +268,42 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
         }
     }
 
-    Box(Modifier.fillMaxSize()) { CompositionLocalProvider(LocalGlassSource provides haze) {
+    // P9: a drag down the title bar, in px, as draggable reports it. The screen follows it 1:1 and eases toward the bar (to .9, corners
+    // to 28) as it nears a third of the screen; let go, it minimises or springs back. Read only in layout and draw, so a drag recomposes
+    // nothing.
+    val density = LocalDensity.current
+    var pulled by remember { mutableFloatStateOf(0f) }
+    var leaving by remember { mutableStateOf(false) }
+    var screenHeight by remember { mutableIntStateOf(0) }
+    val pull = rememberDraggableState { delta -> pulled = (pulled + delta).coerceAtLeast(0f) }
+    // P9's flick, WO-04's 1000 pt/s, in px/s like the release velocity; pt are dp here.
+    val flick = with(density) { 1000.dp.toPx() }
+    val dragToMinimise = Modifier.draggable(pull, Orientation.Vertical, onDragStopped = { velocity ->
+        // Once, on release: velocity is px/s and positive downward, as are pulled and the height.
+        if (minimises(pulled, screenHeight.toFloat(), velocity, flick)) {
+            leaving = true
+            onMinimise()
+        } else animate(pulled, 0f, velocity, Motion.settle()) { value, _ -> pulled = value }
+    })
+
+    // Behind the screen as it is pulled down, black, as behind an iOS card; gone once it leaves, so the tabs show as it sinks.
+    Box(Modifier.fillMaxSize().drawBehind { if (pulled > 0f && !leaving) drawRect(Color.Black) }) {
+    Box(
+        Modifier.fillMaxSize().onSizeChanged { screenHeight = it.height }.graphicsLayer {
+            val toward = if (screenHeight == 0) 0f else (pulled / (screenHeight / 3f)).coerceAtMost(1f)
+            translationY = pulled
+            // From the top edge, so the bar stays under the finger. Under Reduce Motion it does not scale (P9).
+            transformOrigin = TransformOrigin(0.5f, 0f)
+            if (!reduceMotion) { scaleX = 1f - 0.1f * toward; scaleY = scaleX }
+            shape = RoundedCornerShape(28.dp.toPx() * toward)
+            clip = toward > 0f
+        }.background(MaterialTheme.colorScheme.background),
+    ) { CompositionLocalProvider(LocalGlassSource provides haze) {
         Column(Modifier.fillMaxSize()) {
             // The name rides in the bar only while the large header is out of sight (decision 40).
             val scrolled by remember { derivedStateOf { list.firstVisibleItemIndex > 0 } }
             // Once the focus card scrolls away it folds into a strip under the bar (D-scroll): as soon as what is left of the card
             // fits under the strip, which covers it (WO-02-note, WO-03-strip). The list starts under the bar, as the strip does.
-            val density = LocalDensity.current
             val stripShown by remember {
                 derivedStateOf {
                     val card = list.layoutInfo.visibleItemsInfo.firstOrNull { it.key == "focus" }
@@ -271,7 +312,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                 }
             }
             val strip = stripShown && focus != null
-            TitleBar(w, nowMs, showTitle = w.exercises.isEmpty() || scrolled, glassed = scrolled, hairline = !strip, onMinimise, ::finish) {
+            TitleBar(w, nowMs, showTitle = w.exercises.isEmpty() || scrolled, glassed = scrolled, hairline = !strip, onMinimise, ::finish, dragToMinimise) {
                 graph.rest.value = Rest(now(), it)
             }
             Box(Modifier.weight(1f)) {
@@ -462,7 +503,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                 onConfirm = { discarding = false; discard() }, onDismiss = { discarding = false },
             )
         }
-    } }
+    } } }
 }
 
 /**
@@ -510,11 +551,11 @@ private fun AddButton(text: String, height: androidx.compose.ui.unit.Dp, shape: 
  * progress join the middle and the bar turns to glass.
  */
 @Composable
-private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boolean, hairline: Boolean, onMinimise: () -> Unit, onFinish: () -> Unit,
+private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boolean, hairline: Boolean, onMinimise: () -> Unit, onFinish: () -> Unit, drag: Modifier,
                      onRest: (Int) -> Unit) {
     val alpha by animateFloatAsState(if (showTitle) 1f else 0f, Motion.fade())
     val colors = MaterialTheme.colorScheme
-    Column(Modifier.fillMaxWidth().background(if (glassed) StriveTheme.glass.thick else colors.background)) {
+    Column(drag.testTag("title-bar").fillMaxWidth().background(if (glassed) StriveTheme.glass.thick else colors.background)) {
         // `.nav`'s `1fr auto 1fr` with its 8 dp gap: the buttons keep their size and the name takes the room left between them.
         CentredBar(
             StriveTheme.spacing.s8,

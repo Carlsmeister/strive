@@ -175,9 +175,11 @@ class SwipeTest {
     fun aFlickRightHidesDeleteAgain() = assertEquals(0f, target(-264f, velocity = 2000f))
 
     @Test
-    fun withoutAFlickTheRowGoesToTheNearerOfShutAndOpen() {
-        assertEquals(open, target(-200f))
-        assertEquals(0f, target(-100f))
+    fun withoutAFlickTheRowRestsOpenOnlyOnceDeleteIsFullyShown() {
+        // MO-gestures: under 88 pt it springs back closed; from 88 pt to half the row it rests open on Delete.
+        assertEquals(0f, target(-200f))
+        assertEquals(open, target(-264f))
+        assertEquals(open, target(-400f))
     }
 }
 

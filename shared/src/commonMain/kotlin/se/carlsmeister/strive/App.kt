@@ -100,6 +100,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import se.carlsmeister.strive.theme.LocalGlassSource
 import se.carlsmeister.strive.theme.StriveIcons
@@ -212,7 +213,8 @@ fun App(graph: AppGraph) = CompositionLocalProvider(LocalAppGraph provides graph
                         Page { Placeholder(stringResource(route.title), Modifier.safeContentPadding(), close = { root.pop() }) }
                     }
                     ActiveWorkout -> NavEntry(route, metadata = rise(reduceMotion)) {
-                        Page {
+                        // The workout draws its own background, so what lies behind it shows as it is dragged down (P9).
+                        Page(Color.Transparent) {
                             WorkoutScreen(
                                 onMinimise = { root.pop() },
                                 onAddExercises = { root += PickExercises },
@@ -366,7 +368,7 @@ private fun TabsScreen(
 
 // Opaque, so the screen sliding in covers the one it leaves instead of showing both at once.
 @Composable
-private fun Page(content: @Composable () -> Unit) {
+private fun Page(background: Color = MaterialTheme.colorScheme.background, content: @Composable () -> Unit) {
     // A back swipe that starts mid-push seeks a transition whose start state never settled, and the screens jump.
     // Like UIKit, swallow back until the slide ends; this handler, added after NavDisplay's, is asked first.
     NavigationBackHandler(
@@ -374,7 +376,7 @@ private fun Page(content: @Composable () -> Unit) {
         isBackEnabled = LocalNavAnimatedContentScope.current.transition.isRunning,
         onBackCompleted = {},
     )
-    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { content() }
+    Box(Modifier.fillMaxSize().background(background)) { content() }
 }
 
 @Composable
