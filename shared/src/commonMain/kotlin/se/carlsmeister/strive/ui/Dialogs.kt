@@ -173,8 +173,8 @@ private fun AlertActions(confirm: String, color: Color, onConfirm: () -> Unit, o
 
 /** `.btn` in `.acts`: at least 44 dp, 16 dp corners, surface-container-high, title-small. */
 @Composable
-private fun AlertButton(label: String, color: Color, onClick: () -> Unit) = Box(
-    Modifier.pressable(true, onClick).background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.large)
+internal fun AlertButton(label: String, color: Color, onClick: () -> Unit, modifier: Modifier = Modifier) = Box(
+    modifier.pressable(true, onClick).background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.large)
         .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = StriveTheme.spacing.s16),
     contentAlignment = Alignment.Center,
 ) { Text(label, color = color, style = MaterialTheme.typography.titleSmall.css(), textAlign = TextAlign.Center) }

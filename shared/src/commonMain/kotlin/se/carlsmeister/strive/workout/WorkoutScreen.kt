@@ -72,6 +72,7 @@ import se.carlsmeister.strive.ui.CentredBar
 import se.carlsmeister.strive.ui.Segments
 import se.carlsmeister.strive.ui.Alert
 import se.carlsmeister.strive.ui.AlertBox
+import se.carlsmeister.strive.ui.AlertButton
 import se.carlsmeister.strive.ui.GlassMenu
 import se.carlsmeister.strive.ui.Overlay
 import se.carlsmeister.strive.ui.HeaderSheet
@@ -595,7 +596,7 @@ private fun SupersetDialog(w: Workout, e: SessionExercise, onDone: () -> Unit) {
                 .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = StriveTheme.spacing.s8, vertical = 12.dp),
                 style = MaterialTheme.typography.bodyLarge)
         }
-        TextButton(onDone, Modifier.fillMaxWidth()) { Text(stringResource(Res.string.cancel)) }
+        AlertButton(stringResource(Res.string.cancel), MaterialTheme.colorScheme.primary, onDone, Modifier.fillMaxWidth())
     }
 }
 
