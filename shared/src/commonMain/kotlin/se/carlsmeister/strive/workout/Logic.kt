@@ -89,6 +89,30 @@ internal fun badges(sets: List<WorkoutSet>): List<String> {
 /** How many working sets, failure sets among them: the "of 4" in "set 2 of 4". */
 internal fun working(sets: List<WorkoutSet>) = sets.count { it.kind.numbered }
 
+/** The number the set at [index] has, or would have as a working set: a warm-up takes the number of the set after it (#42 P6–P8). */
+internal fun numberAsWorking(sets: List<WorkoutSet>, index: Int) = 1 + sets.take(index).count { it.kind.numbered }
+
+/** The focus card's meta row (#42 P6). */
+internal sealed interface FocusMeta {
+    data class RestAfter(val seconds: Int) : FocusMeta
+    data class RestAfterRound(val seconds: Int) : FocusMeta
+    data object LastSet : FocusMeta
+    data object HoldLastSet : FocusMeta
+}
+
+/** "last set" on the exercise's last set ("hold · last set" while a rest runs), before the superset's "after the round", before plain. */
+internal fun focusMeta(e: SessionExercise, setId: Long, inSuperset: Boolean, resting: Boolean, restSeconds: Int): FocusMeta = when {
+    e.sets.lastOrNull()?.id == setId -> if (resting) FocusMeta.HoldLastSet else FocusMeta.LastSet
+    inSuperset -> FocusMeta.RestAfterRound(restSeconds)
+    else -> FocusMeta.RestAfter(restSeconds)
+}
+
+/** A drag down the title bar minimises once it reaches a third of the screen or flicks at [flick] or faster (#42 P9). */
+internal fun minimises(dragged: Float, height: Float, velocity: Float, flick: Float) = dragged >= height / 3 || velocity >= flick
+
+/** The workout without the session exercises [ids], hidden until the remove toast ends (#42 P4). */
+internal fun Workout.without(ids: Set<Long>): Workout = if (ids.isEmpty()) this else copy(exercises = exercises.filterNot { it.id in ids })
+
 /** The exercises in blocks, in order: a superset's exercises together (#17 choice 6), every other exercise alone. */
 internal fun blocks(exercises: List<SessionExercise>): List<List<SessionExercise>> {
     val out = mutableListOf<MutableList<SessionExercise>>()

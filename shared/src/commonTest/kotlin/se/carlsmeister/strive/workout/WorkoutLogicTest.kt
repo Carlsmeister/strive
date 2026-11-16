@@ -16,7 +16,10 @@ import se.carlsmeister.strive.data.tidy
 import se.carlsmeister.strive.data.warmupOrder
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 class KeypadTest {
     private fun Field.type(keys: String, decimals: Boolean = true, separator: Char = ',') =
@@ -410,4 +413,57 @@ class BarStateTest {
 
     @Test
     fun aRestAtZeroReadsOpen() = assertEquals(BarState.Open, barState(leftOpen = false, restLeft = 0))
+}
+
+class WorkoutLogicTest {
+    private fun s(id: Long, kind: SetKind = SetKind.Normal) = WorkoutSet(id, kind = kind)
+    private val three = SessionExercise(1, 1, "Bench Press BB", ExerciseType.WeightReps, 2.5, "", listOf(s(1), s(2), s(3)))
+
+    @Test
+    fun theLastSetReadsLastSet() = assertEquals(FocusMeta.LastSet, focusMeta(three, 3, inSuperset = false, resting = false, restSeconds = 120))
+
+    @Test
+    fun theLastSetReadsHoldLastSetWhileResting() =
+        assertEquals(FocusMeta.HoldLastSet, focusMeta(three, 3, inSuperset = false, resting = true, restSeconds = 120))
+
+    @Test
+    fun aSupersetSetReadsRestAfterTheRound() =
+        assertEquals(FocusMeta.RestAfterRound(90), focusMeta(three, 1, inSuperset = true, resting = false, restSeconds = 90))
+
+    @Test
+    fun aPlainSetReadsRestAfter() = assertEquals(FocusMeta.RestAfter(120), focusMeta(three, 2, inSuperset = false, resting = false, restSeconds = 120))
+
+    @Test
+    fun theLastSetInASupersetReadsLastSet() =
+        assertEquals(FocusMeta.LastSet, focusMeta(three, 3, inSuperset = true, resting = false, restSeconds = 90))
+
+    @Test
+    fun aWarmUpTakesTheNumberOfTheSetAfterIt() {
+        assertEquals(1, numberAsWorking(listOf(s(1, SetKind.Warmup), s(2), s(3)), 0))
+        assertEquals(3, numberAsWorking(listOf(s(1), s(2), s(3)), 2))
+        assertEquals(2, numberAsWorking(listOf(s(1), s(2, SetKind.Drop), s(3)), 1))
+    }
+
+    @Test
+    fun aDragOfAThirdOfTheHeightMinimises() = assertTrue(minimises(281.4f, 844f, 0f, 1000f))
+
+    @Test
+    fun aFlickMinimises() = assertTrue(minimises(40f, 844f, 1200f, 1000f))
+
+    @Test
+    fun aShortSlowDragDoesNotMinimise() = assertFalse(minimises(200f, 844f, 300f, 1000f))
+
+    @Test
+    fun anExerciseHiddenLeavesTheCount() {
+        // Today's Push A in SampleData: Bench Press BB (W + 3), the superset (3 + 3), Dips (2, one to failure), Pushdown (3, one drop).
+        fun x(id: Long, vararg kinds: SetKind) =
+            SessionExercise(id, id, "X$id", ExerciseType.WeightReps, 2.5, "", kinds.mapIndexed { i, k -> s(id * 10 + i, k) })
+        val n = SetKind.Normal
+        val w = Workout(1, "Push A", 0, null, "", null, listOf(
+            x(1, SetKind.Warmup, n, n, n), x(2, n, n, n), x(3, n, n, n), x(4, n, SetKind.Failure), x(5, n, n, SetKind.Drop),
+        ))
+        assertEquals(14, w.countedSets)
+        assertEquals(14 - 3, w.without(setOf(1L)).countedSets)
+        assertSame(w, w.without(emptySet()))
+    }
 }
