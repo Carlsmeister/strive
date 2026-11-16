@@ -1,6 +1,10 @@
 package se.carlsmeister.strive.workout
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
@@ -373,7 +377,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             // A tap anywhere outside the dock closes it (#17 D3).
             Box(Modifier.fillMaxSize().clickable(remember { MutableInteractionSource() }, indication = null) { edit(null) })
         }
-        AnimatedVisibility(
+        Overlay(
             open != null, Modifier.align(Alignment.BottomCenter),
             enter = if (reduceMotion) fadeIn(Motion.fade()) else slideInVertically(Motion.settle(IntOffset.VisibilityThreshold)) { it },
             exit = if (reduceMotion) fadeOut(Motion.fade()) else slideOutVertically(Motion.settle(IntOffset.VisibilityThreshold)) { it },
@@ -381,8 +385,8 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             // Keeps showing the set it closed on while it slides away.
             val shown = remember { mutableStateOf(open) }
             if (open != null) shown.value = open
-            val (e, i) = shown.value ?: return@AnimatedVisibility
-            val set = e.sets.getOrNull(i) ?: return@AnimatedVisibility
+            val (e, i) = shown.value ?: return@Overlay
+            val set = e.sets.getOrNull(i) ?: return@Overlay
             Dock(e, set, badges(e.sets)[i], defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
                 field = editField, logs = !editRest)
         }
@@ -635,7 +639,7 @@ private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
 @Composable
 private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, rir: Int?, tag: String?, modifier: Modifier, onBack: () -> Unit) {
     val reduceMotion = StriveTheme.reduceMotion
-    AnimatedVisibility(
+    Overlay(
         shown, modifier,
         enter = if (reduceMotion) fadeIn(Motion.fade()) else fadeIn(Motion.fade()) + slideInVertically(Motion.settle(IntOffset.VisibilityThreshold)) { -it },
         exit = if (reduceMotion) fadeOut(Motion.fade()) else fadeOut(Motion.fade()) + slideOutVertically(Motion.settle(IntOffset.VisibilityThreshold)) { -it },
@@ -652,6 +656,19 @@ private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, rir
             HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
         }
     }
+}
+
+/**
+ * `AnimatedVisibility` for the dock and the strip, which start hidden: in the composition only while it shows or moves. Left there
+ * for good, its transition can go on asking for a frame, every frame, after it has ended. Compose keeps that loop by a
+ * `derivedStateOf`, which trusts a hash of its inputs' records; on iOS the hash repeats when the overlay hides exactly 1 240
+ * snapshots after it showed, and the loop is never taken away (#57). Out of the composition, the loop goes with it.
+ */
+@Composable
+internal fun Overlay(visible: Boolean, modifier: Modifier, enter: EnterTransition, exit: ExitTransition, content: @Composable AnimatedVisibilityScope.() -> Unit) {
+    val state = remember { MutableTransitionState(false) }
+    state.targetState = visible
+    if (state.currentState || state.targetState) AnimatedVisibility(state, modifier, enter, exit, content = content)
 }
 
 /** Quick picks for an empty workout: exercises marked Ja, else the ones done most recently, at most six (decision 40). */
