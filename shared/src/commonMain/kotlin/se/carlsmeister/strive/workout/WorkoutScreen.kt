@@ -352,7 +352,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                                     // ended rest only while it shows, so a rest under the dock can outlive its time.
                                     val resting = rest?.takeIf { it.left(nowMs) > 0 }?.setId?.let { id -> e.sets.any { it.id == id } } == true
                                     val meta = focusMeta(e, e.sets[i].id, inSuperset = tags[e.id] != null, resting, focusRest)
-                                    FocusCard(e, e.sets[i], badges(e.sets)[i], previous[e.exerciseId]?.getOrNull(i), meta,
+                                    FocusCard(e, e.sets[i], badges(e.sets)[i], previousOf(e.sets, i, previous[e.exerciseId]), meta,
                                         focusRir, focusMore, { focusRir = it }, { focusMore = it },
                                         onEdit = { edit(e.sets[i].id) }, onLog = { logFocus() }, tag = tags[e.id])
                                 }
@@ -413,7 +413,8 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                                     Box(Modifier.edge(superset).bleed(6.dp).padding(top = top, bottom = 1.5.dp).animateItem(placementSpec = place)) {
                                         SwipeToDelete(RowShape, onDelete = { scope.launch { sessions.deleteSet(s.id) } }) {
                                             SetRow(
-                                                "set ${e.name} ${i + 1}", badge, s, e.type, current = s.id == current, prev = previous[e.exerciseId]?.getOrNull(i),
+                                                "set ${e.name} ${i + 1}", badge, s, e.type, current = s.id == current, prev = previousOf(e.sets, i, previous[e.exerciseId]),
+                                                number = numberAsWorking(e.sets, i),
                                                 onKind = { kind -> scope.launch { sessions.setKind(s.id, kind) } },
                                                 onOpen = { f -> tap { edit(s.id, f) } },
                                                 onCheck = {

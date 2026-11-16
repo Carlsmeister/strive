@@ -26,6 +26,7 @@ import se.carlsmeister.strive.data.Finish
 import se.carlsmeister.strive.data.Rest
 import se.carlsmeister.strive.data.SeedExercise
 import se.carlsmeister.strive.data.SessionExercise
+import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.SqlExercises
 import se.carlsmeister.strive.workout.now
 import strive.shared.generated.resources.Res
@@ -35,6 +36,7 @@ import strive.shared.generated.resources.next
 import strive.shared.generated.resources.note
 import strive.shared.generated.resources.remove_exercise
 import strive.shared.generated.resources.rest_change
+import strive.shared.generated.resources.set_type
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.workout
 import kotlin.test.Test
@@ -319,6 +321,45 @@ class WorkoutShotTest {
             moveBy(Offset(-width.toFloat(), 0f))
         }
     }
+
+    /** WO-03-strip's page with a set 4 added under set 3, a copy of it, as "+ Add set" adds one. */
+    @Test
+    fun wo13AddedInDarkAndDarkHc() = workoutBoard("WO-13-added", waitFor = "Add set (2:00)") { graph -> benchSet4(graph) }
+
+    /** The same page with set 4's badge menu open. */
+    @Test
+    fun wo13MenuInDarkAndDarkHc() = workoutBoard("WO-13-menu", waitFor = "To failure") { graph ->
+        benchSet4(graph)
+        setMenu("4")
+    }
+
+    /** Set 4 made a warm-up: it moves up to be next, above set 2, and the focus card shows it. */
+    @Test
+    fun wo13MovedInDarkAndDarkHc() = workoutBoard("WO-13-moved", waitFor = "Log warm-up") { graph ->
+        val bench = today(graph).exercises.first { it.name == "Bench Press BB" }
+        graph.sessions.addSet(bench.id)
+        graph.sessions.setKind(today(graph).exercises.first { it.id == bench.id }.sets.last().id, SetKind.Warmup)
+    }
+
+    /** The reference board with logged set 1's badge menu open: the caption says the set stays where it is. */
+    @Test
+    fun wo13LoggedInDarkAndDarkHc() = workoutBoard("WO-13-logged", waitFor = "The set stays where it is.") { setMenu("1") }
+}
+
+/** Adds Bench Press BB's set 4, a copy of set 3, and scrolls to WO-03-strip's page. */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.benchSet4(graph: AppGraph) {
+    graph.sessions.addSet(today(graph).exercises.first { it.name == "Bench Press BB" }.id)
+    pastTheFocusCard(graph)
+    val badge = getString(Res.string.set_type, "4")
+    waitUntil(timeoutMillis = 10_000) { onAllNodes(hasContentDescription(badge)).fetchSemanticsNodes().isNotEmpty() }
+}
+
+/** Opens the set type menu from the badge of Bench Press BB's set [badge]. */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.setMenu(badge: String) {
+    onNode(hasContentDescription(getString(Res.string.set_type, badge))).performClick()
+    waitForIdle()
 }
 
 /**

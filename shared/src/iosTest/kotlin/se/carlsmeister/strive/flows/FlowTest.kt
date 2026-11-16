@@ -142,6 +142,7 @@ import strive.shared.generated.resources.back_to_focus
 import strive.shared.generated.resources.change_start
 import strive.shared.generated.resources.free_rest
 import strive.shared.generated.resources.kind_warmup
+import strive.shared.generated.resources.kind_normal
 import strive.shared.generated.resources.kind_drop
 import strive.shared.generated.resources.order_skip
 import strive.shared.generated.resources.rest
@@ -1200,6 +1201,21 @@ class FlowTest {
         // Working sets are numbered among themselves: 1, W, 2.
         seeDesc(s(Res.string.set_type, "W"))
         seeDesc(s(Res.string.set_type, "2"))
+    }
+
+    /** P8: the set type menu reads Warm-up, Working set, Drop set, To failure, each with the badge the set would take: W, 4, D, 4. */
+    @Test
+    fun theSetMenuNamesTheSetsOwnNumber() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        repeat(3) { graph.sessions.addSet(open().exercises.single().id) }
+        waitUntilTrue { open().sets == 4 }
+        tapDesc(s(Res.string.set_type, "4"))
+        wait("the menu") { test.onAllNodes(hasTestTag("glass-menu")).fetchSemanticsNodes().size == 1 }
+        val rows = test.onAllNodes(hasAnyAncestor(hasTestTag("glass-menu")) and hasClickAction()).fetchSemanticsNodes()
+            .map { row -> row.config[SemanticsProperties.Text].joinToString(" ") { it.text } }
+        val kinds = listOf(Res.string.kind_warmup to "W", Res.string.kind_normal to "4", Res.string.kind_drop to "D", Res.string.kind_failure to "4")
+        assertEquals(kinds.map { (kind, tail) -> "${s(kind)} $tail" }, rows)
     }
 
     @Test

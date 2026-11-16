@@ -475,6 +475,14 @@ class WorkoutLogicTest {
         assertEquals(2, numberAsWorking(listOf(s(1), s(2, SetKind.Drop), s(3)), 1))
     }
 
+    /** WO-13-moved: a second warm-up moved up above set 2 has no Previous, and set 2 keeps last time's set 2. */
+    @Test
+    fun previousFollowsTheSetsNumberNotItsPlace() {
+        val last = listOf(s(11, SetKind.Warmup), s(12), s(13), s(14))
+        val today = listOf(s(1, SetKind.Warmup), s(2), s(5, SetKind.Warmup), s(3), s(4))
+        assertEquals(listOf(11L, 12L, null, 13L, 14L), today.indices.map { previousOf(today, it, last)?.id })
+    }
+
     @Test
     fun aDragOfAThirdOfTheHeightMinimises() = assertTrue(minimises(281.4f, 844f, 0f, 1000f))
 

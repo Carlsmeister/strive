@@ -30,6 +30,8 @@ import se.carlsmeister.strive.ui.touchTall
 import se.carlsmeister.strive.ui.GlassMenu
 import se.carlsmeister.strive.ui.HeaderSheet
 import se.carlsmeister.strive.ui.MenuRow
+import se.carlsmeister.strive.ui.MenuSeparator
+import se.carlsmeister.strive.ui.MenuTitle
 import se.carlsmeister.strive.ui.MorePill
 import se.carlsmeister.strive.ui.TextPrompt
 import se.carlsmeister.strive.ui.Accent
@@ -128,6 +130,7 @@ import strive.shared.generated.resources.rest_row
 import strive.shared.generated.resources.save
 import strive.shared.generated.resources.session_note
 import strive.shared.generated.resources.set_failure
+import strive.shared.generated.resources.set_stays
 import strive.shared.generated.resources.set_type
 import strive.shared.generated.resources.sets_progress
 import strive.shared.generated.resources.skipped
@@ -465,7 +468,7 @@ internal fun ColumnLabels(type: ExerciseType, perSide: Boolean = false) {
  */
 @Composable
 internal fun SetRow(
-    tag: String, badge: String, set: WorkoutSet, type: ExerciseType, current: Boolean, prev: WorkoutSet?,
+    tag: String, badge: String, set: WorkoutSet, type: ExerciseType, current: Boolean, prev: WorkoutSet?, number: Int,
     onKind: (SetKind) -> Unit, onOpen: (Int?) -> Unit, onCheck: () -> Unit, guard: (() -> Unit) -> Unit = { it() }, letter: String? = null,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -496,9 +499,15 @@ internal fun SetRow(
                     color = when { !current -> set.kind.tint; tinted -> colors.onTertiary; else -> colors.onPrimary })
             }
             GlassMenu(menu, { menu = false }) {
-                for (kind in SetKind.entries) {
-                    MenuRow(stringResource(kind.label), { menu = false; onKind(kind) }, checked = kind == set.kind, tail = kind.letter ?: "1",
-                        tailColor = if (kind == SetKind.Normal) colors.onSurfaceVariant else kind.tint)
+                // P8: a logged set keeps its place, whatever its type becomes (WO-13-logged).
+                if (set.done) {
+                    MenuTitle(stringResource(Res.string.set_stays), Modifier.padding(bottom = StriveTheme.spacing.s8))
+                    MenuSeparator()
+                }
+                // Each type with the badge the set would take: W, the number it has or would have as a working set, D, that number.
+                for (kind in listOf(SetKind.Warmup, SetKind.Normal, SetKind.Drop, SetKind.Failure)) {
+                    MenuRow(stringResource(kind.label), { menu = false; onKind(kind) }, checked = kind == set.kind, tail = kind.letter ?: "$number",
+                        tailColor = if (kind == SetKind.Normal) colors.primary else kind.tint, tailBadge = true)
                 }
             }
         }

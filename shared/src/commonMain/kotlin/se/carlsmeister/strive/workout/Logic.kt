@@ -92,6 +92,16 @@ internal fun working(sets: List<WorkoutSet>) = sets.count { it.kind != SetKind.W
 /** The number the set at [index] has, or would have as a working set: 1 + the numbered sets before it (#42 P6–P8). */
 internal fun numberAsWorking(sets: List<WorkoutSet>, index: Int) = 1 + sets.take(index).count { it.kind.numbered }
 
+/**
+ * Last time's set for the set at [index]: the working set of the same number, or the warm-up or drop set of the same count among its
+ * kind, so a warm-up moved up does not shift every Previous below it (WO-13-moved).
+ */
+internal fun previousOf(sets: List<WorkoutSet>, index: Int, last: List<WorkoutSet>?): WorkoutSet? {
+    val kind = sets[index].kind
+    fun same(other: SetKind) = if (kind.numbered) other.numbered else other == kind
+    return last?.filter { same(it.kind) }?.getOrNull(sets.take(index).count { same(it.kind) })
+}
+
 /** The focus card's meta row (#42 P6). */
 internal sealed interface FocusMeta {
     data class RestAfter(val seconds: Int) : FocusMeta

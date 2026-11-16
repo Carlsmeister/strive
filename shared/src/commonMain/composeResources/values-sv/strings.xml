@@ -189,6 +189,7 @@
     <string name="kind_failure">Till failure</string>
     <string name="set_type">Settyp för set %1$s</string>
     <string name="set_failure">Set %1$s, till failure</string>
+    <string name="set_stays">Setet stannar där det är.</string>
     <string name="change_start">Ändra starttid</string>
     <string name="sticky_note">Fast anteckning</string>
     <string name="rest_all">Vila för alla set</string>

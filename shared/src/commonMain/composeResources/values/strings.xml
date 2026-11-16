@@ -189,6 +189,7 @@
     <string name="kind_failure">To failure</string>
     <string name="set_type">Set type for set %1$s</string>
     <string name="set_failure">Set %1$s, to failure</string>
+    <string name="set_stays">The set stays where it is.</string>
     <string name="change_start">Change start time</string>
     <string name="sticky_note">Sticky note</string>
     <string name="rest_all">Rest for all sets</string>
