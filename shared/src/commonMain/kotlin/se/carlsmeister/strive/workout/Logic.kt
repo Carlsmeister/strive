@@ -86,8 +86,8 @@ internal fun badges(sets: List<WorkoutSet>): List<String> {
     return sets.map { if (it.kind.numbered) n++; it.kind.letter ?: "$n" }
 }
 
-/** How many working sets, failure sets among them: the "of 4" in "set 2 of 4". */
-internal fun working(sets: List<WorkoutSet>) = sets.count { it.kind.numbered }
+/** The "of 3" in "set 2 of 3": every set but the warm-ups, drop sets among them, as O-25 counts them (WO-02-abc). */
+internal fun working(sets: List<WorkoutSet>) = sets.count { it.kind != SetKind.Warmup }
 
 /** The number the set at [index] has, or would have as a working set: 1 + the numbered sets before it (#42 P6–P8). */
 internal fun numberAsWorking(sets: List<WorkoutSet>, index: Int) = 1 + sets.take(index).count { it.kind.numbered }

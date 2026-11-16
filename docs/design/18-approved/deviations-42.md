@@ -16,3 +16,12 @@ beside them. dark-HC is compared first, then dark. The pull request quotes this 
 | WO-02-note | Plates line under set 2 | Not drawn | As WO-02-s2 | #48 |
 | WO-02-note | Strip under the bar | The board draws the strip with the focus card scrolled under the bar; the shot shows the card's foot there and no strip | This issue's own trigger: the strip shows only once `firstVisibleItemIndex > 1` (`WorkoutScreen.kt`), so while the card's foot is still under the bar there is no strip. The shot keeps the header, notes and field where the board draws them | #42, Task 6 |
 | WO-02-note | Keyboard and its Done bar | Not drawn | The system's keyboard; a test window has none | Not ours (iOS) |
+| WO-02-s3 | Bench Press BB's Plan note | Not drawn, so the rows below sit 20 pt higher | As WO-02-s2 (P3) | #44 |
+| WO-02-s3 | Plates line under set 2 | Not drawn | As WO-02-s2 | #48 |
+| WO-02-s3 | Rest card | Sits 21–23 pt lower (board 641–805 pt, shot 663–828 pt); colours match | The rest card's own look and place | #43 |
+| WO-02-s3 | Focus card's values | About 6 pt wider | As WO-02-s2: the optical size | #42 |
+| WO-02-s4 | Rest card | Sits about 23 pt lower, as WO-02-s3 | The rest card's own look and place | #43 |
+| WO-02-s4 | Focus label and values | The label 1–2 pt wider, the values as WO-02-s2 | As WO-02-s2: the optical size | #42 |
+| WO-02-s5, s5b, s5c | Focus label and values | As WO-02-s4 | As WO-02-s2: the optical size | #42 |
+| WO-02-abc | Focus label and values | As WO-02-s4 | As WO-02-s2: the optical size | #42 |
+| WO-15-several | Tricep Pushdown's "Set 2 of 2" | The app now reads "set 2 of 3": the "of" counts every set but warm-ups | **Contradiction between boards, for Carl:** WO-02-abc and its registry row draw Pushdown's 1, 2 and D as "set 1 of 3", O-25's count. WO-15-several is #58's sheet and not shot here | #58 |

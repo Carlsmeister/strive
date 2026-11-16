@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -165,13 +166,16 @@ internal fun Tag(letter: String, modifier: Modifier = Modifier) = Box(
     contentAlignment = Alignment.Center,
 ) { Text(letter, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold, color = StriveTheme.accents.superset) }
 
-/** G1's line down the superset's left edge (choice 6), drawn on each of its rows so they join into one; nothing unless [on]. */
+/**
+ * G1's line down the superset's left edge (choice 6), drawn on each of its rows so they join into one; nothing unless [on]. As `.ssgroup`:
+ * 2 in, the line, then 10 to the content.
+ */
 @Composable
 internal fun Modifier.edge(on: Boolean = true): Modifier {
     if (!on) return this
     val color = StriveTheme.accents.superset
     val width = StriveTheme.borders.focus
-    return drawBehind { drawRect(color, size = Size(width.toPx(), size.height)) }.padding(start = width + 12.dp)
+    return drawBehind { drawRect(color, Offset(2.dp.toPx(), 0f), Size(width.toPx(), size.height)) }.padding(start = width + 12.dp)
 }
 
 /** "Superset · vila 1:30 efter varvet" over the superset's headers (choice 6), "Superset" in the superset's blue. */
@@ -179,8 +183,9 @@ internal fun Modifier.edge(on: Boolean = true): Modifier {
 internal fun SupersetLabel(rest: Int, modifier: Modifier = Modifier) {
     val text = stringResource(Res.string.superset_rest, clock(rest.toLong()))
     val accent = StriveTheme.accents.superset
-    Text(buildAnnotatedString { append(text); addStyle(SpanStyle(color = accent), 0, text.indexOf(" · ").coerceAtLeast(0)) }, modifier,
-        style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    val word = SpanStyle(color = accent, fontWeight = FontWeight.SemiBold)
+    Text(buildAnnotatedString { append(text); addStyle(word, 0, text.indexOf(" · ").coerceAtLeast(0)) }, modifier,
+        style = MaterialTheme.typography.labelMedium.board(), color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 private val SetColumn = 36.dp
@@ -472,7 +477,10 @@ internal fun SetRow(
                 Text(
                     buildAnnotatedString {
                         append(v ?: "–")
-                        if (reps) set.rir?.let { withStyle(SpanStyle(fontSize = 12.sp, color = colors.onSurfaceVariant)) { append(" @$it") } }
+                        if (reps) set.rir?.let {
+                            withStyle(SpanStyle(fontSize = 7.sp)) { append(" ") }
+                            withStyle(SpanStyle(fontSize = 12.sp, color = colors.onSurfaceVariant)) { append("@$it") }
+                        }
                     },
                     style = MaterialTheme.typography.bodyLarge.board(), maxLines = 1,
                     color = if (set.done || current) colors.onSurface else colors.onSurfaceVariant,
@@ -507,7 +515,7 @@ internal fun RestLine(seconds: Int, now: Boolean, label: String, onClick: () -> 
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Box(Modifier.weight(1f).height(2.dp).background(line, RoundedCornerShape(1.dp)))
-        Text(stringResource(Res.string.rest_row, clock(seconds.toLong())), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold,
+        Text(stringResource(Res.string.rest_row, clock(seconds.toLong())), style = MaterialTheme.typography.bodySmall.board(), fontWeight = FontWeight.SemiBold,
             color = if (now) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
         Box(Modifier.weight(1f).height(2.dp).background(line, RoundedCornerShape(1.dp)))
     }
@@ -531,10 +539,11 @@ internal fun ExerciseOverview(e: SessionExercise, first: Boolean, last: Boolean,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s12),
         ) {
-            Column(Modifier.weight(1f).padding(vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4)) {
+            Column(Modifier.weight(1f).padding(vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     letter?.let { Tag(it, Modifier.padding(end = 8.dp)) }
-                    Text(e.name, style = MaterialTheme.typography.titleSmall.copy(fontSize = 16.sp), color = if (e.skipped) colors.onSurfaceVariant else colors.onSurface)
+                    Text(e.name, style = MaterialTheme.typography.titleSmall.copy(fontSize = 16.sp, lineHeight = 21.sp).board(),
+                        color = if (e.skipped) colors.onSurfaceVariant else colors.onSurface)
                 }
                 if (!e.skipped) Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                     for (s in e.sets) {
@@ -546,9 +555,12 @@ internal fun ExerciseOverview(e: SessionExercise, first: Boolean, last: Boolean,
                 }
             }
             val all = logged == e.sets.size && logged > 0
-            Text(if (e.skipped) stringResource(Res.string.skipped) else "$logged/${e.sets.size}" + if (all) " ✓" else "",
-                style = MaterialTheme.typography.bodyMedium, color = if (all && !e.skipped) colors.primary else colors.onSurfaceVariant,
-                fontWeight = if (all && !e.skipped) FontWeight.SemiBold else FontWeight.Normal)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(if (e.skipped) stringResource(Res.string.skipped) else "$logged/${e.sets.size}",
+                    style = MaterialTheme.typography.bodyMedium.board(), color = if (all && !e.skipped) colors.primary else colors.onSurfaceVariant,
+                    fontWeight = if (all && !e.skipped) FontWeight.SemiBold else FontWeight.Normal)
+                if (all && !e.skipped) Glyph(Glyph.Check, 14.dp, color = colors.primary)
+            }
             Box(
                 Modifier.size(36.dp).clip(CircleShape).background(colors.surfaceContainerHigh).clickable(onClickLabel = label, onClick = onExpand)
                     .semantics { contentDescription = label },

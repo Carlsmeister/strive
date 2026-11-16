@@ -205,7 +205,14 @@ class SetKindTest {
         val sets = listOf(s(1, SetKind.Warmup), s(2), s(3), s(4, SetKind.Drop), s(5, SetKind.Failure), s(6))
         // A failure set is a working set (Q31): it shows its own number, in its colour, not F (Carl, 2026-11-03).
         assertEquals(listOf("W", "1", "2", "D", "3", "4"), badges(sets))
-        assertEquals(4, working(sets))
+    }
+
+    @Test
+    fun theOfInSetNOfMCountsEverySetButWarmUps() {
+        // WO-02-abc: Tricep Pushdown's 1, 2 and D read "set 1 of 3"; Bench Press's W, 1, 2 and 3 "set 2 of 3" (O-25's count).
+        assertEquals(3, working(listOf(s(1), s(2), s(3, SetKind.Drop))))
+        assertEquals(3, working(listOf(s(1, SetKind.Warmup), s(2), s(3), s(4))))
+        assertEquals(5, working(listOf(s(1, SetKind.Warmup), s(2), s(3), s(4, SetKind.Drop), s(5, SetKind.Failure), s(6))))
     }
 
     @Test

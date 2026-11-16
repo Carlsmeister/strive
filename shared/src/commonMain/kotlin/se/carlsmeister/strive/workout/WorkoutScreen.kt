@@ -282,7 +282,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                             val last = shown.getOrNull(index + 1)?.let(::folded) != true
                             b.forEachIndexed { n, e ->
                                 item(key = "o${e.id}") {
-                                    Box(Modifier.padding(top = if (first && n == 0) 14.dp else 0.dp).animateItem(placementSpec = place)) {
+                                    Box(Modifier.padding(top = if (first && n == 0) StriveTheme.spacing.s16 else 0.dp).animateItem(placementSpec = place)) {
                                         ExerciseOverview(e, first && n == 0, last && n == b.lastIndex, tags[e.id]) {
                                             folds[b.first().id] = false
                                             if (e.skipped) scope.launch { sessions.skip(e.id, false) }
@@ -299,25 +299,28 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                         if (superset) {
                             item(key = "g${b.first().id}") {
                                 val roundRest = rows.firstOrNull()?.last()?.let { (e, i) -> restOf(e.sets[i], defaultRest) } ?: defaultRest
-                                SupersetLabel(roundRest, Modifier.animateItem(placementSpec = place).padding(top = StriveTheme.spacing.s16).edge())
+                                SupersetLabel(roundRest, Modifier.animateItem(placementSpec = place).padding(top = StriveTheme.spacing.s16 + StriveTheme.spacing.s8).edge())
                             }
                         }
-                        for (e in members) {
+                        members.forEachIndexed { n, e ->
                             item(key = "h${e.id}") {
+                                // A lone exercise is its own section: the `.body`'s 16 gap comes before its header's own 16. A superset's
+                                // headers stack under its label: the first 6 below it, the others at once (WO-02-s4).
+                                val top = if (!superset) StriveTheme.spacing.s16 * 2 else if (n == 0) 6.dp else 0.dp
                                 ExerciseHeader(w, e, defaultRest, tags[e.id], onFold = { folds[b.first().id] = true }, onSwap = { onSwap(e) },
-                                    // A lone exercise is its own section: the `.body`'s 16 gap comes before its header's own 16.
-                                    Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place).edge(superset)
-                                        .then(if (superset) Modifier else Modifier.padding(top = StriveTheme.spacing.s16)))
+                                    Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place).edge(superset).padding(top = top))
                             }
                         }
                         // One row of column labels over a superset whose exercises record the same values.
                         if (members.map { it.type }.distinct().size == 1) item(key = "c${b.first().id}") { Box(Modifier.edge(superset)) { ColumnLabels(members[0].type) } }
                         rows.forEachIndexed { r, round ->
-                            for ((e, i) in round) {
+                            round.forEachIndexed { k, (e, i) ->
                                 val s = e.sets[i]
                                 val badge = badges.getValue(e.id)[i]
                                 item(key = s.id) {
-                                    Box(Modifier.edge(superset).bleed(6.dp).padding(vertical = 1.5.dp).animateItem(placementSpec = place)) {
+                                    // `.srow`'s 1.5 margins collapse between a round's rows, so only the first takes one on top.
+                                    val top = if (k == 0) 1.5.dp else 0.dp
+                                    Box(Modifier.edge(superset).bleed(6.dp).padding(top = top, bottom = 1.5.dp).animateItem(placementSpec = place)) {
                                         SwipeToDelete(RowShape, onDelete = { scope.launch { sessions.deleteSet(s.id) } }) {
                                             SetRow(
                                                 "set ${e.name} ${i + 1}", badge, s, e.type, current = s.id == current, prev = previous[e.exerciseId]?.getOrNull(i),
@@ -500,7 +503,7 @@ private fun ExerciseHeader(
     var note by remember(e.id) { mutableStateOf(e.note) }
     val previousNote by remember(e.exerciseId, w.id) { sessions.previousNote(e.exerciseId, w.id) }.collectAsState(null)
     val fold = stringResource(Res.string.collapse, e.name)
-    Column(modifier.padding(top = StriveTheme.spacing.s16), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(3.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
             letter?.let { Tag(it) }
             Text(e.name, Modifier.weight(1f).clickable(onClickLabel = fold, onClick = onFold).padding(vertical = 6.dp),
