@@ -128,6 +128,8 @@ class FormatTest {
         assertEquals("82,5 × 8 @2", setText(WorkoutSet(0, weight = 82.5, reps = 8, rir = 2), ExerciseType.WeightReps, swedish = true))
         assertEquals("82.5 × 8", setText(WorkoutSet(0, weight = 82.5, reps = 8), ExerciseType.WeightReps, swedish = false))
         assertEquals("12", setText(WorkoutSet(0, reps = 12), ExerciseType.BodyweightReps, swedish = true))
+        // A bodyweight set's added weight comes first with its plus (WO-02-s10bw).
+        assertEquals("+10 × 9 @2", setText(WorkoutSet(0, weight = 10.0, reps = 9, rir = 2), ExerciseType.BodyweightReps, swedish = false))
         assertEquals("1:30", setText(WorkoutSet(0, seconds = 90), ExerciseType.Time, swedish = true))
         assertEquals("–", setText(WorkoutSet(0), ExerciseType.WeightReps, swedish = true))
     }

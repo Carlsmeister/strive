@@ -60,6 +60,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -239,8 +240,16 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
         Column(Modifier.fillMaxSize()) {
             // The name rides in the bar only while the large header is out of sight (decision 40).
             val scrolled by remember { derivedStateOf { list.firstVisibleItemIndex > 0 } }
-            // Once the focus card scrolls away it folds into a strip under the bar (D-scroll).
-            val stripShown by remember { derivedStateOf { list.firstVisibleItemIndex > 1 } }
+            // Once the focus card scrolls away it folds into a strip under the bar (D-scroll): as soon as what is left of the card
+            // fits under the strip, which covers it (WO-02-note, WO-03-strip). The list starts under the bar, as the strip does.
+            val density = LocalDensity.current
+            val stripShown by remember {
+                derivedStateOf {
+                    val card = list.layoutInfo.visibleItemsInfo.firstOrNull { it.key == "focus" }
+                    list.firstVisibleItemIndex > 1 ||
+                        card != null && card.offset + card.size - list.layoutInfo.viewportStartOffset <= with(density) { StripHeight.roundToPx() }
+                }
+            }
             val strip = stripShown && focus != null
             TitleBar(w, nowMs, showTitle = w.exercises.isEmpty() || scrolled, glassed = scrolled, hairline = !strip, onMinimise, ::finish) {
                 graph.rest.value = Rest(now(), it)
@@ -274,7 +283,10 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                     }
                     // Each exercise alone, or a superset's together in one list in the order you lift (#17 choice 6, G2 with G1's edge line).
                     val shown = blocks(w.exercises)
-                    fun folded(b: List<SessionExercise>) = b.all { it.skipped } || (folds[b.first().id] ?: (focus != null && b.none { it.id == focus.first.id }))
+                    // With every set logged nothing is being done, so every exercise folds into the overview (WO-02-s13); a workout
+                    // of one exercise stays open, its rows and Add set in reach, since an overview of one row sums up nothing.
+                    fun folded(b: List<SessionExercise>) = b.all { it.skipped } ||
+                        (folds[b.first().id] ?: if (focus == null) shown.size > 1 else b.none { it.id == focus.first.id })
                     shown.forEachIndexed { index, b ->
                         if (folded(b)) {
                             // Folded, a superset's exercises are rows in the card the folded exercises share.
@@ -283,7 +295,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                             b.forEachIndexed { n, e ->
                                 item(key = "o${e.id}") {
                                     Box(Modifier.padding(top = if (first && n == 0) StriveTheme.spacing.s16 else 0.dp).animateItem(placementSpec = place)) {
-                                        ExerciseOverview(e, first && n == 0, last && n == b.lastIndex, tags[e.id]) {
+                                        ExerciseOverview(e, first && n == 0, last && n == b.lastIndex, tags[e.id], complete = w.complete) {
                                             folds[b.first().id] = false
                                             if (e.skipped) scope.launch { sessions.skip(e.id, false) }
                                         }
@@ -312,7 +324,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                             }
                         }
                         // One row of column labels over a superset whose exercises record the same values.
-                        if (members.map { it.type }.distinct().size == 1) item(key = "c${b.first().id}") { Box(Modifier.edge(superset)) { ColumnLabels(members[0].type) } }
+                        if (members.map { it.type }.distinct().size == 1) item(key = "c${b.first().id}") { Box(Modifier.edge(superset)) { ColumnLabels(members[0].type, members[0].perSide) } }
                         rows.forEachIndexed { r, round ->
                             round.forEachIndexed { k, (e, i) ->
                                 val s = e.sets[i]
@@ -370,12 +382,12 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                         Column(Modifier.fillMaxWidth().padding(top = 28.dp), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
                             if (w.exercises.isNotEmpty()) AddButton(stringResource(Res.string.add_exercises), 50.dp, MaterialTheme.shapes.large, onClick = onAddExercises)
                             TextButton({ discarding = true }, Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch)) {
-                                Text(stringResource(Res.string.discard_workout), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.error)
+                                Text(stringResource(Res.string.discard_workout), style = MaterialTheme.typography.titleMedium.board(), color = MaterialTheme.colorScheme.error)
                             }
                         }
                     }
                 }
-                StripOverlay(strip, focus, focusRir, focus?.let { tags[it.first.id] }, Modifier.align(Alignment.TopCenter)) {
+                StripOverlay(strip, focus, focus?.let { tags[it.first.id] }, Modifier.align(Alignment.TopCenter)) {
                     scope.launch { if (reduceMotion) list.scrollToItem(0) else list.animateScrollToItem(0) }
                 }
             }
@@ -657,9 +669,15 @@ private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
     }
 }
 
+/**
+ * The strip's height under the bar, `.stripwrap` on WO-03-strip (104 to 169.7 pt). shortcut: a constant, not the strip measured; measure
+ * it if the strip's type or padding change.
+ */
+private val StripHeight = 66.dp
+
 /** The focus strip under the bar while the focus card is out of sight (D-scroll), on the bar's glass. */
 @Composable
-private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, rir: Int?, tag: String?, modifier: Modifier, onBack: () -> Unit) {
+private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, tag: String?, modifier: Modifier, onBack: () -> Unit) {
     val reduceMotion = StriveTheme.reduceMotion
     Overlay(
         shown, modifier,
@@ -672,7 +690,7 @@ private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, rir
         Column(Modifier.fillMaxWidth().background(StriveTheme.glass.thick)) {
             shownFocus.value?.let { (e, i) ->
                 e.sets.getOrNull(i)?.let {
-                    Box(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 10.dp)) { FocusStrip(e, it, badges(e.sets)[i], rir, onBack, tag) }
+                    Box(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 10.dp)) { FocusStrip(e, it, badges(e.sets)[i], onBack, tag) }
                 }
             }
             HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.TextStyle
@@ -27,8 +28,9 @@ import se.carlsmeister.strive.ui.HeaderSheet
 import se.carlsmeister.strive.ui.MenuRow
 import se.carlsmeister.strive.ui.MorePill
 import se.carlsmeister.strive.ui.TextPrompt
+import se.carlsmeister.strive.ui.Accent
+import se.carlsmeister.strive.ui.text
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimeInput
@@ -41,7 +43,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
@@ -71,6 +75,7 @@ import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.data.WorkoutSet
+import se.carlsmeister.strive.data.loggable
 import se.carlsmeister.strive.library.kilos
 import se.carlsmeister.strive.theme.ShapeLargeIncreased
 import se.carlsmeister.strive.theme.StriveTheme
@@ -85,6 +90,10 @@ import strive.shared.generated.resources.col_metres
 import strive.shared.generated.resources.col_previous
 import strive.shared.generated.resources.col_reps
 import strive.shared.generated.resources.col_seconds
+import strive.shared.generated.resources.col_seconds_side
+import strive.shared.generated.resources.col_added
+import strive.shared.generated.resources.per_side
+import strive.shared.generated.resources.type_a_time
 import strive.shared.generated.resources.col_set
 import strive.shared.generated.resources.down_by
 import strive.shared.generated.resources.edit
@@ -126,17 +135,27 @@ import strive.shared.generated.resources.what_today_body
 import strive.shared.generated.resources.workout_options
 
 /** The columns a set row shows after Set and Förra, by what the exercise records. */
-internal fun columns(type: ExerciseType): List<StringResource> = when (type) {
+internal fun columns(type: ExerciseType, perSide: Boolean = false): List<StringResource> = when (type) {
     ExerciseType.WeightReps -> listOf(Res.string.col_kg, Res.string.col_reps)
-    ExerciseType.BodyweightReps, ExerciseType.Reps -> listOf(Res.string.col_reps)
-    ExerciseType.Time -> listOf(Res.string.col_seconds)
+    ExerciseType.BodyweightReps -> listOf(Res.string.col_added, Res.string.col_reps)
+    ExerciseType.Reps -> listOf(Res.string.col_reps)
+    ExerciseType.Time -> listOf(if (perSide) Res.string.col_seconds_side else Res.string.col_seconds)
     ExerciseType.Distance -> listOf(Res.string.col_metres)
 }
 
-/** The values for those columns; null before one is entered. */
+/** The units after the focus card's values (WO-02-s9f, s10td, s15): a time has none unless it is per side. */
+private fun units(type: ExerciseType, perSide: Boolean): List<StringResource?> = when (type) {
+    ExerciseType.WeightReps, ExerciseType.BodyweightReps -> listOf(Res.string.col_kg, Res.string.col_reps)
+    ExerciseType.Reps -> listOf(Res.string.col_reps)
+    ExerciseType.Time -> listOf(if (perSide) Res.string.per_side else null)
+    ExerciseType.Distance -> listOf(Res.string.col_metres)
+}
+
+/** The values for those columns; null before one is entered. A bodyweight exercise's added weight reads "+10". */
 internal fun cells(s: WorkoutSet, type: ExerciseType, swedish: Boolean): List<String?> = when (type) {
     ExerciseType.WeightReps -> listOf(s.weight?.let { kilos(it, swedish) }, s.reps?.toString())
-    ExerciseType.BodyweightReps, ExerciseType.Reps -> listOf(s.reps?.toString())
+    ExerciseType.BodyweightReps -> listOf(s.weight?.let { "+" + kilos(it, swedish) }, s.reps?.toString())
+    ExerciseType.Reps -> listOf(s.reps?.toString())
     ExerciseType.Time -> listOf(s.seconds?.let { clock(it.toLong()) })
     ExerciseType.Distance -> listOf(s.metres?.let { kilos(it, swedish) })
 }
@@ -271,7 +290,14 @@ internal fun LargeHeader(w: Workout, now: Long) {
                 Glyph(Glyph.Clock, 16.dp, color = grey, stroke = 1.8f)
                 Text(clock((now - w.startedAt) / 1_000), style = style)
             }
-            Text(stringResource(Res.string.sets_progress, w.countedLogged, w.countedSets), style = style, color = grey)
+            val count = stringResource(Res.string.sets_progress, w.countedLogged, w.countedSets)
+            if (w.complete) {
+                // P11: every working set logged turns the count lime with a check (WO-02-s13's `.m-lime`).
+                Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Glyph(Glyph.Check, 16.dp, color = StriveTheme.moments.lime)
+                    Text(count, style = style, color = StriveTheme.moments.text(Accent.Lime))
+                }
+            } else Text(count, style = style, color = grey)
         }
     }
 }
@@ -326,12 +352,16 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
         Column {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 val big = type.displaySmall.copy(fontSize = 38.sp, lineHeight = 44.sp, letterSpacing = (-1).sp, fontWeight = FontWeight.Bold).board()
-                val units = columns(e.type)
+                val units = units(e.type, e.perSide)
                 cells(set, e.type, sv).forEachIndexed { i, v ->
                     if (i > 0) Text("×", Modifier.alignByBaseline(), style = type.headlineMedium.copy(fontSize = 26.sp, lineHeight = 32.sp).board(), color = colors.onSurfaceVariant)
                     Text(v ?: "–", Modifier.alignByBaseline(), style = big)
-                    Text(stringResource(units[i]).lowercase(), Modifier.alignByBaseline(), style = type.bodyMedium.board(), color = colors.onSurfaceVariant)
+                    units[i]?.let { Text(stringResource(it).lowercase(), Modifier.alignByBaseline(), style = type.bodyMedium.board(), color = colors.onSurfaceVariant) }
                 }
+            }
+            // `.cap`: a time not yet typed says how to log it (WO-02-s15).
+            if (e.type == ExerciseType.Time && set.seconds == null) {
+                Text(stringResource(Res.string.type_a_time), style = type.labelMedium.board(), color = colors.onSurfaceVariant)
             }
             changeText(set, prev, sv)?.let {
                 Text(it, Modifier.layout { m, c ->
@@ -363,14 +393,17 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
             Btn(onEdit, Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp)) {
                 Text(stringResource(Res.string.edit), style = type.titleMedium)
             }
-            Btn(onLog, Modifier.weight(2f).height(50.dp), container = colors.primary, content = colors.onPrimary, shape = RoundedCornerShape(14.dp)) {
+            // `.fbtn.wait`: until the set has its values, Log waits on a grey fill; a tap opens the dock to type them.
+            val ready = set.loggable(e.type)
+            Btn(onLog, Modifier.weight(2f).height(50.dp), container = if (ready) colors.primary else colors.surfaceContainerHigh,
+                content = if (ready) colors.onPrimary else colors.onSurfaceVariant, shape = RoundedCornerShape(14.dp)) {
                 Glyph(Glyph.Check, 20.dp, stroke = 2.8f)
                 val log = when (set.kind) {
                     SetKind.Warmup -> stringResource(Res.string.log_warmup)
                     SetKind.Drop -> stringResource(Res.string.log_drop)
                     else -> stringResource(Res.string.log_set, badge)
                 }
-                Text(log, Modifier.padding(start = 8.dp), style = type.titleMedium, fontWeight = FontWeight.Bold)
+                Text(log, Modifier.padding(start = 8.dp), style = type.titleMedium, fontWeight = if (ready) FontWeight.Bold else null)
             }
         }
     }
@@ -381,7 +414,7 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
  * stays on the card and the rows, so a tap meant for the bar never logs a set (Carl, point 7).
  */
 @Composable
-internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, badge: String, rir: Int?, onBack: () -> Unit, tag: String? = null) {
+internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, badge: String, onBack: () -> Unit, tag: String? = null) {
     val colors = MaterialTheme.colorScheme
     val sv = swedish
     val main = when (e.type) {
@@ -394,22 +427,17 @@ internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, badge: String, rir:
             .padding(horizontal = 14.dp, vertical = 8.dp).testTag("focus-strip"),
         verticalArrangement = Arrangement.spacedBy(1.dp),
     ) {
-        Text(nowLabel(e, set, badge, strip = true, tag), style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 0.3.sp),
+        Text(nowLabel(e, set, badge, strip = true, tag), style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 0.3.sp).board(),
             fontWeight = FontWeight.SemiBold, color = colors.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        Text(
-            buildAnnotatedString {
-                append(main)
-                rir?.let { withStyle(SpanStyle(fontSize = 13.sp, fontWeight = FontWeight.Normal, color = colors.onSurfaceVariant)) { append(" RIR $it") } }
-            },
-            style = MaterialTheme.typography.titleMedium,
-        )
+        // No RIR on the strip (design-1 item 7): it names the set, the card picks its RIR.
+        Text(main, style = MaterialTheme.typography.titleMedium.board())
     }
 }
 
 /** A's column labels: Set · Förra · the values · ✓. */
 @Composable
-internal fun ColumnLabels(type: ExerciseType) {
-    val cols = columns(type)
+internal fun ColumnLabels(type: ExerciseType, perSide: Boolean = false) {
+    val cols = columns(type, perSide)
     val style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold).board()
     val grey = MaterialTheme.colorScheme.onSurfaceVariant
     Row(Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 2.dp), horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
@@ -446,13 +474,16 @@ internal fun SetRow(
             val label = stringResource(Res.string.set_type, badge)
             // VoiceOver reads a failure set's number with its type, since the colour alone says nothing: "Set 2, till failure".
             val desc = if (set.kind == SetKind.Failure) stringResource(Res.string.set_failure, badge) else label
+            // The next set's badge is filled: teal, or a failure or drop set's own colour (WO-02-s9f, s9d).
+            val tinted = set.kind == SetKind.Failure || set.kind == SetKind.Drop
+            val fill = when { !current -> colors.surfaceContainerHigh; tinted -> set.kind.tint; else -> colors.primary }
             Box(
-                Modifier.width(SetColumn).height(28.dp).clip(MaterialTheme.shapes.small).background(if (current) colors.primary else colors.surfaceContainerHigh)
+                Modifier.width(SetColumn).height(28.dp).clip(MaterialTheme.shapes.small).background(fill)
                     .clickable(onClickLabel = label) { guard { menu = true } }.semantics { contentDescription = desc },
                 contentAlignment = Alignment.Center,
             ) {
                 Text(badge, style = MaterialTheme.typography.bodyMedium.board(), fontWeight = if (current) FontWeight.Bold else FontWeight.SemiBold,
-                    color = if (current) colors.onPrimary else set.kind.tint)
+                    color = when { !current -> set.kind.tint; tinted -> colors.onTertiary; else -> colors.onPrimary })
             }
             GlassMenu(menu, { menu = false }) {
                 for (kind in SetKind.entries) {
@@ -470,7 +501,8 @@ internal fun SetRow(
             Box(
                 Modifier.width(cellWidth(values.size, i)).height(34.dp).clip(RoundedCornerShape(10.dp))
                     .background(when { set.done -> Color.Transparent; current -> colors.surfaceContainerHigh; else -> colors.surface })
-                    .clickable { onOpen(i) }.testTag("$tag cell $i"),
+                    // The dock has no added-weight field yet (deviations-42.md), so a bodyweight row's +kg opens it on reps.
+                    .clickable { onOpen(if (type == ExerciseType.BodyweightReps) (i - 1).coerceAtLeast(0) else i) }.testTag("$tag cell $i"),
                 contentAlignment = Alignment.Center,
             ) {
                 val reps = type.hasRir() && i == values.lastIndex
@@ -489,8 +521,10 @@ internal fun SetRow(
             }
         }
         val check = if (set.done) stringResource(Res.string.logged) else stringResource(Res.string.log_set, badge)
+        // `.ok.wait`: the next set's ✓ dims until the set has its values (WO-02-s15); a tap still opens the dock.
+        val waiting = current && !set.done && !set.loggable(type)
         Box(
-            Modifier.width(CheckColumn).height(34.dp).clip(RoundedCornerShape(10.dp))
+            Modifier.width(CheckColumn).height(34.dp).alpha(if (waiting) StriveTheme.states.disabledOpacity else 1f).clip(RoundedCornerShape(10.dp))
                 .background(if (set.done) colors.primary else if (current) Color.Transparent else colors.surfaceContainerHigh)
                 .then(if (current && !set.done) Modifier.border(2.dp, colors.primary, RoundedCornerShape(10.dp)) else Modifier)
                 .clickable(onClickLabel = check, onClick = onCheck)
@@ -527,14 +561,20 @@ internal fun RestLine(seconds: Int, now: Boolean, label: String, onClick: () -> 
  * card, joined by hairlines; [first] and [last] round its ends.
  */
 @Composable
-internal fun ExerciseOverview(e: SessionExercise, first: Boolean, last: Boolean, letter: String? = null, onExpand: () -> Unit) {
+internal fun ExerciseOverview(e: SessionExercise, first: Boolean, last: Boolean, letter: String? = null, complete: Boolean = false,
+                               onExpand: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     val logged = e.sets.count { it.done }
     val label = stringResource(Res.string.expand, e.name)
     val top = if (first) ShapeLargeIncreased.topStart else ZeroCornerSize
     val bottom = if (last) ShapeLargeIncreased.topStart else ZeroCornerSize
-    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(top, top, bottom, bottom)).background(colors.surface)) {
-        if (!first) HorizontalDivider(thickness = 0.5.dp, color = colors.outlineVariant)
+    // `.ovrow + .ovrow::before`: the hairline is drawn over the row from 14 in, so it takes no height.
+    val hairline = colors.outlineVariant
+    val hairlineWidth = StriveTheme.borders.hairline
+    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(top, top, bottom, bottom)).background(colors.surface).drawWithContent {
+        drawContent()
+        if (!first) drawRect(hairline, Offset(14.dp.toPx(), 0f), Size(size.width - 14.dp.toPx(), hairlineWidth.toPx()))
+    }) {
         Row(
             Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(onClickLabel = label, onClick = onExpand).padding(start = 14.dp, end = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -543,8 +583,11 @@ internal fun ExerciseOverview(e: SessionExercise, first: Boolean, last: Boolean,
             Column(Modifier.weight(1f).padding(vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     letter?.let { Tag(it, Modifier.padding(end = 8.dp)) }
-                    Text(e.name, style = MaterialTheme.typography.titleSmall.copy(fontSize = 16.sp, lineHeight = 21.sp).board(),
-                        color = if (e.skipped) colors.onSurfaceVariant else colors.onSurface)
+                    // `.nm.skip`: "Tricep Dips · Skipped" in grey 400, with no count (WO-02-s14).
+                    val skipped = stringResource(Res.string.skipped)
+                    Text(if (e.skipped) "${e.name} · $skipped" else e.name,
+                        style = MaterialTheme.typography.titleSmall.copy(fontSize = 16.sp, lineHeight = 21.sp).board(),
+                        color = if (e.skipped) colors.onSurfaceVariant else colors.onSurface, fontWeight = if (e.skipped) FontWeight.Normal else null)
                 }
                 if (!e.skipped) Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                     for (s in e.sets) {
@@ -556,13 +599,15 @@ internal fun ExerciseOverview(e: SessionExercise, first: Boolean, last: Boolean,
                 }
             }
             val all = logged == e.sets.size && logged > 0
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(if (e.skipped) stringResource(Res.string.skipped) else "$logged/${e.sets.size}",
-                    style = MaterialTheme.typography.bodyMedium.board(), color = if (all && !e.skipped) colors.primary else colors.onSurfaceVariant,
-                    fontWeight = if (all && !e.skipped) FontWeight.SemiBold else FontWeight.Normal)
-                if (all && !e.skipped) {
+            // P11: lime once the whole workout is logged (WO-02-s13); a finished exercise alone stays teal (WO-02-s4).
+            val ink = if (complete) StriveTheme.moments.text(Accent.Lime) else colors.primary
+            if (!e.skipped) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text("$logged/${e.sets.size}",
+                    style = MaterialTheme.typography.bodyMedium.board(), color = if (all) ink else colors.onSurfaceVariant,
+                    fontWeight = if (all) FontWeight.SemiBold else FontWeight.Normal)
+                if (all) {
                     val done = stringResource(Res.string.logged)
-                    Glyph(Glyph.Check, 14.dp, Modifier.semantics { contentDescription = done }, color = colors.primary)
+                    Glyph(Glyph.Check, 14.dp, Modifier.offset(y = 1.5.dp).semantics { contentDescription = done }, color = ink)
                 }
             }
             Box(

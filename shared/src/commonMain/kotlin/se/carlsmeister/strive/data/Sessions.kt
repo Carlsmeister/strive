@@ -60,6 +60,8 @@ internal data class SessionExercise(
     val skipped: Boolean = false,
     /** The superset it is done in with the exercises next to it that share it (#17 choice 6); null for none. */
     val superset: Long? = null,
+    /** Done one side at a time: a time reads "per side" (WO-02-s15). */
+    val perSide: Boolean = false,
 )
 
 /** A workout with its exercises and sets, open while [endedAt] is null. Times are epoch milliseconds. */
@@ -346,7 +348,7 @@ private class Row(
     val seId: Long?, val exerciseId: Long?, val seNote: String?, val skipped: Boolean?, val superset: Long?, val exerciseName: String?, val type: String?,
     val step: Double?, val bar: Double?, val pinned: String?,
     val setId: Long?, val weight: Double?, val reps: Long?, val seconds: Long?, val metres: Double?, val rir: Long?, val done: Boolean?,
-    val kind: String?, val rest: Long?,
+    val kind: String?, val rest: Long?, val perSide: Boolean?,
 )
 
 /** Groups the rows, already in workout, exercise and set order, back into workouts. */
@@ -360,7 +362,7 @@ private fun workouts(rows: List<Row>): List<Workout> = rows.groupBy { it.id }.va
                 WorkoutSet(it.setId!!, it.weight, it.reps?.toInt(), it.seconds?.toInt(), it.metres, it.rir?.toInt(), it.done!!, SetKind.of(it.kind!!),
                     it.rest?.toInt())
             },
-            pinned = e.pinned.orEmpty(), bar = e.bar, skipped = e.skipped!!, superset = e.superset,
+            pinned = e.pinned.orEmpty(), bar = e.bar, skipped = e.skipped!!, superset = e.superset, perSide = e.perSide == true,
         )
     }
     Workout(w.id, w.name, w.startedAt, w.endedAt, w.note, w.rpe?.toInt(), exercises)

@@ -157,6 +157,9 @@
     <string name="col_reps">Reps</string>
     <string name="col_seconds">Time</string>
     <string name="col_metres">m</string>
+    <string name="col_added">+kg</string>
+    <string name="col_seconds_side">Time / side</string>
+    <string name="type_a_time">Type a time to log</string>
     <string name="collapse">Collapse %1$s</string>
     <string name="expand">Expand %1$s</string>
     <string name="what_today">What are you training today?</string>

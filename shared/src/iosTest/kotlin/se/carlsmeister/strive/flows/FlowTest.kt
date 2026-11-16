@@ -1070,7 +1070,7 @@ class FlowTest {
         waitUntilTrue { open().exercises[1].skipped && open().sets == 1 }
         shot("20-order-sheet")
         tap(s(Res.string.done))
-        see(s(Res.string.skipped))
+        see("Squat BB · ${s(Res.string.skipped)}") // WO-02-s14's overview row
         // Swap Bench Press, the one still open, for another exercise.
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.swap))

@@ -107,6 +107,9 @@ internal fun focusMeta(e: SessionExercise, setId: Long, inSuperset: Boolean, res
     else -> FocusMeta.RestAfter(restSeconds)
 }
 
+/** P11: every working set logged, the moment the count and the overview turn lime (WO-02-s13). */
+internal val Workout.complete get() = countedSets > 0 && countedLogged == countedSets
+
 /** A drag down the title bar minimises once it reaches a third of the screen or flicks at [flick] or faster (#42 P9). */
 internal fun minimises(dragged: Float, height: Float, velocity: Float, flick: Float) = dragged >= height / 3 || velocity >= flick
 
@@ -184,7 +187,8 @@ internal fun setText(s: WorkoutSet, type: ExerciseType, swedish: Boolean): Strin
     val main = when (type) {
         ExerciseType.WeightReps -> if (s.weight == null && s.reps == null) null
             else "${s.weight?.let { kilos(it, swedish) } ?: "–"} × ${s.reps ?: "–"}"
-        ExerciseType.BodyweightReps, ExerciseType.Reps -> s.reps?.toString()
+        ExerciseType.BodyweightReps -> s.reps?.let { reps -> s.weight?.let { "+${kilos(it, swedish)} × $reps" } ?: "$reps" }
+        ExerciseType.Reps -> s.reps?.toString()
         ExerciseType.Time -> s.seconds?.let { clock(it.toLong()) }
         ExerciseType.Distance -> s.metres?.let { "${kilos(it, swedish)} m" }
     } ?: return "–"

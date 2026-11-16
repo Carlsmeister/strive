@@ -157,6 +157,9 @@
     <string name="col_reps">Reps</string>
     <string name="col_seconds">Tid</string>
     <string name="col_metres">m</string>
+    <string name="col_added">+kg</string>
+    <string name="col_seconds_side">Tid / sida</string>
+    <string name="type_a_time">Skriv en tid för att logga</string>
     <string name="collapse">Fäll ihop %1$s</string>
     <string name="expand">Fäll ut %1$s</string>
     <string name="what_today">Vad kör du idag?</string>
