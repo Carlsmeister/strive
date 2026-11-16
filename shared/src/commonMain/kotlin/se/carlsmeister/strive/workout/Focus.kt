@@ -1,5 +1,34 @@
 package se.carlsmeister.strive.workout
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+import kotlinx.coroutines.Job
+import se.carlsmeister.strive.theme.Motion
+import se.carlsmeister.strive.theme.calm
+import se.carlsmeister.strive.theme.win
+import kotlin.math.abs
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,6 +64,7 @@ import se.carlsmeister.strive.ui.MenuTitle
 import se.carlsmeister.strive.ui.MorePill
 import se.carlsmeister.strive.ui.TextPrompt
 import se.carlsmeister.strive.ui.Accent
+import se.carlsmeister.strive.ui.edge
 import se.carlsmeister.strive.ui.text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -220,6 +250,9 @@ internal fun SupersetLabel(rest: Int, modifier: Modifier = Modifier) {
 
 private val SetColumn = 36.dp
 private val CheckColumn = 44.dp
+
+/** The ✓'s speed as it pops from the press, per second: the win spring then peaks at 1.14 about 70 ms later, as MO-log draws. */
+private const val PopVelocity = 5.7f
 internal val RowShape = RoundedCornerShape(12.dp)
 
 /** D's grid: weight 64 pt, reps 56; a single value gets the two together. */
@@ -306,10 +339,34 @@ internal fun LargeHeader(w: Workout, now: Long) {
                 // P11: every working set logged turns the count lime with a check (WO-02-s13's `.m-lime`).
                 Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
                     Glyph(Glyph.Check, 16.dp, color = StriveTheme.moments.lime)
-                    Text(count, style = style, color = StriveTheme.moments.text(Accent.Lime))
+                    RollingCount(w.countedLogged, count, style, StriveTheme.moments.text(Accent.Lime))
                 }
-            } else Text(count, style = style, color = grey)
+            } else RollingCount(w.countedLogged, count, style, grey)
         }
+    }
+}
+
+/**
+ * MO-log: "1 of 14 sets" rolls to "2 of 14", each changed digit sliding up on the win spring; under Reduce Motion the new digit
+ * cross-fades in place. VoiceOver reads the whole count as one text, as it did when this was one Text.
+ */
+@Composable
+private fun RollingCount(logged: Int, count: String, style: TextStyle, color: Color) {
+    val reduceMotion = StriveTheme.reduceMotion
+    val digits = "$logged"
+    Row(Modifier.clearAndSetSemantics { text = AnnotatedString(count) }) {
+        digits.forEachIndexed { i, digit ->
+            // Keyed from the right, so 9 to 10 rolls the units and adds the tens.
+            key(digits.length - i) {
+                AnimatedContent(digit, Modifier.clipToBounds(), transitionSpec = {
+                    if (reduceMotion) fadeIn(Motion.fade()) togetherWith fadeOut(Motion.fade())
+                    else slideInVertically(Motion.win(IntOffset.VisibilityThreshold)) { it } togetherWith
+                        (slideOutVertically(Motion.win(IntOffset.VisibilityThreshold)) { -it } + fadeOut(Motion.fade()))
+                }) { Text("$it", style = style, color = color) }
+            }
+        }
+        // shortcut: assumes the count leads its string, as in English and Swedish; split on the placeholder if a language moves it.
+        Text(count.removePrefix(digits), style = style, color = color)
     }
 }
 
@@ -352,11 +409,48 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
                        onRir: (Int?) -> Unit, onMore: (Boolean) -> Unit, onEdit: () -> Unit, onLog: () -> Unit, tag: String? = null) {
     val colors = MaterialTheme.colorScheme
     val type = MaterialTheme.typography
-    val sv = swedish
+    val reduceMotion = StriveTheme.reduceMotion
     Column(
         Modifier.fillMaxWidth().background(colors.surface, ShapeLargeIncreased).padding(StriveTheme.spacing.s16).testTag("focus"),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
+        // MO-log: the next set's values cross-fade over 250 ms, and the card's height follows on the calm spring (at once under Reduce
+        // Motion). A value changed on the same set changes in place.
+        AnimatedContent(FocusShown(e, set, badge, prev, meta, tag), contentKey = { it.set.id }, transitionSpec = {
+            fadeIn(Motion.fade()) togetherWith fadeOut(Motion.fade()) using
+                SizeTransform(clip = false) { _, _ -> if (reduceMotion) snap() else Motion.calm(IntSize.VisibilityThreshold) }
+        }) { FocusValues(it.e, it.set, it.badge, it.prev, it.meta, it.tag) }
+        if (e.type.hasRir()) RirRow(rir, more, onRir, onMore, label = false, compact = true)
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Btn(onEdit, Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp)) {
+                Text(stringResource(Res.string.edit), style = type.titleMedium)
+            }
+            // `.fbtn.wait`: until the set has its values, Log waits on a grey fill; a tap opens the dock to type them.
+            val ready = set.loggable(e.type)
+            Btn(onLog, Modifier.weight(2f).height(50.dp), container = if (ready) colors.primary else colors.surfaceContainerHigh,
+                content = if (ready) colors.onPrimary else colors.onSurfaceVariant, shape = RoundedCornerShape(14.dp)) {
+                Glyph(Glyph.Check, 20.dp, stroke = 2.8f)
+                val log = when (set.kind) {
+                    SetKind.Warmup -> stringResource(Res.string.log_warmup)
+                    SetKind.Drop -> stringResource(Res.string.log_drop)
+                    else -> stringResource(Res.string.log_set, badge)
+                }
+                Text(log, Modifier.padding(start = 8.dp), style = type.titleMedium, fontWeight = if (ready) FontWeight.Bold else null)
+            }
+        }
+    }
+}
+
+/** What the focus card cross-fades between: one set's label and values. */
+private data class FocusShown(val e: SessionExercise, val set: WorkoutSet, val badge: String, val prev: WorkoutSet?, val meta: FocusMeta, val tag: String?)
+
+/** The focus card's label, the next set large, "upp 2,5 kg" and the meta row. */
+@Composable
+private fun FocusValues(e: SessionExercise, set: WorkoutSet, badge: String, prev: WorkoutSet?, meta: FocusMeta, tag: String?) {
+    val colors = MaterialTheme.colorScheme
+    val type = MaterialTheme.typography
+    val sv = swedish
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         // The board's CSS line boxes: `.now` 13/18, `.fv` 38/44, `.fchange` 13/18 pulled up 8 under the values, `.fmeta` 4 below.
         Text(nowLabel(e, set, badge, strip = false, tag), style = type.bodySmall.copy(letterSpacing = 0.3.sp).board(), fontWeight = FontWeight.SemiBold,
             color = colors.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -397,24 +491,6 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
                     // `.fmeta b`'s 15/20 sets the row's line box.
                     Modifier.alignByBaseline(), style = type.bodySmall.copy(lineHeight = 20.sp).board(),
                 )
-            }
-        }
-        if (e.type.hasRir()) RirRow(rir, more, onRir, onMore, label = false, compact = true)
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Btn(onEdit, Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp)) {
-                Text(stringResource(Res.string.edit), style = type.titleMedium)
-            }
-            // `.fbtn.wait`: until the set has its values, Log waits on a grey fill; a tap opens the dock to type them.
-            val ready = set.loggable(e.type)
-            Btn(onLog, Modifier.weight(2f).height(50.dp), container = if (ready) colors.primary else colors.surfaceContainerHigh,
-                content = if (ready) colors.onPrimary else colors.onSurfaceVariant, shape = RoundedCornerShape(14.dp)) {
-                Glyph(Glyph.Check, 20.dp, stroke = 2.8f)
-                val log = when (set.kind) {
-                    SetKind.Warmup -> stringResource(Res.string.log_warmup)
-                    SetKind.Drop -> stringResource(Res.string.log_drop)
-                    else -> stringResource(Res.string.log_set, badge)
-                }
-                Text(log, Modifier.padding(start = 8.dp), style = type.titleMedium, fontWeight = if (ready) FontWeight.Bold else null)
             }
         }
     }
@@ -475,10 +551,51 @@ internal fun SetRow(
     val sv = swedish
     val values = cells(set, type, sv)
     var menu by remember { mutableStateOf(false) }
+    val reduceMotion = StriveTheme.reduceMotion
+    val scope = rememberCoroutineScope()
+    val nextRow = StriveTheme.roles.stateNextRow
+    val lime = StriveTheme.moments.edge(Accent.Lime)
+    // MO-log: the next-row tint leaves this row downwards and enters the next from above on the calm spring, each clipped to its own
+    // row, so it reads as one tint moving down. 0 is here, -1 above, 1 gone. Under Reduce Motion it cross-fades.
+    val tint = remember { Animatable(if (current) 0f else 1f) }
+    LaunchedEffect(current) {
+        val spec = if (reduceMotion) Motion.fade<Float>() else Motion.calm()
+        if (current && tint.value != 0f) { tint.snapTo(-1f); tint.animateTo(0f, spec) }
+        if (!current && tint.value != 1f) tint.animateTo(1f, spec)
+    }
+    // MO-log: the ✓ presses to .96 on a tap that logs; once the set is logged it pops 1 → 1.14 → 1 on the win spring and the row's
+    // edge flashes lime, fading over 400 ms. A log from the focus card or the dock pops it too, without the press. Under Reduce Motion
+    // nothing scales and the edge fades in and out.
+    val scale = remember { Animatable(1f) }
+    val flash = remember { Animatable(0f) }
+    var press by remember { mutableStateOf<Job?>(null) }
+    var wasDone by remember { mutableStateOf(set.done) }
+    LaunchedEffect(set.done) {
+        val logged = set.done && !wasDone
+        wasDone = set.done
+        if (!logged) return@LaunchedEffect
+        press?.join()
+        launch {
+            if (reduceMotion) flash.animateTo(1f, Motion.fade()) else flash.snapTo(1f)
+            flash.animateTo(0f, tween(400, easing = EaseOut))
+        }
+        if (!reduceMotion) scale.animateTo(1f, Motion.win(), initialVelocity = PopVelocity)
+    }
     Row(
         Modifier.fillMaxWidth().heightIn(min = if (current) 42.dp else 38.dp)
             .background(colors.background, RowShape)
-            .then(if (current) Modifier.background(StriveTheme.roles.stateNextRow, RowShape) else Modifier)
+            .drawBehind {
+                val p = tint.value
+                if (abs(p) < 1f) {
+                    if (reduceMotion) drawOutline(RowShape.createOutline(size, layoutDirection, this), nextRow, alpha = 1f - abs(p))
+                    else translate(top = p * size.height) { drawOutline(RowShape.createOutline(size, layoutDirection, this), nextRow) }
+                }
+                // `box-shadow: inset 0 0 0 2px var(--m)`: the stroke drawn inside the row.
+                if (flash.value > 0f) {
+                    val w = 2.dp.toPx()
+                    inset(w / 2) { drawOutline(RowShape.createOutline(size, layoutDirection, this), lime, alpha = flash.value, style = Stroke(w)) }
+                }
+            }
             .clickable { onOpen(null) }.testTag(tag).padding(horizontal = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8),
@@ -543,11 +660,21 @@ internal fun SetRow(
         val check = if (set.done) stringResource(Res.string.logged) else stringResource(Res.string.log_set, badge)
         // `.ok.wait`: the next set's ✓ dims until the set has its values (WO-02-s15); a tap still opens the dock.
         val waiting = current && !set.done && !set.loggable(type)
+        val states = StriveTheme.states
         Box(
-            Modifier.width(CheckColumn).height(34.dp).alpha(if (waiting) StriveTheme.states.disabledOpacity else 1f).clip(RoundedCornerShape(10.dp))
+            // Outside the semantics, so the ✓'s bounds scale with it; `.ok`'s press also dims it to .8 (MO-log's 0 ms frame).
+            Modifier.graphicsLayer {
+                scaleX = scale.value; scaleY = scale.value
+                alpha = 1f - ((1f - scale.value) / (1f - states.pressedScale)).coerceIn(0f, 1f) * (1f - states.pressedOpacity)
+            }
+                .width(CheckColumn).height(34.dp).alpha(if (waiting) states.disabledOpacity else 1f).clip(RoundedCornerShape(10.dp))
                 .background(if (set.done) colors.primary else if (current) Color.Transparent else colors.surfaceContainerHigh)
                 .then(if (current && !set.done) Modifier.border(2.dp, colors.primary, RoundedCornerShape(10.dp)) else Modifier)
-                .clickable(onClickLabel = check, onClick = onCheck)
+                .clickable(onClickLabel = check) {
+                    // Only a tap that logs presses, through the row's guard as the log goes, so a press always ends in a pop.
+                    if (!set.done && set.loggable(type) && !reduceMotion) guard { press = scope.launch { scale.animateTo(states.pressedScale, Motion.press()) } }
+                    onCheck()
+                }
                 .semantics { contentDescription = check },
             contentAlignment = Alignment.Center,
         ) {

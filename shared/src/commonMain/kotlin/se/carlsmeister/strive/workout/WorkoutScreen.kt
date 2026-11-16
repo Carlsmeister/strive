@@ -1,5 +1,7 @@
 package se.carlsmeister.strive.workout
 
+import androidx.compose.animation.core.Animatable
+import se.carlsmeister.strive.theme.calm
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animate
@@ -241,7 +243,9 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     val previous = remember(history, w.exercises.map { it.exerciseId }) { w.exercises.associate { it.exerciseId to previous(history, it.exerciseId) } }
 
     fun log(set: WorkoutSet) {
-        haptics.performHapticFeedback(HapticFeedbackType.Confirm) // Q23: a short haptic confirms ✓
+        // Q23 and MO-log: a light haptic confirms a log; success is a record's. Compose 1.12.1 sends ToggleOn to iOS's light impact
+        // and Confirm to its success notification. Recheck on a Compose bump.
+        haptics.performHapticFeedback(HapticFeedbackType.ToggleOn)
         scope.launch { sessions.saveSet(set) }
         // The rest starts when a set is logged (Q10, Q17); in a superset, once every set in its round is, in either order (choice 6).
         val after = active.map { e -> e.copy(sets = e.sets.map { if (it.id == set.id) set else it }) }
@@ -477,8 +481,15 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
         val open = editing?.let { id -> w.exercises.firstNotNullOfOrNull { e -> e.sets.indexOfFirst { it.id == id }.takeIf { it >= 0 }?.let { e to it } } }
         val restNow = rest
         if (open == null && restNow != null) {
+            // MO-log: the card rises 16 pt and fades in on the calm spring from 150 ms after the log; under Reduce Motion it fades in
+            // where it sits. One delay that ends, on the frame clock, so the UI tests still go idle.
+            val rise = remember(restNow.startedAt) { Animatable(0f) }
+            LaunchedEffect(rise) { delay(150); rise.animateTo(1f, if (reduceMotion) Motion.fade() else Motion.calm()) }
             RestCard(restNow, nowMs, haze, onChange = { graph.rest.value = it },
-                Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = StriveTheme.spacing.s16))
+                Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = StriveTheme.spacing.s16).graphicsLayer {
+                    alpha = rise.value.coerceIn(0f, 1f)
+                    if (!reduceMotion) translationY = (1f - rise.value) * 16.dp.toPx()
+                })
         }
         if (open != null) {
             // A tap anywhere outside the dock closes it (#17 D3).

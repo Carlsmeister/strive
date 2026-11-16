@@ -218,7 +218,8 @@ class FlowTest {
      * The sample's Push A (Bench Press BB's warm-up and set 1 logged, set 2 next, four exercises after it), opened from its bar. The
      * sample pins the clock, so it is let go after.
      */
-    private fun pushA(block: suspend Flow.() -> Unit) = flow {
+    private fun pushA(dark: Boolean? = null, highContrast: Boolean? = null, reduceMotion: Boolean? = null, block: suspend Flow.() -> Unit) =
+        flow(dark = dark, highContrast = highContrast, reduceMotion = reduceMotion) {
         try {
             SampleData.load(graph)
             bar()
@@ -968,6 +969,56 @@ class FlowTest {
             test.mainClock.autoAdvance = true
         }
     }
+
+    /**
+     * MO-log's key frames, 0, 100, 450 and 500 ms after set 2's ✓ in Push A, and the pop's peak at 170, compared by eye with the motion board, so drawn in English
+     * as the board is. At 100 ms the ✓ has pressed to .96 and has not yet popped back.
+     */
+    @Test
+    fun moLogFramesInDarkHc() = inEnglish {
+        pushA(dark = true, highContrast = true) {
+            test.mainClock.autoAdvance = false
+            test.onNode(setTwosCheckMatcher()).performClick()
+            test.savePng(BOARD_SHOTS, "MO-log-0-dark-hc")
+            test.mainClock.advanceTimeBy(100)
+            val pressed = setTwosCheck()
+            test.savePng(BOARD_SHOTS, "MO-log-100-dark-hc")
+            // Not one of the board's frames: the pop's 1.14 peak and the full lime edge, which follow the 100 ms press.
+            test.mainClock.advanceTimeBy(70)
+            test.savePng(BOARD_SHOTS, "MO-log-170-dark-hc")
+            test.mainClock.advanceTimeBy(280)
+            test.savePng(BOARD_SHOTS, "MO-log-450-dark-hc")
+            test.mainClock.advanceTimeBy(50)
+            test.savePng(BOARD_SHOTS, "MO-log-500-dark-hc")
+            test.mainClock.autoAdvance = true
+            idle()
+            val settled = setTwosCheck()
+            assertTrue(pressed.width < settled.width, "the ✓ at 100 ms is ${pressed.width} px wide, settled ${settled.width}")
+        }
+    }
+
+    /**
+     * MO-log under Reduce Motion: no press and no pop, so the ✓ is its settled size at 100 ms. Its size, not its place: the focus card
+     * above it loses set 2's "up 2.5 kg" line, so the row moves up whatever the motion does.
+     */
+    @Test
+    fun underReduceMotionTheCheckDoesNotScale() = pushA(reduceMotion = true) {
+        test.mainClock.autoAdvance = false
+        test.onNode(setTwosCheckMatcher()).performClick()
+        test.mainClock.advanceTimeBy(100)
+        val early = setTwosCheck()
+        test.mainClock.autoAdvance = true
+        idle()
+        waitUntilTrue { open().exercises.first().sets[2].done }
+        assertEquals(setTwosCheck().size, early.size)
+    }
+
+    /** Bench Press BB's set 2 ✓ in Push A (its third row, after the warm-up), before and after it is logged. */
+    private suspend fun Flow.setTwosCheckMatcher() =
+        (hasContentDescription(s(Res.string.log_set, "2")) or hasContentDescription(s(Res.string.logged))) and
+            hasAnyAncestor(hasTestTag("set Bench Press BB 3"))
+
+    private suspend fun Flow.setTwosCheck() = test.onNode(setTwosCheckMatcher()).fetchSemanticsNode().boundsInRoot
 
     @Test
     fun aDoubleTapOnContinueOpensTheWorkoutOnce() = flow {
