@@ -89,7 +89,7 @@ internal fun badges(sets: List<WorkoutSet>): List<String> {
 /** How many working sets, failure sets among them: the "of 4" in "set 2 of 4". */
 internal fun working(sets: List<WorkoutSet>) = sets.count { it.kind.numbered }
 
-/** The number the set at [index] has, or would have as a working set: a warm-up takes the number of the set after it (#42 P6–P8). */
+/** The number the set at [index] has, or would have as a working set: 1 + the numbered sets before it (#42 P6–P8). */
 internal fun numberAsWorking(sets: List<WorkoutSet>, index: Int) = 1 + sets.take(index).count { it.kind.numbered }
 
 /** The focus card's meta row (#42 P6). */

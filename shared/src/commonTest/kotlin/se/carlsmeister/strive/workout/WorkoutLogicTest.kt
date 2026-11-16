@@ -363,6 +363,10 @@ class SupersetTest {
             tidy(slots(1L to 4L, 2L to null, 3L to 4L, 4L to 4L, 5L to null, 6L to 4L)))
 }
 
+/** Push A with one exercise, Bench Press BB, of [sets]. */
+private fun workout(vararg sets: WorkoutSet, skipped: Boolean = false) =
+    Workout(1, "Push A", 0, null, "", null, listOf(SessionExercise(1, 1, "Bench Press BB", ExerciseType.WeightReps, null, "", sets.toList(), skipped = skipped)))
+
 class ProgressCountTest {
     /** O-25: the progress line counts every set but warm-ups, so Push A at 24:13 reads 1 of 14 (design 1, polish 2). */
     @Test
@@ -376,16 +380,9 @@ class ProgressCountTest {
         assertEquals(2 to 4, w.countedLogged to w.countedSets)
     }
 
-    private fun workout(vararg sets: WorkoutSet, skipped: Boolean = false) =
-        Workout(1, "Push A", 0, null, "", null, listOf(SessionExercise(1, 1, "Bench Press BB", ExerciseType.WeightReps, null, "", sets.toList(), skipped = skipped)))
-
     @Test
     fun aWarmUpNotLoggedIsLeftOutOfTheTotal() =
         assertEquals(0 to 1, workout(WorkoutSet(1, kind = SetKind.Warmup), WorkoutSet(2)).let { it.countedLogged to it.countedSets })
-
-    @Test
-    fun aLoggedWarmUpIsLeftOutOfTheLoggedCount() =
-        assertEquals(0 to 1, workout(WorkoutSet(1, done = true, kind = SetKind.Warmup), WorkoutSet(2)).let { it.countedLogged to it.countedSets })
 
     @Test
     fun aDropSetCounts() =
@@ -455,7 +452,7 @@ class WorkoutLogicTest {
 
     @Test
     fun anExerciseHiddenLeavesTheCount() {
-        // Today's Push A in SampleData: Bench Press BB (W + 3), the superset (3 + 3), Dips (2, one to failure), Pushdown (3, one drop).
+        // Bench (W + 3), a superset (3 + 3), then 2 sets with one to failure and 3 with one drop: 14 counted sets.
         fun x(id: Long, vararg kinds: SetKind) =
             SessionExercise(id, id, "X$id", ExerciseType.WeightReps, 2.5, "", kinds.mapIndexed { i, k -> s(id * 10 + i, k) })
         val n = SetKind.Normal
@@ -466,4 +463,8 @@ class WorkoutLogicTest {
         assertEquals(14 - 3, w.without(setOf(1L)).countedSets)
         assertSame(w, w.without(emptySet()))
     }
+
+    @Test
+    fun aLoggedWarmUpIsLeftOutOfTheLoggedCount() =
+        assertEquals(0 to 1, workout(WorkoutSet(1, done = true, kind = SetKind.Warmup), WorkoutSet(2)).let { it.countedLogged to it.countedSets })
 }
