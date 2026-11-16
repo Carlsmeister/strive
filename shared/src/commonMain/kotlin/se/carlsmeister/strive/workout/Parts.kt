@@ -131,7 +131,9 @@ internal fun SwipeToDelete(shape: Shape, onDelete: () -> Unit, content: @Composa
                     // The finger's speed carries into the spring, so letting go has no seam (apple-motion).
                     animate(offset, target, velocity, Motion.settle()) { value, _ -> offset = value }
                     if (target == -width.toFloat()) {
-                        haptics.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate) // MO-gestures' medium haptic
+                        // MO-gestures' medium haptic: Compose 1.12.1 sends LongPress to iOS's default impact, medium (and
+                        // GestureThresholdActivate to light). Recheck on a Compose bump.
+                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                         onDelete()
                     }
                 }),

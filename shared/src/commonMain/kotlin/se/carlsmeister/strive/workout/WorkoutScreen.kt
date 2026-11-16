@@ -13,6 +13,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -278,16 +282,28 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     val pull = rememberDraggableState { delta -> pulled = (pulled + delta).coerceAtLeast(0f) }
     // P9's flick, WO-04's 1000 pt/s, in px/s like the release velocity; pt are dp here.
     val flick = with(density) { 1000.dp.toPx() }
-    val dragToMinimise = Modifier.draggable(pull, Orientation.Vertical, onDragStopped = { velocity ->
+    // The finger's speed, tracked on the box that does not move. Draggable's own velocity is taken in the title bar's coordinates, and
+    // the bar moves with the finger, so it read about 0 for a flick (measured: 0.0 px/s for 405 px in 80 ms).
+    val finger = remember { VelocityTracker() }
+    val dragToMinimise = Modifier.draggable(pull, Orientation.Vertical, onDragStopped = {
         // Once, on release: velocity is px/s and positive downward, as are pulled and the height.
+        val velocity = finger.calculateVelocity().y
         if (minimises(pulled, screenHeight.toFloat(), velocity, flick)) {
             leaving = true
             onMinimise()
-        } else animate(pulled, 0f, velocity, Motion.settle()) { value, _ -> pulled = value }
+        } else pull.drag {
+            // Inside the drag's lock, so a finger that lands mid-spring takes the screen over from it.
+            animate(pulled, 0f, velocity, Motion.settle()) { value, _ -> dragBy(value - pulled) }
+        }
     })
 
     // Behind the screen as it is pulled down, black, as behind an iOS card; gone once it leaves, so the tabs show as it sinks.
-    Box(Modifier.fillMaxSize().drawBehind { if (pulled > 0f && !leaving) drawRect(Color.Black) }) {
+    Box(
+        Modifier.fillMaxSize().drawBehind { if (pulled > 0f && !leaving) drawRect(Color.Black) }.pointerInput(Unit) {
+            // Watches every touch on its way in and consumes none, so the screen under it works as before.
+            awaitPointerEventScope { while (true) awaitPointerEvent(PointerEventPass.Initial).changes.firstOrNull()?.let(finger::addPointerInputChange) }
+        },
+    ) {
     Box(
         Modifier.fillMaxSize().onSizeChanged { screenHeight = it.height }.graphicsLayer {
             val toward = if (screenHeight == 0) 0f else (pulled / (screenHeight / 3f)).coerceAtMost(1f)

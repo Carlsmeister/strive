@@ -366,7 +366,8 @@ private fun TabsScreen(
     } }
 }
 
-// Opaque, so the screen sliding in covers the one it leaves instead of showing both at once.
+// Opaque by default, so the screen sliding in covers the one it leaves instead of showing both at once. A screen that draws its own
+// background, as the workout does, may pass Color.Transparent.
 @Composable
 private fun Page(background: Color = MaterialTheme.colorScheme.background, content: @Composable () -> Unit) {
     // A back swipe that starts mid-push seeks a transition whose start state never settled, and the screens jump.

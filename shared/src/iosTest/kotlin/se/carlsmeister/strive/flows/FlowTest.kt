@@ -30,6 +30,7 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToString
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.onLast
+import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.test.assert
@@ -791,19 +792,38 @@ class FlowTest {
     @Test
     fun draggingTheTitleBarDownMinimises() = flow {
         startWorkout()
-        val screen = test.onRoot().fetchSemanticsNode().size.height.toFloat()
-        test.onNodeWithTag("title-bar").performTouchInput { swipeDown(startY = centerY, endY = centerY + screen * 0.4f, durationMillis = 600) }
-        bar()
+        dragTheTitleBarDown(0.4f, millis = 600) // about 1 850 px/s, under the flick: only the distance minimises
+        barAboveTheTabs()
     }
 
-    /** Short of a third and slow, the drag springs back and the workout stays. */
+    /**
+     * Short of a third, a flick minimises (criterion 8): 15 % in 80 ms is about 5 200 px/s at 3x, past the flick's 1000 pt/s (3 000 px/s).
+     * It passes only if the release velocity reaches `minimises` downward-positive and in px, as the drag does.
+     */
+    @Test
+    fun flickingTheTitleBarDownMinimises() = flow {
+        startWorkout()
+        dragTheTitleBarDown(0.15f, millis = 80)
+        barAboveTheTabs()
+    }
+
+    /** Under Reduce Motion the screen does not scale and minimising cross-fades (P9), but the drag still minimises. */
+    @Test
+    fun draggingTheTitleBarDownMinimisesUnderReduceMotion() = flow(reduceMotion = true) {
+        startWorkout()
+        dragTheTitleBarDown(0.4f, millis = 600)
+        barAboveTheTabs()
+    }
+
+    /** Short of a third and slow, the drag springs back: the workout stays, its title bar where it started. */
     @Test
     fun aShortDragOnTheTitleBarSpringsBack() = flow {
         startWorkout()
-        val screen = test.onRoot().fetchSemanticsNode().size.height.toFloat()
-        test.onNodeWithTag("title-bar").performTouchInput { swipeDown(startY = centerY, endY = centerY + screen * 0.15f, durationMillis = 1500) }
+        val top = test.onNodeWithTag("title-bar").getBoundsInRoot().top
+        dragTheTitleBarDown(0.15f, millis = 1500)
         idle()
         seeDesc(s(Res.string.minimise))
+        assertEquals(top, test.onNodeWithTag("title-bar").getBoundsInRoot().top)
     }
 
     /** Only the title bar minimises: the same drag on the list at its top scrolls, or bounces, and never minimises (Review Focus 4). */
@@ -1831,6 +1851,20 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
     suspend fun bar() {
         val label = s(Res.string.back_to_workout)
         test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(clickLabel(label)).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    /** The bar a minimised workout sits in, and that it sits above the tabs (criterion 8's QA). */
+    suspend fun barAboveTheTabs() {
+        bar()
+        val bar = test.onNode(clickLabel(s(Res.string.back_to_workout))).getBoundsInRoot()
+        val home = test.onAllNodes(hasText(s(Res.string.tab_home)) and hasClickAction()).onLast().getBoundsInRoot()
+        assertTrue(bar.bottom <= home.top, "the bar's bottom ${bar.bottom} is above the tabs' top ${home.top}")
+    }
+
+    /** Drags the workout's title bar down by [share] of the screen's height over [millis]. */
+    fun dragTheTitleBarDown(share: Float, millis: Long) {
+        val screen = test.onRoot().fetchSemanticsNode().size.height.toFloat()
+        test.onNodeWithTag("title-bar").performTouchInput { swipeDown(startY = centerY, endY = centerY + screen * share, durationMillis = millis) }
     }
 
     /** Renames the open workout, minimises it if it shows, and returns the bar's height once the bar shows the new name. */
