@@ -1537,7 +1537,8 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
             dump()
             throw e
         }
-        test.waitForIdle() // settled already: rethrows what the screen threw and draws the last frame
+        // No waitForIdle after it: it has no bound either. What it added comes later: the next node lookup or the test's end rethrows
+        // what the screen threw, and shot() waits for its own last frame.
     }
 
     /** How many times recomposition has changed the screen; an animation alone draws frames without one. */
