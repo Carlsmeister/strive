@@ -208,7 +208,7 @@ class SetKindTest {
     }
 
     @Test
-    fun theOfInSetNOfMCountsEverySetButWarmUps() {
+    fun setNOfMCountsEverySetButWarmUps() {
         // WO-02-abc: Tricep Pushdown's 1, 2 and D read "set 1 of 3"; Bench Press's W, 1, 2 and 3 "set 2 of 3" (O-25's count).
         assertEquals(3, working(listOf(s(1), s(2), s(3, SetKind.Drop))))
         assertEquals(3, working(listOf(s(1, SetKind.Warmup), s(2), s(3), s(4))))

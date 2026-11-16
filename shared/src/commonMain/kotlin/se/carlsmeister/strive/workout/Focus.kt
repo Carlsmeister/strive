@@ -478,6 +478,7 @@ internal fun SetRow(
                     buildAnnotatedString {
                         append(v ?: "–")
                         if (reps) set.rir?.let {
+                            // A 7 sp space is about 2 pt, `.cell small`'s margin; the text keeps its space so it still reads "8 @2".
                             withStyle(SpanStyle(fontSize = 7.sp)) { append(" ") }
                             withStyle(SpanStyle(fontSize = 12.sp, color = colors.onSurfaceVariant)) { append("@$it") }
                         }
@@ -559,7 +560,10 @@ internal fun ExerciseOverview(e: SessionExercise, first: Boolean, last: Boolean,
                 Text(if (e.skipped) stringResource(Res.string.skipped) else "$logged/${e.sets.size}",
                     style = MaterialTheme.typography.bodyMedium.board(), color = if (all && !e.skipped) colors.primary else colors.onSurfaceVariant,
                     fontWeight = if (all && !e.skipped) FontWeight.SemiBold else FontWeight.Normal)
-                if (all && !e.skipped) Glyph(Glyph.Check, 14.dp, color = colors.primary)
+                if (all && !e.skipped) {
+                    val done = stringResource(Res.string.logged)
+                    Glyph(Glyph.Check, 14.dp, Modifier.semantics { contentDescription = done }, color = colors.primary)
+                }
             }
             Box(
                 Modifier.size(36.dp).clip(CircleShape).background(colors.surfaceContainerHigh).clickable(onClickLabel = label, onClick = onExpand)

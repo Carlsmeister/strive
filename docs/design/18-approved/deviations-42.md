@@ -18,10 +18,11 @@ beside them. dark-HC is compared first, then dark. The pull request quotes this 
 | WO-02-note | Keyboard and its Done bar | Not drawn | The system's keyboard; a test window has none | Not ours (iOS) |
 | WO-02-s3 | Bench Press BB's Plan note | Not drawn, so the rows below sit 20 pt higher | As WO-02-s2 (P3) | #44 |
 | WO-02-s3 | Plates line under set 2 | Not drawn | As WO-02-s2 | #48 |
-| WO-02-s3 | Rest card | Sits 21–23 pt lower (board 641–805 pt, shot 663–828 pt); colours match | The rest card's own look and place | #43 |
+| WO-02-s3 | Rest card | Sits 34 pt lower at the same 152 pt height (board 641.7–793.7 pt, shot 676.0–828.0 pt, dark-HC); colours match | The rest card's own look and place | #43 |
 | WO-02-s3 | Focus card's values | About 6 pt wider | As WO-02-s2: the optical size | #42 |
-| WO-02-s4 | Rest card | Sits about 23 pt lower, as WO-02-s3 | The rest card's own look and place | #43 |
+| WO-02-s4 | Rest card | Sits 34 pt lower, as WO-02-s3 (board 641.7–793.7 pt, shot 676.0–828.0 pt) | The rest card's own look and place | #43 |
 | WO-02-s4 | Focus label and values | The label 1–2 pt wider, the values as WO-02-s2 | As WO-02-s2: the optical size | #42 |
 | WO-02-s5, s5b, s5c | Focus label and values | As WO-02-s4 | As WO-02-s2: the optical size | #42 |
 | WO-02-abc | Focus label and values | As WO-02-s4 | As WO-02-s2: the optical size | #42 |
+| WO-02-s5, WO-02-abc | A superset's stacked headers | The headers stand 34 pt apart, so each header's 44 pt targets (the ⋯ and the name that folds it) overlap the next header's by 10 pt. The later header takes the overlap, which leaves the ones above an effective 34 pt where the plan's rule is 44 pt | The board's spacing was kept: the board wins on a value | Carl to settle (board vs 44 pt rule) |
 | WO-15-several | Tricep Pushdown's "Set 2 of 2" | The app now reads "set 2 of 3": the "of" counts every set but warm-ups | **Contradiction between boards, for Carl:** WO-02-abc and its registry row draw Pushdown's 1, 2 and D as "set 1 of 3", O-25's count. WO-15-several is #58's sheet and not shot here | #58 |
