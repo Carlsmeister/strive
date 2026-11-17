@@ -39,12 +39,18 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
@@ -190,8 +196,7 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, defaultRest: Int, 
         Modifier.fillMaxWidth()
             .onSizeChanged { height = it.height.toFloat() }
             .graphicsLayer { translationY = drag.value }
-            .clip(DockShape)
-            .glass(haze, StriveTheme.glass, thick = true)
+            .glass(haze, StriveTheme.glass, thick = true, shape = DockShape)
             // Taps on the dock itself stay in it; only a tap outside closes it. Not clickable, which would merge the dock into one
             // element for VoiceOver and hide the grabber's Stäng behind an empty action.
             .pointerInput(Unit) { detectTapGestures { } }
@@ -396,7 +401,25 @@ private fun Key(
     )
 }
 
-internal val DockShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+/**
+ * The dock's 28 dp top corners. `.dock` keeps only `.glass`'s top border, so the outline runs 1 dp past the sides and the foot:
+ * glass draws its hairline inside the outline, and there it falls off screen everywhere but the top.
+ */
+internal val DockShape = object : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+        val r = with(density) { 28.dp.toPx() }
+        val e = with(density) { 1.dp.toPx() }
+        return Outline.Generic(Path().apply {
+            moveTo(-e, size.height + e)
+            lineTo(-e, r)
+            arcTo(Rect(0f, 0f, 2 * r, 2 * r), 180f, 90f, false)
+            arcTo(Rect(size.width - 2 * r, 0f, size.width, 2 * r), 270f, 90f, false)
+            lineTo(size.width + e, r)
+            lineTo(size.width + e, size.height + e)
+            close()
+        })
+    }
+}
 
 /** `.btn`'s min-height. */
 private val ButtonHeight = 50.dp
