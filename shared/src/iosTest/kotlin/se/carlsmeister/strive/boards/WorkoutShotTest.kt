@@ -35,6 +35,7 @@ import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.collapse
 import strive.shared.generated.resources.exercise_details
 import strive.shared.generated.resources.exercise_options
+import strive.shared.generated.resources.exercise_settings
 import strive.shared.generated.resources.rest_all
 import strive.shared.generated.resources.next
 import strive.shared.generated.resources.note
@@ -316,6 +317,31 @@ class WorkoutShotTest {
         waitForIdle()
     }
 
+    /** Exercise settings from Bench Press BB's ⋯ over WO-02-s2: Step 2.5 kg and Bar Olympic 20 kg pull-downs, Unit on kg. */
+    @Test
+    fun wo12BbInDarkAndDarkHc() = workoutBoard("WO-12-bb", waitFor = "Saved for Bench Press BB in every workout and template.") {
+        exerciseSettings("Bench Press BB")
+    }
+
+    /** Armar at 6:40 with only Curl DB, in lb with a 5 lb step and no bar: the sheet has no Bar row, Unit on lb. */
+    @Test
+    fun wo12DbInDarkAndDarkHc() = emptyWorkoutBoard("WO-12-db", "Saved for Curl DB in every workout and template.", at = 6 * 60 + 40) { graph ->
+        val curl = exerciseId(graph, "Curl DB")
+        graph.exercises.setSettings(curl, step = 5.0, bar = null, unit = WeightUnit.Lb)
+        // Last time's sets, 25 × 12 @2 with 1:30 rest, from an arms day two days back (P14).
+        val day = 86_400_000L
+        val past = graph.sessions.start("Armar", now() - 2 * day)
+        graph.sessions.add(past, listOf(curl))
+        repeat(2) { graph.sessions.addSet(graph.sessions.workout(past).first()!!.exercises.single().id) }
+        graph.sessions.workout(past).first()!!.exercises.single().sets.forEach {
+            graph.sessions.saveSet(it.copy(weight = 25.0, reps = 12, rir = 2, rest = 90, done = true))
+        }
+        graph.sessions.finish(past, Finish.WithoutThem, now() - 2 * day + 30 * 60_000L)
+        graph.sessions.rename(today(graph).id, "Armar")
+        graph.sessions.add(today(graph).id, listOf(curl), lastTime = true)
+        exerciseSettings("Curl DB")
+    }
+
     /** A new empty workout at 0:12, Push A discarded: the quick picks are the exercises marked Yes. */
     @Test
     fun wo01MarksInDarkAndDarkHc() = emptyWorkoutBoard("WO-01-marks", "What are you training today?", at = 12)
@@ -518,6 +544,14 @@ private suspend fun ComposeUiTest.exerciseMenu(name: String) {
     pills[i].performClick()
     val details = getString(Res.string.exercise_details)
     waitUntil("the menu's $details", 10_000) { onAllNodes(hasText(details)).fetchSemanticsNodes().isNotEmpty() }
+}
+
+/** [name]'s ⋯ → Exercise settings. */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.exerciseSettings(name: String) {
+    exerciseMenu(name)
+    onNode(hasText(getString(Res.string.exercise_settings))).performClick()
+    waitForIdle()
 }
 
 /** Adds Bench Press BB's set 4, a copy of set 3, and scrolls to WO-03-strip's page. */

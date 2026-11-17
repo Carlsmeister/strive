@@ -211,7 +211,13 @@
     <string name="alternatives">Alternativ</string>
     <string name="step">Steg</string>
     <string name="bar">Stång</string>
-    <string name="no_bar">Ingen</string>
+    <string name="unit">Enhet</string>
+    <string name="saved_for">Sparas för %1$s i varje pass och mall.</string>
+    <string name="bar_olympic">Olympisk %1$s</string>
+    <string name="bar_short">Kort %1$s</string>
+    <string name="bar_ez">EZ %1$s</string>
+    <string name="bar_hex">Hex %1$s</string>
+    <string name="bar_none">Ingen %1$s</string>
     <string name="skip">Hoppa över</string>
     <string name="skipped">Hoppas över</string>
     <string name="include">Ta med</string>

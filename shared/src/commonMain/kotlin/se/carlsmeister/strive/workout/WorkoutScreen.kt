@@ -41,6 +41,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -127,6 +128,7 @@ import strive.shared.generated.resources.undo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import se.carlsmeister.strive.data.ExerciseType
 import se.carlsmeister.strive.data.Finish
@@ -165,7 +167,13 @@ import strive.shared.generated.resources.log_and_save
 import strive.shared.generated.resources.minimise
 import strive.shared.generated.resources.move_down
 import strive.shared.generated.resources.move_up
-import strive.shared.generated.resources.no_bar
+import strive.shared.generated.resources.unit
+import strive.shared.generated.resources.saved_for
+import strive.shared.generated.resources.bar_olympic
+import strive.shared.generated.resources.bar_short
+import strive.shared.generated.resources.bar_ez
+import strive.shared.generated.resources.bar_hex
+import strive.shared.generated.resources.bar_none
 import strive.shared.generated.resources.note
 import strive.shared.generated.resources.order_skip
 import strive.shared.generated.resources.remove_exercise
@@ -851,24 +859,67 @@ private fun SupersetDialog(w: Workout, e: SessionExercise, onDone: () -> Unit) {
 /** The exercises [e] can make a superset with: the workout's others that are not skipped. The menu offers the row only if there is one. */
 private fun supersetPartners(w: Workout, e: SessionExercise) = w.exercises.filter { it.id != e.id && !it.skipped }
 
-/** Övningens inställningar (Q15, Q7, Q22): the step − and + use, and the bar. */
+/** The step − and + use (Q15). */
+private val Steps = listOf(1.0, 1.25, 2.0, 2.5, 4.0, 5.0)
+
+/** The bars by name (Q22, WO-12), None as 0. */
+private val Bars: List<Pair<Double?, StringResource>> =
+    listOf(20.0 to Res.string.bar_olympic, 15.0 to Res.string.bar_short, 7.5 to Res.string.bar_ez, 25.0 to Res.string.bar_hex, null to Res.string.bar_none)
+
+/**
+ * Exercise settings (WO-12): the exercise's name in the head; Step and Bar as pull-downs, Unit as kg | lb, and what saving means. Done saves
+ * the three; the unit stays unset, the app default, unless a segment was tapped. A tap on the scrim closes without saving.
+ */
 @Composable
 private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
-    val exercises = LocalAppGraph.current.exercises
+    val graph = LocalAppGraph.current
     val scope = rememberCoroutineScope()
     val swedish = Locale.current.language == "sv"
+    val default by remember { graph.settings.defaultUnit() }.collectAsState(WeightUnit.Kg)
     var step by remember { mutableStateOf(e.step ?: 2.5) }
     var bar by remember { mutableStateOf(e.bar) }
-    val steps = listOf(1.0, 1.25, 2.0, 2.5, 4.0, 5.0)
-    val bars = listOf(null, 7.5, 15.0, 20.0, 25.0)
-    // A tap on the scrim closes without saving, as dismissing the dialog did.
-    HeaderSheet(stringResource(Res.string.exercise_settings), onDismiss = onDone, done = stringResource(Res.string.done),
-        onDone = { scope.launch { exercises.setSettings(e.exerciseId, step, bar, e.unit) }; onDone() }) {
-        Text(stringResource(Res.string.step), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Segments(steps.map { kilos(it, swedish) }, steps.indexOf(step).takeIf { it >= 0 }, { i -> i?.let { step = steps[it] } }, clearable = false)
-        Text(stringResource(Res.string.bar), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        val none = stringResource(Res.string.no_bar)
-        Segments(bars.map { it?.let { b -> kilos(b, swedish) } ?: none }, bars.indexOf(bar).takeIf { it >= 0 }, { i -> i?.let { bar = bars[it] } }, clearable = false)
+    var unit by remember { mutableStateOf(e.unit) }
+    // Ruling 3: the Bar row is there for an exercise that had a bar at open, so choosing None keeps it until the sheet closes.
+    val hasBar = remember { e.bar != null }
+    val shown = unit ?: default
+    val unitText = stringResource(shown.label)
+    fun amount(v: Double) = "${kilos(v, swedish)} $unitText"
+    HeaderSheet(e.name, onDismiss = onDone, done = stringResource(Res.string.done),
+        onDone = { scope.launch { graph.exercises.setSettings(e.exerciseId, step, bar, unit) }; onDone() }) {
+        val rows = listOfNotNull<@Composable () -> Unit>(
+            { PullDownRow(stringResource(Res.string.step), Steps, step, { amount(it) }) { step = it } },
+            if (hasBar) {
+                {
+                    PullDownRow(stringResource(Res.string.bar), Bars.map { it.first }, bar, { b ->
+                        Bars.firstOrNull { it.first == b }?.let { stringResource(it.second, amount(b ?: 0.0)) } ?: amount(b ?: 0.0)
+                    }) { bar = it }
+                }
+            } else null,
+            {
+                Row(Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch).padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(Res.string.unit), Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.bodyLarge.board())
+                    Segments(WeightUnit.entries.map { stringResource(it.label) }, WeightUnit.entries.indexOf(shown),
+                        { i -> i?.let { unit = WeightUnit.entries[it] } }, Modifier.width(132.dp), clearable = false)
+                }
+            },
+        )
+        ListBlock(rows, Modifier.fillMaxWidth())
+        Text(stringResource(Res.string.saved_for, e.name), Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium.board())
+    }
+}
+
+/** A `.row` whose teal value opens a [GlassMenu] of [options] read as [text], the [chosen] one checked. */
+@Composable
+private fun <T> PullDownRow(label: String, options: List<T>, chosen: T, text: @Composable (T) -> String, onChoose: (T) -> Unit) {
+    var open by remember { mutableStateOf(false) }
+    Box {
+        ListRow(label, value = text(chosen), pullDown = true, onClick = { open = true })
+        GlassMenu(open, { open = false }) {
+            for (o in options) MenuRow(text(o), { open = false; onChoose(o) }, checked = o == chosen)
+        }
     }
 }
 

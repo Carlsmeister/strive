@@ -64,6 +64,10 @@ import se.carlsmeister.strive.data.memoryDriver
 import se.carlsmeister.strive.db.StriveDatabase
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.exercise_settings
+import strive.shared.generated.resources.unit_lb
+import strive.shared.generated.resources.step
+import strive.shared.generated.resources.bar
+import strive.shared.generated.resources.saved_for
 import strive.shared.generated.resources.exercise_details
 import strive.shared.generated.resources.tab_about
 import strive.shared.generated.resources.tab_history
@@ -814,9 +818,61 @@ class FlowTest {
         addExercises("Bench Press BB")
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.exercise_settings))
-        tapSegment("5")
-        tapOnText(s(Res.string.exercise_settings))
-        test.onAllNodes(hasText("5") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)).onLast().assertIsSelected()
+        tap(s(Res.string.step))
+        tap("5 kg")
+        tapOnText("Bench Press BB")
+        see(s(Res.string.saved_for, "Bench Press BB"))
+        assertTrue(test.onAllNodes(hasText(s(Res.string.step)) and hasText("5 kg")).fetchSemanticsNodes().isNotEmpty(), "the Step row, still 5 kg")
+    }
+
+    /** WO-12: lb chosen in Curl DB's settings is the exercise's own, so the next workout's dock reads lb, with Curl DB's step 2 (#58). */
+    @Test
+    fun theSettingsSheetSetsTheUnitForEveryWorkout() = flow {
+        startWorkout()
+        addExercises("Curl DB")
+        val curl = open().exercises.single().exerciseId
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.exercise_settings))
+        tapSegment(s(Res.string.unit_lb))
+        tap(s(Res.string.done))
+        waitUntilTrue { graph.exercises.byId(curl).first()!!.unit == WeightUnit.Lb }
+        tap(s(Res.string.discard_workout))
+        tap(s(Res.string.discard_workout)) // the alert's button is drawn last
+        seeDesc(s(Res.string.tab_start))
+        startWorkout()
+        addExercises("Curl DB")
+        openSet(0)
+        see(weightLabel("lb", "2"))
+    }
+
+    /** Done saves the unit only when Unit was changed: a new step alone leaves the exercise on the app default (#58). */
+    @Test
+    fun changingOnlyTheStepKeepsTheUnitUnset() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        val bench = open().exercises.single().exerciseId
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.exercise_settings))
+        tap(s(Res.string.step))
+        tap("5 kg")
+        tap(s(Res.string.done))
+        waitUntilTrue { graph.exercises.byId(bench).first()!!.step == 5.0 }
+        assertNull(graph.exercises.byId(bench).first()!!.unit)
+    }
+
+    /** WO-12's Bar pull-down names each bar with its weight in the exercise's unit, None 0 among them. */
+    @Test
+    fun theBarPullDownNamesTheBars() = inEnglish {
+        flow {
+            startWorkout()
+            addExercises("Bench Press BB")
+            tapDesc(s(Res.string.exercise_options))
+            tap(s(Res.string.exercise_settings))
+            tap(s(Res.string.bar))
+            see("Olympic 20 kg")
+            see("EZ 7.5 kg")
+            see("None 0 kg")
+        }
     }
 
     /** A tap on an action sheet's header row leaves the sheet open. */
