@@ -798,7 +798,7 @@ private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
     val bars = listOf(null, 7.5, 15.0, 20.0, 25.0)
     // A tap on the scrim closes without saving, as dismissing the dialog did.
     HeaderSheet(stringResource(Res.string.exercise_settings), onDismiss = onDone, done = stringResource(Res.string.done),
-        onDone = { scope.launch { exercises.setSettings(e.exerciseId, step, bar) }; onDone() }) {
+        onDone = { scope.launch { exercises.setSettings(e.exerciseId, step, bar, e.unit) }; onDone() }) {
         Text(stringResource(Res.string.step), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Segments(steps.map { kilos(it, swedish) }, steps.indexOf(step).takeIf { it >= 0 }, { i -> i?.let { step = steps[it] } }, clearable = false)
         Text(stringResource(Res.string.bar), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)

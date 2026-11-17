@@ -62,6 +62,8 @@ internal data class SessionExercise(
     val superset: Long? = null,
     /** Done one side at a time: a time reads "per side" (WO-02-s15). */
     val perSide: Boolean = false,
+    /** The exercise's weight unit; null for the app default. */
+    val unit: WeightUnit? = null,
 )
 
 /** A workout with its exercises and sets, open while [endedAt] is null. Times are epoch milliseconds. */
@@ -348,7 +350,7 @@ private class Row(
     val seId: Long?, val exerciseId: Long?, val seNote: String?, val skipped: Boolean?, val superset: Long?, val exerciseName: String?, val type: String?,
     val step: Double?, val bar: Double?, val pinned: String?,
     val setId: Long?, val weight: Double?, val reps: Long?, val seconds: Long?, val metres: Double?, val rir: Long?, val done: Boolean?,
-    val kind: String?, val rest: Long?, val perSide: Boolean?,
+    val kind: String?, val rest: Long?, val perSide: Boolean?, val unit: String?,
 )
 
 /** Groups the rows, already in workout, exercise and set order, back into workouts. */
@@ -363,6 +365,7 @@ private fun workouts(rows: List<Row>): List<Workout> = rows.groupBy { it.id }.va
                     it.rest?.toInt())
             },
             pinned = e.pinned.orEmpty(), bar = e.bar, skipped = e.skipped!!, superset = e.superset, perSide = e.perSide == true,
+            unit = WeightUnit.of(e.unit),
         )
     }
     Workout(w.id, w.name, w.startedAt, w.endedAt, w.note, w.rpe?.toInt(), exercises)

@@ -64,6 +64,8 @@ internal data class Exercise(
     val tipsSv: String,
     val mark: Mark?,
     val note: String?,
+    /** The unit its weights are in; null for the app default. */
+    val unit: WeightUnit? = null,
 )
 
 internal interface Exercises {
@@ -77,7 +79,7 @@ internal interface Exercises {
     /** The sticky note, shown every time the exercise is done (Q15). */
     suspend fun setNote(id: Long, note: String)
 
-    suspend fun setSettings(id: Long, step: Double?, bar: Double?)
+    suspend fun setSettings(id: Long, step: Double?, bar: Double?, unit: WeightUnit?)
 }
 
 /** One row of `files/exercises.json`; keys the app does not use (the image prompt, review state) are ignored. */
@@ -115,8 +117,8 @@ internal class SqlExercises(private val database: StriveDatabase, private val io
         withContext(io) { queries.setNote(note.ifEmpty { null }, id) }
     }
 
-    override suspend fun setSettings(id: Long, step: Double?, bar: Double?) {
-        withContext(io) { queries.setSettings(step, bar, id) }
+    override suspend fun setSettings(id: Long, step: Double?, bar: Double?, unit: WeightUnit?) {
+        withContext(io) { queries.setSettings(step, bar, unit?.key, id) }
     }
 
     suspend fun seed(rows: List<SeedExercise>) = withContext(io) {
@@ -136,11 +138,11 @@ internal class SqlExercises(private val database: StriveDatabase, private val io
         id: Long, name: String, aliases: String, primary: String, secondary: String, pattern: String, equipment: String, type: String,
         perSide: Boolean, step: Double?, bar: Double?, category: String, stepsEn: String, tipsEn: String, stepsSv: String,
         tipsSv: String, mark: String?, note: String?, @Suppress("UNUSED_PARAMETER") edited: Boolean,
-        @Suppress("UNUSED_PARAMETER") archived: Boolean,
+        @Suppress("UNUSED_PARAMETER") archived: Boolean, unit: String?,
     ) = Exercise(
         id, name, aliases.split("|").map { it.trim() }.filter { it.isNotEmpty() }, Muscle.of(primary),
         secondary.split(",").filter { it.isNotEmpty() }.map(Muscle::of), pattern, equipment, ExerciseType.of(type), perSide, step, bar,
-        Category.of(category), stepsEn, tipsEn, stepsSv, tipsSv, mark?.let(Mark::valueOf), note,
+        Category.of(category), stepsEn, tipsEn, stepsSv, tipsSv, mark?.let(Mark::valueOf), note, WeightUnit.of(unit),
     )
 }
 
