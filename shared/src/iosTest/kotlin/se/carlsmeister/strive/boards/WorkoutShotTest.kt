@@ -273,12 +273,24 @@ class WorkoutShotTest {
 
     /**
      * The dock on set 2 of an exercise in lb with a 5 lb step and no bar (#58). The board draws Curl DB with Bench Press BB's rows, so
-     * Curl DB takes Bench Press BB's place and sets, its set 2 at 25 × 12 and its rest 1:30.
+     * Curl DB takes Bench Press BB's place and sets, its set 2 at 25 × 12 and its rest 1:30. Its focus card's "up 5 lb" and
+     * "Previous 20 × 12 @2" come from an arm day two days back, and it carries Bench Press BB's pinned note and last time's note.
      */
     @Test
     fun wo04LbInDarkAndDarkHc() = workoutBoard("WO-04-lb", waitFor = "Curl DB · Set 2") { graph ->
         val curl = exerciseId(graph, "Curl DB")
         graph.exercises.setSettings(curl, step = 5.0, bar = null, unit = WeightUnit.Lb)
+        graph.exercises.setNote(curl, "Arch, feet planted.")
+        val day = 86_400_000L
+        val arms = graph.sessions.start("Arms", now() - 2 * day)
+        graph.sessions.add(arms, listOf(curl))
+        val last = graph.sessions.workout(arms).first()!!.exercises.single()
+        repeat(2) { graph.sessions.addSet(last.id) }
+        graph.sessions.workout(arms).first()!!.exercises.single().sets.forEach {
+            graph.sessions.saveSet(it.copy(weight = 20.0, reps = 12, rir = 2, done = true))
+        }
+        graph.sessions.setExerciseNote(last.id, "Kändes stark idag.")
+        graph.sessions.finish(arms, Finish.WithoutThem, now() - 2 * day + 45 * 60_000L)
         val e = today(graph).exercises.first { it.name == "Bench Press BB" }
         graph.sessions.swap(e.id, curl)
         // The set first: saving the copy read before would write its old rest back over the new one.
