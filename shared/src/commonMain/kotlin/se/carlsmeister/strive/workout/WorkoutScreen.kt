@@ -431,7 +431,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                                 // A lone exercise is its own section: the `.body`'s 16 gap comes before its header's own 16. A superset's
                                 // headers stack under its label: the first 6 below it, the others at once (WO-02-s4).
                                 val top = if (!superset) StriveTheme.spacing.s16 * 2 else if (n == 0) 6.dp else 0.dp
-                                ExerciseHeader(w, e, defaultRest, tags[e.id], onFold = { folds[b.first().id] = true }, onSwap = { onSwap(e) },
+                                ExerciseHeader(w, e, defaultRest, defaultUnit, tags[e.id], onFold = { folds[b.first().id] = true }, onSwap = { onSwap(e) },
                                     onOrder = { ordering = true }, Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place).edge(superset).padding(top = top))
                             }
                         }
@@ -670,7 +670,7 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
  */
 @Composable
 private fun ExerciseHeader(
-    w: Workout, e: SessionExercise, defaultRest: Int, letter: String?, onFold: () -> Unit, onSwap: () -> Unit, onOrder: () -> Unit, modifier: Modifier,
+    w: Workout, e: SessionExercise, defaultRest: Int, defaultUnit: WeightUnit, letter: String?, onFold: () -> Unit, onSwap: () -> Unit, onOrder: () -> Unit, modifier: Modifier,
     plan: String? = null,
 ) {
     val graph = LocalAppGraph.current
@@ -761,7 +761,7 @@ private fun ExerciseHeader(
             scope.launch { graph.exercises.setNote(e.exerciseId, n) }
         }, onDismiss = { dialog = null })
         "superset" -> SupersetDialog(w, e) { dialog = null }
-        "settings" -> SettingsDialog(e) { dialog = null }
+        "settings" -> SettingsDialog(e, defaultUnit) { dialog = null }
         // EX-05 over the workout (O-02): nothing is pushed, so Done leaves the workout where it was.
         "details" -> HeaderSheet(e.name, { dialog = null }, done = stringResource(Res.string.done), full = true) {
             // The 48 dp foot lies inside the scroll, past the home indicator, as EX-05-sheet draws it.
@@ -878,19 +878,17 @@ private val Bars = listOf(
  * the scrim closes without saving.
  */
 @Composable
-private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
+private fun SettingsDialog(e: SessionExercise, default: WeightUnit, onDone: () -> Unit) {
     val graph = LocalAppGraph.current
     val scope = rememberCoroutineScope()
     val swedish = Locale.current.language == "sv"
-    val default by remember { graph.settings.defaultUnit() }.collectAsState(WeightUnit.Kg)
     var step by remember { mutableStateOf(e.step ?: 2.5) }
     var bar by remember { mutableStateOf(e.bar) }
     var unit by remember { mutableStateOf(e.unit) }
     // Ruling 3: the Bar row is there for an exercise that had a bar at open, so choosing None keeps it until the sheet closes.
     val hasBar = remember { e.bar != null }
-    // A saved bar no name weighs (10 kg on some seeded barbells) leads the pull-down, so it shows checked and can be kept. Keyed on the
-    // default, which reads kg until the stored one arrives.
-    val odd = remember(default) { e.bar?.takeIf { b -> Bars.none { it.weight(e.unitIn(default)) == b } } }
+    // A saved bar no name weighs (10 kg on some seeded barbells) leads the pull-down, so it shows checked and can be kept.
+    val odd = remember { e.bar?.takeIf { b -> Bars.none { it.weight(e.unitIn(default)) == b } } }
     val shown = unit ?: default
     val unitText = stringResource(shown.label)
     fun amount(v: Double) = "${kilos(v, swedish)} $unitText"
