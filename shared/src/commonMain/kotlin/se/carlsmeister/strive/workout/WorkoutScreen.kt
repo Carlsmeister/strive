@@ -126,7 +126,10 @@ import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.data.Rest
 import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.Workout
+import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.data.WorkoutSet
+import se.carlsmeister.strive.data.defaultUnit
+import se.carlsmeister.strive.data.unitIn
 import se.carlsmeister.strive.data.loggable
 import se.carlsmeister.strive.library.kilos
 import se.carlsmeister.strive.theme.Motion
@@ -224,6 +227,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     val history by remember { sessions.history() }.collectAsState(emptyList())
     val restSetting by remember { graph.settings.get(REST_KEY) }.collectAsState(null)
     val defaultRest = defaultRest(restSetting)
+    val defaultUnit by remember { graph.settings.defaultUnit() }.collectAsState(WeightUnit.Kg)
     val rest by graph.rest.collectAsState()
     // Only the exercise being done stands open; the rest fold to C's overview rows until opened (decision 39). When the focus moves
     // on, the next one opens and the finished one folds.
@@ -357,7 +361,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                                     // ended rest only while it shows, so a rest under the dock can outlive its time.
                                     val resting = rest?.takeIf { it.left(nowMs) > 0 }?.setId?.let { id -> e.sets.any { it.id == id } } == true
                                     val meta = focusMeta(e, e.sets[i].id, inSuperset = tags[e.id] != null, resting, focusRest)
-                                    FocusCard(e, e.sets[i], badges(e.sets)[i], previousOf(e.sets, i, previous[e.exerciseId]), meta,
+                                    FocusCard(e, e.unitIn(defaultUnit), e.sets[i], badges(e.sets)[i], previousOf(e.sets, i, previous[e.exerciseId]), meta,
                                         focusRir, focusMore, { focusRir = it }, { focusMore = it },
                                         onEdit = { edit(e.sets[i].id) }, onLog = { logFocus() }, tag = tags[e.id])
                                 }
@@ -406,8 +410,10 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                                     Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place).edge(superset).padding(top = top))
                             }
                         }
-                        // One row of column labels over a superset whose exercises record the same values.
-                        if (members.map { it.type }.distinct().size == 1) item(key = "c${b.first().id}") { Box(Modifier.edge(superset)) { ColumnLabels(members[0].type, members[0].perSide) } }
+                        // One row of column labels over a superset whose exercises record the same values, in the same unit.
+                        if (members.map { it.type to it.unitIn(defaultUnit) }.distinct().size == 1) item(key = "c${b.first().id}") {
+                            Box(Modifier.edge(superset)) { ColumnLabels(members[0].type, members[0].unitIn(defaultUnit), members[0].perSide) }
+                        }
                         rows.forEachIndexed { r, round ->
                             round.forEachIndexed { k, (e, i) ->
                                 val s = e.sets[i]
@@ -475,7 +481,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                         }
                     }
                 }
-                StripOverlay(strip, focus, focusRir, focus?.let { tags[it.first.id] }, Modifier.align(Alignment.TopCenter)) {
+                StripOverlay(strip, focus, defaultUnit, focusRir, focus?.let { tags[it.first.id] }, Modifier.align(Alignment.TopCenter)) {
                     scope.launch { if (reduceMotion) list.scrollToItem(0) else list.animateScrollToItem(0) }
                 }
             }
@@ -509,7 +515,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             if (open != null) shown.value = open
             val (e, i) = shown.value ?: return@Overlay
             val set = e.sets.getOrNull(i) ?: return@Overlay
-            Dock(e, set, defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
+            Dock(e, e.unitIn(defaultUnit), set, defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
                 field = editField, logs = !editRest)
         }
         val toast by toasts.shown.collectAsState()
@@ -821,7 +827,7 @@ private const val RISE_WINDOW_MS = 500L
 
 /** The focus strip under the bar while the focus card is out of sight (D-scroll), on the bar's glass. */
 @Composable
-private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, rir: Int?, tag: String?, modifier: Modifier, onBack: () -> Unit) {
+private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, defaultUnit: WeightUnit, rir: Int?, tag: String?, modifier: Modifier, onBack: () -> Unit) {
     val reduceMotion = StriveTheme.reduceMotion
     Overlay(
         shown, modifier,
@@ -834,7 +840,7 @@ private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, rir
         Column(Modifier.fillMaxWidth().background(StriveTheme.glass.thick)) {
             shownFocus.value?.let { (e, i) ->
                 e.sets.getOrNull(i)?.let {
-                    Box(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 10.dp)) { FocusStrip(e, it, badges(e.sets)[i], rir, onBack, tag) }
+                    Box(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 10.dp)) { FocusStrip(e, e.unitIn(defaultUnit), it, badges(e.sets)[i], rir, onBack, tag) }
                 }
             }
             HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)

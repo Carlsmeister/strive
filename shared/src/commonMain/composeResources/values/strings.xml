@@ -120,7 +120,8 @@
     <string name="save_change">Save change</string>
     <string name="next">Next</string>
     <string name="hide">Hide</string>
-    <string name="field_weight">Weight, kg</string>
+    <string name="field_weight">Weight, %1$s</string>
+    <string name="field_weight_step">Weight, %1$s · step %2$s</string>
     <string name="field_reps">Reps</string>
     <string name="field_seconds">Time, s</string>
     <string name="field_metres">Distance, m</string>
@@ -156,7 +157,6 @@
     <string name="edit">Edit</string>
     <string name="col_set">Set</string>
     <string name="col_previous">Previous</string>
-    <string name="col_kg">kg</string>
     <string name="unit_kg">kg</string>
     <string name="unit_lb">lb</string>
     <string name="col_reps">Reps</string>
@@ -177,8 +177,8 @@
     <string name="rest">Rest</string>
     <string name="rest_row">Rest %1$s</string>
     <string name="rest_after">rest %1$s after</string>
-    <string name="up_by">up %1$s kg</string>
-    <string name="down_by">down %1$s kg</string>
+    <string name="up_by">up %1$s %2$s</string>
+    <string name="down_by">down %1$s %2$s</string>
     <string name="add_set_rest">Add set (%1$s)</string>
     <string name="now_kind">Now · %1$s · %2$s</string>
     <string name="now_strip">Now · %1$s · set %2$s</string>

@@ -120,7 +120,8 @@
     <string name="save_change">Spara ändring</string>
     <string name="next">Nästa</string>
     <string name="hide">Dölj</string>
-    <string name="field_weight">Vikt, kg</string>
+    <string name="field_weight">Vikt, %1$s</string>
+    <string name="field_weight_step">Vikt, %1$s · steg %2$s</string>
     <string name="field_reps">Reps</string>
     <string name="field_seconds">Tid, s</string>
     <string name="field_metres">Distans, m</string>
@@ -156,7 +157,6 @@
     <string name="edit">Ändra</string>
     <string name="col_set">Set</string>
     <string name="col_previous">Förra</string>
-    <string name="col_kg">kg</string>
     <string name="unit_kg">kg</string>
     <string name="unit_lb">lb</string>
     <string name="col_reps">Reps</string>
@@ -177,8 +177,8 @@
     <string name="rest">Vila</string>
     <string name="rest_row">Vila %1$s</string>
     <string name="rest_after">vila %1$s efter</string>
-    <string name="up_by">upp %1$s kg</string>
-    <string name="down_by">ner %1$s kg</string>
+    <string name="up_by">upp %1$s %2$s</string>
+    <string name="down_by">ner %1$s %2$s</string>
     <string name="add_set_rest">Lägg till set (%1$s)</string>
     <string name="now_kind">Nu · %1$s · %2$s</string>
     <string name="now_strip">Nu · %1$s · set %2$s</string>

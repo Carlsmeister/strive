@@ -23,3 +23,6 @@ internal fun Double.convert(from: WeightUnit, to: WeightUnit): Double = this * f
 
 // 1 lb is 0.45359237 kg exactly, by the international definition.
 private val WeightUnit.kilos get() = if (this == WeightUnit.Lb) 0.45359237 else 1.0
+
+/** The unit the exercise's weights read in: its own, or the app default when it has none. */
+internal fun SessionExercise.unitIn(default: WeightUnit): WeightUnit = unit ?: default

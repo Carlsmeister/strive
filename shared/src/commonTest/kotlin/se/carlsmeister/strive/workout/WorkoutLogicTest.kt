@@ -14,7 +14,11 @@ import se.carlsmeister.strive.data.Slot
 import se.carlsmeister.strive.data.join
 import se.carlsmeister.strive.data.leave
 import se.carlsmeister.strive.data.tidy
+import se.carlsmeister.strive.data.unitIn
 import se.carlsmeister.strive.data.warmupOrder
+import strive.shared.generated.resources.Res
+import strive.shared.generated.resources.col_reps
+import strive.shared.generated.resources.unit_lb
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -118,6 +122,21 @@ class SummaryTest {
 
     @Test
     fun volumeOfNullUnitSetsIsUnchanged() = assertEquals(80.0 * 8 + 82.5 * 6, summary(workout, now = 0, WeightUnit.Kg).volume)
+}
+
+/** An exercise's weights read in its own unit, or in the app default when it has none (#58). */
+class WeightUnitTest {
+    private val curl = SessionExercise(0, 0, "Curl DB", ExerciseType.WeightReps, 5.0, "", emptyList())
+
+    @Test
+    fun anExerciseWithoutAUnitTakesTheDefault() = assertEquals(WeightUnit.Lb, curl.unitIn(WeightUnit.Lb))
+
+    @Test
+    fun anExercisesOwnUnitWinsOverTheDefault() = assertEquals(WeightUnit.Lb, curl.copy(unit = WeightUnit.Lb).unitIn(WeightUnit.Kg))
+
+    @Test
+    fun anLbExercisesWeightColumnReadsLb() =
+        assertEquals(listOf(Res.string.unit_lb, Res.string.col_reps), columns(ExerciseType.WeightReps, unit = WeightUnit.Lb))
 }
 
 class WeeksTest {

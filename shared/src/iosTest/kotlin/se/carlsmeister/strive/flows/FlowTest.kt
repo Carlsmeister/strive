@@ -82,7 +82,6 @@ import strive.shared.generated.resources.workout_options
 import strive.shared.generated.resources.mark_none
 import strive.shared.generated.resources.field_reps
 import strive.shared.generated.resources.field_seconds
-import strive.shared.generated.resources.field_weight
 import strive.shared.generated.resources.finish
 import strive.shared.generated.resources.hide
 import strive.shared.generated.resources.keep_going
@@ -131,6 +130,9 @@ import androidx.compose.ui.test.hasScrollToIndexAction
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.performScrollToKey
 import se.carlsmeister.strive.data.Mark
+import se.carlsmeister.strive.data.WeightUnit
+import se.carlsmeister.strive.workout.grouped
+import kotlin.math.roundToLong
 import strive.shared.generated.resources.add_named
 import strive.shared.generated.resources.collapse
 import strive.shared.generated.resources.edit
@@ -248,7 +250,7 @@ class FlowTest {
         openSet(0)
         tapSegment("2")
         shot("dark-03-dock")
-        tapDesc(s(Res.string.field_weight))
+        tapDesc(weightLabel("kg"))
         shot("dark-04-keypad")
         keys("80")
         tap(s(Res.string.next))
@@ -316,7 +318,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         openSet(0)
         shot("02-dock")
-        tapDesc(s(Res.string.field_weight))
+        tapDesc(weightLabel("kg"))
         shot("03-keypad")
         keys("80")
         tap(s(Res.string.next))
@@ -337,11 +339,11 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         openSet(0)
-        tapDesc(s(Res.string.field_weight))
+        tapDesc(weightLabel("kg"))
         keys("805⌫")
         tap(s(Res.string.hide))
         // The keypad is gone, the steppers are back, and the field kept what was typed.
-        seeDesc("${s(Res.string.field_weight)} +")
+        seeDesc("${weightLabel("kg")} +")
         see("80")
     }
 
@@ -350,7 +352,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         openSet(0)
-        repeat(2) { tapDesc("${s(Res.string.field_weight)} +") } // 2,5 kg a step
+        repeat(2) { tapDesc("${weightLabel("kg")} +") } // 2,5 kg a step
         repeat(3) { tapDesc("${s(Res.string.field_reps)} +") }
         tapDesc("${s(Res.string.field_reps)} −")
         tapSegment("2")
@@ -365,7 +367,7 @@ class FlowTest {
         openSet(0)
         tapSegment("4+")
         tapSegment("7")
-        tapDesc("${s(Res.string.field_weight)} +")
+        tapDesc("${weightLabel("kg")} +")
         tapDesc("${s(Res.string.field_reps)} +")
         tap(s(Res.string.log))
         waitUntilTrue { open().exercises.single().sets.single().rir == 7 }
@@ -376,7 +378,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         tapDesc(s(Res.string.log_set, 1))
-        seeDesc(s(Res.string.field_weight))
+        seeDesc(weightLabel("kg"))
         assertEquals(false, open().exercises.single().sets.single().done)
     }
 
@@ -385,7 +387,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         openSet(0)
-        tapDesc("${s(Res.string.field_weight)} +")
+        tapDesc("${weightLabel("kg")} +")
         tap(s(Res.string.log))
         // Reps is empty, so Logga opens the keypad on it rather than logging half a set; rest comes after it.
         see(s(Res.string.next))
@@ -428,7 +430,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         openSet(0)
         test.onRoot().performTouchInput { click(Offset(centerX, 300f)) }
-        gone(hasContentDescription(s(Res.string.field_weight)))
+        gone(hasContentDescription(weightLabel("kg")))
     }
 
     @Test
@@ -437,7 +439,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         openSet(0)
         test.onNodeWithContentDescription(s(Res.string.close)).performTouchInput { swipeDown(endY = centerY + 900f) }
-        gone(hasContentDescription(s(Res.string.field_weight)))
+        gone(hasContentDescription(weightLabel("kg")))
     }
 
     @Test
@@ -447,7 +449,7 @@ class FlowTest {
         openSet(0)
         // VoiceOver does not tap the grabber, it performs its action.
         test.onNodeWithContentDescription(s(Res.string.close)).performSemanticsAction(SemanticsActions.OnClick)
-        gone(hasContentDescription(s(Res.string.field_weight)))
+        gone(hasContentDescription(weightLabel("kg")))
     }
 
     @Test
@@ -469,7 +471,7 @@ class FlowTest {
         // Only the part the row uncovers is red; the row itself stays opaque (point 4).
         shot("13-swipe-open")
         // The swipe began on the set's ✓ and ended over the row: neither may count as a tap.
-        gone(hasContentDescription(s(Res.string.field_weight)))
+        gone(hasContentDescription(weightLabel("kg")))
         tap(s(Res.string.delete))
         waitUntilTrue { open().exercises.single().sets.isEmpty() }
     }
@@ -495,7 +497,7 @@ class FlowTest {
         see(s(Res.string.delete))
         setRows()[0].performClick()
         gone(hasText(s(Res.string.delete)))
-        gone(hasContentDescription(s(Res.string.field_weight)))
+        gone(hasContentDescription(weightLabel("kg")))
         assertEquals(1, open().exercises.single().sets.size)
     }
 
@@ -1195,12 +1197,58 @@ class FlowTest {
         see(s(Res.string.all_activities))
     }
 
+    /** An lb exercise is logged in lb, and History's volume converts it into the app default, kg (#58, acceptance 2). */
+    @Test
+    fun anLbExerciseLogsInLbAndTheTotalsConvert() = inEnglish {
+        flow {
+            startWorkout()
+            curlInLb()
+            addExercises("Bench Press BB", "Curl DB")
+            logFirstSet("100", "5")
+            // Bench Press done, the focus moves on and Curl DB opens.
+            test.onNodeWithTag("set Curl DB 1").performClick()
+            idle()
+            see("Weight, lb · step 5")
+            tapDesc(weightLabel("lb", "5"))
+            keys("25")
+            tap(s(Res.string.next))
+            keys("12")
+            tap(s(Res.string.next))
+            tap(s(Res.string.log_next))
+            waitUntilTrue { open().exercises.all { e -> e.sets.all { it.done } } }
+            tap(s(Res.string.finish))
+            tap(s(Res.string.done))
+            tap(s(Res.string.tab_you))
+            tap(s(Res.string.all_activities))
+            // 100 × 5 kg plus 25 × 12 lb in kg: 636, not the 800 the raw numbers add up to.
+            see("${grouped((500 + 300 * 0.45359237).roundToLong(), swedish = false)} kg", substring = true)
+        }
+    }
+
+    /** Ruling 2: a bar-less exercise's weight label names its step, one with a bar does not, and neither crashes on lb (#58). */
+    @Test
+    fun lbDockWithoutABarShowsTheStep() = inEnglish {
+        flow {
+            startWorkout()
+            curlInLb()
+            addExercises("Bench Press BB", "Curl DB")
+            openSet(0)
+            see("Weight, kg")
+            test.onNodeWithContentDescription(s(Res.string.close)).performSemanticsAction(SemanticsActions.OnClick)
+            gone(hasText("Weight, kg"))
+            tapDesc(s(Res.string.expand, "Curl DB"))
+            test.onNodeWithTag("set Curl DB 1").performClick()
+            idle()
+            see("Weight, lb · step 5")
+        }
+    }
+
     @Test
     fun aBodyweightExerciseLogsRepsOnly() = flow {
         startWorkout()
         addExercises("Chest Dips")
         openSet(0)
-        gone(hasContentDescription(s(Res.string.field_weight)))
+        gone(descContains(weightLabel("kg")))
         repeat(10) { tapDesc("${s(Res.string.field_reps)} +") }
         tap(s(Res.string.log))
         waitUntilTrue { open().exercises.single().sets.single().let { it.done && it.reps == 10 } }
@@ -1240,7 +1288,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         tap(s(Res.string.edit))
-        seeDesc(s(Res.string.field_weight))
+        seeDesc(weightLabel("kg"))
     }
 
     @Test
@@ -1291,7 +1339,7 @@ class FlowTest {
     @Test
     fun theFocusCardShowsLastTimeTheChangeAndTheRest() = flow {
         designD()
-        see(s(Res.string.up_by, "5"))
+        see(s(Res.string.up_by, "5", "kg"))
         // Set 2 of 2 is Bench Press's last, so the meta row says so where it said the rest (#42 P6).
         see(s(Res.string.last_set))
         see("80 × 8 @3", substring = true)
@@ -1414,7 +1462,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         openSet(0)
-        tapDesc("${s(Res.string.field_weight)} +")
+        tapDesc("${weightLabel("kg")} +")
         tapDesc("${s(Res.string.field_reps)} +")
         tapDesc("${s(Res.string.rest)} +")
         see("2:15")
@@ -1669,13 +1717,13 @@ class FlowTest {
         assertEquals(listOf("set Incline Press DB 1", "set Lateral Raise DB 1", "set Incline Press DB 2", "set Lateral Raise DB 2"),
             setRows().fetchSemanticsNodes().map { it.config[SemanticsProperties.TestTag] })
         // B 1 first: A 1 is still to do, so no rest, and the focus stays on A 1.
-        logSet("set Lateral Raise DB 1", "10", "12")
+        logSet("set Lateral Raise DB 1", "10", "12", weightLabel("kg", "2"))
         waitUntilTrue { open().exercises[1].sets[0].done }
         assertNull(graph.rest.value)
         gone(hasTestTag("rest-card"))
         see(s(Res.string.now_set, "A · Incline Press DB", 1, 2).uppercase())
         // Then A 1: the round is done, its rest starts, and the focus moves on to A 2.
-        logSet("set Incline Press DB 1", "26", "10")
+        logSet("set Incline Press DB 1", "26", "10", weightLabel("kg", "2"))
         waitUntilTrue { open().exercises[0].sets[0].done }
         test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
         assertEquals(open().exercises[1].sets[0].id, graph.rest.value?.setId)
@@ -2142,6 +2190,12 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
         waitUntilTrue { open().exercises.size == before + names.size }
     }
 
+    /** Curl DB in lb with a 5 lb step and no bar, as WO-04-lb draws it. */
+    suspend fun curlInLb() {
+        val curl = graph.exercises.all().first { it.isNotEmpty() }.first { it.name == "Curl DB" }
+        graph.exercises.setSettings(curl.id, step = 5.0, bar = null, unit = WeightUnit.Lb)
+    }
+
     /** Taps the [index]th open exercise's Lägg till set. */
     suspend fun addSetTo(index: Int) {
         val add = hasText(s(Res.string.add_set), substring = true) and hasClickAction()
@@ -2150,11 +2204,11 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
         idle()
     }
 
-    /** Opens the set row tagged [tag] and logs it through the dock. */
-    suspend fun logSet(tag: String, weight: String, reps: String) {
+    /** Opens the set row tagged [tag] and logs it through the dock, whose weight field reads [label]. */
+    suspend fun logSet(tag: String, weight: String, reps: String, label: String) {
         test.onNodeWithTag(tag).performClick()
         idle()
-        tapDesc(s(Res.string.field_weight))
+        tapDesc(label)
         keys(weight)
         tap(s(Res.string.next))
         keys(reps)
@@ -2165,7 +2219,7 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
     suspend fun logFirstSet(weight: String, reps: String, rir: String? = null) {
         openSet(0)
         rir?.let { tapSegment(it) }
-        tapDesc(s(Res.string.field_weight))
+        tapDesc(weightLabel("kg"))
         keys(weight)
         tap(s(Res.string.next))
         keys(reps)

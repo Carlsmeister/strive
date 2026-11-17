@@ -28,10 +28,11 @@ import se.carlsmeister.strive.data.SeedExercise
 import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.SqlExercises
+import se.carlsmeister.strive.data.WeightUnit
+import se.carlsmeister.strive.flows.weightLabel
 import se.carlsmeister.strive.workout.now
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.exercise_options
-import strive.shared.generated.resources.field_weight
 import strive.shared.generated.resources.next
 import strive.shared.generated.resources.note
 import strive.shared.generated.resources.remove_exercise
@@ -270,6 +271,23 @@ class WorkoutShotTest {
     @Test
     fun wo04NewInDarkAndDarkHc() = workoutBoard("WO-04-new", waitFor = "Bench Press BB · Set 2") { benchDock(row = 3) }
 
+    /**
+     * The dock on set 2 of an exercise in lb with a 5 lb step and no bar (#58). The board draws Curl DB with Bench Press BB's rows, so
+     * Curl DB takes Bench Press BB's place and sets, its set 2 at 25 × 12 and its rest 1:30.
+     */
+    @Test
+    fun wo04LbInDarkAndDarkHc() = workoutBoard("WO-04-lb", waitFor = "Curl DB · Set 2") { graph ->
+        val curl = exerciseId(graph, "Curl DB")
+        graph.exercises.setSettings(curl, step = 5.0, bar = null, unit = WeightUnit.Lb)
+        val e = today(graph).exercises.first { it.name == "Bench Press BB" }
+        graph.sessions.swap(e.id, curl)
+        // The set first: saving the copy read before would write its old rest back over the new one.
+        graph.sessions.saveSet(e.sets[2].copy(weight = 25.0, reps = 12))
+        graph.sessions.setRestAll(e.id, 90)
+        waitUntil(timeoutMillis = 10_000) { onAllNodes(hasTestTag("set Curl DB 3")).fetchSemanticsNodes().isNotEmpty() }
+        dock("Curl DB", row = 3, weightLabel("lb", "5"))
+    }
+
     /** The dock on the logged set 1. */
     @Test
     fun wo04LoggedInDarkAndDarkHc() = workoutBoard("WO-04-logged", waitFor = "Save change") { benchDock(row = 2) }
@@ -367,9 +385,12 @@ private suspend fun ComposeUiTest.setMenu(badge: String) {
  * weight cell, which opens the keypad instead.
  */
 @OptIn(ExperimentalTestApi::class)
-private suspend fun ComposeUiTest.benchDock(row: Int) {
-    onNode(hasTestTag("set Bench Press BB $row")).performSemanticsAction(SemanticsActions.OnClick)
-    val weight = getString(Res.string.field_weight)
+private suspend fun ComposeUiTest.benchDock(row: Int) = dock("Bench Press BB", row, weightLabel("kg"))
+
+/** Opens the dock on [exercise]'s [row] through the row's own action, and waits for its weight field, labelled [weight]. */
+@OptIn(ExperimentalTestApi::class)
+private fun ComposeUiTest.dock(exercise: String, row: Int, weight: String) {
+    onNode(hasTestTag("set $exercise $row")).performSemanticsAction(SemanticsActions.OnClick)
     waitUntil(timeoutMillis = 10_000) { onAllNodes(hasText(weight)).fetchSemanticsNodes().isNotEmpty() }
 }
 
@@ -377,7 +398,7 @@ private suspend fun ComposeUiTest.benchDock(row: Int) {
 @OptIn(ExperimentalTestApi::class)
 private suspend fun ComposeUiTest.benchKeypad(nexts: Int) {
     benchDock(row = 3)
-    onNode(hasContentDescription(getString(Res.string.field_weight))).performClick()
+    onNode(hasContentDescription(weightLabel("kg"))).performClick()
     waitForIdle()
     "85".forEach { onNode(hasTestTag("key-$it")).performClick(); waitForIdle() }
     repeat(nexts) { onNode(hasText(getString(Res.string.next)) and hasClickAction()).performClick(); waitForIdle() }

@@ -39,8 +39,6 @@ import strive.shared.generated.resources.history_sets
 import strive.shared.generated.resources.minutes
 import strive.shared.generated.resources.no_workouts
 import strive.shared.generated.resources.start_a_workout
-import strive.shared.generated.resources.unit_kg
-import strive.shared.generated.resources.unit_lb
 import strive.shared.generated.resources.week_workouts
 import strive.shared.generated.resources.weekdays_short
 import kotlin.math.roundToLong
@@ -119,7 +117,7 @@ private fun HistoryRow(w: Workout, unit: WeightUnit, onClick: () -> Unit) {
             val grey = MaterialTheme.colorScheme.onSurfaceVariant
             Text(stringResource(Res.string.minutes, s.minutes.toInt()), style = MaterialTheme.typography.bodySmall, color = grey)
             val sets = stringResource(Res.string.history_sets, s.sets)
-            val label = stringResource(if (unit == WeightUnit.Lb) Res.string.unit_lb else Res.string.unit_kg)
+            val label = stringResource(unit.label)
             Text(if (s.volume > 0) "$sets · ${grouped(s.volume.roundToLong(), swedish)} $label" else sets, style = MaterialTheme.typography.bodySmall, color = grey)
         }
     }
