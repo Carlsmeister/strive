@@ -651,7 +651,8 @@ internal fun SetRow(
                         if (reps) set.rir?.let {
                             // A 7 sp space is about 2 pt, `.cell small`'s margin; the text keeps its space so it still reads "8 @2".
                             withStyle(SpanStyle(fontSize = 7.sp)) { append(" ") }
-                            // `.cell` is a flex box, so `small` centres on its own 16 pt line box, its baseline 2 pt above the reps'.
+                            // `.cell` is a flex box, so `small` centres on its own 16 pt line box, its baseline about 2 pt above the
+                            // reps': 2.0 measured on the 19 boards, where CSS's arithmetic gives about 1.8.
                             withStyle(SpanStyle(fontSize = 12.sp, color = colors.onSurfaceVariant, baselineShift = BaselineShift(2f / 12))) {
                                 append("@$it")
                             }
