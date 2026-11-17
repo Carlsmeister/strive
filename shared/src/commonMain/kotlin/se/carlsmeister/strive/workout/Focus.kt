@@ -24,6 +24,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.TextUnit
 import kotlinx.coroutines.Job
 import se.carlsmeister.strive.theme.Motion
 import se.carlsmeister.strive.theme.calm
@@ -93,6 +94,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
@@ -649,10 +651,15 @@ internal fun SetRow(
                         if (reps) set.rir?.let {
                             // A 7 sp space is about 2 pt, `.cell small`'s margin; the text keeps its space so it still reads "8 @2".
                             withStyle(SpanStyle(fontSize = 7.sp)) { append(" ") }
-                            withStyle(SpanStyle(fontSize = 12.sp, color = colors.onSurfaceVariant)) { append("@$it") }
+                            // `.cell` is a flex box, so `small` centres on its own 16 pt line box, its baseline 2 pt above the reps'.
+                            withStyle(SpanStyle(fontSize = 12.sp, color = colors.onSurfaceVariant, baselineShift = BaselineShift(2f / 12))) {
+                                append("@$it")
+                            }
                         }
                     },
-                    style = MaterialTheme.typography.bodyLarge.board(), maxLines = 1,
+                    // The font's own line box: Compose gives the 7 and 12 sp runs the 22 pt line too, which deepens the line and lifts
+                    // the reps 2 pt. Centred in the 34 pt cell, the natural box puts the baseline where CSS's 22 pt one does.
+                    style = MaterialTheme.typography.bodyLarge.board().copy(lineHeight = TextUnit.Unspecified), maxLines = 1,
                     color = if (set.done || current) colors.onSurface else colors.onSurfaceVariant,
                 )
             }
