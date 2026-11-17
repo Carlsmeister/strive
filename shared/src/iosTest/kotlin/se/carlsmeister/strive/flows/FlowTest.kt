@@ -141,6 +141,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.performScrollToKey
 import se.carlsmeister.strive.data.Mark
 import se.carlsmeister.strive.data.WeightUnit
+import se.carlsmeister.strive.data.UNIT_KEY
 import se.carlsmeister.strive.workout.grouped
 import kotlin.math.abs
 import kotlin.math.roundToLong
@@ -899,6 +900,23 @@ class FlowTest {
             tapDesc(s(Res.string.exercise_options))
             tap(s(Res.string.exercise_settings))
             wait("the Bar row at 45 lb") { test.onAllNodes(hasText("Bar") and hasText("Olympic 45 lb")).fetchSemanticsNodes().isNotEmpty() }
+        }
+    }
+
+    /**
+     * With lb stored as the app default, a unit-less Bench's seeded 20 is judged against the lb bars, which have no 20: it leads the
+     * pull-down, checked, not left out because the sheet opened before the stored default arrived.
+     */
+    @Test
+    fun anLbDefaultJudgesTheBarInLb() = flow {
+        graph.settings.put(UNIT_KEY, WeightUnit.Lb.key)
+        startWorkout()
+        addExercises("Bench Press BB")
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.exercise_settings))
+        tap(s(Res.string.bar))
+        wait("20 lb checked") {
+            test.onAllNodes(hasText("20 lb") and SemanticsMatcher.expectValue(SemanticsProperties.Selected, true)).fetchSemanticsNodes().isNotEmpty()
         }
     }
 

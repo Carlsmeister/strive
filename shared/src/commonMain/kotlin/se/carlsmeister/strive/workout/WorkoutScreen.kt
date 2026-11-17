@@ -888,8 +888,9 @@ private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
     var unit by remember { mutableStateOf(e.unit) }
     // Ruling 3: the Bar row is there for an exercise that had a bar at open, so choosing None keeps it until the sheet closes.
     val hasBar = remember { e.bar != null }
-    // A saved bar no name weighs (10 kg on some seeded barbells) leads the pull-down, so it shows checked and can be kept.
-    val odd = remember { e.bar?.takeIf { b -> Bars.none { it.weight(e.unitIn(default)) == b } } }
+    // A saved bar no name weighs (10 kg on some seeded barbells) leads the pull-down, so it shows checked and can be kept. Keyed on the
+    // default, which reads kg until the stored one arrives.
+    val odd = remember(default) { e.bar?.takeIf { b -> Bars.none { it.weight(e.unitIn(default)) == b } } }
     val shown = unit ?: default
     val unitText = stringResource(shown.label)
     fun amount(v: Double) = "${kilos(v, swedish)} $unitText"
