@@ -17,6 +17,7 @@ import se.carlsmeister.strive.data.tidy
 import se.carlsmeister.strive.data.unitIn
 import se.carlsmeister.strive.data.warmupOrder
 import strive.shared.generated.resources.Res
+import strive.shared.generated.resources.col_added_lb
 import strive.shared.generated.resources.col_reps
 import strive.shared.generated.resources.unit_lb
 import kotlin.test.Test
@@ -137,6 +138,10 @@ class WeightUnitTest {
     @Test
     fun anLbExercisesWeightColumnReadsLb() =
         assertEquals(listOf(Res.string.unit_lb, Res.string.col_reps), columns(ExerciseType.WeightReps, unit = WeightUnit.Lb))
+
+    @Test
+    fun anLbBodyweightExercisesAddedWeightColumnReadsPlusLb() =
+        assertEquals(listOf(Res.string.col_added_lb, Res.string.col_reps), columns(ExerciseType.BodyweightReps, unit = WeightUnit.Lb))
 }
 
 class WeeksTest {

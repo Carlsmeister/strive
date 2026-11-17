@@ -132,6 +132,7 @@ import strive.shared.generated.resources.col_reps
 import strive.shared.generated.resources.col_seconds
 import strive.shared.generated.resources.col_seconds_side
 import strive.shared.generated.resources.col_added
+import strive.shared.generated.resources.col_added_lb
 import strive.shared.generated.resources.per_side
 import strive.shared.generated.resources.type_a_time
 import strive.shared.generated.resources.col_set
@@ -178,7 +179,7 @@ import strive.shared.generated.resources.workout_options
 /** The columns a set row shows after Set and Förra, by what the exercise records. */
 internal fun columns(type: ExerciseType, perSide: Boolean = false, unit: WeightUnit = WeightUnit.Kg): List<StringResource> = when (type) {
     ExerciseType.WeightReps -> listOf(unit.label, Res.string.col_reps)
-    ExerciseType.BodyweightReps -> listOf(Res.string.col_added, Res.string.col_reps)
+    ExerciseType.BodyweightReps -> listOf(if (unit == WeightUnit.Lb) Res.string.col_added_lb else Res.string.col_added, Res.string.col_reps)
     ExerciseType.Reps -> listOf(Res.string.col_reps)
     ExerciseType.Time -> listOf(if (perSide) Res.string.col_seconds_side else Res.string.col_seconds)
     ExerciseType.Distance -> listOf(Res.string.col_metres)

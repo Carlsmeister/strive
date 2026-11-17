@@ -163,6 +163,7 @@
     <string name="col_seconds">Time</string>
     <string name="col_metres">m</string>
     <string name="col_added">+kg</string>
+    <string name="col_added_lb">+lb</string>
     <string name="col_seconds_side">Time / side</string>
     <string name="type_a_time">Type a time to log</string>
     <string name="collapse">Collapse %1$s</string>

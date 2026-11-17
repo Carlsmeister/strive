@@ -93,9 +93,9 @@ import strive.shared.generated.resources.dock_rest_after
 import strive.shared.generated.resources.dock_set
 import strive.shared.generated.resources.dock_warmup
 
-/** The values a set of each type records, in the order Nästa walks them (Q16). */
-private enum class Value(val label: StringResource, val decimals: Boolean) {
-    Weight(Res.string.field_weight, true), Reps(Res.string.field_reps, false),
+/** The values a set of each type records, in the order Nästa walks them (Q16). Weight's label depends on the exercise (#58). */
+private enum class Value(val label: StringResource?, val decimals: Boolean) {
+    Weight(null, true), Reps(Res.string.field_reps, false),
     Seconds(Res.string.field_seconds, false), Metres(Res.string.field_metres, true),
     /** The rest after the set, last in Nästa's order (Q16, Q17). */
     Rest(Res.string.rest, false),
@@ -186,7 +186,7 @@ internal fun Dock(exercise: SessionExercise, unit: WeightUnit, set: WorkoutSet, 
     @Composable
     fun field(i: Int, modifier: Modifier, steppers: Boolean) = Column(modifier, verticalArrangement = Arrangement.spacedBy(space.s4)) {
         val v = fields[i]
-        val label = if (v == Value.Weight) weight else stringResource(v.label)
+        val label = v.label?.let { stringResource(it) } ?: weight
         Text(label, style = MaterialTheme.typography.labelMedium.board(), color = MaterialTheme.colorScheme.onSurfaceVariant)
         NumberField(
             label, texts[i].text, focused = focus == i, fresh = texts[i].fresh, steppers = steppers,
