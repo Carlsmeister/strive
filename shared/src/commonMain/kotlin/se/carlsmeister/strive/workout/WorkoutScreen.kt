@@ -600,7 +600,8 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
                 Column(Modifier.alpha(alpha), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     if (alpha > 0f) {
                         WorkoutMenu(w, large = false, nowMs = nowMs)
-                        Text(progress(w, nowMs), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                        // The board's `.wtb .mid small` resets `tabular-nums`: proportional figures, so the centred line shifts as the clock ticks.
+                        Text(progress(w, nowMs), style = MaterialTheme.typography.bodyMedium.copy(fontFeatureSettings = null), color = colors.onSurfaceVariant)
                     }
                 }
             },
