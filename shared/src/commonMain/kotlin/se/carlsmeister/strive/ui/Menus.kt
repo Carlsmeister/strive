@@ -145,7 +145,8 @@ internal fun TextStyle.css() = copy(fontFeatureSettings = null, lineHeightStyle 
 
 /**
  * `.mrow`: [text] left, a 20 dp [icon] or a [tail] right. [danger] is `.mrow.danger`, in error. A non-null [checked] adds `.lead`'s
- * 20 dp column holding `Check` in primary when true; [back] is a submenu's back row, in label-large with `Back` in that column.
+ * 20 dp column holding an 18 dp `Check` (`ic-check s18`) at its start in primary when true; [back] is a submenu's back row, in
+ * label-large with `Back` in that column.
  * [tailBadge] draws the tail as a set's badge, 32 by 24 in 600 13 (WO-13-menu).
  * It presses as a list row does: surface-container-highest, no scale.
  */
@@ -181,10 +182,10 @@ internal fun MenuRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (lead) {
-            Box(Modifier.size(20.dp)) {
+            Box(Modifier.size(20.dp), contentAlignment = Alignment.CenterStart) {
                 when {
                     back -> Icon(StriveIcons.Back, null, Modifier.size(20.dp), tint = ink)
-                    checked == true -> Icon(StriveIcons.Check, null, Modifier.size(20.dp), tint = colors.primary)
+                    checked == true -> Icon(StriveIcons.Check, null, Modifier.size(18.dp), tint = colors.primary)
                 }
             }
         }
