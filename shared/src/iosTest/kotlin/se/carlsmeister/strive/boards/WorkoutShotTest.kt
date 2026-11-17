@@ -264,18 +264,20 @@ class WorkoutShotTest {
         waitUntil("2:00 checked", 10_000) { onAllNodes(hasText("2:00") and isSelected()).fetchSemanticsNodes().isNotEmpty() }
     }
 
-    /** Incline Press DB's ⋯ over WO-02-s5, in superset A: Remove from superset instead of Create superset. */
+    /** Incline Press DB's ⋯ over WO-02-s5, in superset A: Remove from superset instead of Create superset. The superset moves first, so it sits under the focus card as drawn. */
     @Test
     fun wo09SupersetInDarkAndDarkHc() = workoutBoard("WO-09-superset", waitFor = "Remove from superset") { graph ->
         benchLogged(graph, at = 38 * 60 + 40)
+        moveFirst(graph, "Incline Press DB", "Lateral Raise DB")
         exerciseMenu("Incline Press DB")
     }
 
-    /** Plank's ⋯ over WO-02-s10td, Plank resting 1:00 as this board draws it: a time exercise has no Exercise settings row. */
+    /** Plank's ⋯ over WO-02-s10td, Plank resting 1:00 as this board draws it: a time exercise has no Exercise settings row. Plank moves first, so it sits under the focus card as drawn. */
     @Test
     fun wo09NoweightInDarkAndDarkHc() = workoutBoard("WO-09-noweight", waitFor = "Exercise details") { graph ->
         plankAndLungeAdded(graph)
         graph.sessions.setRestAll(today(graph).exercises.first { it.name == "Plank" }.id, 60)
+        moveFirst(graph, "Plank")
         exerciseMenu("Plank")
     }
 
@@ -503,7 +505,7 @@ class WorkoutShotTest {
     @Test
     fun wo15OneInDarkAndDarkHc() = workoutBoard("WO-15-one", waitFor = "Log it as it is and save") { graph ->
         pushdownLeft(graph, at = 58 * 60 + 20, logged = 2)
-        pushdownFirst(graph)
+        moveFirst(graph, "Tricep Pushdown")
         tapFinish()
     }
 
@@ -511,7 +513,7 @@ class WorkoutShotTest {
     @Test
     fun wo15SeveralInDarkAndDarkHc() = workoutBoard("WO-15-several", waitFor = "Log them as they are and save") { graph ->
         pushdownLeft(graph, at = 56 * 60 + 10, logged = 1)
-        pushdownFirst(graph)
+        moveFirst(graph, "Tricep Pushdown")
         tapFinish()
     }
 
@@ -543,12 +545,13 @@ private suspend fun pushdownLeft(graph: AppGraph, at: Int, logged: Int) {
 }
 
 /**
- * Tricep Pushdown moved to the top, as Order and skip would: the WO-15 boards draw its header straight under the focus card, and the
- * done exercises' overview card, which the app keeps in list order, now follows it under the sheet.
+ * The named exercises moved to the top, as Order and skip would. The WO-15 and WO-09-superset and -noweight boards put the done
+ * exercises' `.ov` above the focus card without `flex: none`, so it renders as nothing and the next exercise's header sits straight
+ * under the focus card. The rendered board is the spec; the overview card, which the app keeps in list order, now follows.
  */
-private suspend fun pushdownFirst(graph: AppGraph) {
-    val (pushdown, rest) = today(graph).exercises.partition { it.name == "Tricep Pushdown" }
-    graph.sessions.reorder((pushdown + rest).map { it.id })
+private suspend fun moveFirst(graph: AppGraph, vararg names: String) {
+    val (moved, rest) = today(graph).exercises.partition { it.name in names }
+    graph.sessions.reorder((moved + rest).map { it.id })
 }
 
 /** No marks and no history, so the empty workout shows the card alone (WO-01-none). */

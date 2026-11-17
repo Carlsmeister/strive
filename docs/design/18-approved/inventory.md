@@ -224,8 +224,9 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   card hides); a heavy bar ("4 × 25 + 1,25", wraps, shrinks); lb exercise.
 - **Source:** #17 choices 1, 1b (D3), 2 and its correction and additions, 3 (P3), Q13 change;
   catalogue: logging dock (deviation: RIR segments about 29 × 44 pt).
-- **Built:** partly: `workout/Dock.kt` (Dock, NumberField, RirRow, RirSegments, RirMore). Not built:
-  the bar and plates (#48).
+- **Built:** partly: `workout/Dock.kt` (Dock, NumberField, RirRow, RirSegments, RirMore); an lb exercise logs
+  in lb (the exercise's unit, `data/Units.kt`), and the weight label adds its step when there is no bar ("Weight, lb ·
+  step 5"). Not built: the bar and plates (#48).
 
 **WO-05 · Keypad**
 - **Purpose:** Strive's own number keypad inside the dock.
@@ -265,7 +266,8 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   opens a time picker.
 - **States:** menu open; rename prompt; note prompt (empty, filled); start-time picker.
 - **Source:** #17 Q11, Q19, choice 4.
-- **Built:** `workout/Focus.kt` (WorkoutMenu), `ui/Dialogs.kt` (TextPrompt).
+- **Built:** `workout/Focus.kt` (WorkoutMenu, StartPrompt), `ui/Dialogs.kt` (TextPrompt, HeaderSheet), `ui/Wheel.kt`
+  (Wheel: the start-time picker's two columns).
 
 **WO-09 · Exercise menu**
 - **Purpose:** everything you do to one exercise mid-workout.
@@ -276,7 +278,8 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   Exercise settings (→ WO-12, weight exercises), and **Remove exercise** in red last.
 - **States:** menu open; rest submenu open; inside a superset; a non-weight exercise (no settings row).
 - **Source:** #17 Q15, choice 4 (M2 without the warm-up tile); commit 5226124.
-- **Built:** `workout/WorkoutScreen.kt` (ExerciseHeader), `ui/Menus.kt` (MenuTiles, MenuTile).
+- **Built:** `workout/WorkoutScreen.kt` (ExerciseHeader), `ui/Menus.kt` (GlassMenu, MenuTiles, MenuTile, MenuRow).
+  Exercise details opens EX-05 as a sheet (`ui/Dialogs.kt` HeaderSheet over `library/ExerciseScreen.kt`).
 
 **WO-10 · Create superset**
 - **Purpose:** pair this exercise with another in the workout.
@@ -284,7 +287,7 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   moves next to it.
 - **States:** list; one exercise left (row hidden from WO-09 when only one exercise exists).
 - **Source:** #17 Q8, choice 4; commit 4c06f7d.
-- **Built:** `workout/WorkoutScreen.kt` (SupersetDialog).
+- **Built:** `workout/WorkoutScreen.kt` (SupersetDialog), `ui/Dialogs.kt` (AlertBox).
 
 **WO-11 · Order and skip**
 - **Purpose:** reorder the workout and skip an exercise.
@@ -292,7 +295,8 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   A skipped exercise stays recorded, its unlogged sets dropped at finish.
 - **States:** default; one skipped; a superset (moves as a group).
 - **Source:** #17 Q8, Q15.
-- **Built:** `workout/WorkoutScreen.kt` (OrderDialog).
+- **Built:** `workout/WorkoutScreen.kt` (OrderDialog), `ui/Dialogs.kt` (HeaderSheet), `workout/Logic.kt` (blocks: a
+  superset moves as one).
 
 **WO-12 · Exercise settings (in the workout)**
 - **Purpose:** change step, bar and unit without leaving the workout.
@@ -300,7 +304,9 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   None 0), Unit (kg, lb).
 - **States:** barbell exercise; dumbbell (no bar); lb.
 - **Source:** #17 Q7, Q15, Q22, Q23.
-- **Built:** partly: `workout/WorkoutScreen.kt` (SettingsDialog: step and bar). Unit not built.
+- **Built:** `workout/WorkoutScreen.kt` (SettingsDialog: step, bar and unit), `ui/Dialogs.kt` (HeaderSheet). The unit is
+  stored on the exercise (`data/Exercises.kt`), and totals across exercises convert (`data/Units.kt`). The Bar row
+  shows only for an exercise that has a bar; editing bars is #48.
 
 **WO-13 · Set type menu**
 - **Purpose:** change a set's kind from its badge.
@@ -622,7 +628,8 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
 - **States:** as a screen from the library; as a sheet from the workout (O-02); no illustration yet
   (text first); mark menu open; each mark.
 - **Source:** #17 Q32, Q36 (changed), choice 10 (X1) and its settled points; decisions 30, 31; #41.
-- **Built:** `library/ExerciseScreen.kt` (About, MarkRow).
+- **Built:** `library/ExerciseScreen.kt` (About, MarkRow); also a sheet from the workout (WO-09's Exercise details,
+  `ui/Dialogs.kt` HeaderSheet). About's content to the board is #60.
 
 **EX-06 · Exercise detail · History**
 - **Purpose:** every workout with this exercise.
