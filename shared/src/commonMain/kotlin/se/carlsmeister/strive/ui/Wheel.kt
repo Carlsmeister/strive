@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,9 +61,10 @@ internal fun Wheel(values: List<String>, selected: Int, onSelect: (Int) -> Unit,
                 val far = abs(i - centre)
                 val size = when (far) { 0 -> 22.sp; 1 -> 20.sp; else -> 18.sp }
                 Box(
-                    Modifier.fillMaxWidth().height(WheelRow).clickable(interactionSource = null, indication = null) {
-                        scope.launch { state.animateScrollToItem(i) }
-                    }.padding(horizontal = 22.dp),
+                    // `selected`: VoiceOver says which row Save stores.
+                    Modifier.fillMaxWidth().height(WheelRow).semantics { this.selected = far == 0 }
+                        .clickable(interactionSource = null, indication = null) { scope.launch { state.animateScrollToItem(i) } }
+                        .padding(horizontal = 22.dp),
                     contentAlignment = if (alignEnd) Alignment.CenterEnd else Alignment.CenterStart,
                 ) {
                     Text(

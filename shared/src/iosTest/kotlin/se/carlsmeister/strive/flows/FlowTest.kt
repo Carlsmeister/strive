@@ -1454,6 +1454,14 @@ class FlowTest {
 
     @Test
     fun theWorkoutMenuChangesTheStartTime() = startedAt1726 {
+        // Untouched, the wheels open on the start, VoiceOver reads those rows as selected, and Save keeps it.
+        tap(s(Res.string.workout))
+        tap(s(Res.string.change_start))
+        test.onNode(wheelRow(s(Res.string.hour), "17")).assertIsSelected()
+        test.onNode(wheelRow(s(Res.string.minute), "26")).assertIsSelected()
+        tap(s(Res.string.save))
+        gone(hasText(s(Res.string.save)))
+        assertEquals(onTheDay(17, 26), open().startedAt)
         changeStart("16", "45")
         waitUntilTrue { open().startedAt == onTheDay(16, 45) }
     }
@@ -1490,15 +1498,19 @@ class FlowTest {
         tap(s(Res.string.change_start))
         shot("17-start-time")
         for ((column, value) in listOf(s(Res.string.hour) to hour, s(Res.string.minute) to minute)) {
-            val row = hasText(value) and hasClickAction() and hasAnyAncestor(hasContentDescription(column))
+            val row = wheelRow(column, value)
             // A row off the wheel's five is scrolled into view first; a row in view is only tapped.
             if (test.onAllNodes(row).fetchSemanticsNodes().isEmpty())
                 test.onNode(hasContentDescription(column) and hasScrollToIndexAction()).performScrollToIndex(value.toInt())
             test.onNode(row).performClick()
             test.waitForIdle()
+            test.onNode(row).assertIsSelected()
         }
         tap(s(Res.string.save))
     }
+
+    /** [value]'s row on the wheel labelled [column]: the hour and minute wheels share "00" to "23". */
+    private fun wheelRow(column: String, value: String) = hasText(value) and hasClickAction() and hasAnyAncestor(hasContentDescription(column))
 
     @Test
     fun theDockStepsTheRestAndLoggingStartsTheRestCard() = flow {
