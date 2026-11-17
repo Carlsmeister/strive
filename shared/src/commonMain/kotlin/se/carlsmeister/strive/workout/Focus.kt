@@ -678,7 +678,7 @@ internal fun SetRow(
                 .semantics { contentDescription = check },
             contentAlignment = Alignment.Center,
         ) {
-            Glyph(Glyph.Check, 17.dp, stroke = 2.6f,
+            Glyph(Glyph.Check, 18.dp,
                 color = if (set.done) colors.onPrimary else if (current) colors.primary else colors.onSurfaceVariant)
         }
     }
