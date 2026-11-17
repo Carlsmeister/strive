@@ -425,6 +425,32 @@ class SupersetTest {
             tidy(slots(1L to 4L, 2L to null, 3L to 4L, 4L to 4L, 5L to null, 6L to 4L)))
 }
 
+class OrderTest {
+    /** The fixture's Push A in order: Bench, the superset Incline + Lateral, Dips, Pushdown. */
+    private val rows = blocks(listOf(
+        "Bench Press BB" to null, "Incline Press DB" to 1L, "Lateral Raise DB" to 1L, "Tricep Dips" to null, "Tricep Pushdown" to null,
+    ).mapIndexed { i, (name, group) -> SessionExercise(i + 1L, i + 1L, name, ExerciseType.WeightReps, 2.5, "", emptyList(), superset = group) })
+
+    private fun names(ids: List<Long>) = ids.map { id -> rows.flatten().first { it.id == id }.name }
+
+    @Test
+    fun aSupersetIsOneRow() {
+        assertEquals(4, rows.size)
+        assertEquals(listOf("Incline Press DB", "Lateral Raise DB"), rows[1].map { it.name })
+    }
+
+    @Test
+    fun movingASupersetDownMovesBothPastTheNext() =
+        assertEquals(listOf("Bench Press BB", "Tricep Dips", "Incline Press DB", "Lateral Raise DB", "Tricep Pushdown"), names(moved(rows, 1, +1)))
+
+    @Test
+    fun movingPastAnEndChangesNothing() {
+        val original = listOf(1L, 2L, 3L, 4L, 5L)
+        assertEquals(original, moved(rows, 0, -1))
+        assertEquals(original, moved(rows, 3, +1))
+    }
+}
+
 /** Push A with one exercise, Bench Press BB, of [sets]. */
 private fun workout(vararg sets: WorkoutSet, skipped: Boolean = false) =
     Workout(1, "Push A", 0, null, "", null, listOf(SessionExercise(1, 1, "Bench Press BB", ExerciseType.WeightReps, null, "", sets.toList(), skipped = skipped)))

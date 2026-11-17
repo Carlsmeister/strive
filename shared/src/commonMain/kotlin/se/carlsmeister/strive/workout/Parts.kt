@@ -81,11 +81,12 @@ internal fun Chevron(down: Boolean, modifier: Modifier = Modifier, color: Color 
         drawLine(color, b, c, stroke, StrokeCap.Round)
     }
 
-/** A 44 pt round target holding a glyph or a drawing, for title bars. */
+/** A 44 pt round target holding a glyph or a drawing, for title bars; not [enabled], it is `.dis`: faded and deaf to taps. */
 @Composable
-internal fun IconTarget(label: String, onClick: () -> Unit, content: @Composable () -> Unit) =
+internal fun IconTarget(label: String, onClick: () -> Unit, enabled: Boolean = true, content: @Composable () -> Unit) =
     Box(
-        Modifier.size(StriveTheme.sizes.touch).clip(ShapeFull).clickable(onClickLabel = label, onClick = onClick)
+        Modifier.size(StriveTheme.sizes.touch).alpha(if (enabled) 1f else StriveTheme.states.disabledOpacity).clip(ShapeFull)
+            .clickable(enabled = enabled, onClickLabel = label, onClick = onClick)
             .semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) { content() }

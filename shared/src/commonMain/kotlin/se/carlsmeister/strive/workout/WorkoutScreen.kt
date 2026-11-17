@@ -11,6 +11,8 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
+import se.carlsmeister.strive.ui.NavText
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
@@ -177,6 +179,8 @@ import strive.shared.generated.resources.sticky_body
 import strive.shared.generated.resources.superset_create
 import strive.shared.generated.resources.superset_leave
 import strive.shared.generated.resources.superset_moves
+import strive.shared.generated.resources.superset_moves_as_one
+import strive.shared.generated.resources.skipped_note
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.time_sets
 import strive.shared.generated.resources.unlogged
@@ -765,34 +769,54 @@ private fun ExerciseNote(label: String, text: String) {
     }
 }
 
-/** Ordning och hoppa över (Q8): move an exercise up or down, or skip it; a skipped exercise stays recorded. */
+/**
+ * Ordning och hoppa över (WO-11): the exercises in a `.list`, a superset as one row (its A and B on a blue edge) that moves and skips
+ * as one; each row ↑ ↓ and Skip, or Include once skipped, greyed. A skipped exercise stays recorded (Q8), as the footnote says.
+ */
 @Composable
 private fun OrderDialog(w: Workout, onDone: () -> Unit) {
     val sessions = LocalAppGraph.current.sessions
     val scope = rememberCoroutineScope()
     val workout by remember { sessions.open() }.collectAsState(w)
     val exercises = (workout ?: w).exercises
-    fun move(i: Int, by: Int) {
-        val ids = exercises.map { it.id }.toMutableList()
-        val j = i + by
-        if (j !in ids.indices) return
-        ids[i] = ids[j].also { ids[j] = ids[i] }
-        scope.launch { sessions.reorder(ids) }
-    }
+    val rows = blocks(exercises)
+    val colors = MaterialTheme.colorScheme
+    val style = MaterialTheme.typography.bodyLarge.board()
     HeaderSheet(stringResource(Res.string.order_skip), onDone, done = stringResource(Res.string.done)) {
-        Column(verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4)) {
-            exercises.forEachIndexed { i, e ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(e.name, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge,
-                        color = if (e.skipped) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface)
-                    IconTarget(stringResource(Res.string.move_up, e.name), { move(i, -1) }) { Glyph(Glyph.Up, 16.dp, color = MaterialTheme.colorScheme.primary) }
-                    IconTarget(stringResource(Res.string.move_down, e.name), { move(i, 1) }) { Glyph(Glyph.Down, 16.dp, color = MaterialTheme.colorScheme.primary) }
-                    TextButton({ scope.launch { sessions.skip(e.id, !e.skipped) } }) {
-                        Text(stringResource(if (e.skipped) Res.string.include else Res.string.skip))
+        // A long workout scrolls inside the list, so Done and the footnote stay on screen.
+        ListBlock(rows.mapIndexed { i, row -> {
+            val skipped = row.all { it.skipped }
+            val ink = if (skipped) colors.onSurfaceVariant else colors.onSurface
+            val name = row.joinToString { it.name }
+            Row(Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch).padding(start = 16.dp, top = 4.dp, end = 4.dp, bottom = 4.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                if (row.size == 1) Text(row[0].name, Modifier.weight(1f), color = ink, style = style)
+                else {
+                    val accent = StriveTheme.accents.superset
+                    val edge = StriveTheme.borders.focus
+                    Column(Modifier.weight(1f).drawBehind { drawRect(accent, size = Size(edge.toPx(), size.height)) }.padding(start = edge + 10.dp)) {
+                        row.forEachIndexed { n, e ->
+                            Row(Modifier.padding(top = if (n == 0) 0.dp else 6.dp), Arrangement.spacedBy(StriveTheme.spacing.s8), Alignment.CenterVertically) {
+                                Tag("${'A' + n}")
+                                Text(e.name, color = ink, style = style)
+                            }
+                        }
+                        // `small` with margin-top −2 in the 6 px gap.
+                        Text(stringResource(Res.string.superset_moves_as_one), Modifier.padding(top = 4.dp), color = colors.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodySmall.board())
                     }
                 }
+                IconTarget(stringResource(Res.string.move_up, name), { scope.launch { sessions.reorder(moved(rows, i, -1)) } }, enabled = i > 0) {
+                    Glyph(Glyph.Up, 18.dp, color = colors.primary)
+                }
+                IconTarget(stringResource(Res.string.move_down, name), { scope.launch { sessions.reorder(moved(rows, i, 1)) } }, enabled = i < rows.lastIndex) {
+                    Glyph(Glyph.Down, 18.dp, color = colors.primary)
+                }
+                NavText(stringResource(if (skipped) Res.string.include else Res.string.skip), { scope.launch { row.forEach { sessions.skip(it.id, !skipped) } } })
             }
-        }
+        } }, Modifier.fillMaxWidth().weight(1f, fill = false).clip(MaterialTheme.shapes.large).verticalScroll(rememberScrollState()))
+        if (exercises.any { it.skipped }) Text(stringResource(Res.string.skipped_note), Modifier.padding(horizontal = 16.dp),
+            color = colors.onSurfaceVariant, style = MaterialTheme.typography.labelMedium.board())
     }
 }
 

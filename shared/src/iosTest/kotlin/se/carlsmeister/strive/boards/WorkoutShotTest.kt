@@ -40,6 +40,7 @@ import strive.shared.generated.resources.next
 import strive.shared.generated.resources.note
 import strive.shared.generated.resources.remove_exercise
 import strive.shared.generated.resources.rest_change
+import strive.shared.generated.resources.order_skip
 import strive.shared.generated.resources.set_type
 import strive.shared.generated.resources.superset_create
 import strive.shared.generated.resources.swap
@@ -295,6 +296,18 @@ class WorkoutShotTest {
         assertTrue(onAllNodes(hasText(getString(Res.string.superset_create))).fetchSemanticsNodes().isEmpty())
     }
 
+    /** Order and skip from Bench Press BB's ⋯ over WO-02-s2: four rows, the superset Incline + Lateral as one with its edge and line. */
+    @Test
+    fun wo11InDarkAndDarkHc() = workoutBoard("WO-11", waitFor = "Superset · moves as one") { openOrderAndSkip() }
+
+    /** The same with Tricep Dips skipped: its name grey, its button Include, and the footnote under the list. */
+    @Test
+    fun wo11SkipInDarkAndDarkHc() =
+        workoutBoard("WO-11-skip", waitFor = "Skipped exercises stay in the log; their sets are dropped at Finish.") { graph ->
+            graph.sessions.skip(today(graph).exercises.first { it.name == "Tricep Dips" }.id, true)
+            openOrderAndSkip()
+        }
+
     /** Exercise details from Bench Press BB's ⋯: EX-05 in a full sheet over WO-02-s2, its name in the head with Done. */
     @Test
     fun ex05SheetInDarkAndDarkHc() = workoutBoard("EX-05-sheet", waitFor = "Records") {
@@ -484,6 +497,14 @@ private suspend fun plankAndLungeAdded(graph: AppGraph) {
     graph.sessions.finish(core, Finish.WithoutThem, now() - 4 * day + 30 * 60_000L)
     logAll(graph, at = 63 * 60 + 40, "Bench Press BB", "Incline Press DB", "Lateral Raise DB", "Tricep Dips", "Tricep Pushdown")
     graph.sessions.add(today(graph).id, names.map { exerciseId(graph, it) }, lastTime = true)
+}
+
+/** Bench Press BB's ⋯ → Order and skip. */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.openOrderAndSkip() {
+    exerciseMenu("Bench Press BB")
+    onNode(hasText(getString(Res.string.order_skip))).performClick()
+    waitForIdle()
 }
 
 /** Opens [name]'s ⋯, the one level with its fold button, and waits for the menu's Exercise details row. */

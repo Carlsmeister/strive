@@ -217,6 +217,8 @@
     <string name="include">Include</string>
     <string name="move_up">Move %1$s up</string>
     <string name="move_down">Move %1$s down</string>
+    <string name="superset_moves_as_one">Superset · moves as one</string>
+    <string name="skipped_note">Skipped exercises stay in the log; their sets are dropped at Finish.</string>
     <string name="rest_shorter">15 seconds shorter</string>
     <string name="rest_longer">15 seconds longer</string>
     <string name="free_rest">Free rest</string>

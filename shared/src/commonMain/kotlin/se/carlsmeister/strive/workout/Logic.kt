@@ -137,6 +137,13 @@ internal fun blocks(exercises: List<SessionExercise>): List<List<SessionExercise
     return out
 }
 
+/** The exercise ids, in order, once block [index] of [rows] moves [by] places, so a superset moves as one (WO-11); stops at the ends. */
+internal fun moved(rows: List<List<SessionExercise>>, index: Int, by: Int): List<Long> {
+    val out = rows.toMutableList()
+    out.add((index + by).coerceIn(rows.indices), out.removeAt(index))
+    return out.flatten().map { it.id }
+}
+
 /** A block's rounds in the order you lift (G2): each set alone for one exercise; set n of each exercise in turn for a superset. */
 internal fun rounds(block: List<SessionExercise>): List<List<Pair<SessionExercise, Int>>> =
     if (block.size == 1) block[0].sets.indices.map { listOf(block[0] to it) }
