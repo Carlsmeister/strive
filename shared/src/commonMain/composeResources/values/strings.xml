@@ -228,6 +228,7 @@
     <string name="superset_rest">Superset · rest %1$s after each round</string>
     <string name="superset_create">Create superset</string>
     <string name="superset_leave">Remove from superset</string>
+    <string name="superset_moves">The one you pick moves next to %1$s.</string>
     <string name="log_warmup">Log warm-up</string>
     <string name="log_drop">Log drop set</string>
     <string name="rest_after_round">rest %1$s after the round</string>

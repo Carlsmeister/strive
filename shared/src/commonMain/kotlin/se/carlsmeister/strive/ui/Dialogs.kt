@@ -168,8 +168,9 @@ internal fun TextPrompt(
     }
 }
 
+/** `.alert h2` or `.alert p`: a centred line of the alert's, full width. */
 @Composable
-private fun AlertText(text: String, style: TextStyle) = Text(text, Modifier.fillMaxWidth(), style = style.css(), textAlign = TextAlign.Center)
+internal fun AlertText(text: String, style: TextStyle) = Text(text, Modifier.fillMaxWidth(), style = style.css(), textAlign = TextAlign.Center)
 
 /**
  * `.alert .acts`, 8 dp further down: Cancel and [confirm] side by side, equal and 8 dp apart. When either label would not fit its

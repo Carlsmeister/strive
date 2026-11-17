@@ -41,6 +41,7 @@ import strive.shared.generated.resources.note
 import strive.shared.generated.resources.remove_exercise
 import strive.shared.generated.resources.rest_change
 import strive.shared.generated.resources.set_type
+import strive.shared.generated.resources.superset_create
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.workout
 import strive.shared.generated.resources.workout_options
@@ -53,6 +54,7 @@ import se.carlsmeister.strive.ui.MENU_ICON
 import org.jetbrains.compose.resources.StringResource
 import kotlin.math.abs
 import kotlin.test.Test
+import kotlin.test.assertTrue
 
 /** The workout's boards (#42), shot from Carl's sample data into [BOARD_SHOTS] for a person to set beside the boards. */
 @OptIn(ExperimentalTestApi::class)
@@ -275,6 +277,22 @@ class WorkoutShotTest {
         plankAndLungeAdded(graph)
         graph.sessions.setRestAll(today(graph).exercises.first { it.name == "Plank" }.id, 60)
         exerciseMenu("Plank")
+    }
+
+    /** Create superset from Bench Press BB's ⋯ over WO-02-s2: the line, the four other exercises left-aligned in a list, a ghost Cancel. */
+    @Test
+    fun wo10InDarkAndDarkHc() = workoutBoard("WO-10", waitFor = "The one you pick moves next to Bench Press BB.") {
+        exerciseMenu("Bench Press BB")
+        onNode(hasText(getString(Res.string.superset_create))).performClick()
+        waitForIdle()
+    }
+
+    /** WO-01-picked with Bench Press BB's ⋯ open: the workout holds no other exercise, so the menu has no Create superset row. */
+    @Test
+    fun wo10OneInDarkAndDarkHc() = emptyWorkoutBoard("WO-10-one", "Exercise details", at = 31) { graph ->
+        graph.sessions.add(today(graph).id, listOf(exerciseId(graph, "Bench Press BB")), lastTime = true)
+        exerciseMenu("Bench Press BB")
+        assertTrue(onAllNodes(hasText(getString(Res.string.superset_create))).fetchSemanticsNodes().isEmpty())
     }
 
     /** Exercise details from Bench Press BB's ⋯: EX-05 in a full sheet over WO-02-s2, its name in the head with Done. */

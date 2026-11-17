@@ -87,7 +87,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -103,6 +102,9 @@ import se.carlsmeister.strive.ui.Segments
 import se.carlsmeister.strive.ui.Alert
 import se.carlsmeister.strive.ui.AlertBox
 import se.carlsmeister.strive.ui.AlertButton
+import se.carlsmeister.strive.ui.AlertText
+import se.carlsmeister.strive.ui.ListBlock
+import se.carlsmeister.strive.ui.ListRow
 import se.carlsmeister.strive.ui.GlassMenu
 import se.carlsmeister.strive.ui.Overlay
 import se.carlsmeister.strive.ui.HeaderSheet
@@ -172,6 +174,7 @@ import strive.shared.generated.resources.sticky_note
 import strive.shared.generated.resources.sticky_body
 import strive.shared.generated.resources.superset_create
 import strive.shared.generated.resources.superset_leave
+import strive.shared.generated.resources.superset_moves
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.time_sets
 import strive.shared.generated.resources.unlogged
@@ -791,20 +794,22 @@ private fun OrderDialog(w: Workout, onDone: () -> Unit) {
     }
 }
 
-/** Skapa superset: the workout's other exercises; the one tapped joins this one in a superset, right after it. */
+/**
+ * Skapa superset (WO-10): the line under the title, then the workout's other exercises left-aligned in a `.list`, 4 dp further down;
+ * the one tapped joins this one in a superset, right after it. One ghost Cancel.
+ */
 @Composable
 private fun SupersetDialog(w: Workout, e: SessionExercise, onDone: () -> Unit) {
     val sessions = LocalAppGraph.current.sessions
     val scope = rememberCoroutineScope()
     AlertBox(onDone) {
-        Text(stringResource(Res.string.superset_create), Modifier.fillMaxWidth(), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-        for (other in w.exercises.filter { it.id != e.id && !it.skipped }) {
-            Text(other.name, Modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium)
-                .clickable { scope.launch { sessions.superset(e.id, other.id) }; onDone() }
-                .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = StriveTheme.spacing.s8, vertical = 12.dp),
-                style = MaterialTheme.typography.bodyLarge)
-        }
-        AlertButton(stringResource(Res.string.cancel), MaterialTheme.colorScheme.primary, onDone, Modifier.fillMaxWidth())
+        AlertText(stringResource(Res.string.superset_create), MaterialTheme.typography.titleMedium)
+        AlertText(stringResource(Res.string.superset_moves, e.name), MaterialTheme.typography.bodyMedium)
+        ListBlock(w.exercises.filter { it.id != e.id && !it.skipped }.map { other ->
+            { ListRow(other.name, onClick = { scope.launch { sessions.superset(e.id, other.id) }; onDone() }) }
+        }, Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s4))
+        AlertButton(stringResource(Res.string.cancel), MaterialTheme.colorScheme.primary, onDone,
+            Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s8), ghost = true)
     }
 }
 

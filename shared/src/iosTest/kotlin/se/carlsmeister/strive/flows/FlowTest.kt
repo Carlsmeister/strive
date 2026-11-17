@@ -180,6 +180,7 @@ import strive.shared.generated.resources.dock_set
 import strive.shared.generated.resources.superset_count
 import strive.shared.generated.resources.superset_create
 import strive.shared.generated.resources.superset_leave
+import strive.shared.generated.resources.superset_moves
 import strive.shared.generated.resources.superset_rest
 import androidx.compose.ui.graphics.Color
 import se.carlsmeister.strive.workout.wallClock
@@ -1862,6 +1863,7 @@ class FlowTest {
         addExercises("Bench Press BB", "Squat BB", "Incline Press DB")
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.superset_create))
+        see(s(Res.string.superset_moves, "Bench Press BB"))
         shot("21-superset-alert")
         tapLastText("Incline Press DB")
         // Incline Press moves up to follow Bench Press, and the two are one superset.
