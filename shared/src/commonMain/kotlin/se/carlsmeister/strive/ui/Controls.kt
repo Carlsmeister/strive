@@ -112,7 +112,8 @@ internal fun InputField(
             // shortcut: an empty BasicTextField measures 1.3 dp taller than a filled one on Skiko (Compose Multiplatform 1.12.1), and
             // the pin hides that; drop it when an upgrade makes the empty and filled fields equally tall without it.
             Box(Modifier.weight(1f).padding(vertical = 10.dp).height(with(LocalDensity.current) { style.lineHeight.toDp() })) {
-                if (value.isEmpty()) Text(placeholder, color = colors.onSurfaceVariant, style = style, maxLines = 1)
+                // The board's `.caret` is an inline box before `.ph`, so a focused field's placeholder starts after it; the cursor takes no room.
+                if (value.isEmpty()) Text(placeholder, Modifier.padding(start = if (focused) 3.dp else 0.dp), color = colors.onSurfaceVariant, style = style, maxLines = 1)
                 field()
             }
         }
