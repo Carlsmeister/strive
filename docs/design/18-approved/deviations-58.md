@@ -8,7 +8,7 @@ beside them. dark-HC is compared first, then dark. The pull request quotes this 
 then dark. A board counts lines, not elements: one for each line below that names it. Lines owned "Not a difference" and lines
 whose board is "None" are not counted. A difference under 1 pt is not listed. Two lines hold for every board, and each board counts
 them: the optical size (text a little wide, deviations-42) and the glass's teal glow, which shows in dark alone. Every other
-line holds in both modes. Positions are in pt on the 390 × 844 board, measured on the renders and shots side by side, so within about 1 pt. 95 in all.
+line holds in both modes. Positions are in pt on the 390 × 844 board, measured on the renders and shots side by side, so within about 1 pt. 96 in all.
 
 | Boards | Remaining differences |
 |---|---|
@@ -16,7 +16,7 @@ line holds in both modes. Positions are in pt on the 390 × 844 board, measured 
 | WO-08 | menu 5 · rename 4 · note-empty 5 · note 5 · time 3 |
 | WO-09 | menu 5 · rest 5 · superset 5 · noweight 5 · sticky 4 |
 | WO-10, WO-11, WO-12 | WO-10 4 · 10-one 4 · 11 3 · 11-skip 4 · 12-bb 4 · 12-db 4 |
-| WO-15, WO-16 | 15-one 4 · 15-several 5 · 16-discard 4 · 16-empty 3 |
+| WO-15, WO-16 | 15-one 4 · 15-several 5 · 16-discard 4 · 16-empty 4 |
 | EX-05 | sheet 4 |
 
 | Board | Element | Difference | Reason | Owner |
@@ -47,8 +47,9 @@ line holds in both modes. Positions are in pt on the 390 × 844 board, measured 
 | WO-15-several | The focus card's "SET 2 OF 3" | The board reads "SET 2 OF 2" | The app counts the drop set as a working set (O-25); the board draws the drop-set row and "of 2" together, which contradicts O-25 and its own "12 of 14 sets" | #58 |
 | WO-09-superset, WO-09-noweight, WO-15-one, WO-15-several | The focus card and everything under it | Sit 16 pt higher (focus card 190 against 206; WO-09-noweight's Plank header 427 against 443) | The board's markup puts the done exercises' `.ov` above the focus card without `flex: none`, so it shrinks to nothing but keeps its 16 pt gap. The rendered board is the spec: each shot's arrange moves the next exercise first (Incline Press DB and Lateral Raise DB, Plank, Tricep Pushdown), as Order and skip would, so its header sits under the focus card as drawn. App unaffected | #58 |
 | WO-16-discard, WO-16-empty | The alert's buttons | Cancel and "Discard workout" side by side, the label on two lines, as drawn | The board is the spec; ghost alerts no longer stack, filled alerts keep ea5246a's stacking rule (Task 10) | Not a difference |
-| WO-16-empty | The empty card behind the alert | "Pick from the library, or tap an exercise below." wraps "below." to a second line, so the card is 20 pt taller and starts 6 pt lower | As deviations-42's WO-01-marks, recent, none | #42 |
+| WO-16-empty | The empty card's top, behind the alert | Starts 6 pt lower (120 against 114) | WO-16-empty's markup drops the `margin-top: 8px` WO-01-none puts on the card for the same state; the app follows WO-01-none, less the 2 pt deviations-42 measures there | #58 |
+| WO-16-empty | The empty card's height, behind the alert | "Pick from the library, or tap an exercise below." wraps "below." to a second line, so the card is 20 pt taller (273 against 253) | As deviations-42's WO-01-marks, recent, none | #42 |
 | EX-05-sheet | About's content | No illustration; "In my programmes" without the pull-down's chevron; instructions as one numbered paragraph, tips, muscles, equipment and settings as plain sections, where the board draws the illustration, cards and numbered rows | **Planner ruling 9:** EX-05's own content is #60's; the sheet's frame (top 60, grabber, title, Done, the four segments) matches | #60 |
-| EX-05-sheet | The sheet's material | `glass thick`, as every `HeaderSheet`, where the board's sheet is `glass full` without `thick` | One material for every sheet | #58 |
+| EX-05-sheet | The title bar behind the sheet's top | The chevron, the timer and "Finish" show faintly through the glass, where the board's blur leaves only the buttons' circles | The shared `Modifier.glass` blurs less than the board's backdrop filter, the cause deviations-42 gives the teal glow's narrower spread | Carl to settle |
 | WO-09-superset | The superset's label | "Superset · rest 1:30 after each round" sits inside the group's blue edge, 33 pt under the focus card, where this board draws it above the edge at the screen's margin, 40 under | This board's markup puts `.sslabel` outside `.ssgroup`; WO-02-s5, the same state, puts it inside, and the app matches WO-02-s5 (#42) | #58 |
 | WO-09-noweight | Under Plank's Add set | The done exercises' overview card, then Walking Lunge, where the board draws Discard workout | The board's header counts Walking Lunge's sets ("14 of 18 sets") but draws neither it nor the done exercises; the app draws every exercise | #58 |

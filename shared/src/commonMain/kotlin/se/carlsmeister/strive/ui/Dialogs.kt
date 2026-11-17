@@ -280,7 +280,8 @@ internal fun HeaderSheet(
     val space = StriveTheme.spacing
     Column(
         Modifier.align(Alignment.BottomCenter).then(if (full) Modifier.padding(top = 60.dp).fillMaxHeight() else Modifier)
-            .rise().fillMaxWidth().panel().glass(LocalGlassSource.current, StriveTheme.glass, thick = true, shape = SheetShape)
+            // EX-05-sheet's `.sheet.glass.full` is regular glass; the partial sheets are `glass thick`.
+            .rise().fillMaxWidth().panel().glass(LocalGlassSource.current, StriveTheme.glass, thick = !full, shape = SheetShape)
             .padding(start = space.s16, top = space.s8, end = space.s16)
             .then(if (full) Modifier else Modifier.navigationBarsPadding().padding(bottom = space.s16)),
         verticalArrangement = Arrangement.spacedBy(space.s12),
