@@ -7,14 +7,14 @@ beside them. dark-HC is compared first, then dark. The pull request quotes this 
 **Remaining differences per board**, after Task 13 compared all 40 boards and the two motion boards, dark-HC then dark. A board
 counts lines, not elements: one for each line below that names it. A line holds one element, or neighbouring elements with one
 cause (the focus label and values); the Plan note and the plates line, which most boards miss, have a line each. Lines owned "Not a
-difference" and lines whose board is "None" are not counted. No difference shows in dark alone. 124 in all.
+difference" and lines whose board is "None" are not counted. No difference shows in dark alone. 127 in all.
 
 | Boards | Remaining differences |
 |---|---|
 | WO-01 | marks 4 · recent 4 · none 3 · picked 3 · logged 2 |
-| WO-02, s2 to abc | s2 3 · rir 3 · s3 4 · s4 2 · s5 2 · s5b 1 · s5c 1 · abc 2 |
+| WO-02, s2 to abc | s2 3 · rir 3 · s3 5 · s4 3 · s5 2 · s5b 1 · s5c 1 · abc 2 |
 | WO-02, s9f to swap | s9f 3 · s9d 2 · s10bw 2 · s10td 2 · s13 2 · s14 4 · s15 3 · s16 4 · note 3 · removed 2 · swap 2 |
-| WO-03 | strip 2 · rest 3 · end 2 |
+| WO-03 | strip 2 · rest 4 · end 2 |
 | WO-04, WO-05 | 04-new 4 · 04-logged 3 · 04-rest 3 · 04-rir4 4 · 05-weight 4 · 05-reps 3 · 05-rest 3 |
 | WO-13, WO-14 | 13-menu 5 · 13-added 4 · 13-moved 5 · 13-logged 4 · 14-revealed 3 · 14-full 4 |
 | Motion | MO-log 4 · MO-gestures 1 |
@@ -32,7 +32,8 @@ difference" and lines whose board is "None" are not counted. No difference shows
 | WO-02-note | Keyboard and its Done bar | Not drawn | The system's keyboard; a test window has none | Test harness (no system keyboard) |
 | WO-02-s3 | Bench Press BB's Plan note | Not drawn, so the rows below sit 20 pt higher | As WO-02-s2 (P3) | #44 |
 | WO-02-s3 | Plates line under set 2 | Not drawn | As WO-02-s2 | #48 |
-| WO-02-s3 | Rest card | Sits 34 pt lower at the same 152 pt height (board 641.7–793.7 pt, shot 676.0–828.0 pt, dark-HC; Skip 736–775 against 770–809); colours match | The test window has no home-indicator inset. The card sits `navigationBarsPadding()` + 16 above the foot, as the dock does; on a phone the inset adds the board's 34 (`--safe-bottom`) | Test harness (no home-indicator inset) |
+| WO-02-s3 | Rest card | Sits 34 pt lower at the same 152 pt height (board 641.7–793.7 pt, shot 676.0–828.0 pt, dark-HC; Skip 736–775 against 770–809); its fill and text colours match (its outline: the next line) | The test window has no home-indicator inset. The card sits `navigationBarsPadding()` + 16 above the foot, as the dock does; on a phone the inset adds the board's 34 (`--safe-bottom`) | Test harness (no home-indicator inset) |
+| WO-02-s3, s4, WO-03-rest | Rest card's outline | The board draws a ⅓ pt light outline on all four edges (x 16.0 and 373.7, y 641.3 and 793.7 pt on s3): (118, 118, 119) on the fill's (28, 28, 30) in dark-HC, about (48, 49, 52) on (25, 25, 27) in dark. The shot draws none; its fill runs to the edge in both modes | The board's card is `.glass`, whose hairline edge is `border: var(--border-hairline) solid var(--material-edge)`. `Rest.kt` applies `Modifier.glass` without a shape, and `glass` draws its hairline only with one. The rest card's own changes are out of #42's scope | #43 |
 | WO-02-s3 | Focus card's values | About 6 pt wider | As WO-02-s2: the optical size | #42 |
 | WO-02-s4 | Rest card | Sits 34 pt lower, as WO-02-s3 (board 641.7–793.7 pt, shot 676.0–828.0 pt), so set 1's row shows above it | As WO-02-s3: no home-indicator inset | Test harness (no home-indicator inset) |
 | WO-02-s4 | Focus label and values | The label 1–2 pt wider, the values as WO-02-s2 | As WO-02-s2: the optical size | #42 |
