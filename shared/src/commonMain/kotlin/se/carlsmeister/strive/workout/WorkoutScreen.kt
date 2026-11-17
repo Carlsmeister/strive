@@ -166,6 +166,7 @@ import strive.shared.generated.resources.save_without
 import strive.shared.generated.resources.skip
 import strive.shared.generated.resources.step
 import strive.shared.generated.resources.sticky_note
+import strive.shared.generated.resources.sticky_body
 import strive.shared.generated.resources.superset_create
 import strive.shared.generated.resources.superset_leave
 import strive.shared.generated.resources.swap
@@ -723,7 +724,7 @@ private fun ExerciseHeader(
         }
     }
     when (dialog) {
-        "pin" -> TextPrompt(stringResource(Res.string.sticky_note), e.pinned, singleLine = false, onSave = { n ->
+        "pin" -> TextPrompt(stringResource(Res.string.sticky_note), e.pinned, body = stringResource(Res.string.sticky_body, e.name), onSave = { n ->
             dialog = null
             scope.launch { graph.exercises.setNote(e.exerciseId, n) }
         }, onDismiss = { dialog = null })

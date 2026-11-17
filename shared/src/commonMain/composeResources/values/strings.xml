@@ -198,6 +198,10 @@
     <string name="hour">Hour</string>
     <string name="minute">Minute</string>
     <string name="sticky_note">Sticky note</string>
+    <string name="sticky_body">Shown every time you do %1$s, in every template.</string>
+    <string name="note_placeholder">Energy, sleep, pain…</string>
+    <string name="note_hint">Shown in the summary and in History.</string>
+    <string name="clear_text">Clear text</string>
     <string name="rest_all">Rest for all sets</string>
     <string name="order_skip">Order and skip</string>
     <string name="exercise_settings">Exercise settings</string>

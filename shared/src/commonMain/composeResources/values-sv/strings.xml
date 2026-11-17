@@ -198,6 +198,10 @@
     <string name="hour">Timme</string>
     <string name="minute">Minut</string>
     <string name="sticky_note">Fast anteckning</string>
+    <string name="sticky_body">Visas varje gång du gör %1$s, i varje mall.</string>
+    <string name="note_placeholder">Energi, sömn, smärta…</string>
+    <string name="note_hint">Visas i sammanfattningen och i Historik.</string>
+    <string name="clear_text">Rensa text</string>
     <string name="rest_all">Vila för alla set</string>
     <string name="order_skip">Ordning och hoppa över</string>
     <string name="exercise_settings">Övningens inställningar</string>

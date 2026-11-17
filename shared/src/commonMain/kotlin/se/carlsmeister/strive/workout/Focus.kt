@@ -165,6 +165,8 @@ import strive.shared.generated.resources.log_drop
 import strive.shared.generated.resources.rest_row
 import strive.shared.generated.resources.save
 import strive.shared.generated.resources.session_note
+import strive.shared.generated.resources.note_placeholder
+import strive.shared.generated.resources.note_hint
 import strive.shared.generated.resources.set_failure
 import strive.shared.generated.resources.set_stays
 import strive.shared.generated.resources.set_type
@@ -272,7 +274,7 @@ private val swedish @Composable get() = androidx.compose.ui.text.intl.Locale.cur
 /** Text as a board's CSS `font:` shorthand sets it: the shorthand resets `.strive`'s tabular figures, and the line box is CSS's. */
 internal fun TextStyle.board() = copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox)
 
-/** The workout's name with ⋯: Byt namn, Passanteckning and Ändra starttid (Q19). */
+/** The workout's name with ⋯: Rename, Workout note and Change start time, each with its glyph (Q19, WO-08-menu). */
 @Composable
 internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
     val sessions = LocalAppGraph.current.sessions
@@ -290,9 +292,9 @@ internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
             // `.pill` 40 × 32 in the header, the bar's 32 × 24, each tapped across 44 pt.
             MorePill(stringResource(Res.string.workout_options), { menu = true }, small = !large)
             GlassMenu(menu, { menu = false }) {
-                MenuRow(stringResource(Res.string.rename), { menu = false; prompt = "name" })
-                MenuRow(stringResource(Res.string.session_note), { menu = false; prompt = "note" })
-                MenuRow(stringResource(Res.string.change_start), { menu = false; prompt = "start" })
+                MenuRow(stringResource(Res.string.rename), { menu = false; prompt = "name" }, icon = StriveIcons.Pencil)
+                MenuRow(stringResource(Res.string.session_note), { menu = false; prompt = "note" }, icon = StriveIcons.Note)
+                MenuRow(stringResource(Res.string.change_start), { menu = false; prompt = "start" }, icon = StriveIcons.Clock)
             }
         }
     }
@@ -301,7 +303,8 @@ internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
             prompt = null
             if (n.isNotEmpty()) scope.launch { sessions.rename(w.id, n) }
         }, onDismiss = { prompt = null })
-        "note" -> TextPrompt(stringResource(Res.string.session_note), w.note, singleLine = false, onSave = { n ->
+        "note" -> TextPrompt(stringResource(Res.string.session_note), w.note, singleLine = false,
+            placeholder = stringResource(Res.string.note_placeholder), caption = stringResource(Res.string.note_hint), onSave = { n ->
             prompt = null
             scope.launch { sessions.setNote(w.id, n) }
         }, onDismiss = { prompt = null })

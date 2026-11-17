@@ -659,6 +659,18 @@ class FlowTest {
         waitUntilTrue { open().name == "Push A" && open().note == "Slept badly" }
     }
 
+    /** WO-08-note-empty: a workout without a note offers what to write in it, and says where it shows. In English, as the board. */
+    @Test
+    fun theNotePromptShowsItsPlaceholderAndHint() = inEnglish {
+        flow {
+            startWorkout()
+            tap(s(Res.string.workout))
+            tap(s(Res.string.session_note))
+            see("Energy, sleep, pain…")
+            see("Shown in the summary and in History.")
+        }
+    }
+
     @Test
     fun finishingWithEverySetLoggedGoesStraightToTheSummary() = flow {
         startWorkout()

@@ -42,6 +42,10 @@ import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.workout
 import strive.shared.generated.resources.workout_options
 import strive.shared.generated.resources.change_start
+import strive.shared.generated.resources.rename
+import strive.shared.generated.resources.session_note
+import strive.shared.generated.resources.sticky_note
+import org.jetbrains.compose.resources.StringResource
 import kotlin.test.Test
 
 /** The workout's boards (#42), shot from Carl's sample data into [BOARD_SHOTS] for a person to set beside the boards. */
@@ -215,10 +219,36 @@ class WorkoutShotTest {
 
     /** WO-02-s2 with Change start time opened from the workout's ⋯: the wheel at Push A's 17:02. */
     @Test
-    fun wo08TimeInDarkAndDarkHc() = workoutBoard("WO-08-time", waitFor = "Change start time") {
-        onAllNodes(hasContentDescription(getString(Res.string.workout_options)))[0].performClick()
+    fun wo08TimeInDarkAndDarkHc() = workoutBoard("WO-08-time", waitFor = "Change start time") { openWorkoutMenu(Res.string.change_start) }
+
+    /** WO-02-s2 with the workout's ⋯ open: Rename, Workout note and Change start time, each with its glyph. */
+    @Test
+    fun wo08MenuInDarkAndDarkHc() = workoutBoard("WO-08-menu", waitFor = "Change start time") { openWorkoutMenu() }
+
+    /** Rename from the workout's ⋯: the prompt holding Push A, its field ringed teal with a clear glyph. */
+    @Test
+    fun wo08RenameInDarkAndDarkHc() = workoutBoard("WO-08-rename", waitFor = "Rename") { openWorkoutMenu(Res.string.rename) }
+
+    /** Workout note on a workout without one: the placeholder and the caption under the field. */
+    @Test
+    fun wo08NoteEmptyInDarkAndDarkHc() = workoutBoard("WO-08-note-empty", waitFor = "Energy, sleep, pain…") { graph ->
+        graph.sessions.setNote(today(graph).id, "")
+        openWorkoutMenu(Res.string.session_note)
+    }
+
+    /** Workout note holding "Sov 7 h. Axeln okej.". */
+    @Test
+    fun wo08NoteInDarkAndDarkHc() = workoutBoard("WO-08-note", waitFor = "Shown in the summary and in History.") { graph ->
+        graph.sessions.setNote(today(graph).id, "Sov 7 h. Axeln okej.")
+        openWorkoutMenu(Res.string.session_note)
+    }
+
+    /** Sticky note from Bench Press BB's ⋯: the body names the exercise, the field holds its note. */
+    @Test
+    fun wo09StickyInDarkAndDarkHc() = workoutBoard("WO-09-sticky", waitFor = "Shown every time you do Bench Press BB, in every template.") {
+        onAllNodes(hasContentDescription(getString(Res.string.exercise_options)))[0].performClick()
         waitForIdle()
-        onNode(hasText(getString(Res.string.change_start))).performClick()
+        onNode(hasText(getString(Res.string.sticky_note))).performClick()
         waitForIdle()
     }
 
@@ -437,6 +467,14 @@ private suspend fun ComposeUiTest.pastTheFocusCard(graph: AppGraph) {
     onNode(hasScrollToIndexAction()).performScrollToKey("h${bench.id}")
     onNode(hasScrollToIndexAction()).performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, -50f * 3) }
     waitForIdle()
+}
+
+/** Opens the workout's ⋯ and, given a [row], taps it. */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.openWorkoutMenu(row: StringResource? = null) {
+    onAllNodes(hasContentDescription(getString(Res.string.workout_options)))[0].performClick()
+    waitForIdle()
+    if (row != null) { onNode(hasText(getString(row))).performClick(); waitForIdle() }
 }
 
 private suspend fun exerciseId(graph: AppGraph, name: String) = graph.exercises.all().first().first { it.name == name }.id

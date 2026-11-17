@@ -23,7 +23,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -130,15 +131,36 @@ internal fun AlertPanel(title: String, body: String, confirm: String, onConfirm:
     AlertActions(confirm, if (destructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary, onConfirm, onDismiss)
 }
 
-/** A text to write in the alert's panel, for a name or a note; Save keeps it. */
+/**
+ * A text to write in the alert's panel, for a name or a note; Save keeps it (WO-08-rename, WO-08-note, WO-09-sticky). [body] is the
+ * alert's centred line under the title; the field, 8 dp further down, takes the caret at once, holds [placeholder] while empty and,
+ * single-line, ends in a clear glyph. [caption] is `.cap` under it, left-aligned.
+ */
 @Composable
-internal fun TextPrompt(title: String, initial: String, onSave: (String) -> Unit, onDismiss: () -> Unit, singleLine: Boolean = true) {
+internal fun TextPrompt(
+    title: String,
+    initial: String,
+    onSave: (String) -> Unit,
+    onDismiss: () -> Unit,
+    singleLine: Boolean = true,
+    body: String? = null,
+    placeholder: String? = null,
+    caption: String? = null,
+) {
     var text by remember { mutableStateOf(initial) }
     AlertBox(onDismiss) {
+        val focus = remember { FocusRequester() }
         AlertText(title, MaterialTheme.typography.titleMedium)
-        OutlinedTextField(text, { text = it }, Modifier.fillMaxWidth(), singleLine = singleLine, minLines = if (singleLine) 1 else 3,
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences))
-        AlertActions(stringResource(Res.string.save), MaterialTheme.colorScheme.primary, { onSave(text.trim()) }, onDismiss)
+        body?.let { AlertText(it, MaterialTheme.typography.bodyMedium) }
+        InputField(
+            text, { text = it }, Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s8).focusRequester(focus), placeholder.orEmpty(),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences), singleLine = singleLine,
+            onClear = if (singleLine) ({ text = "" }) else null,
+        )
+        // `.alert p.cap`: `.alert p`'s body-medium outranks `.cap`'s font; `.cap` keeps its colour.
+        caption?.let { Text(it, Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium.css()) }
+        AlertActions(stringResource(Res.string.save), MaterialTheme.colorScheme.primary, { onSave(text.trim()) }, onDismiss, ghost = true)
+        LaunchedEffect(Unit) { focus.requestFocus() }
     }
 }
 
@@ -148,13 +170,13 @@ private fun AlertText(text: String, style: TextStyle) = Text(text, Modifier.fill
 /**
  * `.alert .acts`, 8 dp further down: Cancel and [confirm] side by side, equal and 8 dp apart. When either label would not fit its
  * half on one line, measured, it is `.acts.stack`: both full width, 8 dp apart, [confirm] first and Cancel under it (no board draws
- * the stacked order).
+ * the stacked order). [ghost] is `.btn.ghost`: no fill.
  */
 @Composable
-private fun AlertActions(confirm: String, color: Color, onConfirm: () -> Unit, onCancel: () -> Unit) = Layout(
+private fun AlertActions(confirm: String, color: Color, onConfirm: () -> Unit, onCancel: () -> Unit, ghost: Boolean = false) = Layout(
     {
-        AlertButton(stringResource(Res.string.cancel), MaterialTheme.colorScheme.primary, onCancel)
-        AlertButton(confirm, color, onConfirm)
+        AlertButton(stringResource(Res.string.cancel), MaterialTheme.colorScheme.primary, onCancel, ghost = ghost)
+        AlertButton(confirm, color, onConfirm, ghost = ghost)
     },
     Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s8),
 ) { (cancel, ok), constraints ->
@@ -171,10 +193,10 @@ private fun AlertActions(confirm: String, color: Color, onConfirm: () -> Unit, o
     }
 }
 
-/** `.btn` in `.acts`: at least 44 dp, 16 dp corners, surface-container-high, title-small. */
+/** `.btn` in `.acts`: at least 44 dp, 16 dp corners, surface-container-high (none when [ghost]), title-small. */
 @Composable
-internal fun AlertButton(label: String, color: Color, onClick: () -> Unit, modifier: Modifier = Modifier) = Box(
-    modifier.pressable(true, onClick).background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.large)
+internal fun AlertButton(label: String, color: Color, onClick: () -> Unit, modifier: Modifier = Modifier, ghost: Boolean = false) = Box(
+    modifier.pressable(true, onClick).background(if (ghost) Color.Transparent else MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.large)
         .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = StriveTheme.spacing.s16),
     contentAlignment = Alignment.Center,
 ) { Text(label, color = color, style = MaterialTheme.typography.titleSmall.css(), textAlign = TextAlign.Center) }
