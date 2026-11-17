@@ -22,7 +22,8 @@ CREATE TABLE exercise (
     mark TEXT,
     note TEXT,
     edited INTEGER AS Boolean NOT NULL DEFAULT 0,
-    archived INTEGER AS Boolean NOT NULL DEFAULT 0
+    archived INTEGER AS Boolean NOT NULL DEFAULT 0,
+    unit TEXT
 );
 
 all:
@@ -49,6 +50,6 @@ UPDATE exercise SET mark = ? WHERE id = ?;
 setNote:
 UPDATE exercise SET note = ? WHERE id = ?;
 
--- Carl's step and bar; edited keeps a seed update from writing over them.
+-- Carl's step, bar and unit; edited keeps a seed update from writing over them.
 setSettings:
-UPDATE exercise SET step = ?, bar = ?, edited = 1 WHERE id = ?;
+UPDATE exercise SET step = ?, bar = ?, unit = ?, edited = 1 WHERE id = ?;

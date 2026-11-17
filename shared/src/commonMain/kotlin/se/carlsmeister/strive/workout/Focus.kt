@@ -64,14 +64,12 @@ import se.carlsmeister.strive.ui.MenuSeparator
 import se.carlsmeister.strive.ui.MenuTitle
 import se.carlsmeister.strive.ui.MorePill
 import se.carlsmeister.strive.ui.TextPrompt
+import se.carlsmeister.strive.ui.Wheel
 import se.carlsmeister.strive.ui.Accent
 import se.carlsmeister.strive.ui.edge
 import se.carlsmeister.strive.ui.text
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TimeInput
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -112,6 +110,7 @@ import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.Workout
+import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.data.WorkoutSet
 import se.carlsmeister.strive.data.loggable
 import se.carlsmeister.strive.library.kilos
@@ -123,13 +122,18 @@ import strive.shared.generated.resources.add_named
 import strive.shared.generated.resources.back_to_focus
 import strive.shared.generated.resources.cancel
 import strive.shared.generated.resources.change_start
-import strive.shared.generated.resources.col_kg
+import strive.shared.generated.resources.start_caption
+import strive.shared.generated.resources.hour
+import strive.shared.generated.resources.minute
+import strive.shared.generated.resources.unit_kg
+import strive.shared.generated.resources.unit_lb
 import strive.shared.generated.resources.col_metres
 import strive.shared.generated.resources.col_previous
 import strive.shared.generated.resources.col_reps
 import strive.shared.generated.resources.col_seconds
 import strive.shared.generated.resources.col_seconds_side
 import strive.shared.generated.resources.col_added
+import strive.shared.generated.resources.col_added_lb
 import strive.shared.generated.resources.per_side
 import strive.shared.generated.resources.type_a_time
 import strive.shared.generated.resources.col_set
@@ -161,6 +165,8 @@ import strive.shared.generated.resources.log_drop
 import strive.shared.generated.resources.rest_row
 import strive.shared.generated.resources.save
 import strive.shared.generated.resources.session_note
+import strive.shared.generated.resources.note_placeholder
+import strive.shared.generated.resources.note_hint
 import strive.shared.generated.resources.set_failure
 import strive.shared.generated.resources.set_stays
 import strive.shared.generated.resources.set_type
@@ -174,17 +180,20 @@ import strive.shared.generated.resources.what_today_body
 import strive.shared.generated.resources.workout_options
 
 /** The columns a set row shows after Set and Förra, by what the exercise records. */
-internal fun columns(type: ExerciseType, perSide: Boolean = false): List<StringResource> = when (type) {
-    ExerciseType.WeightReps -> listOf(Res.string.col_kg, Res.string.col_reps)
-    ExerciseType.BodyweightReps -> listOf(Res.string.col_added, Res.string.col_reps)
+internal fun columns(type: ExerciseType, perSide: Boolean = false, unit: WeightUnit = WeightUnit.Kg): List<StringResource> = when (type) {
+    ExerciseType.WeightReps -> listOf(unit.label, Res.string.col_reps)
+    ExerciseType.BodyweightReps -> listOf(if (unit == WeightUnit.Lb) Res.string.col_added_lb else Res.string.col_added, Res.string.col_reps)
     ExerciseType.Reps -> listOf(Res.string.col_reps)
     ExerciseType.Time -> listOf(if (perSide) Res.string.col_seconds_side else Res.string.col_seconds)
     ExerciseType.Distance -> listOf(Res.string.col_metres)
 }
 
+/** The unit's own short name: "kg" or "lb" (#58). */
+internal val WeightUnit.label get() = if (this == WeightUnit.Lb) Res.string.unit_lb else Res.string.unit_kg
+
 /** The units after the focus card's values (WO-02-s9f, s10td, s15): a time has none unless it is per side. */
-private fun units(type: ExerciseType, perSide: Boolean): List<StringResource?> = when (type) {
-    ExerciseType.WeightReps, ExerciseType.BodyweightReps -> listOf(Res.string.col_kg, Res.string.col_reps)
+private fun units(type: ExerciseType, perSide: Boolean, unit: WeightUnit): List<StringResource?> = when (type) {
+    ExerciseType.WeightReps, ExerciseType.BodyweightReps -> listOf(unit.label, Res.string.col_reps)
     ExerciseType.Reps -> listOf(Res.string.col_reps)
     ExerciseType.Time -> listOf(if (perSide) Res.string.per_side else null)
     ExerciseType.Distance -> listOf(Res.string.col_metres)
@@ -265,7 +274,7 @@ private val swedish @Composable get() = androidx.compose.ui.text.intl.Locale.cur
 /** Text as a board's CSS `font:` shorthand sets it: the shorthand resets `.strive`'s tabular figures, and the line box is CSS's. */
 internal fun TextStyle.board() = copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox)
 
-/** The workout's name with ⋯: Byt namn, Passanteckning and Ändra starttid (Q19). */
+/** The workout's name with ⋯: Rename, Workout note and Change start time, each with its glyph (Q19, WO-08-menu). */
 @Composable
 internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
     val sessions = LocalAppGraph.current.sessions
@@ -283,9 +292,9 @@ internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
             // `.pill` 40 × 32 in the header, the bar's 32 × 24, each tapped across 44 pt.
             MorePill(stringResource(Res.string.workout_options), { menu = true }, small = !large)
             GlassMenu(menu, { menu = false }) {
-                MenuRow(stringResource(Res.string.rename), { menu = false; prompt = "name" })
-                MenuRow(stringResource(Res.string.session_note), { menu = false; prompt = "note" })
-                MenuRow(stringResource(Res.string.change_start), { menu = false; prompt = "start" })
+                MenuRow(stringResource(Res.string.rename), { menu = false; prompt = "name" }, icon = StriveIcons.Pencil)
+                MenuRow(stringResource(Res.string.session_note), { menu = false; prompt = "note" }, icon = StriveIcons.Note)
+                MenuRow(stringResource(Res.string.change_start), { menu = false; prompt = "start" }, icon = StriveIcons.Clock)
             }
         }
     }
@@ -294,7 +303,8 @@ internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
             prompt = null
             if (n.isNotEmpty()) scope.launch { sessions.rename(w.id, n) }
         }, onDismiss = { prompt = null })
-        "note" -> TextPrompt(stringResource(Res.string.session_note), w.note, singleLine = false, onSave = { n ->
+        "note" -> TextPrompt(stringResource(Res.string.session_note), w.note, singleLine = false,
+            placeholder = stringResource(Res.string.note_placeholder), caption = stringResource(Res.string.note_hint), onSave = { n ->
             prompt = null
             scope.launch { sessions.setNote(w.id, n) }
         }, onDismiss = { prompt = null })
@@ -305,17 +315,25 @@ internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
     }
 }
 
-/** Ändra starttid: the hour and minute on the day the workout started. */
-@OptIn(ExperimentalMaterial3Api::class)
+/** WO-08-time: the hour and minute on the day the workout started, on two wheels. */
 @Composable
 private fun StartPrompt(startedAt: Long, onSave: (Int, Int) -> Unit, onDismiss: () -> Unit) {
     val start = local(startedAt)
-    val state = rememberTimePickerState(start.hour, start.minute, is24Hour = true)
+    var hour by remember { mutableStateOf(start.hour) }
+    var minute by remember { mutableStateOf(start.minute) }
     HeaderSheet(stringResource(Res.string.change_start), onDismiss, cancel = stringResource(Res.string.cancel), done = stringResource(Res.string.save),
-        onDone = { onSave(state.hour, state.minute) }) {
-        TimeInput(state, Modifier.align(Alignment.CenterHorizontally))
+        onDone = { onSave(hour, minute) }) {
+        Text(stringResource(Res.string.start_caption, dayHeading(start)), Modifier.fillMaxWidth(), style = MaterialTheme.typography.bodySmall.board(),
+            color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+        Row(Modifier.padding(top = 8.dp, bottom = 12.dp)) {
+            Wheel(Hours, hour, { hour = it }, stringResource(Res.string.hour), alignEnd = true, Modifier.weight(1f))
+            Wheel(Minutes, minute, { minute = it }, stringResource(Res.string.minute), alignEnd = false, Modifier.weight(1f))
+        }
     }
 }
+
+private val Hours = List(24) { "$it".padStart(2, '0') }
+private val Minutes = List(60) { "$it".padStart(2, '0') }
 
 /** B's large title (decision 40), as D draws it: the name with ⋯, then the day, the time and the sets done, each with its glyph. */
 @Composable
@@ -397,8 +415,8 @@ private fun nowLabel(e: SessionExercise, set: WorkoutSet, badge: String, strip: 
 
 /** "upp 2,5 kg" against last time, or nothing (Q21's ↑, until #45's rule). */
 @Composable
-internal fun changeText(set: WorkoutSet, prev: WorkoutSet?, swedish: Boolean): String? = change(set.weight, prev?.weight)?.let {
-    stringResource(if (it > 0) Res.string.up_by else Res.string.down_by, kilos(kotlin.math.abs(it), swedish))
+internal fun changeText(set: WorkoutSet, prev: WorkoutSet?, swedish: Boolean, unit: WeightUnit): String? = change(set.weight, prev?.weight)?.let {
+    stringResource(if (it > 0) Res.string.up_by else Res.string.down_by, kilos(kotlin.math.abs(it), swedish), stringResource(unit.label))
 }
 
 /**
@@ -406,7 +424,7 @@ internal fun changeText(set: WorkoutSet, prev: WorkoutSet?, swedish: Boolean): S
  * "last set") and last time's set, RIR, Ändra for the dock, and one tap to log it.
  */
 @Composable
-internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev: WorkoutSet?, meta: FocusMeta, rir: Int?, more: Boolean,
+internal fun FocusCard(e: SessionExercise, unit: WeightUnit, set: WorkoutSet, badge: String, prev: WorkoutSet?, meta: FocusMeta, rir: Int?, more: Boolean,
                        onRir: (Int?) -> Unit, onMore: (Boolean) -> Unit, onEdit: () -> Unit, onLog: () -> Unit, tag: String? = null) {
     val colors = MaterialTheme.colorScheme
     val type = MaterialTheme.typography
@@ -417,11 +435,11 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
     ) {
         // MO-log: the next set's values cross-fade over 250 ms, and the card's height follows on the calm spring (at once under Reduce
         // Motion). A value changed on the same set changes in place.
-        AnimatedContent(FocusShown(e, set, badge, prev, meta, tag), contentKey = { it.set.id }, transitionSpec = {
+        AnimatedContent(FocusShown(e, unit, set, badge, prev, meta, tag), contentKey = { it.set.id }, transitionSpec = {
             fadeIn(Motion.fade()) togetherWith fadeOut(Motion.fade()) using
                 // Under Reduce Motion the height snaps, so the taller outgoing values are clipped rather than drawn over the RIR row.
                 SizeTransform(clip = reduceMotion) { _, _ -> if (reduceMotion) snap() else Motion.calm(IntSize.VisibilityThreshold) }
-        }) { FocusValues(it.e, it.set, it.badge, it.prev, it.meta, it.tag) }
+        }) { FocusValues(it.e, it.unit, it.set, it.badge, it.prev, it.meta, it.tag) }
         if (e.type.hasRir()) RirRow(rir, more, onRir, onMore, label = false, compact = true)
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Btn(onEdit, Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp)) {
@@ -444,11 +462,11 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
 }
 
 /** What the focus card cross-fades between: one set's label and values. */
-private data class FocusShown(val e: SessionExercise, val set: WorkoutSet, val badge: String, val prev: WorkoutSet?, val meta: FocusMeta, val tag: String?)
+private data class FocusShown(val e: SessionExercise, val unit: WeightUnit, val set: WorkoutSet, val badge: String, val prev: WorkoutSet?, val meta: FocusMeta, val tag: String?)
 
 /** The focus card's label, the next set large, "upp 2,5 kg" and the meta row. */
 @Composable
-private fun FocusValues(e: SessionExercise, set: WorkoutSet, badge: String, prev: WorkoutSet?, meta: FocusMeta, tag: String?) {
+private fun FocusValues(e: SessionExercise, unit: WeightUnit, set: WorkoutSet, badge: String, prev: WorkoutSet?, meta: FocusMeta, tag: String?) {
     val colors = MaterialTheme.colorScheme
     val type = MaterialTheme.typography
     val sv = swedish
@@ -459,7 +477,7 @@ private fun FocusValues(e: SessionExercise, set: WorkoutSet, badge: String, prev
         Column {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 val big = type.displaySmall.copy(fontSize = 38.sp, lineHeight = 44.sp, letterSpacing = (-1).sp, fontWeight = FontWeight.Bold).board()
-                val units = units(e.type, e.perSide)
+                val units = units(e.type, e.perSide, unit)
                 cardCells(set, e.type, sv).forEachIndexed { n, (i, v) ->
                     if (n > 0) Text("×", Modifier.alignByBaseline(), style = type.headlineMedium.copy(fontSize = 26.sp, lineHeight = 32.sp).board(), color = colors.onSurfaceVariant)
                     Text(v ?: "–", Modifier.alignByBaseline(), style = big)
@@ -470,7 +488,7 @@ private fun FocusValues(e: SessionExercise, set: WorkoutSet, badge: String, prev
             if (e.type == ExerciseType.Time && set.seconds == null) {
                 Text(stringResource(Res.string.type_a_time), style = type.labelMedium.board(), color = colors.onSurfaceVariant)
             }
-            changeText(set, prev, sv)?.let {
+            changeText(set, prev, sv, unit)?.let {
                 Text(it, Modifier.layout { m, c ->
                     val p = m.measure(c)
                     val up = 8.dp.roundToPx()
@@ -503,11 +521,11 @@ private fun FocusValues(e: SessionExercise, set: WorkoutSet, badge: String, prev
  * stays on the card and the rows, so a tap meant for the bar never logs a set (Carl, point 7).
  */
 @Composable
-internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, badge: String, rir: Int?, onBack: () -> Unit, tag: String? = null) {
+internal fun FocusStrip(e: SessionExercise, unit: WeightUnit, set: WorkoutSet, badge: String, rir: Int?, onBack: () -> Unit, tag: String? = null) {
     val colors = MaterialTheme.colorScheme
     val sv = swedish
     val main = when (e.type) {
-        ExerciseType.WeightReps -> "${set.weight?.let { kilos(it, sv) } ?: "–"} kg × ${set.reps ?: "–"}"
+        ExerciseType.WeightReps -> "${set.weight?.let { kilos(it, sv) } ?: "–"} ${stringResource(unit.label)} × ${set.reps ?: "–"}"
         else -> setText(set.copy(rir = null), e.type, sv)
     }
     Column(
@@ -527,8 +545,8 @@ internal fun FocusStrip(e: SessionExercise, set: WorkoutSet, badge: String, rir:
 
 /** A's column labels: Set · Förra · the values · ✓. */
 @Composable
-internal fun ColumnLabels(type: ExerciseType, perSide: Boolean = false) {
-    val cols = columns(type, perSide)
+internal fun ColumnLabels(type: ExerciseType, unit: WeightUnit, perSide: Boolean = false) {
+    val cols = columns(type, perSide, unit)
     val style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold).board()
     val grey = MaterialTheme.colorScheme.onSurfaceVariant
     Row(Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 2.dp), horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {

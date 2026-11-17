@@ -7,13 +7,19 @@ import se.carlsmeister.strive.data.ExerciseType
 import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.data.WorkoutSet
+import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.Rest
 import se.carlsmeister.strive.data.Slot
 import se.carlsmeister.strive.data.join
 import se.carlsmeister.strive.data.leave
 import se.carlsmeister.strive.data.tidy
+import se.carlsmeister.strive.data.unitIn
 import se.carlsmeister.strive.data.warmupOrder
+import strive.shared.generated.resources.Res
+import strive.shared.generated.resources.col_added_lb
+import strive.shared.generated.resources.col_reps
+import strive.shared.generated.resources.unit_lb
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -101,6 +107,41 @@ class SummaryTest {
         assertEquals(set(null, 12), best(exercise(ExerciseType.Reps, set(null, 10), set(null, 12))))
         assertNull(best(exercise(ExerciseType.WeightReps, set(done = false))))
     }
+
+    @Test
+    fun volumeConvertsLbSetsIntoTheDefaultUnit() {
+        val w = workout.copy(
+            exercises = listOf(
+                exercise(ExerciseType.WeightReps, set(100.0, 5)).copy(name = "Bench"),
+                exercise(ExerciseType.WeightReps, set(25.0, 10)).copy(name = "Curl DB", unit = WeightUnit.Lb),
+            ),
+        )
+        assertEquals(500 + 250 * 0.45359237, summary(w, now = 0, WeightUnit.Kg).volume, 1e-6)
+        // Null means the app default, so with an lb default Bench's sets count as lb.
+        assertEquals(750.0, summary(w, now = 0, WeightUnit.Lb).volume, 1e-6)
+    }
+
+    @Test
+    fun volumeOfNullUnitSetsIsUnchanged() = assertEquals(80.0 * 8 + 82.5 * 6, summary(workout, now = 0, WeightUnit.Kg).volume)
+}
+
+/** An exercise's weights read in its own unit, or in the app default when it has none (#58). */
+class WeightUnitTest {
+    private val curl = SessionExercise(0, 0, "Curl DB", ExerciseType.WeightReps, 5.0, "", emptyList())
+
+    @Test
+    fun anExerciseWithoutAUnitTakesTheDefault() = assertEquals(WeightUnit.Lb, curl.unitIn(WeightUnit.Lb))
+
+    @Test
+    fun anExercisesOwnUnitWinsOverTheDefault() = assertEquals(WeightUnit.Lb, curl.copy(unit = WeightUnit.Lb).unitIn(WeightUnit.Kg))
+
+    @Test
+    fun anLbExercisesWeightColumnReadsLb() =
+        assertEquals(listOf(Res.string.unit_lb, Res.string.col_reps), columns(ExerciseType.WeightReps, unit = WeightUnit.Lb))
+
+    @Test
+    fun anLbBodyweightExercisesAddedWeightColumnReadsPlusLb() =
+        assertEquals(listOf(Res.string.col_added_lb, Res.string.col_reps), columns(ExerciseType.BodyweightReps, unit = WeightUnit.Lb))
 }
 
 class WeeksTest {
@@ -382,6 +423,32 @@ class SupersetTest {
     fun anExerciseLeftWithoutANeighbourInItsSupersetLeavesIt() =
         assertEquals(slots(1L to null, 2L to null, 3L to 4L, 4L to 4L, 5L to null, 6L to null),
             tidy(slots(1L to 4L, 2L to null, 3L to 4L, 4L to 4L, 5L to null, 6L to 4L)))
+}
+
+class OrderTest {
+    /** The fixture's Push A in order: Bench, the superset Incline + Lateral, Dips, Pushdown. */
+    private val rows = blocks(listOf(
+        "Bench Press BB" to null, "Incline Press DB" to 1L, "Lateral Raise DB" to 1L, "Tricep Dips" to null, "Tricep Pushdown" to null,
+    ).mapIndexed { i, (name, group) -> SessionExercise(i + 1L, i + 1L, name, ExerciseType.WeightReps, 2.5, "", emptyList(), superset = group) })
+
+    private fun names(ids: List<Long>) = ids.map { id -> rows.flatten().first { it.id == id }.name }
+
+    @Test
+    fun aSupersetIsOneRow() {
+        assertEquals(4, rows.size)
+        assertEquals(listOf("Incline Press DB", "Lateral Raise DB"), rows[1].map { it.name })
+    }
+
+    @Test
+    fun movingASupersetDownMovesBothPastTheNext() =
+        assertEquals(listOf("Bench Press BB", "Tricep Dips", "Incline Press DB", "Lateral Raise DB", "Tricep Pushdown"), names(moved(rows, 1, +1)))
+
+    @Test
+    fun movingPastAnEndChangesNothing() {
+        val original = listOf(1L, 2L, 3L, 4L, 5L)
+        assertEquals(original, moved(rows, 0, -1))
+        assertEquals(original, moved(rows, 3, +1))
+    }
 }
 
 /** Push A with one exercise, Bench Press BB, of [sets]. */

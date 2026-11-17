@@ -27,4 +27,11 @@ class SettingsTest {
         settings.put("unit", "lb")
         assertEquals("lb", settings.get("unit").first())
     }
+
+    @Test
+    fun defaultUnitIsKgUntilOneIsStored() = runTest {
+        assertEquals(WeightUnit.Kg, settings.defaultUnit().first())
+        settings.put(UNIT_KEY, "lb")
+        assertEquals(WeightUnit.Lb, settings.defaultUnit().first())
+    }
 }

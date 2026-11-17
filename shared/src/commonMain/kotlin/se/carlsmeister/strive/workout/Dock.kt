@@ -63,6 +63,7 @@ import org.jetbrains.compose.resources.stringResource
 import se.carlsmeister.strive.data.ExerciseType
 import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.SetKind
+import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.data.WorkoutSet
 import se.carlsmeister.strive.data.loggable
 import se.carlsmeister.strive.library.kilos
@@ -78,6 +79,7 @@ import strive.shared.generated.resources.field_metres
 import strive.shared.generated.resources.field_reps
 import strive.shared.generated.resources.field_seconds
 import strive.shared.generated.resources.field_weight
+import strive.shared.generated.resources.field_weight_step
 import strive.shared.generated.resources.hide
 import strive.shared.generated.resources.log
 import strive.shared.generated.resources.log_next
@@ -91,9 +93,9 @@ import strive.shared.generated.resources.dock_rest_after
 import strive.shared.generated.resources.dock_set
 import strive.shared.generated.resources.dock_warmup
 
-/** The values a set of each type records, in the order Nästa walks them (Q16). */
-private enum class Value(val label: StringResource, val decimals: Boolean) {
-    Weight(Res.string.field_weight, true), Reps(Res.string.field_reps, false),
+/** The values a set of each type records, in the order Nästa walks them (Q16). Weight's label depends on the exercise (#58). */
+private enum class Value(val label: StringResource?, val decimals: Boolean) {
+    Weight(null, true), Reps(Res.string.field_reps, false),
     Seconds(Res.string.field_seconds, false), Metres(Res.string.field_metres, true),
     /** The rest after the set, last in Nästa's order (Q16, Q17). */
     Rest(Res.string.rest, false),
@@ -135,7 +137,7 @@ private fun Value.parse(f: Field) = if (this == Value.Rest) restSeconds(f.text)?
  * from a rest line it changes without logging: [logs] false, and its button says Spara.
  */
 @Composable
-internal fun Dock(exercise: SessionExercise, set: WorkoutSet, defaultRest: Int, haze: HazeState, onSave: (WorkoutSet) -> Unit, onClose: () -> Unit,
+internal fun Dock(exercise: SessionExercise, unit: WeightUnit, set: WorkoutSet, defaultRest: Int, haze: HazeState, onSave: (WorkoutSet) -> Unit, onClose: () -> Unit,
                   field: Int? = null, logs: Boolean = true) {
     val space = StriveTheme.spacing
     val swedish = Locale.current.language == "sv"
@@ -158,6 +160,11 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, defaultRest: Int, 
         Value.Rest -> 15.0
     }
 
+    // Ruling 2 (#58): the weight always names its unit, and names the step too when no bar line shows it.
+    val unitText = stringResource(unit.label)
+    val weight = if (exercise.bar == null) stringResource(Res.string.field_weight_step, unitText, kilos(stepOf(Value.Weight), swedish))
+        else stringResource(Res.string.field_weight, unitText)
+
     fun edit(i: Int, f: Field) {
         texts = texts.toMutableList().also { it[i] = f }
     }
@@ -179,9 +186,10 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, defaultRest: Int, 
     @Composable
     fun field(i: Int, modifier: Modifier, steppers: Boolean) = Column(modifier, verticalArrangement = Arrangement.spacedBy(space.s4)) {
         val v = fields[i]
-        Text(stringResource(v.label), style = MaterialTheme.typography.labelMedium.board(), color = MaterialTheme.colorScheme.onSurfaceVariant)
+        val label = v.label?.let { stringResource(it) } ?: weight
+        Text(label, style = MaterialTheme.typography.labelMedium.board(), color = MaterialTheme.colorScheme.onSurfaceVariant)
         NumberField(
-            stringResource(v.label), texts[i].text, focused = focus == i, fresh = texts[i].fresh, steppers = steppers,
+            label, texts[i].text, focused = focus == i, fresh = texts[i].fresh, steppers = steppers,
             onTap = { focus = i; edit(i, texts[i].copy(fresh = true)) },
             onStep = { by -> step(i, by) },
         )

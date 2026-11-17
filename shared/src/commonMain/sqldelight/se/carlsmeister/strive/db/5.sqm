@@ -1,0 +1,2 @@
+-- Version 5 to 6: a weight unit per exercise (#58), kg or lb; null for the app default.
+ALTER TABLE exercise ADD COLUMN unit TEXT;

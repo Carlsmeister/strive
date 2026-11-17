@@ -32,6 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.decodeToImageBitmap
@@ -62,19 +64,27 @@ import strive.shared.generated.resources.yes
 
 private val Tabs = listOf(Res.string.tab_about, Res.string.tab_history, Res.string.tab_chart, Res.string.tab_records)
 
-/** Exercise detail (#17 X1): Om · Historik · Diagram · Rekord, Om first. The last three fill with #42 and #46. */
+/**
+ * Exercise detail (#17 X1): Om · Historik · Diagram · Rekord, Om first. The last three fill with #42 and #46. A null [parent] is the
+ * sheet over the workout (EX-05-sheet): no back label and no name, as the sheet's head carries the name and Done, and the sheet's
+ * own 16 dp sides in place of the page's.
+ */
 @Composable
-internal fun ExerciseScreen(id: Long, padding: PaddingValues, parent: String, onBack: () -> Unit) {
+internal fun ExerciseScreen(id: Long, padding: PaddingValues, parent: String?, onBack: () -> Unit) {
     val exercise by LocalAppGraph.current.exercises.byId(id).collectAsState(null)
     var tab by remember { mutableIntStateOf(0) }
     val space = StriveTheme.spacing
+    val side = if (parent == null) 0.dp else space.s16
     Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-        BackLabel(parent, onBack, Modifier.padding(start = space.s8))
+        parent?.let { BackLabel(it, onBack, Modifier.padding(start = space.s8)) }
         val e = exercise ?: return@Column
-        Text(e.name, Modifier.padding(horizontal = space.s16), style = MaterialTheme.typography.headlineMedium)
-        SegmentedTabs(Tabs.map { stringResource(it) }, tab, { tab = it }, Modifier.fillMaxWidth().padding(horizontal = space.s16, vertical = space.s8))
+        if (parent != null) Text(e.name, Modifier.padding(horizontal = space.s16), style = MaterialTheme.typography.headlineMedium)
+        // In the sheet, the head's 12 dp gap already lies above the tabs, and the sheet's 12 dp gap follows them (EX-05-sheet).
+        SegmentedTabs(Tabs.map { stringResource(it) }, tab, { tab = it },
+            Modifier.fillMaxWidth().padding(start = side, top = if (parent == null) 0.dp else space.s8, end = side,
+                bottom = if (parent == null) space.s12 else space.s8))
         if (tab == 0) {
-            About(e, Modifier.verticalScroll(rememberScrollState()).padding(bottom = padding.calculateBottomPadding()))
+            About(e, side, Modifier.verticalScroll(rememberScrollState()).padding(bottom = padding.calculateBottomPadding()))
         } else {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(stringResource(Res.string.no_workouts), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -84,14 +94,14 @@ internal fun ExerciseScreen(id: Long, padding: PaddingValues, parent: String, on
 }
 
 @Composable
-private fun About(e: Exercise, modifier: Modifier) {
+private fun About(e: Exercise, side: Dp, modifier: Modifier) {
     val space = StriveTheme.spacing
     val swedish = Locale.current.language == "sv"
     // Carl's illustrations arrive one by one (decision 31); without one the page simply starts with the text.
     val image by produceState<ImageBitmap?>(null, e.name) {
         value = runCatching { Res.readBytes(imagePath(e.name)).decodeToImageBitmap() }.getOrNull()
     }
-    Column(modifier.padding(horizontal = space.s16), verticalArrangement = Arrangement.spacedBy(space.s16)) {
+    Column(modifier.padding(horizontal = side), verticalArrangement = Arrangement.spacedBy(space.s16)) {
         image?.let { Image(it, contentDescription = e.name, Modifier.fillMaxWidth().aspectRatio(it.width.toFloat() / it.height)) }
         MarkRow(e)
         Section(Res.string.instructions, if (swedish) e.stepsSv else e.stepsEn)

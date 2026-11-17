@@ -56,4 +56,13 @@ class ExercisesTest {
         val id = exercises.all().first().single().id
         assertEquals("Bench Press BB", exercises.byId(id).first()?.name)
     }
+
+    @Test
+    fun aChosenUnitIsKeptThroughAReseed() = runTest {
+        seedExercises(seed(), version = 1, exercises, settings)
+        val bench = exercises.all().first().single().id
+        exercises.setSettings(bench, 2.5, 20.0, WeightUnit.Lb)
+        seedExercises(seed(steps = "1. Press harder."), version = 2, exercises, settings)
+        assertEquals(WeightUnit.Lb, exercises.byId(bench).first()!!.unit)
+    }
 }

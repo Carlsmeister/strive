@@ -15,6 +15,7 @@ never edited after it is accepted; a new record supersedes it and says so.
 - [0004. Database: SQLDelight](0004-database.md) (#33)
 - [0005. Dependency injection: by hand](0005-dependency-injection.md) (#33)
 - [0006. The system layer](0006-system-layer.md) (#56)
+- [0007. Weight unit](0007-weight-unit.md) (#58)
 
 ## Template
 

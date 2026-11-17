@@ -104,10 +104,15 @@ internal fun boardShots(
  * simulator's global one. Restoring removes the key rather than writing back what objectForKey read: that is the resolved
  * value, and writing it pinned it in the app's persistent domain, so one run left every later run in English.
  */
-internal fun <T> inEnglish(block: () -> T): T {
+internal fun <T> inEnglish(block: () -> T): T = inLanguage("en", block)
+
+/** [inEnglish] in Swedish, the app's other language: for checks of the sv strings that must not depend on the simulator's own. */
+internal fun <T> inSwedish(block: () -> T): T = inLanguage("sv", block)
+
+private fun <T> inLanguage(code: String, block: () -> T): T {
     clearLeftOverLanguage()
     val defaults = NSUserDefaults.standardUserDefaults
-    defaults.setObject(listOf("en"), APPLE_LANGUAGES)
+    defaults.setObject(listOf(code), APPLE_LANGUAGES)
     try {
         return block()
     } finally {

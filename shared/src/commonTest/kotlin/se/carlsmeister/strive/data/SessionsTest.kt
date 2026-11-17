@@ -284,6 +284,20 @@ class SessionsTest {
         sessions.add(open, listOf(bench), lastTime = true)
         assertEquals(listOf(70.0 to 5), sessions.open().first()!!.exercises.single().sets.map { it.weight to it.reps })
     }
+
+    @Test
+    fun anotherWorkoutCarriesTheExercisesUnit() = runTest {
+        val (db, sessions) = sessions()
+        val curl = db.exercise("Curl DB")
+        SqlExercises(db).setSettings(curl, step = 2.0, bar = null, unit = WeightUnit.Lb)
+        val first = sessions.start("Pass", 0)
+        sessions.add(first, listOf(curl))
+        assertEquals(WeightUnit.Lb, sessions.open().first()!!.exercises.single().unit)
+
+        sessions.finish(first, Finish.WithoutThem, now = 1)
+        sessions.add(sessions.start("Pass", 2), listOf(curl))
+        assertEquals(WeightUnit.Lb, sessions.open().first()!!.exercises.single().unit)
+    }
 }
 class SessionChangesTest {
     private fun StriveDatabase.exercise(name: String): Long {
@@ -403,7 +417,7 @@ class SessionChangesTest {
     @Test
     fun theExercisesStepAndBarAreCarlsOnceChanged() = runTest {
         val bench = db.exercise("Bench Press BB")
-        SqlExercises(db).setSettings(bench, step = 1.25, bar = 15.0)
+        SqlExercises(db).setSettings(bench, step = 1.25, bar = 15.0, unit = null)
         val e = SqlExercises(db).byId(bench).first()!!
         assertEquals(1.25 to 15.0, e.step to e.bar)
     }

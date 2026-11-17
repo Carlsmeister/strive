@@ -56,6 +56,12 @@ import androidx.compose.ui.unit.dp
 import se.carlsmeister.strive.theme.CssLineBox
 import se.carlsmeister.strive.theme.ShapeFull
 import se.carlsmeister.strive.theme.StriveTheme
+import se.carlsmeister.strive.theme.StriveIcons
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.wrapContentSize
+import org.jetbrains.compose.resources.stringResource
+import strive.shared.generated.resources.Res
+import strive.shared.generated.resources.clear_text
 
 /** `.chip`: a capsule small button that filters; a chosen one (`.chip.on`) fills teal. It presses as a button does. */
 @Composable
@@ -75,7 +81,10 @@ internal fun ChoiceChip(text: String, selected: Boolean, onClick: () -> Unit, mo
     }
 }
 
-/** `.field` (#16 I3): a grey field; focused, it rings teal (`.field.focus`). [leading] is the 20 dp glyph before the text. */
+/**
+ * `.field` (#16 I3): a grey field; focused, it rings teal (`.field.focus`). [leading] is the 20 dp glyph before the text. Not
+ * [singleLine], it is `.field.area`: at least 96 dp, its text from the top. Given [onClear], the 18 dp clear glyph ends a field with text.
+ */
 @Composable
 internal fun InputField(
     value: String,
@@ -84,6 +93,8 @@ internal fun InputField(
     placeholder: String = "",
     leading: ImageVector? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    singleLine: Boolean = true,
+    onClear: (() -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     val shape = MaterialTheme.shapes.medium
@@ -97,24 +108,33 @@ internal fun InputField(
         if (edit.text == value) edit else TextFieldValue(value, TextRange(value.length)),
         { edit = it; if (it.text != value) onValueChange(it.text) },
         modifier.onFocusChanged { focused = it.isFocused },
-        textStyle = style, singleLine = true, cursorBrush = SolidColor(colors.primary), keyboardOptions = keyboardOptions,
+        textStyle = style, singleLine = singleLine, cursorBrush = SolidColor(colors.primary), keyboardOptions = keyboardOptions,
     ) { field ->
         // Border-box, as CSS: the 2 dp ring sits inside the 44 dp and the 12 dp padding starts inside the ring.
         Row(
-            Modifier.heightIn(min = StriveTheme.sizes.touch).background(colors.surfaceContainerHighest, shape)
+            Modifier.heightIn(min = if (singleLine) StriveTheme.sizes.touch else 96.dp).background(colors.surfaceContainerHighest, shape)
                 .border(ring, if (focused) colors.primary else Color.Transparent, shape).padding(ring)
                 .padding(horizontal = StriveTheme.spacing.s12),
             horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = if (singleLine) Alignment.CenterVertically else Alignment.Top,
         ) {
             if (leading != null) Icon(leading, contentDescription = null, Modifier.size(20.dp), tint = colors.onSurfaceVariant)
             // `.field .in`: 10 px above and below one line box, pinned to the style's line height.
             // shortcut: an empty BasicTextField measures 1.3 dp taller than a filled one on Skiko (Compose Multiplatform 1.12.1), and
             // the pin hides that; drop it when an upgrade makes the empty and filled fields equally tall without it.
-            Box(Modifier.weight(1f).padding(vertical = 10.dp).height(with(LocalDensity.current) { style.lineHeight.toDp() })) {
+            val line = with(LocalDensity.current) { style.lineHeight.toDp() }
+            Box(Modifier.weight(1f).padding(vertical = 10.dp).then(if (singleLine) Modifier.height(line) else Modifier)) {
                 // The board's `.caret` is an inline box before `.ph`, so a focused field's placeholder starts after it; the cursor takes no room.
                 if (value.isEmpty()) Text(placeholder, Modifier.padding(start = if (focused) 3.dp else 0.dp), color = colors.onSurfaceVariant, style = style, maxLines = 1)
                 field()
+            }
+            if (onClear != null && value.isNotEmpty()) {
+                val clear = stringResource(Res.string.clear_text)
+                // `.ic-clear.s18`, tapped across 44 dp centred on it, hanging over its neighbours.
+                Box(
+                    Modifier.size(18.dp).requiredSize(StriveTheme.sizes.touch).clickable(onClickLabel = clear, role = Role.Button, onClick = onClear)
+                        .semantics { contentDescription = clear }.wrapContentSize(),
+                ) { Icon(StriveIcons.Clear, contentDescription = null, Modifier.size(18.dp), tint = colors.onSurfaceVariant) }
             }
         }
     }

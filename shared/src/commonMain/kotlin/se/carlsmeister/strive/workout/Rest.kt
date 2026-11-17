@@ -125,7 +125,7 @@ internal fun RestButton(onStart: (Int) -> Unit) {
         }
     }
     if (custom) {
-        TextPrompt(stringResource(Res.string.custom_time), "", onSave = { t ->
+        TextPrompt(stringResource(Res.string.custom_time), "", ghost = false, clearable = false, onSave = { t ->
             custom = false
             restSeconds(t.filter { it.isDigit() || it == ':' })?.takeIf { it > 0 }?.let(onStart)
         }, onDismiss = { custom = false })

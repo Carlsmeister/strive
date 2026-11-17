@@ -45,7 +45,7 @@ CREATE INDEX workout_set_exercise ON workout_set(session_exercise_id);
 openRows:
 SELECT s.id, s.name, s.started_at, s.ended_at, s.note, s.rpe,
     se.id AS se_id, se.exercise_id, se.note AS se_note, se.skipped, se.superset, e.name AS exercise_name, e.type, e.step, e.bar, e.note AS pinned,
-    ws.id AS set_id, ws.weight, ws.reps, ws.seconds, ws.metres, ws.rir, ws.done, ws.kind, ws.rest_seconds, e.per_side
+    ws.id AS set_id, ws.weight, ws.reps, ws.seconds, ws.metres, ws.rir, ws.done, ws.kind, ws.rest_seconds, e.per_side, e.unit
 FROM session s
 LEFT JOIN session_exercise se ON se.session_id = s.id
 LEFT JOIN exercise e ON e.id = se.exercise_id
@@ -56,7 +56,7 @@ ORDER BY s.started_at DESC, s.id, se.position, ws.position;
 rowsOf:
 SELECT s.id, s.name, s.started_at, s.ended_at, s.note, s.rpe,
     se.id AS se_id, se.exercise_id, se.note AS se_note, se.skipped, se.superset, e.name AS exercise_name, e.type, e.step, e.bar, e.note AS pinned,
-    ws.id AS set_id, ws.weight, ws.reps, ws.seconds, ws.metres, ws.rir, ws.done, ws.kind, ws.rest_seconds, e.per_side
+    ws.id AS set_id, ws.weight, ws.reps, ws.seconds, ws.metres, ws.rir, ws.done, ws.kind, ws.rest_seconds, e.per_side, e.unit
 FROM session s
 LEFT JOIN session_exercise se ON se.session_id = s.id
 LEFT JOIN exercise e ON e.id = se.exercise_id
@@ -67,7 +67,7 @@ ORDER BY se.position, ws.position;
 finishedRows:
 SELECT s.id, s.name, s.started_at, s.ended_at, s.note, s.rpe,
     se.id AS se_id, se.exercise_id, se.note AS se_note, se.skipped, se.superset, e.name AS exercise_name, e.type, e.step, e.bar, e.note AS pinned,
-    ws.id AS set_id, ws.weight, ws.reps, ws.seconds, ws.metres, ws.rir, ws.done, ws.kind, ws.rest_seconds, e.per_side
+    ws.id AS set_id, ws.weight, ws.reps, ws.seconds, ws.metres, ws.rir, ws.done, ws.kind, ws.rest_seconds, e.per_side, e.unit
 FROM session s
 LEFT JOIN session_exercise se ON se.session_id = s.id
 LEFT JOIN exercise e ON e.id = se.exercise_id

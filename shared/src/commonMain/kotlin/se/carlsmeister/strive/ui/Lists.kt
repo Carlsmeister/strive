@@ -43,7 +43,8 @@ internal enum class RowTone { Plain, Action, Danger }
 
 /**
  * `.row`: the title left; a [value] (`.val`) and a [chevron] right; a [leading] glyph in a 30 dp tile (`.row.lead`). [centered] is
- * `.row.center`. A pressed row turns surface-container-highest, with no ripple and no scale (the Lists README).
+ * `.row.center`. [pullDown] is `.val.teal` with `ic-updown`: the value opens a pull-down (WO-12). A pressed row turns
+ * surface-container-highest, with no ripple and no scale (the Lists README).
  */
 @Composable
 internal fun ListRow(
@@ -54,6 +55,7 @@ internal fun ListRow(
     chevron: Boolean = false,
     tone: RowTone = RowTone.Plain,
     centered: Boolean = false,
+    pullDown: Boolean = false,
     onClick: (() -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -83,7 +85,8 @@ internal fun ListRow(
         Text(text, Modifier.weight(1f), color = ink, style = style, textAlign = if (centered) TextAlign.Center else null)
         if (value != null || chevron) {
             Row(horizontalArrangement = Arrangement.spacedBy(space.s4), verticalAlignment = Alignment.CenterVertically) {
-                if (value != null) Text(value, color = colors.onSurfaceVariant, style = style, maxLines = 1, softWrap = false)
+                if (value != null) Text(value, color = if (pullDown) colors.primary else colors.onSurfaceVariant, style = style, maxLines = 1, softWrap = false)
+                if (pullDown) Icon(StriveIcons.Updown, contentDescription = null, Modifier.size(16.dp), tint = colors.primary)
                 // Alone, it is `.chev`: `vertical-align: middle` in `.row`'s 22 px line box, which the card paints 2 pt low. `.val` centres it.
                 val drop = if (value == null) 2.dp else 0.dp
                 if (chevron) Icon(StriveIcons.ChevR, contentDescription = null, Modifier.offset(y = drop).size(16.dp), tint = colors.onSurfaceVariant)

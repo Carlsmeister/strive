@@ -10,6 +10,8 @@ import kotlinx.datetime.toInstant
 import se.carlsmeister.strive.data.ExerciseType
 import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.SessionExercise
+import se.carlsmeister.strive.data.WeightUnit
+import se.carlsmeister.strive.data.convert
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.data.WorkoutSet
 import se.carlsmeister.strive.library.kilos
@@ -49,8 +51,8 @@ private const val MAX_LENGTH = 6
 /** The summary's numbers (#17 choice 7): time, logged sets, Snitt-RIR over the sets that have one, and volume for History. */
 internal data class Summary(val minutes: Long, val sets: Int, val rir: Double?, val rirSets: Int, val volume: Double)
 
-internal fun summary(w: Workout, now: Long): Summary {
-    val logged = w.exercises.flatMap { e -> e.sets.filter { it.done }.map { e.type to it } }
+internal fun summary(w: Workout, now: Long, unit: WeightUnit = WeightUnit.Kg): Summary {
+    val logged = w.exercises.flatMap { e -> e.sets.filter { it.done }.map { e to it } }
     // Warm-ups say nothing about how hard the workout was, nor about the work done (#17 choice 4).
     val work = logged.filter { it.second.kind != SetKind.Warmup }
     val rirs = work.mapNotNull { it.second.rir }
@@ -59,7 +61,9 @@ internal fun summary(w: Workout, now: Long): Summary {
         sets = logged.size,
         rir = if (rirs.isEmpty()) null else rirs.average(),
         rirSets = rirs.size,
-        volume = work.filter { it.first == ExerciseType.WeightReps }.sumOf { (_, s) -> (s.weight ?: 0.0) * (s.reps ?: 0) },
+        // Volume sums across exercises, so each set converts from its exercise's unit (null is the default) into [unit].
+        volume = work.filter { it.first.type == ExerciseType.WeightReps }
+            .sumOf { (e, s) -> ((s.weight ?: 0.0) * (s.reps ?: 0)).convert(e.unit ?: unit, unit) },
     )
 }
 
@@ -131,6 +135,13 @@ internal fun blocks(exercises: List<SessionExercise>): List<List<SessionExercise
     val out = mutableListOf<MutableList<SessionExercise>>()
     for (e in exercises) if (e.superset != null && out.lastOrNull()?.last()?.superset == e.superset) out.last() += e else out += mutableListOf(e)
     return out
+}
+
+/** The exercise ids, in order, once block [index] of [rows] moves [by] places, so a superset moves as one (WO-11); stops at the ends. */
+internal fun moved(rows: List<List<SessionExercise>>, index: Int, by: Int): List<Long> {
+    val out = rows.toMutableList()
+    out.add((index + by).coerceIn(rows.indices), out.removeAt(index))
+    return out.flatten().map { it.id }
 }
 
 /** A block's rounds in the order you lift (G2): each set alone for one exercise; set n of each exercise in turn for a superset. */

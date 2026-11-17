@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -23,7 +24,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -116,45 +118,74 @@ private fun AlertFrame(modifier: Modifier, content: @Composable ColumnScope.() -
     content = content,
 )
 
-/** An alert: only for an uncommon action that cannot be undone (#16). */
+/** An alert: only for an uncommon action that cannot be undone (#16). [ghost] leaves both buttons unfilled, as WO-16 draws them. */
 @Composable
-internal fun Alert(title: String, body: String, confirm: String, onConfirm: () -> Unit, onDismiss: () -> Unit, destructive: Boolean = true) =
-    DialogWindow(onDismiss) { AlertPanel(title, body, confirm, onConfirm, onDismiss, destructive, Modifier.align(Alignment.Center).padding(StriveTheme.spacing.s24)) }
+internal fun Alert(title: String, body: String, confirm: String, onConfirm: () -> Unit, onDismiss: () -> Unit, destructive: Boolean = true,
+                   ghost: Boolean = false) =
+    DialogWindow(onDismiss) {
+        AlertPanel(title, body, confirm, onConfirm, onDismiss, destructive, Modifier.align(Alignment.Center).padding(StriveTheme.spacing.s24), ghost)
+    }
 
 /** [Alert]'s panel without its window: the title, one line of body, and Cancel beside the confirming button. */
 @Composable
 internal fun AlertPanel(title: String, body: String, confirm: String, onConfirm: () -> Unit, onDismiss: () -> Unit, destructive: Boolean = true,
-                        modifier: Modifier = Modifier) = AlertFrame(modifier) {
+                        modifier: Modifier = Modifier, ghost: Boolean = false) = AlertFrame(modifier) {
     AlertText(title, MaterialTheme.typography.titleMedium)
     AlertText(body, MaterialTheme.typography.bodyMedium)
-    AlertActions(confirm, if (destructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary, onConfirm, onDismiss)
+    AlertActions(confirm, if (destructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary, onConfirm, onDismiss, ghost)
 }
 
-/** A text to write in the alert's panel, for a name or a note; Save keeps it. */
+/**
+ * A text to write in the alert's panel, for a name or a note; Save keeps it (WO-08-rename, WO-08-note, WO-09-sticky). [body] is the
+ * alert's centred line under the title; the field, 8 dp further down, takes the caret at once, holds [placeholder] while empty and,
+ * [clearable], ends in a clear glyph while it holds text. [caption] is `.cap` under it, left-aligned. [ghost] draws Cancel and Save
+ * unfilled, as WO-08 and WO-09 do; WO-07-custom fills them.
+ */
 @Composable
-internal fun TextPrompt(title: String, initial: String, onSave: (String) -> Unit, onDismiss: () -> Unit, singleLine: Boolean = true) {
+internal fun TextPrompt(
+    title: String,
+    initial: String,
+    onSave: (String) -> Unit,
+    onDismiss: () -> Unit,
+    singleLine: Boolean = true,
+    body: String? = null,
+    placeholder: String? = null,
+    caption: String? = null,
+    ghost: Boolean = true,
+    clearable: Boolean = singleLine,
+) {
     var text by remember { mutableStateOf(initial) }
     AlertBox(onDismiss) {
+        val focus = remember { FocusRequester() }
         AlertText(title, MaterialTheme.typography.titleMedium)
-        OutlinedTextField(text, { text = it }, Modifier.fillMaxWidth(), singleLine = singleLine, minLines = if (singleLine) 1 else 3,
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences))
-        AlertActions(stringResource(Res.string.save), MaterialTheme.colorScheme.primary, { onSave(text.trim()) }, onDismiss)
+        body?.let { AlertText(it, MaterialTheme.typography.bodyMedium) }
+        InputField(
+            text, { text = it }, Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s8).focusRequester(focus), placeholder.orEmpty(),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences), singleLine = singleLine,
+            onClear = if (clearable) ({ text = "" }) else null,
+        )
+        // `.alert p.cap`: `.alert p`'s body-medium outranks `.cap`'s font; `.cap` keeps its colour.
+        caption?.let { Text(it, Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium.css()) }
+        AlertActions(stringResource(Res.string.save), MaterialTheme.colorScheme.primary, { onSave(text.trim()) }, onDismiss, ghost)
+        LaunchedEffect(Unit) { focus.requestFocus() }
     }
 }
 
+/** `.alert h2` or `.alert p`: a centred line of the alert's, full width. */
 @Composable
-private fun AlertText(text: String, style: TextStyle) = Text(text, Modifier.fillMaxWidth(), style = style.css(), textAlign = TextAlign.Center)
+internal fun AlertText(text: String, style: TextStyle) = Text(text, Modifier.fillMaxWidth(), style = style.css(), textAlign = TextAlign.Center)
 
 /**
  * `.alert .acts`, 8 dp further down: Cancel and [confirm] side by side, equal and 8 dp apart. When either label would not fit its
  * half on one line, measured, it is `.acts.stack`: both full width, 8 dp apart, [confirm] first and Cancel under it (no board draws
- * the stacked order).
+ * the stacked order). [ghost] is `.btn.ghost`: no fill, and never stacked; a label too long for its half wraps in it, both buttons
+ * as tall as the taller, as WO-16 draws "Discard workout".
  */
 @Composable
-private fun AlertActions(confirm: String, color: Color, onConfirm: () -> Unit, onCancel: () -> Unit) = Layout(
+private fun AlertActions(confirm: String, color: Color, onConfirm: () -> Unit, onCancel: () -> Unit, ghost: Boolean = false) = Layout(
     {
-        AlertButton(stringResource(Res.string.cancel), MaterialTheme.colorScheme.primary, onCancel)
-        AlertButton(confirm, color, onConfirm)
+        AlertButton(stringResource(Res.string.cancel), MaterialTheme.colorScheme.primary, onCancel, ghost = ghost)
+        AlertButton(confirm, color, onConfirm, ghost = ghost)
     },
     Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s8),
 ) { (cancel, ok), constraints ->
@@ -162,19 +193,21 @@ private fun AlertActions(confirm: String, color: Color, onConfirm: () -> Unit, o
     val width = constraints.maxWidth
     val half = (width - gap) / 2
     fun Measurable.at(w: Int) = measure(constraints.copy(minWidth = w, maxWidth = w, minHeight = 0))
-    if (maxOf(cancel.maxIntrinsicWidth(Constraints.Infinity), ok.maxIntrinsicWidth(Constraints.Infinity)) <= half) {
-        val (c, o) = cancel.at(half) to ok.at(half)
-        layout(width, maxOf(c.height, o.height)) { c.placeRelative(0, 0); o.placeRelative(width - half, 0) }
+    if (ghost || maxOf(cancel.maxIntrinsicWidth(Constraints.Infinity), ok.maxIntrinsicWidth(Constraints.Infinity)) <= half) {
+        // `.acts` is a flex row: both stretch to the taller.
+        val h = maxOf(cancel.minIntrinsicHeight(half), ok.minIntrinsicHeight(half))
+        val (c, o) = cancel.measure(Constraints.fixed(half, h)) to ok.measure(Constraints.fixed(half, h))
+        layout(width, h) { c.placeRelative(0, 0); o.placeRelative(width - half, 0) }
     } else {
         val (o, c) = ok.at(width) to cancel.at(width)
         layout(width, o.height + gap + c.height) { o.placeRelative(0, 0); c.placeRelative(0, o.height + gap) }
     }
 }
 
-/** `.btn` in `.acts`: at least 44 dp, 16 dp corners, surface-container-high, title-small. */
+/** `.btn` in `.acts`: at least 44 dp, 16 dp corners, surface-container-high (none when [ghost]), title-small. */
 @Composable
-internal fun AlertButton(label: String, color: Color, onClick: () -> Unit, modifier: Modifier = Modifier) = Box(
-    modifier.pressable(true, onClick).background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.large)
+internal fun AlertButton(label: String, color: Color, onClick: () -> Unit, modifier: Modifier = Modifier, ghost: Boolean = false) = Box(
+    modifier.pressable(true, onClick).background(if (ghost) Color.Transparent else MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.large)
         .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = StriveTheme.spacing.s16),
     contentAlignment = Alignment.Center,
 ) { Text(label, color = color, style = MaterialTheme.typography.titleSmall.css(), textAlign = TextAlign.Center) }
@@ -229,7 +262,9 @@ private fun SheetRow(label: String, color: Color, style: TextStyle, minHeight: D
 /**
  * `.sheet.glass.thick` with its `.sheet-head`: at the bottom, full width, 28 dp top corners, padding 8 / 16 / 16 plus the navigation
  * bar, its parts 12 dp apart: the grabber, the head ([cancel] at the start, [title] on the sheet's centre, [done] in bold at the
- * end), then [content]. It rises as the action sheet does; a tap on the scrim, or back, is [onDismiss].
+ * end), then [content]. It rises as the action sheet does; a tap on the scrim, or back, is [onDismiss]. [full] is `.sheet.full`: its
+ * top 60 dp from the window's and no padding at the foot, not even the navigation bar's: its content scrolls to the window's edge
+ * and brings its own foot inside the scroll (EX-05-sheet).
  */
 @Composable
 internal fun HeaderSheet(
@@ -239,12 +274,16 @@ internal fun HeaderSheet(
     onCancel: () -> Unit = onDismiss,
     done: String? = null,
     onDone: () -> Unit = onDismiss,
+    full: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) = DialogWindow(onDismiss) {
     val space = StriveTheme.spacing
     Column(
-        Modifier.align(Alignment.BottomCenter).rise().fillMaxWidth().panel().glass(LocalGlassSource.current, StriveTheme.glass, thick = true, shape = SheetShape)
-            .padding(start = space.s16, top = space.s8, end = space.s16).navigationBarsPadding().padding(bottom = space.s16),
+        Modifier.align(Alignment.BottomCenter).then(if (full) Modifier.padding(top = 60.dp).fillMaxHeight() else Modifier)
+            // EX-05-sheet's `.sheet.glass.full` is regular glass; the partial sheets are `glass thick`.
+            .rise().fillMaxWidth().panel().glass(LocalGlassSource.current, StriveTheme.glass, thick = !full, shape = SheetShape)
+            .padding(start = space.s16, top = space.s8, end = space.s16)
+            .then(if (full) Modifier else Modifier.navigationBarsPadding().padding(bottom = space.s16)),
         verticalArrangement = Arrangement.spacedBy(space.s12),
     ) {
         Box(Modifier.align(Alignment.CenterHorizontally).size(36.dp, 5.dp).background(MaterialTheme.colorScheme.outline, ShapeFull))

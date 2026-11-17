@@ -11,6 +11,8 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
+import se.carlsmeister.strive.ui.NavText
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
@@ -44,6 +46,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -78,6 +81,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
@@ -87,7 +92,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -103,9 +107,14 @@ import se.carlsmeister.strive.ui.Segments
 import se.carlsmeister.strive.ui.Alert
 import se.carlsmeister.strive.ui.AlertBox
 import se.carlsmeister.strive.ui.AlertButton
+import se.carlsmeister.strive.ui.AlertText
+import se.carlsmeister.strive.ui.ListBlock
+import se.carlsmeister.strive.ui.ListRow
 import se.carlsmeister.strive.ui.GlassMenu
 import se.carlsmeister.strive.ui.Overlay
 import se.carlsmeister.strive.ui.HeaderSheet
+import se.carlsmeister.strive.ui.MenuSeparator
+import se.carlsmeister.strive.library.ExerciseScreen
 import se.carlsmeister.strive.ui.SheetAction
 import se.carlsmeister.strive.ui.TextPrompt
 import se.carlsmeister.strive.ui.MenuRow
@@ -119,6 +128,7 @@ import strive.shared.generated.resources.undo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import se.carlsmeister.strive.data.ExerciseType
 import se.carlsmeister.strive.data.Finish
@@ -126,7 +136,10 @@ import se.carlsmeister.strive.data.LocalAppGraph
 import se.carlsmeister.strive.data.Rest
 import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.Workout
+import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.data.WorkoutSet
+import se.carlsmeister.strive.data.defaultUnit
+import se.carlsmeister.strive.data.unitIn
 import se.carlsmeister.strive.data.loggable
 import se.carlsmeister.strive.library.kilos
 import se.carlsmeister.strive.theme.Motion
@@ -145,28 +158,41 @@ import strive.shared.generated.resources.discard_question
 import strive.shared.generated.resources.discard_workout
 import strive.shared.generated.resources.done
 import strive.shared.generated.resources.exercise_options
+import strive.shared.generated.resources.exercise_details
 import strive.shared.generated.resources.exercise_settings
 import strive.shared.generated.resources.finish
 import strive.shared.generated.resources.include
 import strive.shared.generated.resources.keep_going
-import strive.shared.generated.resources.log_and_save
 import strive.shared.generated.resources.minimise
 import strive.shared.generated.resources.move_down
 import strive.shared.generated.resources.move_up
-import strive.shared.generated.resources.no_bar
+import strive.shared.generated.resources.unit
+import strive.shared.generated.resources.saved_for
+import strive.shared.generated.resources.bar_olympic
+import strive.shared.generated.resources.bar_short
+import strive.shared.generated.resources.bar_ez
+import strive.shared.generated.resources.bar_hex
+import strive.shared.generated.resources.bar_none
 import strive.shared.generated.resources.note
 import strive.shared.generated.resources.order_skip
 import strive.shared.generated.resources.remove_exercise
 import strive.shared.generated.resources.rest_all
 import strive.shared.generated.resources.rest_change
-import strive.shared.generated.resources.save_without
 import strive.shared.generated.resources.skip
 import strive.shared.generated.resources.step
 import strive.shared.generated.resources.sticky_note
+import strive.shared.generated.resources.sticky_body
 import strive.shared.generated.resources.superset_create
 import strive.shared.generated.resources.superset_leave
+import strive.shared.generated.resources.superset_moves
+import strive.shared.generated.resources.superset_moves_as_one
+import strive.shared.generated.resources.skipped_note
+import strive.shared.generated.resources.skip_named
+import strive.shared.generated.resources.include_named
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.time_sets
+import strive.shared.generated.resources.log_and_save
+import strive.shared.generated.resources.save_without
 import strive.shared.generated.resources.unlogged
 
 /** The clock, ticking on the second. */
@@ -224,12 +250,15 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     val history by remember { sessions.history() }.collectAsState(emptyList())
     val restSetting by remember { graph.settings.get(REST_KEY) }.collectAsState(null)
     val defaultRest = defaultRest(restSetting)
+    val defaultUnit by remember { graph.settings.defaultUnit() }.collectAsState(WeightUnit.Kg)
     val rest by graph.rest.collectAsState()
     // Only the exercise being done stands open; the rest fold to C's overview rows until opened (decision 39). When the focus moves
     // on, the next one opens and the finished one folds.
     val folds = remember { mutableStateMapOf<Long, Boolean>() }
     var finishing by remember { mutableStateOf(false) }
     var discarding by remember { mutableStateOf(false) }
+    // Order and skip is the screen's, not its opener's: skipping the exercise it opened from folds that header away (WO-11-skip).
+    var ordering by remember { mutableStateOf(false) }
     val active = w.exercises.filterNot { it.skipped }
     val tags = tags(active)
     // The next set to do is outlined (#17 S3): the first one not logged, in the order the list is lifted, a superset round by round (G2).
@@ -357,7 +386,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                                     // ended rest only while it shows, so a rest under the dock can outlive its time.
                                     val resting = rest?.takeIf { it.left(nowMs) > 0 }?.setId?.let { id -> e.sets.any { it.id == id } } == true
                                     val meta = focusMeta(e, e.sets[i].id, inSuperset = tags[e.id] != null, resting, focusRest)
-                                    FocusCard(e, e.sets[i], badges(e.sets)[i], previousOf(e.sets, i, previous[e.exerciseId]), meta,
+                                    FocusCard(e, e.unitIn(defaultUnit), e.sets[i], badges(e.sets)[i], previousOf(e.sets, i, previous[e.exerciseId]), meta,
                                         focusRir, focusMore, { focusRir = it }, { focusMore = it },
                                         onEdit = { edit(e.sets[i].id) }, onLog = { logFocus() }, tag = tags[e.id])
                                 }
@@ -402,12 +431,14 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                                 // A lone exercise is its own section: the `.body`'s 16 gap comes before its header's own 16. A superset's
                                 // headers stack under its label: the first 6 below it, the others at once (WO-02-s4).
                                 val top = if (!superset) StriveTheme.spacing.s16 * 2 else if (n == 0) 6.dp else 0.dp
-                                ExerciseHeader(w, e, defaultRest, tags[e.id], onFold = { folds[b.first().id] = true }, onSwap = { onSwap(e) },
-                                    Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place).edge(superset).padding(top = top))
+                                ExerciseHeader(w, e, defaultRest, defaultUnit, tags[e.id], onFold = { folds[b.first().id] = true }, onSwap = { onSwap(e) },
+                                    onOrder = { ordering = true }, Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place).edge(superset).padding(top = top))
                             }
                         }
-                        // One row of column labels over a superset whose exercises record the same values.
-                        if (members.map { it.type }.distinct().size == 1) item(key = "c${b.first().id}") { Box(Modifier.edge(superset)) { ColumnLabels(members[0].type, members[0].perSide) } }
+                        // One row of column labels over a superset whose exercises record the same values, in the same unit.
+                        if (members.map { it.type to it.unitIn(defaultUnit) }.distinct().size == 1) item(key = "c${b.first().id}") {
+                            Box(Modifier.edge(superset)) { ColumnLabels(members[0].type, members[0].unitIn(defaultUnit), members[0].perSide) }
+                        }
                         rows.forEachIndexed { r, round ->
                             round.forEachIndexed { k, (e, i) ->
                                 val s = e.sets[i]
@@ -475,7 +506,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                         }
                     }
                 }
-                StripOverlay(strip, focus, focusRir, focus?.let { tags[it.first.id] }, Modifier.align(Alignment.TopCenter)) {
+                StripOverlay(strip, focus, defaultUnit, focusRir, focus?.let { tags[it.first.id] }, Modifier.align(Alignment.TopCenter)) {
                     scope.launch { if (reduceMotion) list.scrollToItem(0) else list.animateScrollToItem(0) }
                 }
             }
@@ -509,7 +540,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             if (open != null) shown.value = open
             val (e, i) = shown.value ?: return@Overlay
             val set = e.sets.getOrNull(i) ?: return@Overlay
-            Dock(e, set, defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
+            Dock(e, e.unitIn(defaultUnit), set, defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
                 field = editField, logs = !editRest)
         }
         val toast by toasts.shown.collectAsState()
@@ -521,8 +552,8 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             ActionSheet(
                 pluralStringResource(Res.plurals.unlogged, left, left),
                 listOf(
-                    SheetAction(stringResource(Res.string.log_and_save)) { finishing = false; finishAs(Finish.LogAsTheyStand) },
-                    SheetAction(stringResource(Res.string.save_without)) { finishing = false; finishAs(Finish.WithoutThem) },
+                    SheetAction(pluralStringResource(Res.plurals.log_and_save, left)) { finishing = false; finishAs(Finish.LogAsTheyStand) },
+                    SheetAction(pluralStringResource(Res.plurals.save_without, left)) { finishing = false; finishAs(Finish.WithoutThem) },
                     // Red, with no alert after it: Avsluta was the intentional action, not discarding (#16).
                     SheetAction(stringResource(Res.string.discard_workout), destructive = true) { finishing = false; discard() },
                 ),
@@ -532,9 +563,10 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
         if (discarding) {
             Alert(
                 stringResource(Res.string.discard_question), stringResource(Res.string.discard_body), stringResource(Res.string.discard_workout),
-                onConfirm = { discarding = false; discard() }, onDismiss = { discarding = false },
+                onConfirm = { discarding = false; discard() }, onDismiss = { discarding = false }, ghost = true,
             )
         }
+        if (ordering) OrderDialog(w) { ordering = false }
     } } }
 }
 
@@ -638,7 +670,7 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
  */
 @Composable
 private fun ExerciseHeader(
-    w: Workout, e: SessionExercise, defaultRest: Int, letter: String?, onFold: () -> Unit, onSwap: () -> Unit, modifier: Modifier,
+    w: Workout, e: SessionExercise, defaultRest: Int, defaultUnit: WeightUnit, letter: String?, onFold: () -> Unit, onSwap: () -> Unit, onOrder: () -> Unit, modifier: Modifier,
     plan: String? = null,
 ) {
     val graph = LocalAppGraph.current
@@ -665,23 +697,30 @@ private fun ExerciseHeader(
                             MenuTile(StriveIcons.Note, stringResource(Res.string.note)) { menu = false; noteOpen = true },
                             MenuTile(StriveIcons.Swap, stringResource(Res.string.swap)) { menu = false; onSwap() },
                         )
+                        MenuSeparator()
                         MenuRow(stringResource(Res.string.sticky_note), { menu = false; dialog = "pin" }, icon = StriveIcons.Pin)
-                        MenuRow(stringResource(Res.string.rest_all), { restMenu = true }, tail = "›")
+                        MenuSeparator()
+                        MenuRow(stringResource(Res.string.rest_all), { restMenu = true }, icon = StriveIcons.ChevR)
                         // Choice 4's Skapa superset; in a superset, the way out of it.
                         if (letter != null) {
-                            MenuRow(stringResource(Res.string.superset_leave), { menu = false; scope.launch { sessions.leaveSuperset(e.id) } })
-                        } else if (w.exercises.size > 1) {
-                            MenuRow(stringResource(Res.string.superset_create), { menu = false; dialog = "superset" })
+                            MenuRow(stringResource(Res.string.superset_leave), { menu = false; scope.launch { sessions.leaveSuperset(e.id) } }, icon = StriveIcons.Link)
+                        } else if (supersetPartners(w, e).isNotEmpty()) {
+                            MenuRow(stringResource(Res.string.superset_create), { menu = false; dialog = "superset" }, icon = StriveIcons.Link)
                         }
-                        MenuRow(stringResource(Res.string.order_skip), { menu = false; dialog = "order" })
+                        MenuRow(stringResource(Res.string.order_skip), { menu = false; onOrder() }, icon = StriveIcons.Reorder)
+                        // WO-09-noweight draws no line above Exercise details when the settings row is absent.
                         if (e.type == ExerciseType.WeightReps) {
-                            MenuRow(stringResource(Res.string.exercise_settings), { menu = false; dialog = "settings" })
+                            MenuSeparator()
+                            MenuRow(stringResource(Res.string.exercise_settings), { menu = false; dialog = "settings" }, icon = StriveIcons.Sliders)
                         }
+                        MenuRow(stringResource(Res.string.exercise_details), { menu = false; dialog = "details" }, icon = StriveIcons.Info)
+                        MenuSeparator()
                         // Hidden behind a toast with Undo; the rows go when the toast ends (P4).
                         MenuRow(stringResource(Res.string.remove_exercise), { menu = false; graph.toasts.show(WorkoutToast.Removed(e.name, e.id)) },
                             icon = StriveIcons.Trash, danger = true)
                     } else {
                         MenuRow(stringResource(Res.string.rest_all), { restMenu = false }, back = true)
+                        MenuSeparator()
                         val all = e.sets.map { restOf(it, defaultRest) }.distinct().singleOrNull()
                         for (r in listOf(60, 90, 120, 150, 180)) {
                             MenuRow(clock(r.toLong()), { menu = false; restMenu = false; scope.launch { sessions.setRestAll(e.id, r) } }, checked = all == r)
@@ -717,13 +756,17 @@ private fun ExerciseHeader(
         }
     }
     when (dialog) {
-        "pin" -> TextPrompt(stringResource(Res.string.sticky_note), e.pinned, singleLine = false, onSave = { n ->
+        "pin" -> TextPrompt(stringResource(Res.string.sticky_note), e.pinned.replace('\n', ' '), body = stringResource(Res.string.sticky_body, e.name), onSave = { n ->
             dialog = null
             scope.launch { graph.exercises.setNote(e.exerciseId, n) }
         }, onDismiss = { dialog = null })
-        "order" -> OrderDialog(w) { dialog = null }
         "superset" -> SupersetDialog(w, e) { dialog = null }
-        "settings" -> SettingsDialog(e) { dialog = null }
+        "settings" -> SettingsDialog(e, defaultUnit) { dialog = null }
+        // EX-05 over the workout (O-02): nothing is pushed, so Done leaves the workout where it was.
+        "details" -> HeaderSheet(e.name, { dialog = null }, done = stringResource(Res.string.done), full = true) {
+            // The 48 dp foot lies inside the scroll, past the home indicator, as EX-05-sheet draws it.
+            ExerciseScreen(e.exerciseId, PaddingValues(bottom = 48.dp), parent = null, onBack = { dialog = null })
+        }
     }
 }
 
@@ -738,72 +781,163 @@ private fun ExerciseNote(label: String, text: String) {
     }
 }
 
-/** Ordning och hoppa över (Q8): move an exercise up or down, or skip it; a skipped exercise stays recorded. */
+/**
+ * Ordning och hoppa över (WO-11): the exercises in a `.list`, a superset as one row (its A and B on a blue edge) that moves and skips
+ * as one; each row ↑ ↓ and Skip, or Include once skipped, greyed. A skipped exercise stays recorded (Q8), as the footnote says.
+ */
 @Composable
 private fun OrderDialog(w: Workout, onDone: () -> Unit) {
     val sessions = LocalAppGraph.current.sessions
     val scope = rememberCoroutineScope()
     val workout by remember { sessions.open() }.collectAsState(w)
     val exercises = (workout ?: w).exercises
-    fun move(i: Int, by: Int) {
-        val ids = exercises.map { it.id }.toMutableList()
-        val j = i + by
-        if (j !in ids.indices) return
-        ids[i] = ids[j].also { ids[j] = ids[i] }
-        scope.launch { sessions.reorder(ids) }
-    }
+    val rows = blocks(exercises)
+    val colors = MaterialTheme.colorScheme
+    val style = MaterialTheme.typography.bodyLarge.board()
     HeaderSheet(stringResource(Res.string.order_skip), onDone, done = stringResource(Res.string.done)) {
-        Column(verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s4)) {
-            exercises.forEachIndexed { i, e ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(e.name, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge,
-                        color = if (e.skipped) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface)
-                    IconTarget(stringResource(Res.string.move_up, e.name), { move(i, -1) }) { Glyph(Glyph.Up, 16.dp, color = MaterialTheme.colorScheme.primary) }
-                    IconTarget(stringResource(Res.string.move_down, e.name), { move(i, 1) }) { Glyph(Glyph.Down, 16.dp, color = MaterialTheme.colorScheme.primary) }
-                    TextButton({ scope.launch { sessions.skip(e.id, !e.skipped) } }) {
-                        Text(stringResource(if (e.skipped) Res.string.include else Res.string.skip))
+        // A long workout scrolls inside the list, so Done and the footnote stay on screen.
+        ListBlock(rows.mapIndexed { i, row -> {
+            val skipped = row.all { it.skipped }
+            // Each name greys by its own skip, as one half of a superset can be skipped from its menu.
+            fun ink(e: SessionExercise) = if (e.skipped) colors.onSurfaceVariant else colors.onSurface
+            val name = row.joinToString { it.name }
+            Row(Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch).padding(start = 16.dp, top = 4.dp, end = 4.dp, bottom = 4.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                if (row.size == 1) Text(row[0].name, Modifier.weight(1f), color = ink(row[0]), style = style)
+                else {
+                    val accent = StriveTheme.accents.superset
+                    val edge = StriveTheme.borders.focus
+                    Column(Modifier.weight(1f).drawBehind { drawRect(accent, size = Size(edge.toPx(), size.height)) }.padding(start = edge + 10.dp)) {
+                        row.forEachIndexed { n, e ->
+                            Row(Modifier.padding(top = if (n == 0) 0.dp else 6.dp), Arrangement.spacedBy(StriveTheme.spacing.s8), Alignment.CenterVertically) {
+                                Tag("${'A' + n}")
+                                Text(e.name, color = ink(e), style = style)
+                            }
+                        }
+                        // `small` with margin-top −2 in the 6 px gap.
+                        Text(stringResource(Res.string.superset_moves_as_one), Modifier.padding(top = 4.dp), color = colors.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodySmall.board())
                     }
                 }
+                IconTarget(stringResource(Res.string.move_up, name), { scope.launch { sessions.reorder(moved(rows, i, -1)) } }, enabled = i > 0) {
+                    Glyph(Glyph.Up, 18.dp, color = colors.primary)
+                }
+                IconTarget(stringResource(Res.string.move_down, name), { scope.launch { sessions.reorder(moved(rows, i, 1)) } }, enabled = i < rows.lastIndex) {
+                    Glyph(Glyph.Down, 18.dp, color = colors.primary)
+                }
+                val spoken = stringResource(if (skipped) Res.string.include_named else Res.string.skip_named, name)
+                NavText(stringResource(if (skipped) Res.string.include else Res.string.skip), { scope.launch { row.forEach { sessions.skip(it.id, !skipped) } } },
+                    Modifier.semantics { contentDescription = spoken })
             }
-        }
+        } }, Modifier.fillMaxWidth().weight(1f, fill = false).clip(MaterialTheme.shapes.large).verticalScroll(rememberScrollState()))
+        if (exercises.any { it.skipped }) Text(stringResource(Res.string.skipped_note), Modifier.padding(horizontal = 16.dp),
+            color = colors.onSurfaceVariant, style = MaterialTheme.typography.labelMedium.board())
     }
 }
 
-/** Skapa superset: the workout's other exercises; the one tapped joins this one in a superset, right after it. */
+/**
+ * Skapa superset (WO-10): the line under the title, then the workout's other exercises left-aligned in a `.list`, 4 dp further down;
+ * the one tapped joins this one in a superset, right after it. One ghost Cancel.
+ */
 @Composable
 private fun SupersetDialog(w: Workout, e: SessionExercise, onDone: () -> Unit) {
     val sessions = LocalAppGraph.current.sessions
     val scope = rememberCoroutineScope()
     AlertBox(onDone) {
-        Text(stringResource(Res.string.superset_create), Modifier.fillMaxWidth(), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-        for (other in w.exercises.filter { it.id != e.id && !it.skipped }) {
-            Text(other.name, Modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium)
-                .clickable { scope.launch { sessions.superset(e.id, other.id) }; onDone() }
-                .heightIn(min = StriveTheme.sizes.touch).padding(horizontal = StriveTheme.spacing.s8, vertical = 12.dp),
-                style = MaterialTheme.typography.bodyLarge)
-        }
-        AlertButton(stringResource(Res.string.cancel), MaterialTheme.colorScheme.primary, onDone, Modifier.fillMaxWidth())
+        AlertText(stringResource(Res.string.superset_create), MaterialTheme.typography.titleMedium)
+        AlertText(stringResource(Res.string.superset_moves, e.name), MaterialTheme.typography.bodyMedium)
+        // A long list scrolls inside its block, so Cancel stays on screen; a short one is as tall as its rows.
+        ListBlock(supersetPartners(w, e).map { other ->
+            { ListRow(other.name, onClick = { scope.launch { sessions.superset(e.id, other.id) }; onDone() }) }
+        }, Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s4).weight(1f, fill = false).clip(MaterialTheme.shapes.large)
+            .verticalScroll(rememberScrollState()))
+        AlertButton(stringResource(Res.string.cancel), MaterialTheme.colorScheme.primary, onDone,
+            Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s8), ghost = true)
     }
 }
 
-/** Övningens inställningar (Q15, Q7, Q22): the step − and + use, and the bar. */
+/** The exercises [e] can make a superset with: the workout's others that are not skipped. The menu offers the row only if there is one. */
+private fun supersetPartners(w: Workout, e: SessionExercise) = w.exercises.filter { it.id != e.id && !it.skipped }
+
+/** The step − and + use (Q15). */
+private val Steps = listOf(1.0, 1.25, 2.0, 2.5, 4.0, 5.0)
+
+/** A bar by name (Q22, WO-12) with its weight in kg and in lb (EL-07-lb); None weighs nothing and saves no bar. */
+private class NamedBar(val name: StringResource, val kg: Double?, val lb: Double?) {
+    fun weight(unit: WeightUnit) = if (unit == WeightUnit.Lb) lb else kg
+}
+
+private val Bars = listOf(
+    NamedBar(Res.string.bar_olympic, 20.0, 45.0), NamedBar(Res.string.bar_short, 15.0, 35.0), NamedBar(Res.string.bar_ez, 7.5, 15.0),
+    NamedBar(Res.string.bar_hex, 25.0, 55.0), NamedBar(Res.string.bar_none, null, null),
+)
+
+/**
+ * Exercise settings (WO-12): the exercise's name in the head; Step and Bar as pull-downs, Unit as kg | lb, and what saving means. Done saves
+ * the three, the bar in the unit shown; the unit stays as it was (unset follows the app default) unless the one shown changed. A tap on
+ * the scrim closes without saving.
+ */
 @Composable
-private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
-    val exercises = LocalAppGraph.current.exercises
+private fun SettingsDialog(e: SessionExercise, default: WeightUnit, onDone: () -> Unit) {
+    val graph = LocalAppGraph.current
     val scope = rememberCoroutineScope()
     val swedish = Locale.current.language == "sv"
     var step by remember { mutableStateOf(e.step ?: 2.5) }
     var bar by remember { mutableStateOf(e.bar) }
-    val steps = listOf(1.0, 1.25, 2.0, 2.5, 4.0, 5.0)
-    val bars = listOf(null, 7.5, 15.0, 20.0, 25.0)
-    // A tap on the scrim closes without saving, as dismissing the dialog did.
-    HeaderSheet(stringResource(Res.string.exercise_settings), onDismiss = onDone, done = stringResource(Res.string.done),
-        onDone = { scope.launch { exercises.setSettings(e.exerciseId, step, bar) }; onDone() }) {
-        Text(stringResource(Res.string.step), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Segments(steps.map { kilos(it, swedish) }, steps.indexOf(step).takeIf { it >= 0 }, { i -> i?.let { step = steps[it] } }, clearable = false)
-        Text(stringResource(Res.string.bar), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        val none = stringResource(Res.string.no_bar)
-        Segments(bars.map { it?.let { b -> kilos(b, swedish) } ?: none }, bars.indexOf(bar).takeIf { it >= 0 }, { i -> i?.let { bar = bars[it] } }, clearable = false)
+    var unit by remember { mutableStateOf(e.unit) }
+    // Ruling 3: the Bar row is there for an exercise that had a bar at open, so choosing None keeps it until the sheet closes.
+    val hasBar = remember { e.bar != null }
+    // A saved bar no name weighs (10 kg on some seeded barbells) leads the pull-down, so it shows checked and can be kept.
+    val odd = remember { e.bar?.takeIf { b -> Bars.none { it.weight(e.unitIn(default)) == b } } }
+    val shown = unit ?: default
+    val unitText = stringResource(shown.label)
+    fun amount(v: Double) = "${kilos(v, swedish)} $unitText"
+    HeaderSheet(e.name, onDismiss = onDone, done = stringResource(Res.string.done), onDone = {
+        val saved = if (shown != e.unitIn(default)) shown else e.unit
+        scope.launch { graph.exercises.setSettings(e.exerciseId, step, bar, saved) }
+        onDone()
+    }) {
+        val rows = listOfNotNull<@Composable () -> Unit>(
+            { PullDownRow(stringResource(Res.string.step), Steps, step, { amount(it) }) { step = it } },
+            if (hasBar) {
+                {
+                    PullDownRow(stringResource(Res.string.bar), (listOfNotNull(odd) + Bars.map { it.weight(shown) }).distinct(), bar, { b ->
+                        Bars.firstOrNull { it.weight(shown) == b }?.let { stringResource(it.name, amount(b ?: 0.0)) } ?: amount(b ?: 0.0)
+                    }) { bar = it }
+                }
+            } else null,
+            {
+                Row(Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch).padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(Res.string.unit), Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.bodyLarge.board())
+                    Segments(WeightUnit.entries.map { stringResource(it.label) }, WeightUnit.entries.indexOf(shown),
+                        { i ->
+                            i?.let {
+                                val to = WeightUnit.entries[it]
+                                // The same bar by name in the new unit (Olympic 20 kg is Olympic 45 lb); one without a name keeps its number.
+                                bar = Bars.firstOrNull { b -> b.weight(shown) == bar }?.weight(to) ?: bar
+                                unit = to
+                            }
+                        }, Modifier.width(132.dp), clearable = false)
+                }
+            },
+        )
+        ListBlock(rows, Modifier.fillMaxWidth())
+        Text(stringResource(Res.string.saved_for, e.name), Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium.board())
+    }
+}
+
+/** A `.row` whose teal value opens a [GlassMenu] of [options] read as [text], the [chosen] one checked. */
+@Composable
+private fun <T> PullDownRow(label: String, options: List<T>, chosen: T, text: @Composable (T) -> String, onChoose: (T) -> Unit) {
+    var open by remember { mutableStateOf(false) }
+    Box {
+        ListRow(label, value = text(chosen), pullDown = true, onClick = { open = true })
+        GlassMenu(open, { open = false }) {
+            for (o in options) MenuRow(text(o), { open = false; onChoose(o) }, checked = o == chosen)
+        }
     }
 }
 
@@ -821,7 +955,7 @@ private const val RISE_WINDOW_MS = 500L
 
 /** The focus strip under the bar while the focus card is out of sight (D-scroll), on the bar's glass. */
 @Composable
-private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, rir: Int?, tag: String?, modifier: Modifier, onBack: () -> Unit) {
+private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, defaultUnit: WeightUnit, rir: Int?, tag: String?, modifier: Modifier, onBack: () -> Unit) {
     val reduceMotion = StriveTheme.reduceMotion
     Overlay(
         shown, modifier,
@@ -834,7 +968,7 @@ private fun StripOverlay(shown: Boolean, focus: Pair<SessionExercise, Int>?, rir
         Column(Modifier.fillMaxWidth().background(StriveTheme.glass.thick)) {
             shownFocus.value?.let { (e, i) ->
                 e.sets.getOrNull(i)?.let {
-                    Box(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 10.dp)) { FocusStrip(e, it, badges(e.sets)[i], rir, onBack, tag) }
+                    Box(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 10.dp)) { FocusStrip(e, e.unitIn(defaultUnit), it, badges(e.sets)[i], rir, onBack, tag) }
                 }
             }
             HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)

@@ -64,6 +64,16 @@ import se.carlsmeister.strive.data.memoryDriver
 import se.carlsmeister.strive.db.StriveDatabase
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.exercise_settings
+import strive.shared.generated.resources.unit_lb
+import strive.shared.generated.resources.unit_kg
+import strive.shared.generated.resources.step
+import strive.shared.generated.resources.bar
+import strive.shared.generated.resources.saved_for
+import strive.shared.generated.resources.exercise_details
+import strive.shared.generated.resources.tab_about
+import strive.shared.generated.resources.tab_history
+import strive.shared.generated.resources.tab_chart
+import strive.shared.generated.resources.tab_records
 import strive.shared.generated.resources.add_count
 import strive.shared.generated.resources.add_exercises
 import strive.shared.generated.resources.add_set
@@ -82,7 +92,6 @@ import strive.shared.generated.resources.workout_options
 import strive.shared.generated.resources.mark_none
 import strive.shared.generated.resources.field_reps
 import strive.shared.generated.resources.field_seconds
-import strive.shared.generated.resources.field_weight
 import strive.shared.generated.resources.finish
 import strive.shared.generated.resources.hide
 import strive.shared.generated.resources.keep_going
@@ -116,6 +125,7 @@ import strive.shared.generated.resources.food_later_title
 import strive.shared.generated.resources.food_log_later
 import se.carlsmeister.strive.boards.BOARD_SHOTS
 import se.carlsmeister.strive.boards.inEnglish
+import se.carlsmeister.strive.boards.inSwedish
 import se.carlsmeister.strive.boards.clearLeftOverLanguage
 import strive.shared.generated.resources.next_screen
 import androidx.compose.runtime.DisposableEffect
@@ -131,6 +141,11 @@ import androidx.compose.ui.test.hasScrollToIndexAction
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.performScrollToKey
 import se.carlsmeister.strive.data.Mark
+import se.carlsmeister.strive.data.WeightUnit
+import se.carlsmeister.strive.data.UNIT_KEY
+import se.carlsmeister.strive.workout.grouped
+import kotlin.math.abs
+import kotlin.math.roundToLong
 import strive.shared.generated.resources.add_named
 import strive.shared.generated.resources.collapse
 import strive.shared.generated.resources.edit
@@ -143,11 +158,17 @@ import strive.shared.generated.resources.time_sets
 import strive.shared.generated.resources.what_today
 import strive.shared.generated.resources.back_to_focus
 import strive.shared.generated.resources.change_start
+import strive.shared.generated.resources.hour
+import strive.shared.generated.resources.minute
 import strive.shared.generated.resources.free_rest
 import strive.shared.generated.resources.kind_warmup
 import strive.shared.generated.resources.kind_normal
 import strive.shared.generated.resources.kind_drop
 import strive.shared.generated.resources.order_skip
+import strive.shared.generated.resources.skip_named
+import strive.shared.generated.resources.include
+import strive.shared.generated.resources.include_named
+import strive.shared.generated.resources.skipped_note
 import strive.shared.generated.resources.rest
 import strive.shared.generated.resources.rest_all
 import strive.shared.generated.resources.rest_row
@@ -156,6 +177,8 @@ import strive.shared.generated.resources.set_failure
 import strive.shared.generated.resources.skip
 import strive.shared.generated.resources.skipped
 import strive.shared.generated.resources.sticky_note
+import strive.shared.generated.resources.clear_text
+import strive.shared.generated.resources.custom_time
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.up_by
 import strive.shared.generated.resources.rest_after
@@ -169,16 +192,24 @@ import strive.shared.generated.resources.dock_set
 import strive.shared.generated.resources.superset_count
 import strive.shared.generated.resources.superset_create
 import strive.shared.generated.resources.superset_leave
+import strive.shared.generated.resources.superset_moves
 import strive.shared.generated.resources.superset_rest
 import androidx.compose.ui.graphics.Color
 import se.carlsmeister.strive.workout.wallClock
 import se.carlsmeister.strive.workout.now
 import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.assertHeightIsAtLeast
+import androidx.compose.ui.test.assertIsDisplayed
 import se.carlsmeister.strive.data.Rest
 import se.carlsmeister.strive.fixture.SampleData
 import strive.shared.generated.resources.bar_left_open
 import strive.shared.generated.resources.tap_to_continue
 import kotlin.time.Clock
+import kotlin.time.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import androidx.compose.ui.test.performScrollToIndex
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource
 import kotlin.test.Test
@@ -248,7 +279,7 @@ class FlowTest {
         openSet(0)
         tapSegment("2")
         shot("dark-03-dock")
-        tapDesc(s(Res.string.field_weight))
+        tapDesc(weightLabel("kg"))
         shot("dark-04-keypad")
         keys("80")
         tap(s(Res.string.next))
@@ -263,7 +294,7 @@ class FlowTest {
         tap(s(Res.string.finish))
         see(s(Res.string.keep_going))
         shot("dark-06-sheet")
-        tap(s(Res.string.log_and_save))
+        tap(getPluralString(Res.plurals.log_and_save, 1))
         see(s(Res.string.done))
         tapSegment("7")
         shot("dark-07-summary")
@@ -316,7 +347,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         openSet(0)
         shot("02-dock")
-        tapDesc(s(Res.string.field_weight))
+        tapDesc(weightLabel("kg"))
         shot("03-keypad")
         keys("80")
         tap(s(Res.string.next))
@@ -337,11 +368,11 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         openSet(0)
-        tapDesc(s(Res.string.field_weight))
+        tapDesc(weightLabel("kg"))
         keys("805⌫")
         tap(s(Res.string.hide))
         // The keypad is gone, the steppers are back, and the field kept what was typed.
-        seeDesc("${s(Res.string.field_weight)} +")
+        seeDesc("${weightLabel("kg")} +")
         see("80")
     }
 
@@ -350,7 +381,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         openSet(0)
-        repeat(2) { tapDesc("${s(Res.string.field_weight)} +") } // 2,5 kg a step
+        repeat(2) { tapDesc("${weightLabel("kg")} +") } // 2,5 kg a step
         repeat(3) { tapDesc("${s(Res.string.field_reps)} +") }
         tapDesc("${s(Res.string.field_reps)} −")
         tapSegment("2")
@@ -365,7 +396,7 @@ class FlowTest {
         openSet(0)
         tapSegment("4+")
         tapSegment("7")
-        tapDesc("${s(Res.string.field_weight)} +")
+        tapDesc("${weightLabel("kg")} +")
         tapDesc("${s(Res.string.field_reps)} +")
         tap(s(Res.string.log))
         waitUntilTrue { open().exercises.single().sets.single().rir == 7 }
@@ -376,7 +407,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         tapDesc(s(Res.string.log_set, 1))
-        seeDesc(s(Res.string.field_weight))
+        seeDesc(weightLabel("kg"))
         assertEquals(false, open().exercises.single().sets.single().done)
     }
 
@@ -385,7 +416,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         openSet(0)
-        tapDesc("${s(Res.string.field_weight)} +")
+        tapDesc("${weightLabel("kg")} +")
         tap(s(Res.string.log))
         // Reps is empty, so Logga opens the keypad on it rather than logging half a set; rest comes after it.
         see(s(Res.string.next))
@@ -428,7 +459,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         openSet(0)
         test.onRoot().performTouchInput { click(Offset(centerX, 300f)) }
-        gone(hasContentDescription(s(Res.string.field_weight)))
+        gone(hasContentDescription(weightLabel("kg")))
     }
 
     @Test
@@ -437,7 +468,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         openSet(0)
         test.onNodeWithContentDescription(s(Res.string.close)).performTouchInput { swipeDown(endY = centerY + 900f) }
-        gone(hasContentDescription(s(Res.string.field_weight)))
+        gone(hasContentDescription(weightLabel("kg")))
     }
 
     @Test
@@ -447,7 +478,7 @@ class FlowTest {
         openSet(0)
         // VoiceOver does not tap the grabber, it performs its action.
         test.onNodeWithContentDescription(s(Res.string.close)).performSemanticsAction(SemanticsActions.OnClick)
-        gone(hasContentDescription(s(Res.string.field_weight)))
+        gone(hasContentDescription(weightLabel("kg")))
     }
 
     @Test
@@ -469,7 +500,7 @@ class FlowTest {
         // Only the part the row uncovers is red; the row itself stays opaque (point 4).
         shot("13-swipe-open")
         // The swipe began on the set's ✓ and ended over the row: neither may count as a tap.
-        gone(hasContentDescription(s(Res.string.field_weight)))
+        gone(hasContentDescription(weightLabel("kg")))
         tap(s(Res.string.delete))
         waitUntilTrue { open().exercises.single().sets.isEmpty() }
     }
@@ -495,7 +526,7 @@ class FlowTest {
         see(s(Res.string.delete))
         setRows()[0].performClick()
         gone(hasText(s(Res.string.delete)))
-        gone(hasContentDescription(s(Res.string.field_weight)))
+        gone(hasContentDescription(weightLabel("kg")))
         assertEquals(1, open().exercises.single().sets.size)
     }
 
@@ -575,7 +606,9 @@ class FlowTest {
         tap(s(Res.string.remove_exercise))
         see(s(Res.string.exercise_removed, "Bench Press BB"))
         tap(s(Res.string.finish))
-        tap(s(Res.string.save_without)) // the other exercises' sets are not all logged
+        // The other exercises' sets are not all logged.
+        val left = open().exercises.filter { it.name != "Bench Press BB" }.sumOf { e -> e.sets.count { !it.done } }
+        tap(getPluralString(Res.plurals.save_without, left))
         see(s(Res.string.done))
         gone(hasText("Bench Press BB", substring = true))
         assertTrue(graph.sessions.history().first().first().exercises.none { it.name == "Bench Press BB" })
@@ -650,6 +683,60 @@ class FlowTest {
         waitUntilTrue { open().name == "Push A" && open().note == "Slept badly" }
     }
 
+    /** WO-08-note-empty: a workout without a note offers what to write in it, and says where it shows. In English, as the board. */
+    @Test
+    fun theNotePromptShowsItsPlaceholderAndHint() = inEnglish {
+        flow {
+            startWorkout()
+            tap(s(Res.string.workout))
+            tap(s(Res.string.session_note))
+            see("Energy, sleep, pain…")
+            see("Shown in the summary and in History.")
+        }
+    }
+
+    /** The sticky note's clear glyph empties the field, and Save then keeps the note empty. */
+    @Test
+    fun theClearGlyphEmptiesAStickyNote() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.sticky_note))
+        type("Arch, feet planted.")
+        tap(s(Res.string.save))
+        waitUntilTrue { open().exercises.single().pinned == "Arch, feet planted." }
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.sticky_note))
+        tapDesc(s(Res.string.clear_text))
+        gone(hasSetTextAction() and hasText("Arch, feet planted."))
+        tap(s(Res.string.save))
+        waitUntilTrue { open().exercises.single().pinned == "" }
+    }
+
+    /** A note saved before #58 may hold a newline; the single-line prompt opens it folded to a space, so all of it shows. */
+    @Test
+    fun aLegacyStickyNoteWithANewlineOpensOnOneLine() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        graph.exercises.setNote(open().exercises.single().exerciseId, "Knees out\nBrace")
+        waitUntilTrue { open().exercises.single().pinned == "Knees out\nBrace" }
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.sticky_note))
+        see("Knees out Brace")
+    }
+
+    /** WO-07-custom keeps its own look through the shared prompt: no clear glyph once a time is typed. The time still starts a rest. */
+    @Test
+    fun theCustomRestTimeHasNoClearGlyph() = flow {
+        startWorkout()
+        tapDesc(s(Res.string.free_rest))
+        tap(s(Res.string.custom_time))
+        type("1:30")
+        assertTrue(test.onAllNodes(hasContentDescription(s(Res.string.clear_text))).fetchSemanticsNodes().isEmpty(), "no clear glyph")
+        tap(s(Res.string.save))
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
+    }
+
     @Test
     fun finishingWithEverySetLoggedGoesStraightToTheSummary() = flow {
         startWorkout()
@@ -679,7 +766,7 @@ class FlowTest {
         tap(s(Res.string.finish))
         see(getPluralString(Res.plurals.unlogged, 1, 1))
         shot("06-finish-sheet")
-        tap(s(Res.string.log_and_save))
+        tap(getPluralString(Res.plurals.log_and_save, 1))
         see(s(Res.string.done))
         assertEquals(2, graph.sessions.history().first().single().logged)
     }
@@ -693,9 +780,39 @@ class FlowTest {
         tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         tap(s(Res.string.finish))
-        tap(s(Res.string.save_without))
+        tap(getPluralString(Res.plurals.save_without, 1))
         see(s(Res.string.done))
         assertEquals(1, graph.sessions.history().first().single().sets)
+    }
+
+    /** WO-15-one: one set left unlogged, the Finish sheet reads in the singular (#58). */
+    @Test
+    fun oneUnloggedSetReadsInTheSingular() = inEnglish {
+        flow {
+            startWorkout()
+            addExercises("Bench Press BB")
+            tap(s(Res.string.finish))
+            see("1 set not logged")
+            see("Log it as it is and save")
+            see("Save without it")
+            assertTrue(test.onAllNodes(hasText("them", substring = true)).fetchSemanticsNodes().isEmpty(), "no plural label")
+        }
+    }
+
+    /** The same in Swedish: "ett set" is neuter, so both actions read "det" (#58). */
+    @Test
+    fun oneUnloggedSetReadsInTheSingularInSwedish() = inSwedish {
+        flow {
+            startWorkout()
+            addExercises("Bench Press BB")
+            tap(s(Res.string.finish))
+            see("1 set är inte loggat")
+            see("Logga det som det står och spara")
+            see("Spara utan det")
+            for (plural in listOf("1 set är inte loggade", "Logga dem som de står och spara", "Spara utan dem")) {
+                assertTrue(test.onAllNodes(hasText(plural)).fetchSemanticsNodes().isEmpty(), "no '$plural'")
+            }
+        }
     }
 
     @Test
@@ -748,9 +865,118 @@ class FlowTest {
         addExercises("Bench Press BB")
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.exercise_settings))
-        tapSegment("5")
-        tapOnText(s(Res.string.exercise_settings))
-        test.onAllNodes(hasText("5") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)).onLast().assertIsSelected()
+        tap(s(Res.string.step))
+        tap("5 kg")
+        tapOnText("Bench Press BB")
+        see(s(Res.string.saved_for, "Bench Press BB"))
+        assertTrue(test.onAllNodes(hasText(s(Res.string.step)) and hasText("5 kg")).fetchSemanticsNodes().isNotEmpty(), "the Step row, still 5 kg")
+    }
+
+    /** WO-12: lb chosen in Curl DB's settings is the exercise's own, so the next workout's dock reads lb, with Curl DB's step 2 (#58). */
+    @Test
+    fun theSettingsSheetSetsTheUnitForEveryWorkout() = flow {
+        startWorkout()
+        addExercises("Curl DB")
+        val curl = open().exercises.single().exerciseId
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.exercise_settings))
+        tapSegment(s(Res.string.unit_lb))
+        tap(s(Res.string.done))
+        waitUntilTrue { graph.exercises.byId(curl).first()!!.unit == WeightUnit.Lb }
+        tap(s(Res.string.discard_workout))
+        tap(s(Res.string.discard_workout)) // the alert's button is drawn last
+        seeDesc(s(Res.string.tab_start))
+        startWorkout()
+        addExercises("Curl DB")
+        openSet(0)
+        see(weightLabel("lb", "2"))
+    }
+
+    /**
+     * Done saves the unit only when Unit was changed: a new step alone, with a tap on the kg already shown, leaves the exercise on the app
+     * default (#58).
+     */
+    @Test
+    fun changingOnlyTheStepKeepsTheUnitUnset() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        val bench = open().exercises.single().exerciseId
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.exercise_settings))
+        tapSegment(s(Res.string.unit_kg))
+        tap(s(Res.string.step))
+        tap("5 kg")
+        tap(s(Res.string.done))
+        waitUntilTrue { graph.exercises.byId(bench).first()!!.step == 5.0 }
+        assertNull(graph.exercises.byId(bench).first()!!.unit)
+    }
+
+    /** WO-12's Bar pull-down names each bar with its weight in the exercise's unit, None 0 among them. */
+    @Test
+    fun theBarPullDownNamesTheBars() = inEnglish {
+        flow {
+            startWorkout()
+            addExercises("Bench Press BB")
+            tapDesc(s(Res.string.exercise_options))
+            tap(s(Res.string.exercise_settings))
+            tap(s(Res.string.bar))
+            see("Olympic 20 kg")
+            see("EZ 7.5 kg")
+            see("None 0 kg")
+        }
+    }
+
+    /** In lb the bars are lb bars (EL-07-lb): Olympic 20 kg becomes Olympic 45 lb, saved in the exercise's new unit. */
+    @Test
+    fun switchingToLbPicksTheLbBar() = inEnglish {
+        flow {
+            startWorkout()
+            addExercises("Bench Press BB")
+            val bench = open().exercises.single().exerciseId
+            tapDesc(s(Res.string.exercise_options))
+            tap(s(Res.string.exercise_settings))
+            tapSegment("lb")
+            tap("Bar")
+            see("Olympic 45 lb")
+            see("EZ 15 lb")
+            tap("Olympic 45 lb") // the menu's row, drawn last: it closes the menu
+            tap(s(Res.string.done))
+            waitUntilTrue { graph.exercises.byId(bench).first()!!.let { it.bar == 45.0 && it.unit == WeightUnit.Lb } }
+            tapDesc(s(Res.string.exercise_options))
+            tap(s(Res.string.exercise_settings))
+            wait("the Bar row at 45 lb") { test.onAllNodes(hasText("Bar") and hasText("Olympic 45 lb")).fetchSemanticsNodes().isNotEmpty() }
+        }
+    }
+
+    /**
+     * With lb stored as the app default, a unit-less Bench's seeded 20 is judged against the lb bars, which have no 20: it leads the
+     * pull-down, checked, not left out because the sheet opened before the stored default arrived.
+     */
+    @Test
+    fun anLbDefaultJudgesTheBarInLb() = flow {
+        graph.settings.put(UNIT_KEY, WeightUnit.Lb.key)
+        startWorkout()
+        addExercises("Bench Press BB")
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.exercise_settings))
+        tap(s(Res.string.bar))
+        wait("20 lb checked") {
+            test.onAllNodes(hasText("20 lb") and SemanticsMatcher.expectValue(SemanticsProperties.Selected, true)).fetchSemanticsNodes().isNotEmpty()
+        }
+    }
+
+    /** A saved bar the list does not name (10 kg on some seeded barbells) stays in the pull-down, checked, so it can be kept. */
+    @Test
+    fun aBarOutsideTheListStaysChecked() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        graph.exercises.setSettings(open().exercises.single().exerciseId, step = 2.5, bar = 10.0, unit = null)
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.exercise_settings))
+        tap(s(Res.string.bar))
+        wait("10 kg checked") {
+            test.onAllNodes(hasText("10 kg") and SemanticsMatcher.expectValue(SemanticsProperties.Selected, true)).fetchSemanticsNodes().isNotEmpty()
+        }
     }
 
     /** A tap on an action sheet's header row leaves the sheet open. */
@@ -765,24 +991,37 @@ class FlowTest {
         assertTrue(test.onAllNodes(hasText(s(Res.string.keep_going))).fetchSemanticsNodes().isNotEmpty(), "the sheet, still open")
     }
 
-    /** In the simulator's language, the discard alert's two labels are each one line and inside their buttons: stacked if need be. */
+    /**
+     * WO-16: the discard alert's two labels show in full, never cut off, in English and in Swedish. Its buttons are
+     * ghost, so they stay side by side as drawn, a label too long for its half wrapping inside it (#58).
+     */
     @Test
-    fun theDiscardAlertsLabelsStayOnOneLine() = flow {
-        startWorkout()
-        addExercises("Bench Press BB")
-        tap(s(Res.string.discard_workout))
-        see(s(Res.string.discard_question))
-        val inAlert = hasAnyAncestor(hasTestTag("glass-alert"))
-        for (label in listOf(s(Res.string.cancel), s(Res.string.discard_workout))) {
-            val text = test.onNode(hasText(label) and inAlert, useUnmergedTree = true).fetchSemanticsNode()
-            val layouts = mutableListOf<TextLayoutResult>()
-            text.config[SemanticsActions.GetTextLayoutResult].action!!(layouts)
-            val button = test.onNode(hasText(label) and hasClickAction() and inAlert).fetchSemanticsNode().boundsInRoot
-            // Its drawn height, not the layout's line count: the layout the action hands back measured the label at its widest.
-            val oneLine = layouts.single().layoutInput.let { with(it.density) { it.style.lineHeight.toPx() } }
-            assertTrue(text.boundsInRoot.height <= oneLine + 1, "'$label' one line (${oneLine}px) tall: ${text.boundsInRoot}")
-            assertTrue(text.boundsInRoot.width <= button.width, "'$label' (${text.boundsInRoot}) inside its button ($button)")
+    fun theDiscardAlertsLabelsShowInFull() {
+        val check: suspend Flow.() -> Unit = {
+            startWorkout()
+            addExercises("Bench Press BB")
+            tap(s(Res.string.discard_workout))
+            see(s(Res.string.discard_question))
+            val inAlert = hasAnyAncestor(hasTestTag("glass-alert"))
+            val buttons = listOf(s(Res.string.cancel), s(Res.string.discard_workout)).map { label ->
+                val text = test.onNode(hasText(label) and inAlert, useUnmergedTree = true).fetchSemanticsNode()
+                val layouts = mutableListOf<TextLayoutResult>()
+                text.config[SemanticsActions.GetTextLayoutResult].action!!(layouts)
+                val layout = layouts.single()
+                val button = test.onNode(hasText(label) and hasClickAction() and inAlert).fetchSemanticsNode().boundsInRoot
+                val drawn = text.boundsInRoot
+                assertTrue(drawn.left >= button.left - 1 && drawn.right <= button.right + 1 && drawn.top >= button.top - 1 &&
+                    drawn.bottom <= button.bottom + 1, "'$label' ($drawn) inside its button ($button)")
+                // Enough drawn lines for the whole label: the action's layout may be the label at its widest, on one line.
+                val oneLine = with(layout.layoutInput.density) { layout.layoutInput.style.lineHeight.toPx() }
+                val lines = kotlin.math.round(drawn.height / oneLine)
+                assertTrue(lines * drawn.width >= layout.size.width - 1, "'$label' ($drawn, $lines lines) holds all ${layout.size.width}px of it")
+                button
+            }
+            assertEquals(buttons[0].top, buttons[1].top, "Cancel and Discard workout side by side: $buttons")
         }
+        inEnglish { flow(block = check) }
+        inSwedish { flow(block = check) }
     }
 
     @Test
@@ -1195,12 +1434,58 @@ class FlowTest {
         see(s(Res.string.all_activities))
     }
 
+    /** An lb exercise is logged in lb, and History's volume converts it into the app default, kg (#58, acceptance 2). */
+    @Test
+    fun anLbExerciseLogsInLbAndTheTotalsConvert() = inEnglish {
+        flow {
+            startWorkout()
+            curlInLb()
+            addExercises("Bench Press BB", "Curl DB")
+            logFirstSet("100", "5")
+            // Bench Press done, the focus moves on and Curl DB opens.
+            test.onNodeWithTag("set Curl DB 1").performClick()
+            idle()
+            see("Weight, lb · step 5")
+            tapDesc(weightLabel("lb", "5"))
+            keys("25")
+            tap(s(Res.string.next))
+            keys("12")
+            tap(s(Res.string.next))
+            tap(s(Res.string.log_next))
+            waitUntilTrue { open().exercises.all { e -> e.sets.all { it.done } } }
+            tap(s(Res.string.finish))
+            tap(s(Res.string.done))
+            tap(s(Res.string.tab_you))
+            tap(s(Res.string.all_activities))
+            // 100 × 5 kg plus 25 × 12 lb in kg: 636, not the 800 the raw numbers add up to.
+            see("${grouped((500 + 300 * 0.45359237).roundToLong(), swedish = false)} kg", substring = true)
+        }
+    }
+
+    /** Ruling 2: a bar-less exercise's weight label names its step, one with a bar does not, and neither crashes on lb (#58). */
+    @Test
+    fun lbDockWithoutABarShowsTheStep() = inEnglish {
+        flow {
+            startWorkout()
+            curlInLb()
+            addExercises("Bench Press BB", "Curl DB")
+            openSet(0)
+            see("Weight, kg")
+            test.onNodeWithContentDescription(s(Res.string.close)).performSemanticsAction(SemanticsActions.OnClick)
+            gone(hasText("Weight, kg"))
+            tapDesc(s(Res.string.expand, "Curl DB"))
+            test.onNodeWithTag("set Curl DB 1").performClick()
+            idle()
+            see("Weight, lb · step 5")
+        }
+    }
+
     @Test
     fun aBodyweightExerciseLogsRepsOnly() = flow {
         startWorkout()
         addExercises("Chest Dips")
         openSet(0)
-        gone(hasContentDescription(s(Res.string.field_weight)))
+        gone(descContains(weightLabel("kg")))
         repeat(10) { tapDesc("${s(Res.string.field_reps)} +") }
         tap(s(Res.string.log))
         waitUntilTrue { open().exercises.single().sets.single().let { it.done && it.reps == 10 } }
@@ -1240,7 +1525,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         tap(s(Res.string.edit))
-        seeDesc(s(Res.string.field_weight))
+        seeDesc(weightLabel("kg"))
     }
 
     @Test
@@ -1291,7 +1576,7 @@ class FlowTest {
     @Test
     fun theFocusCardShowsLastTimeTheChangeAndTheRest() = flow {
         designD()
-        see(s(Res.string.up_by, "5"))
+        see(s(Res.string.up_by, "5", "kg"))
         // Set 2 of 2 is Bench Press's last, so the meta row says so where it said the rest (#42 P6).
         see(s(Res.string.last_set))
         see("80 × 8 @3", substring = true)
@@ -1378,6 +1663,28 @@ class FlowTest {
         see("Bench at 30°")
     }
 
+    /**
+     * Acceptance 4: Exercise details, two taps from the workout (O-02), opens EX-05 as a sheet over it; Done closes the sheet and the
+     * workout is where it was, with nothing pushed on any back stack.
+     */
+    @Test
+    fun exerciseDetailsOpensAsASheetOverTheWorkout() = pushA {
+        val backs = test.onAllNodes(hasTestTag("back")).fetchSemanticsNodes().size
+        tapDesc(s(Res.string.exercise_options)) // Bench's, the one exercise standing open
+        tap(s(Res.string.exercise_details))
+        for (tab in listOf(Res.string.tab_about, Res.string.tab_history, Res.string.tab_chart, Res.string.tab_records)) see(s(tab))
+        shot("ex05-sheet")
+        // Over the workout, not in place of it: its title and clock stay under the sheet, and the sheet has no back label of its own.
+        see("Push A")
+        see(s(Res.string.finish))
+        assertEquals(backs, test.onAllNodes(hasTestTag("back")).fetchSemanticsNodes().size)
+        tap(s(Res.string.done))
+        gone(hasText(s(Res.string.tab_records)))
+        see(s(Res.string.finish))
+        test.onNode(hasContentDescription(s(Res.string.minimise))).assertExists()
+        assertEquals(backs, test.onAllNodes(hasTestTag("back")).fetchSemanticsNodes().size)
+    }
+
     @Test
     fun theExerciseMenuSkipsAndSwaps() = flow {
         startWorkout()
@@ -1391,30 +1698,95 @@ class FlowTest {
         see("Squat BB · ${s(Res.string.skipped)}") // WO-02-s14's overview row
         // Swap Bench Press, the one still open, for another exercise.
         tapDesc(s(Res.string.exercise_options))
+        // With Squat skipped, Bench has no exercise to make a superset with, so the menu offers none.
+        see(s(Res.string.order_skip))
+        assertTrue(test.onAllNodes(hasText(s(Res.string.superset_create))).fetchSemanticsNodes().isEmpty(), "no Create superset row")
         tap(s(Res.string.swap))
         search("Incline Press DB")
         tap("Incline Press DB")
         waitUntilTrue { open().exercises.first().name == "Incline Press DB" }
     }
 
+    /** Skipping the exercise whose ⋯ opened Order and skip folds its header away; the sheet stays open, as WO-11-skip draws. */
     @Test
-    fun theWorkoutMenuChangesTheStartTime() = flow {
+    fun orderAndSkipStaysOpenWhenItsOpenerIsSkipped() = flow {
         startWorkout()
+        addExercises("Bench Press BB", "Squat BB")
+        tapDesc(s(Res.string.exercise_options)) // Bench's, the one exercise standing open
+        tap(s(Res.string.order_skip))
+        tapDesc(s(Res.string.skip_named, "Bench Press BB"))
+        waitUntilTrue { open().exercises[0].skipped }
+        see(s(Res.string.skipped_note))
+        test.onNode(hasContentDescription(s(Res.string.include_named, "Bench Press BB"))).assertExists()
+        see(s(Res.string.include))
+    }
+
+    @Test
+    fun theWorkoutMenuChangesTheStartTime() = startedAt1726 {
+        // Untouched, the wheels open on the start, VoiceOver reads those rows as selected, and Save keeps it.
+        tap(s(Res.string.workout))
+        tap(s(Res.string.change_start))
+        test.onNode(wheelRow(s(Res.string.hour), "17")).assertIsSelected()
+        test.onNode(wheelRow(s(Res.string.minute), "26")).assertIsSelected()
+        tap(s(Res.string.save))
+        gone(hasText(s(Res.string.save)))
+        assertEquals(onTheDay(17, 26), open().startedAt)
+        changeStart("16", "45")
+        waitUntilTrue { open().startedAt == onTheDay(16, 45) }
+    }
+
+    @Test
+    fun theWheelSelectsTheFirstAndLastRow() = startedAt1726 {
+        changeStart("00", "00")
+        waitUntilTrue { open().startedAt == onTheDay(0, 0) }
+        // 23:59 is later than now, so the start stops at now, as withTime clamps it.
+        changeStart("23", "59")
+        waitUntilTrue { open().startedAt == onTheDay(17, 26) }
+    }
+
+    /** A workout started with [wallClock] standing at 17:26 on Monday 9 November, in the simulator's zone. */
+    private fun startedAt1726(block: suspend Flow.() -> Unit) = flow {
+        val now = Instant.fromEpochMilliseconds(onTheDay(17, 26))
+        wallClock = object : Clock {
+            override fun now() = now
+        }
+        try {
+            startWorkout()
+            block()
+        } finally {
+            wallClock = Clock.System
+        }
+    }
+
+    private fun onTheDay(hour: Int, minute: Int) =
+        LocalDateTime(2026, 11, 9, hour, minute).toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+
+    /** Change start time from the workout's menu: the hour and minute rows tapped on their wheels, then Save. */
+    private suspend fun Flow.changeStart(hour: String, minute: String) {
         tap(s(Res.string.workout))
         tap(s(Res.string.change_start))
         shot("17-start-time")
-        val before = open().startedAt
+        for ((column, value) in listOf(s(Res.string.hour) to hour, s(Res.string.minute) to minute)) {
+            val row = wheelRow(column, value)
+            // A row off the wheel's five is scrolled into view first; a row in view is only tapped.
+            if (test.onAllNodes(row).fetchSemanticsNodes().isEmpty())
+                test.onNode(hasContentDescription(column) and hasScrollToIndexAction()).performScrollToIndex(value.toInt())
+            test.onNode(row).performClick()
+            test.waitForIdle()
+            test.onNode(row).assertIsSelected()
+        }
         tap(s(Res.string.save))
-        // Saved as it stood: the same minute, never later than now.
-        waitUntilTrue { open().startedAt / 60_000 == before / 60_000 }
     }
+
+    /** [value]'s row on the wheel labelled [column]: the hour and minute wheels share "00" to "23". */
+    private fun wheelRow(column: String, value: String) = hasText(value) and hasClickAction() and hasAnyAncestor(hasContentDescription(column))
 
     @Test
     fun theDockStepsTheRestAndLoggingStartsTheRestCard() = flow {
         startWorkout()
         addExercises("Bench Press BB")
         openSet(0)
-        tapDesc("${s(Res.string.field_weight)} +")
+        tapDesc("${weightLabel("kg")} +")
         tapDesc("${s(Res.string.field_reps)} +")
         tapDesc("${s(Res.string.rest)} +")
         see("2:15")
@@ -1669,13 +2041,13 @@ class FlowTest {
         assertEquals(listOf("set Incline Press DB 1", "set Lateral Raise DB 1", "set Incline Press DB 2", "set Lateral Raise DB 2"),
             setRows().fetchSemanticsNodes().map { it.config[SemanticsProperties.TestTag] })
         // B 1 first: A 1 is still to do, so no rest, and the focus stays on A 1.
-        logSet("set Lateral Raise DB 1", "10", "12")
+        logSet("set Lateral Raise DB 1", "10", "12", weightLabel("kg", "2"))
         waitUntilTrue { open().exercises[1].sets[0].done }
         assertNull(graph.rest.value)
         gone(hasTestTag("rest-card"))
         see(s(Res.string.now_set, "A · Incline Press DB", 1, 2).uppercase())
         // Then A 1: the round is done, its rest starts, and the focus moves on to A 2.
-        logSet("set Incline Press DB 1", "26", "10")
+        logSet("set Incline Press DB 1", "26", "10", weightLabel("kg", "2"))
         waitUntilTrue { open().exercises[0].sets[0].done }
         test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
         assertEquals(open().exercises[1].sets[0].id, graph.rest.value?.setId)
@@ -1688,16 +2060,46 @@ class FlowTest {
         addExercises("Bench Press BB", "Squat BB", "Incline Press DB")
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.superset_create))
+        see(s(Res.string.superset_moves, "Bench Press BB"))
         shot("21-superset-alert")
         tapLastText("Incline Press DB")
         // Incline Press moves up to follow Bench Press, and the two are one superset.
         waitUntilTrue {
             open().exercises.let { e -> e.map { it.name } == listOf("Bench Press BB", "Incline Press DB", "Squat BB") && e[0].superset != null && e[0].superset == e[1].superset }
         }
+        // Order and skip with only B skipped, as its own menu can: B's name greys and A's does not; the row's Skip names both.
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.order_skip))
+        val incline = open().exercises[1].id
+        graph.sessions.skip(incline, true)
+        see(s(Res.string.skipped_note))
+        test.onNode(hasContentDescription(s(Res.string.skip_named, "Bench Press BB, Incline Press DB"))).assertExists()
+        assertTrue(ink("Incline Press DB") < ink("Bench Press BB"), "B's name grey, A's not")
+        graph.sessions.skip(incline, false)
+        waitUntilTrue { open().exercises.none { it.skipped } }
+        tap(s(Res.string.done))
+        gone(hasText(s(Res.string.order_skip)))
         // Both stand open; B's ⋯, the last, takes Incline Press out, and a superset of one is none.
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.superset_leave))
         waitUntilTrue { open().exercises.all { it.superset == null } }
+    }
+
+    /** Twenty other exercises outgrow the screen: the list scrolls inside the alert and Cancel stays whole on screen. */
+    @Test
+    fun theSupersetAlertScrollsALongListAndKeepsCancelOnScreen() = flow {
+        startWorkout()
+        val ids = graph.exercises.all().first { it.size >= 21 }.take(21).map { it.id }
+        graph.sessions.add(open().id, ids)
+        waitUntilTrue { open().exercises.size == 21 }
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.superset_create))
+        val cancel = test.onNode(hasText(s(Res.string.cancel)) and hasAnyAncestor(hasTestTag("glass-alert")))
+        cancel.assertIsDisplayed()
+        cancel.assertHeightIsAtLeast(44.dp)
+        val root = test.onAllNodes(isRoot())[0].fetchSemanticsNode().boundsInRoot // the screen; the alert's window is a second root
+        assertTrue(cancel.fetchSemanticsNode().boundsInRoot.bottom <= root.bottom, "Cancel ends on screen")
+        shot("21-superset-alert-long")
     }
 
     @Test
@@ -2001,6 +2403,18 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
 
     fun waitUntilTrue(check: suspend () -> Boolean) = wait("the database to agree") { runBlocking { check() } }
 
+    /** How strongly [text] is drawn, the last such text: its pixels' largest distance from the corner's background. Grey ink scores lower. */
+    fun ink(text: String): Float {
+        val px = test.onAllNodes(hasText(text)).onLast().captureToImage().toPixelMap()
+        val bg = px[0, 0]
+        var most = 0f
+        for (x in 0 until px.width) for (y in 0 until px.height) {
+            val c = px[x, y]
+            most = maxOf(most, abs(c.red - bg.red) + abs(c.green - bg.green) + abs(c.blue - bg.blue))
+        }
+        return most
+    }
+
     fun see(text: String, substring: Boolean = false) = wait("see '$text'") { test.onAllNodes(hasText(text, substring)).fetchSemanticsNodes().isNotEmpty() }
 
     /** Waits, and on a timeout prints what is on screen and saves a picture of it, so a failure says what was there instead. */
@@ -2142,6 +2556,12 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
         waitUntilTrue { open().exercises.size == before + names.size }
     }
 
+    /** Curl DB in lb with a 5 lb step and no bar, as WO-04-lb draws it. */
+    suspend fun curlInLb() {
+        val curl = graph.exercises.all().first { it.isNotEmpty() }.first { it.name == "Curl DB" }
+        graph.exercises.setSettings(curl.id, step = 5.0, bar = null, unit = WeightUnit.Lb)
+    }
+
     /** Taps the [index]th open exercise's Lägg till set. */
     suspend fun addSetTo(index: Int) {
         val add = hasText(s(Res.string.add_set), substring = true) and hasClickAction()
@@ -2150,11 +2570,11 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
         idle()
     }
 
-    /** Opens the set row tagged [tag] and logs it through the dock. */
-    suspend fun logSet(tag: String, weight: String, reps: String) {
+    /** Opens the set row tagged [tag] and logs it through the dock, whose weight field reads [label]. */
+    suspend fun logSet(tag: String, weight: String, reps: String, label: String) {
         test.onNodeWithTag(tag).performClick()
         idle()
-        tapDesc(s(Res.string.field_weight))
+        tapDesc(label)
         keys(weight)
         tap(s(Res.string.next))
         keys(reps)
@@ -2165,7 +2585,7 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
     suspend fun logFirstSet(weight: String, reps: String, rir: String? = null) {
         openSet(0)
         rir?.let { tapSegment(it) }
-        tapDesc(s(Res.string.field_weight))
+        tapDesc(weightLabel("kg"))
         keys(weight)
         tap(s(Res.string.next))
         keys(reps)

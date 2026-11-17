@@ -15,6 +15,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performScrollToKey
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
@@ -28,18 +29,37 @@ import se.carlsmeister.strive.data.SeedExercise
 import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.SqlExercises
+import se.carlsmeister.strive.data.WeightUnit
+import se.carlsmeister.strive.flows.weightLabel
 import se.carlsmeister.strive.workout.now
 import strive.shared.generated.resources.Res
+import strive.shared.generated.resources.collapse
+import strive.shared.generated.resources.discard_workout
+import strive.shared.generated.resources.finish
+import strive.shared.generated.resources.exercise_details
 import strive.shared.generated.resources.exercise_options
-import strive.shared.generated.resources.field_weight
+import strive.shared.generated.resources.exercise_settings
+import strive.shared.generated.resources.rest_all
 import strive.shared.generated.resources.next
 import strive.shared.generated.resources.note
 import strive.shared.generated.resources.remove_exercise
 import strive.shared.generated.resources.rest_change
+import strive.shared.generated.resources.order_skip
 import strive.shared.generated.resources.set_type
+import strive.shared.generated.resources.superset_create
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.workout
+import strive.shared.generated.resources.workout_options
+import strive.shared.generated.resources.change_start
+import strive.shared.generated.resources.rename
+import strive.shared.generated.resources.session_note
+import strive.shared.generated.resources.sticky_note
+import strive.shared.generated.resources.clear_text
+import se.carlsmeister.strive.ui.MENU_ICON
+import org.jetbrains.compose.resources.StringResource
+import kotlin.math.abs
 import kotlin.test.Test
+import kotlin.test.assertTrue
 
 /** The workout's boards (#42), shot from Carl's sample data into [BOARD_SHOTS] for a person to set beside the boards. */
 @OptIn(ExperimentalTestApi::class)
@@ -123,12 +143,7 @@ class WorkoutShotTest {
 
     /** At 58:20, everything logged but Tricep Pushdown's drop set, which is in focus. */
     @Test
-    fun wo02S9dInDarkAndDarkHc() = workoutBoard("WO-02-s9d", waitFor = "DROP SET") { graph ->
-        logAll(graph, at = 58 * 60 + 20, "Bench Press BB", "Incline Press DB", "Lateral Raise DB", "Tricep Dips")
-        val pushdown = today(graph).exercises.first { it.name == "Tricep Pushdown" }
-        graph.sessions.saveSet(pushdown.sets[0].copy(reps = 12, rir = 2, done = true))
-        graph.sessions.saveSet(pushdown.sets[1].copy(reps = 11, rir = 1, done = true))
-    }
+    fun wo02S9dInDarkAndDarkHc() = workoutBoard("WO-02-s9d", waitFor = "DROP SET") { graph -> pushdownLeft(graph, at = 58 * 60 + 20, logged = 2) }
 
     /** At 48:55, Bench Press BB and the A/B superset logged, Tricep Dips' set 1 in focus: a bodyweight exercise's added weight. */
     @Test
@@ -138,22 +153,7 @@ class WorkoutShotTest {
 
     /** At 1:03:40, all 14 sets logged, then Plank (time) and Walking Lunge (distance) added from last time, Plank in focus. */
     @Test
-    fun wo02S10tdInDarkAndDarkHc() = workoutBoard("WO-02-s10td", waitFor = "14 of 18 sets") { graph ->
-        val names = listOf("Plank", "Walking Lunge")
-        // Last time's sets, which an added exercise takes (P14), come from a finished workout of their own four days back.
-        val day = 86_400_000L
-        val core = graph.sessions.start("Core", now() - 4 * day)
-        graph.sessions.add(core, names.map { exerciseId(graph, it) })
-        for (e in graph.sessions.workout(core).first()!!.exercises) {
-            graph.sessions.addSet(e.id)
-            graph.sessions.workout(core).first()!!.exercises.first { it.id == e.id }.sets.forEach {
-                graph.sessions.saveSet(if (e.name == "Plank") it.copy(seconds = 45, done = true) else it.copy(metres = 20.0, done = true))
-            }
-        }
-        graph.sessions.finish(core, Finish.WithoutThem, now() - 4 * day + 30 * 60_000L)
-        logAll(graph, at = 63 * 60 + 40, "Bench Press BB", "Incline Press DB", "Lateral Raise DB", "Tricep Dips", "Tricep Pushdown")
-        graph.sessions.add(today(graph).id, names.map { exerciseId(graph, it) }, lastTime = true)
-    }
+    fun wo02S10tdInDarkAndDarkHc() = workoutBoard("WO-02-s10td", waitFor = "14 of 18 sets") { graph -> plankAndLungeAdded(graph) }
 
     /** At 1:02:10, every set logged: the count and every exercise's count turn lime, and Finish is filled. */
     @Test
@@ -210,6 +210,138 @@ class WorkoutShotTest {
         waitForIdle()
     }
 
+    /** WO-02-s2 with Change start time opened from the workout's ⋯: the wheel at Push A's 17:02. */
+    @Test
+    fun wo08TimeInDarkAndDarkHc() = workoutBoard("WO-08-time", waitFor = "Change start time") { openWorkoutMenu(Res.string.change_start) }
+
+    /** WO-02-s2 with the workout's ⋯ open: Rename, Workout note and Change start time, each with its glyph. */
+    @Test
+    fun wo08MenuInDarkAndDarkHc() = workoutBoard("WO-08-menu", waitFor = "Change start time") {
+        openWorkoutMenu()
+        waitUntil("the three rows' glyphs", 10_000) { onAllNodes(hasTestTag(MENU_ICON), useUnmergedTree = true).fetchSemanticsNodes().size == 3 }
+    }
+
+    /** Rename from the workout's ⋯: the prompt holding Push A, its field ringed teal with a clear glyph. */
+    @Test
+    fun wo08RenameInDarkAndDarkHc() = workoutBoard("WO-08-rename", waitFor = "Rename") {
+        openWorkoutMenu(Res.string.rename)
+        val clear = hasContentDescription(getString(Res.string.clear_text))
+        waitUntil("the clear glyph", 10_000) { onAllNodes(clear).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    /** Workout note on a workout without one: the placeholder and the caption under the field. */
+    @Test
+    fun wo08NoteEmptyInDarkAndDarkHc() = workoutBoard("WO-08-note-empty", waitFor = "Energy, sleep, pain…") { graph ->
+        graph.sessions.setNote(today(graph).id, "")
+        openWorkoutMenu(Res.string.session_note)
+    }
+
+    /** Workout note holding "Sov 7 h. Axeln okej.". */
+    @Test
+    fun wo08NoteInDarkAndDarkHc() = workoutBoard("WO-08-note", waitFor = "Shown in the summary and in History.") { graph ->
+        graph.sessions.setNote(today(graph).id, "Sov 7 h. Axeln okej.")
+        openWorkoutMenu(Res.string.session_note)
+    }
+
+    /** Sticky note from Bench Press BB's ⋯: the body names the exercise, the field holds its note. */
+    @Test
+    fun wo09StickyInDarkAndDarkHc() = workoutBoard("WO-09-sticky", waitFor = "Shown every time you do Bench Press BB, in every template.") {
+        onAllNodes(hasContentDescription(getString(Res.string.exercise_options)))[0].performClick()
+        waitForIdle()
+        onNode(hasText(getString(Res.string.sticky_note))).performClick()
+        waitForIdle()
+    }
+
+    /** Bench Press BB's ⋯: Note and Swap tiles; Sticky note; Rest for all sets with its chevron, Create superset, Order and skip; settings, details; Remove. */
+    @Test
+    fun wo09MenuInDarkAndDarkHc() = workoutBoard("WO-09-menu", waitFor = "Exercise details") { exerciseMenu("Bench Press BB") }
+
+    /** Rest for all sets from Bench Press BB's ⋯: the back row, then 1:00 to 3:00 with 2:00, Bench's rest, checked. */
+    @Test
+    fun wo09RestInDarkAndDarkHc() = workoutBoard("WO-09-rest", waitFor = "3:00") {
+        exerciseMenu("Bench Press BB")
+        onNode(hasText(getString(Res.string.rest_all))).performClick()
+        waitUntil("2:00 checked", 10_000) { onAllNodes(hasText("2:00") and isSelected()).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    /** Incline Press DB's ⋯ over WO-02-s5, in superset A: Remove from superset instead of Create superset. The superset moves first, so it sits under the focus card as drawn. */
+    @Test
+    fun wo09SupersetInDarkAndDarkHc() = workoutBoard("WO-09-superset", waitFor = "Remove from superset") { graph ->
+        benchLogged(graph, at = 38 * 60 + 40)
+        moveFirst(graph, "Incline Press DB", "Lateral Raise DB")
+        exerciseMenu("Incline Press DB")
+    }
+
+    /** Plank's ⋯ over WO-02-s10td, Plank resting 1:00 as this board draws it: a time exercise has no Exercise settings row. Plank moves first, so it sits under the focus card as drawn. */
+    @Test
+    fun wo09NoweightInDarkAndDarkHc() = workoutBoard("WO-09-noweight", waitFor = "Exercise details") { graph ->
+        plankAndLungeAdded(graph)
+        graph.sessions.setRestAll(today(graph).exercises.first { it.name == "Plank" }.id, 60)
+        moveFirst(graph, "Plank")
+        exerciseMenu("Plank")
+    }
+
+    /** Create superset from Bench Press BB's ⋯ over WO-02-s2: the line, the four other exercises left-aligned in a list, a ghost Cancel. */
+    @Test
+    fun wo10InDarkAndDarkHc() = workoutBoard("WO-10", waitFor = "The one you pick moves next to Bench Press BB.") {
+        exerciseMenu("Bench Press BB")
+        onNode(hasText(getString(Res.string.superset_create))).performClick()
+        waitForIdle()
+    }
+
+    /** WO-01-picked with Bench Press BB's ⋯ open: the workout holds no other exercise, so the menu has no Create superset row. */
+    @Test
+    fun wo10OneInDarkAndDarkHc() = emptyWorkoutBoard("WO-10-one", "Exercise details", at = 31) { graph ->
+        graph.sessions.add(today(graph).id, listOf(exerciseId(graph, "Bench Press BB")), lastTime = true)
+        exerciseMenu("Bench Press BB")
+        assertTrue(onAllNodes(hasText(getString(Res.string.superset_create))).fetchSemanticsNodes().isEmpty())
+    }
+
+    /** Order and skip from Bench Press BB's ⋯ over WO-02-s2: four rows, the superset Incline + Lateral as one with its edge and line. */
+    @Test
+    fun wo11InDarkAndDarkHc() = workoutBoard("WO-11", waitFor = "Superset · moves as one") { openOrderAndSkip() }
+
+    /** The same with Tricep Dips skipped: its name grey, its button Include, and the footnote under the list. */
+    @Test
+    fun wo11SkipInDarkAndDarkHc() =
+        workoutBoard("WO-11-skip", waitFor = "Skipped exercises stay in the log; their sets are dropped at Finish.") { graph ->
+            graph.sessions.skip(today(graph).exercises.first { it.name == "Tricep Dips" }.id, true)
+            openOrderAndSkip()
+        }
+
+    /** Exercise details from Bench Press BB's ⋯: EX-05 in a full sheet over WO-02-s2, its name in the head with Done. */
+    @Test
+    fun ex05SheetInDarkAndDarkHc() = workoutBoard("EX-05-sheet", waitFor = "Records") {
+        exerciseMenu("Bench Press BB")
+        onNode(hasText(getString(Res.string.exercise_details))).performClick()
+        waitForIdle()
+    }
+
+    /** Exercise settings from Bench Press BB's ⋯ over WO-02-s2: Step 2.5 kg and Bar Olympic 20 kg pull-downs, Unit on kg. */
+    @Test
+    fun wo12BbInDarkAndDarkHc() = workoutBoard("WO-12-bb", waitFor = "Saved for Bench Press BB in every workout and template.") {
+        exerciseSettings("Bench Press BB")
+    }
+
+    /** Armar at 6:40 with only Curl DB, in lb with a 5 lb step and no bar: the sheet has no Bar row, Unit on lb. */
+    @Test
+    fun wo12DbInDarkAndDarkHc() = emptyWorkoutBoard("WO-12-db", "Saved for Curl DB in every workout and template.", at = 6 * 60 + 40) { graph ->
+        val curl = exerciseId(graph, "Curl DB")
+        graph.exercises.setSettings(curl, step = 5.0, bar = null, unit = WeightUnit.Lb)
+        // Last time's sets, 25 × 12 @2 with 1:30 rest, from an arms day two days back (P14).
+        val day = 86_400_000L
+        val past = graph.sessions.start("Armar", now() - 2 * day)
+        graph.sessions.add(past, listOf(curl))
+        repeat(2) { graph.sessions.addSet(graph.sessions.workout(past).first()!!.exercises.single().id) }
+        graph.sessions.workout(past).first()!!.exercises.single().sets.forEach {
+            graph.sessions.saveSet(it.copy(weight = 25.0, reps = 12, rir = 2, rest = 90, done = true))
+        }
+        graph.sessions.finish(past, Finish.WithoutThem, now() - 2 * day + 30 * 60_000L)
+        graph.sessions.rename(today(graph).id, "Armar")
+        graph.sessions.add(today(graph).id, listOf(curl), lastTime = true)
+        exerciseSettings("Curl DB")
+    }
+
     /** A new empty workout at 0:12, Push A discarded: the quick picks are the exercises marked Yes. */
     @Test
     fun wo01MarksInDarkAndDarkHc() = emptyWorkoutBoard("WO-01-marks", "What are you training today?", at = 12)
@@ -228,12 +360,7 @@ class WorkoutShotTest {
 
     /** No marks and no history: the card alone, no quick picks. */
     @Test
-    fun wo01NoneInDarkAndDarkHc() = emptyWorkoutBoard("WO-01-none", "What are you training today?", at = 12) { graph ->
-        unmarkAll(graph)
-        graph.sessions.history().first().forEach { graph.sessions.discard(it.id) }
-        // The card's question shows before and after, so the first mode waits for the picks to go.
-        waitUntil(timeoutMillis = 10_000) { onAllNodes(hasText("Quick picks")).fetchSemanticsNodes().isEmpty() }
-    }
+    fun wo01NoneInDarkAndDarkHc() = emptyWorkoutBoard("WO-01-none", "What are you training today?", at = 12) { graph -> noPicks(graph) }
 
     /** Bench Press BB from its quick pick at 0:31, with last time's sets (P14): the warm-up in focus. */
     @Test
@@ -269,6 +396,35 @@ class WorkoutShotTest {
     /** WO-02-s2 with the dock open on Bench Press BB's set 2, as a tap on its row opens it. */
     @Test
     fun wo04NewInDarkAndDarkHc() = workoutBoard("WO-04-new", waitFor = "Bench Press BB · Set 2") { benchDock(row = 3) }
+
+    /**
+     * The dock on set 2 of an exercise in lb with a 5 lb step and no bar (#58). The board draws Curl DB with Bench Press BB's rows, so
+     * Curl DB takes Bench Press BB's place and sets, its set 2 at 25 × 12 and its rest 1:30. Its focus card's "up 5 lb" and
+     * "Previous 20 × 12 @2" come from an arm day two days back, and it carries Bench Press BB's pinned note and last time's note.
+     */
+    @Test
+    fun wo04LbInDarkAndDarkHc() = workoutBoard("WO-04-lb", waitFor = "Curl DB · Set 2") { graph ->
+        val curl = exerciseId(graph, "Curl DB")
+        graph.exercises.setSettings(curl, step = 5.0, bar = null, unit = WeightUnit.Lb)
+        graph.exercises.setNote(curl, "Arch, feet planted.")
+        val day = 86_400_000L
+        val arms = graph.sessions.start("Arms", now() - 2 * day)
+        graph.sessions.add(arms, listOf(curl))
+        val last = graph.sessions.workout(arms).first()!!.exercises.single()
+        repeat(2) { graph.sessions.addSet(last.id) }
+        graph.sessions.workout(arms).first()!!.exercises.single().sets.forEach {
+            graph.sessions.saveSet(it.copy(weight = 20.0, reps = 12, rir = 2, done = true))
+        }
+        graph.sessions.setExerciseNote(last.id, "Kändes stark idag.")
+        graph.sessions.finish(arms, Finish.WithoutThem, now() - 2 * day + 45 * 60_000L)
+        val e = today(graph).exercises.first { it.name == "Bench Press BB" }
+        graph.sessions.swap(e.id, curl)
+        // The set first: saving the copy read before would write its old rest back over the new one.
+        graph.sessions.saveSet(e.sets[2].copy(weight = 25.0, reps = 12))
+        graph.sessions.setRestAll(e.id, 90)
+        waitUntil(timeoutMillis = 10_000) { onAllNodes(hasTestTag("set Curl DB 3")).fetchSemanticsNodes().isNotEmpty() }
+        dock("Curl DB", row = 3, weightLabel("lb", "5"))
+    }
 
     /** The dock on the logged set 1. */
     @Test
@@ -344,6 +500,121 @@ class WorkoutShotTest {
     /** The reference board with logged set 1's badge menu open: the caption says the set stays where it is. */
     @Test
     fun wo13LoggedInDarkAndDarkHc() = workoutBoard("WO-13-logged", waitFor = "The set stays where it is.") { setMenu("1") }
+
+    /** WO-02-s9d with Tricep Pushdown moved first, then Finish: the one set left reads in the singular (#58). */
+    @Test
+    fun wo15OneInDarkAndDarkHc() = workoutBoard("WO-15-one", waitFor = "Log it as it is and save") { graph ->
+        pushdownLeft(graph, at = 58 * 60 + 20, logged = 2)
+        moveFirst(graph, "Tricep Pushdown")
+        tapFinish()
+    }
+
+    /** At 56:10, Tricep Pushdown moved first, its set 2 in focus and its drop set after it: two left, then Finish. */
+    @Test
+    fun wo15SeveralInDarkAndDarkHc() = workoutBoard("WO-15-several", waitFor = "Log them as they are and save") { graph ->
+        pushdownLeft(graph, at = 56 * 60 + 10, logged = 1)
+        moveFirst(graph, "Tricep Pushdown")
+        tapFinish()
+    }
+
+    /** WO-02-s2 with the list's Discard workout tapped, the list back at its top: both of the alert's buttons unfilled. */
+    @Test
+    fun wo16DiscardInDarkAndDarkHc() = workoutBoard("WO-16-discard", waitFor = "Discard the workout?") {
+        val list = onNode(hasScrollToIndexAction())
+        list.performScrollToKey("end")
+        waitForIdle()
+        onAllNodes(hasText(getString(Res.string.discard_workout)) and hasClickAction())[0].performClick()
+        waitForIdle()
+        list.performScrollToIndex(0)
+        waitForIdle()
+    }
+
+    /** WO-01-none with Finish tapped: a workout with no sets asks the same. */
+    @Test
+    fun wo16EmptyInDarkAndDarkHc() = emptyWorkoutBoard("WO-16-empty", "Discard the workout?", at = 12) { graph ->
+        noPicks(graph)
+        tapFinish()
+    }
+}
+
+/** Everything logged up to Tricep Pushdown, then its first [logged] sets, the workout's clock at [at] seconds (WO-02-s9d, WO-15). */
+private suspend fun pushdownLeft(graph: AppGraph, at: Int, logged: Int) {
+    logAll(graph, at = at, "Bench Press BB", "Incline Press DB", "Lateral Raise DB", "Tricep Dips")
+    val pushdown = today(graph).exercises.first { it.name == "Tricep Pushdown" }
+    listOf(12 to 2, 11 to 1).take(logged).forEachIndexed { i, (reps, rir) -> graph.sessions.saveSet(pushdown.sets[i].copy(reps = reps, rir = rir, done = true)) }
+}
+
+/**
+ * The named exercises moved to the top, as Order and skip would. The WO-15 and WO-09-superset and -noweight boards put the done
+ * exercises' `.ov` above the focus card without `flex: none`, so it renders as nothing and the next exercise's header sits straight
+ * under the focus card. The rendered board is the spec; the overview card, which the app keeps in list order, now follows.
+ */
+private suspend fun moveFirst(graph: AppGraph, vararg names: String) {
+    val (moved, rest) = today(graph).exercises.partition { it.name in names }
+    graph.sessions.reorder((moved + rest).map { it.id })
+}
+
+/** No marks and no history, so the empty workout shows the card alone (WO-01-none). */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.noPicks(graph: AppGraph) {
+    unmarkAll(graph)
+    graph.sessions.history().first().forEach { graph.sessions.discard(it.id) }
+    // The card's question shows before and after, so the first mode waits for the picks to go.
+    waitUntil(timeoutMillis = 10_000) { onAllNodes(hasText("Quick picks")).fetchSemanticsNodes().isEmpty() }
+}
+
+/** Taps Finish in the workout's bar. */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.tapFinish() {
+    onNode(hasText(getString(Res.string.finish)) and hasClickAction()).performClick()
+    waitForIdle()
+}
+
+/** WO-02-s10td: at 1:03:40, all 14 sets logged, then Plank (time) and Walking Lunge (distance) added from last time. */
+private suspend fun plankAndLungeAdded(graph: AppGraph) {
+    val names = listOf("Plank", "Walking Lunge")
+    // Last time's sets, which an added exercise takes (P14), come from a finished workout of their own four days back.
+    val day = 86_400_000L
+    val core = graph.sessions.start("Core", now() - 4 * day)
+    graph.sessions.add(core, names.map { exerciseId(graph, it) })
+    for (e in graph.sessions.workout(core).first()!!.exercises) {
+        graph.sessions.addSet(e.id)
+        graph.sessions.workout(core).first()!!.exercises.first { it.id == e.id }.sets.forEach {
+            graph.sessions.saveSet(if (e.name == "Plank") it.copy(seconds = 45, done = true) else it.copy(metres = 20.0, done = true))
+        }
+    }
+    graph.sessions.finish(core, Finish.WithoutThem, now() - 4 * day + 30 * 60_000L)
+    logAll(graph, at = 63 * 60 + 40, "Bench Press BB", "Incline Press DB", "Lateral Raise DB", "Tricep Dips", "Tricep Pushdown")
+    graph.sessions.add(today(graph).id, names.map { exerciseId(graph, it) }, lastTime = true)
+}
+
+/** Bench Press BB's ⋯ → Order and skip. */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.openOrderAndSkip() {
+    exerciseMenu("Bench Press BB")
+    onNode(hasText(getString(Res.string.order_skip))).performClick()
+    waitForIdle()
+}
+
+/** Opens [name]'s ⋯, the one level with its fold button, and waits for the menu's Exercise details row. */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.exerciseMenu(name: String) {
+    val fold = hasContentDescription(getString(Res.string.collapse, name))
+    waitUntil("$name's header", 10_000) { onAllNodes(fold).fetchSemanticsNodes().isNotEmpty() }
+    val row = onNode(fold).fetchSemanticsNode().boundsInRoot.center.y
+    val pills = onAllNodes(hasContentDescription(getString(Res.string.exercise_options)))
+    val i = pills.fetchSemanticsNodes().withIndex().minBy { abs(it.value.boundsInRoot.center.y - row) }.index
+    pills[i].performClick()
+    val details = getString(Res.string.exercise_details)
+    waitUntil("the menu's $details", 10_000) { onAllNodes(hasText(details)).fetchSemanticsNodes().isNotEmpty() }
+}
+
+/** [name]'s ⋯ → Exercise settings. */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.exerciseSettings(name: String) {
+    exerciseMenu(name)
+    onNode(hasText(getString(Res.string.exercise_settings))).performClick()
+    waitForIdle()
 }
 
 /** Adds Bench Press BB's set 4, a copy of set 3, and scrolls to WO-03-strip's page. */
@@ -367,9 +638,12 @@ private suspend fun ComposeUiTest.setMenu(badge: String) {
  * weight cell, which opens the keypad instead.
  */
 @OptIn(ExperimentalTestApi::class)
-private suspend fun ComposeUiTest.benchDock(row: Int) {
-    onNode(hasTestTag("set Bench Press BB $row")).performSemanticsAction(SemanticsActions.OnClick)
-    val weight = getString(Res.string.field_weight)
+private suspend fun ComposeUiTest.benchDock(row: Int) = dock("Bench Press BB", row, weightLabel("kg"))
+
+/** Opens the dock on [exercise]'s [row] through the row's own action, and waits for its weight field, labelled [weight]. */
+@OptIn(ExperimentalTestApi::class)
+private fun ComposeUiTest.dock(exercise: String, row: Int, weight: String) {
+    onNode(hasTestTag("set $exercise $row")).performSemanticsAction(SemanticsActions.OnClick)
     waitUntil(timeoutMillis = 10_000) { onAllNodes(hasText(weight)).fetchSemanticsNodes().isNotEmpty() }
 }
 
@@ -377,7 +651,7 @@ private suspend fun ComposeUiTest.benchDock(row: Int) {
 @OptIn(ExperimentalTestApi::class)
 private suspend fun ComposeUiTest.benchKeypad(nexts: Int) {
     benchDock(row = 3)
-    onNode(hasContentDescription(getString(Res.string.field_weight))).performClick()
+    onNode(hasContentDescription(weightLabel("kg"))).performClick()
     waitForIdle()
     "85".forEach { onNode(hasTestTag("key-$it")).performClick(); waitForIdle() }
     repeat(nexts) { onNode(hasText(getString(Res.string.next)) and hasClickAction()).performClick(); waitForIdle() }
@@ -393,6 +667,14 @@ private suspend fun ComposeUiTest.pastTheFocusCard(graph: AppGraph) {
     onNode(hasScrollToIndexAction()).performScrollToKey("h${bench.id}")
     onNode(hasScrollToIndexAction()).performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, -50f * 3) }
     waitForIdle()
+}
+
+/** Opens the workout's ⋯ and, given a [row], taps it. */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.openWorkoutMenu(row: StringResource? = null) {
+    onAllNodes(hasContentDescription(getString(Res.string.workout_options)))[0].performClick()
+    waitForIdle()
+    if (row != null) { onNode(hasText(getString(row))).performClick(); waitForIdle() }
 }
 
 private suspend fun exerciseId(graph: AppGraph, name: String) = graph.exercises.all().first().first { it.name == name }.id

@@ -28,7 +28,9 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import se.carlsmeister.strive.data.LocalAppGraph
+import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.data.Workout
+import se.carlsmeister.strive.data.defaultUnit
 import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.ui.BackLabel
 import strive.shared.generated.resources.Res
@@ -47,8 +49,9 @@ import kotlin.math.roundToLong
  */
 @Composable
 internal fun HistoryScreen(padding: PaddingValues, parent: String, onOpen: (Long) -> Unit, onBack: () -> Unit, onStart: () -> Unit) {
-    val sessions = LocalAppGraph.current.sessions
-    val history by remember { sessions.history() }.collectAsState(null)
+    val graph = LocalAppGraph.current
+    val history by remember { graph.sessions.history() }.collectAsState(null)
+    val unit by remember { graph.settings.defaultUnit() }.collectAsState(WeightUnit.Kg)
     val space = StriveTheme.spacing
     Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
         BackLabel(parent, onBack, Modifier.padding(start = space.s8))
@@ -79,7 +82,7 @@ internal fun HistoryScreen(padding: PaddingValues, parent: String, onOpen: (Long
                     Block {
                         week.workouts.forEachIndexed { i, w ->
                             if (i > 0) Hairline()
-                            HistoryRow(w) { onOpen(w.id) }
+                            HistoryRow(w, unit) { onOpen(w.id) }
                         }
                     }
                 }
@@ -90,11 +93,11 @@ internal fun HistoryScreen(padding: PaddingValues, parent: String, onOpen: (Long
 
 /** H3's row: the day in a column, then name and start time, then minutes, sets and volume (Carl wants to watch volume grow). */
 @Composable
-private fun HistoryRow(w: Workout, onClick: () -> Unit) {
+private fun HistoryRow(w: Workout, unit: WeightUnit, onClick: () -> Unit) {
     val space = StriveTheme.spacing
     val swedish = Locale.current.language == "sv"
     val start = local(w.startedAt)
-    val s = summary(w, now())
+    val s = summary(w, now(), unit)
     Row(
         Modifier.fillMaxWidth().clickable(onClick = onClick).heightIn(min = StriveTheme.sizes.touch + space.s16)
             .padding(horizontal = space.s16, vertical = space.s8),
@@ -114,7 +117,8 @@ private fun HistoryRow(w: Workout, onClick: () -> Unit) {
             val grey = MaterialTheme.colorScheme.onSurfaceVariant
             Text(stringResource(Res.string.minutes, s.minutes.toInt()), style = MaterialTheme.typography.bodySmall, color = grey)
             val sets = stringResource(Res.string.history_sets, s.sets)
-            Text(if (s.volume > 0) "$sets · ${grouped(s.volume.roundToLong(), swedish)} kg" else sets, style = MaterialTheme.typography.bodySmall, color = grey)
+            val label = stringResource(unit.label)
+            Text(if (s.volume > 0) "$sets · ${grouped(s.volume.roundToLong(), swedish)} $label" else sets, style = MaterialTheme.typography.bodySmall, color = grey)
         }
     }
 }

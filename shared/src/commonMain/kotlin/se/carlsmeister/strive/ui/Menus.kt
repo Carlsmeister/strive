@@ -140,13 +140,16 @@ private fun MenuPanel(modifier: Modifier = Modifier, content: @Composable () -> 
 private const val ROW = "menu-row"
 private const val LINE = "menu-line"
 
+/** The tag on a [MenuRow]'s trailing glyph, for a test to find a glyph that has no text. */
+internal const val MENU_ICON = "menu-icon"
+
 /** Text whose CSS rule sets `font:` (`.mrow`, `.alert h2`, `.asheet .row`), which resets `.strive`'s tabular-nums. */
 internal fun TextStyle.css() = copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox)
 
 /**
  * `.mrow`: [text] left, a 20 dp [icon] or a [tail] right. [danger] is `.mrow.danger`, in error. A non-null [checked] adds `.lead`'s
- * 20 dp column holding an 18 dp `Check` (`ic-check s18`) at its start in primary when true; [back] is a submenu's back row, in
- * label-large with `Back` in that column.
+ * 20 dp column holding an 18 dp `Check` (`ic-check s18`) at its start in primary when true; [back] is a submenu's back row
+ * (`.mrow.lead.back`), in label-large and primary, as `.back` colours it, with an 18 dp `ChevL` in that column.
  * [tailBadge] draws the tail as a set's badge, 32 by 24 in 600 13 (WO-13-menu).
  * It presses as a list row does: surface-container-highest, no scale.
  */
@@ -167,7 +170,7 @@ internal fun MenuRow(
     val space = StriveTheme.spacing
     val source = remember { MutableInteractionSource() }
     val pressed by source.collectIsPressedAsState()
-    val ink = if (danger) colors.error else colors.onSurface
+    val ink = if (danger) colors.error else if (back) colors.primary else colors.onSurface
     val lead = checked != null || back
     // A border is whole device pixels, as Chrome draws the board's: 0.5 dp is 1 px at 3x, where a 0.5 dp layout rounds to 2.
     val line = with(LocalDensity.current) { StriveTheme.borders.hairline.toPx().toInt().coerceAtLeast(1).toDp() }
@@ -184,13 +187,13 @@ internal fun MenuRow(
         if (lead) {
             Box(Modifier.size(20.dp), contentAlignment = Alignment.CenterStart) {
                 when {
-                    back -> Icon(StriveIcons.Back, null, Modifier.size(20.dp), tint = ink)
+                    back -> Icon(StriveIcons.ChevL, null, Modifier.size(18.dp), tint = ink)
                     checked == true -> Icon(StriveIcons.Check, null, Modifier.size(18.dp), tint = colors.primary)
                 }
             }
         }
         Text(text, Modifier.weight(1f), color = ink, style = (if (back) type.labelLarge else type.bodyLarge).css())
-        icon?.let { Icon(it, null, Modifier.size(20.dp), tint = ink) }
+        icon?.let { Icon(it, null, Modifier.size(20.dp).testTag(MENU_ICON), tint = ink) }
         tail?.let {
             val color = if (tailColor == Color.Unspecified) colors.onSurfaceVariant else tailColor
             if (tailBadge) {
