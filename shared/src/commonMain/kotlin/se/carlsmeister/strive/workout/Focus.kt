@@ -429,7 +429,7 @@ internal fun FocusCard(e: SessionExercise, set: WorkoutSet, badge: String, prev:
             val ready = set.loggable(e.type)
             Btn(onLog, Modifier.weight(2f).height(50.dp), container = if (ready) colors.primary else colors.surfaceContainerHigh,
                 content = if (ready) colors.onPrimary else colors.onSurfaceVariant, shape = RoundedCornerShape(14.dp)) {
-                Glyph(Glyph.Check, 20.dp, stroke = 2.8f)
+                Glyph(Glyph.Check, 20.dp)
                 val log = when (set.kind) {
                     SetKind.Warmup -> stringResource(Res.string.log_warmup)
                     SetKind.Drop -> stringResource(Res.string.log_drop)
