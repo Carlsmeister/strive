@@ -157,6 +157,8 @@
     <string name="col_set">Set</string>
     <string name="col_previous">Previous</string>
     <string name="col_kg">kg</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lb">lb</string>
     <string name="col_reps">Reps</string>
     <string name="col_seconds">Time</string>
     <string name="col_metres">m</string>

@@ -7,6 +7,7 @@ import se.carlsmeister.strive.data.ExerciseType
 import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.data.WorkoutSet
+import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.Rest
 import se.carlsmeister.strive.data.Slot
@@ -101,6 +102,22 @@ class SummaryTest {
         assertEquals(set(null, 12), best(exercise(ExerciseType.Reps, set(null, 10), set(null, 12))))
         assertNull(best(exercise(ExerciseType.WeightReps, set(done = false))))
     }
+
+    @Test
+    fun volumeConvertsLbSetsIntoTheDefaultUnit() {
+        val w = workout.copy(
+            exercises = listOf(
+                exercise(ExerciseType.WeightReps, set(100.0, 5)).copy(name = "Bench"),
+                exercise(ExerciseType.WeightReps, set(25.0, 10)).copy(name = "Curl DB", unit = WeightUnit.Lb),
+            ),
+        )
+        assertEquals(500 + 250 * 0.45359237, summary(w, now = 0, WeightUnit.Kg).volume, 1e-6)
+        // Null means the app default, so with an lb default Bench's sets count as lb.
+        assertEquals(750.0, summary(w, now = 0, WeightUnit.Lb).volume, 1e-6)
+    }
+
+    @Test
+    fun volumeOfNullUnitSetsIsUnchanged() = assertEquals(80.0 * 8 + 82.5 * 6, summary(workout, now = 0, WeightUnit.Kg).volume)
 }
 
 class WeeksTest {
