@@ -249,6 +249,8 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     val folds = remember { mutableStateMapOf<Long, Boolean>() }
     var finishing by remember { mutableStateOf(false) }
     var discarding by remember { mutableStateOf(false) }
+    // Order and skip is the screen's, not its opener's: skipping the exercise it opened from folds that header away (WO-11-skip).
+    var ordering by remember { mutableStateOf(false) }
     val active = w.exercises.filterNot { it.skipped }
     val tags = tags(active)
     // The next set to do is outlined (#17 S3): the first one not logged, in the order the list is lifted, a superset round by round (G2).
@@ -422,7 +424,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                                 // headers stack under its label: the first 6 below it, the others at once (WO-02-s4).
                                 val top = if (!superset) StriveTheme.spacing.s16 * 2 else if (n == 0) 6.dp else 0.dp
                                 ExerciseHeader(w, e, defaultRest, tags[e.id], onFold = { folds[b.first().id] = true }, onSwap = { onSwap(e) },
-                                    Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place).edge(superset).padding(top = top))
+                                    onOrder = { ordering = true }, Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place).edge(superset).padding(top = top))
                             }
                         }
                         // One row of column labels over a superset whose exercises record the same values, in the same unit.
@@ -556,6 +558,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                 onConfirm = { discarding = false; discard() }, onDismiss = { discarding = false },
             )
         }
+        if (ordering) OrderDialog(w) { ordering = false }
     } } }
 }
 
@@ -659,7 +662,7 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
  */
 @Composable
 private fun ExerciseHeader(
-    w: Workout, e: SessionExercise, defaultRest: Int, letter: String?, onFold: () -> Unit, onSwap: () -> Unit, modifier: Modifier,
+    w: Workout, e: SessionExercise, defaultRest: Int, letter: String?, onFold: () -> Unit, onSwap: () -> Unit, onOrder: () -> Unit, modifier: Modifier,
     plan: String? = null,
 ) {
     val graph = LocalAppGraph.current
@@ -696,7 +699,7 @@ private fun ExerciseHeader(
                         } else if (supersetPartners(w, e).isNotEmpty()) {
                             MenuRow(stringResource(Res.string.superset_create), { menu = false; dialog = "superset" }, icon = StriveIcons.Link)
                         }
-                        MenuRow(stringResource(Res.string.order_skip), { menu = false; dialog = "order" }, icon = StriveIcons.Reorder)
+                        MenuRow(stringResource(Res.string.order_skip), { menu = false; onOrder() }, icon = StriveIcons.Reorder)
                         // WO-09-noweight draws no line above Exercise details when the settings row is absent.
                         if (e.type == ExerciseType.WeightReps) {
                             MenuSeparator()
@@ -749,7 +752,6 @@ private fun ExerciseHeader(
             dialog = null
             scope.launch { graph.exercises.setNote(e.exerciseId, n) }
         }, onDismiss = { dialog = null })
-        "order" -> OrderDialog(w) { dialog = null }
         "superset" -> SupersetDialog(w, e) { dialog = null }
         "settings" -> SettingsDialog(e) { dialog = null }
         // EX-05 over the workout (O-02): nothing is pushed, so Done leaves the workout where it was.

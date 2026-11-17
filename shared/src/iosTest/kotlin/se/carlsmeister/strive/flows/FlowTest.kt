@@ -159,6 +159,8 @@ import strive.shared.generated.resources.kind_normal
 import strive.shared.generated.resources.kind_drop
 import strive.shared.generated.resources.order_skip
 import strive.shared.generated.resources.skip_named
+import strive.shared.generated.resources.include
+import strive.shared.generated.resources.include_named
 import strive.shared.generated.resources.skipped_note
 import strive.shared.generated.resources.rest
 import strive.shared.generated.resources.rest_all
@@ -1532,6 +1534,20 @@ class FlowTest {
         waitUntilTrue { open().exercises.first().name == "Incline Press DB" }
     }
 
+    /** Skipping the exercise whose ⋯ opened Order and skip folds its header away; the sheet stays open, as WO-11-skip draws. */
+    @Test
+    fun orderAndSkipStaysOpenWhenItsOpenerIsSkipped() = flow {
+        startWorkout()
+        addExercises("Bench Press BB", "Squat BB")
+        tapDesc(s(Res.string.exercise_options)) // Bench's, the one exercise standing open
+        tap(s(Res.string.order_skip))
+        tapDesc(s(Res.string.skip_named, "Bench Press BB"))
+        waitUntilTrue { open().exercises[0].skipped }
+        see(s(Res.string.skipped_note))
+        test.onNode(hasContentDescription(s(Res.string.include_named, "Bench Press BB"))).assertExists()
+        see(s(Res.string.include))
+    }
+
     @Test
     fun theWorkoutMenuChangesTheStartTime() = startedAt1726 {
         // Untouched, the wheels open on the start, VoiceOver reads those rows as selected, and Save keeps it.
@@ -1879,14 +1895,13 @@ class FlowTest {
             open().exercises.let { e -> e.map { it.name } == listOf("Bench Press BB", "Incline Press DB", "Squat BB") && e[0].superset != null && e[0].superset == e[1].superset }
         }
         // Order and skip with only B skipped, as its own menu can: B's name greys and A's does not; the row's Skip names both.
-        // From A's ⋯, the first: the sheet belongs to the header it opened from, and a skipped B's header leaves the screen.
-        test.onAllNodes(hasContentDescription(s(Res.string.exercise_options)))[0].performClick()
+        tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.order_skip))
         val incline = open().exercises[1].id
         graph.sessions.skip(incline, true)
         see(s(Res.string.skipped_note))
-        assertTrue(ink("Incline Press DB") < ink("Bench Press BB"), "B's name grey, A's not")
         test.onNode(hasContentDescription(s(Res.string.skip_named, "Bench Press BB, Incline Press DB"))).assertExists()
+        assertTrue(ink("Incline Press DB") < ink("Bench Press BB"), "B's name grey, A's not")
         graph.sessions.skip(incline, false)
         waitUntilTrue { open().exercises.none { it.skipped } }
         tap(s(Res.string.done))
