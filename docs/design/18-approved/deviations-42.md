@@ -10,16 +10,16 @@ each line below that names it. A line holds one element, or neighbouring element
 Plan note and the plates line, which most boards miss, have a line each. Lines owned "Not a difference" and lines whose board is
 "None" are not counted. A difference under 1 pt is not listed. Only one line shows in dark alone, the glass's teal glow; every
 other line holds in both modes. A range of WO-02 boards runs in the table's order (s2, rir, s3, s4, s5, s5b, s5c, abc, s9f, s9d,
-s10bw, s10td, s13, s14, s15, s16, note, removed, swap): "s2 to s16" takes in rir and abc and leaves out note. 417 in all.
+s10bw, s10td, s13, s14, s15, s16, note, removed, swap): "s2 to s16" takes in rir and abc and leaves out note. 409 in all.
 
 | Boards | Remaining differences |
 |---|---|
 | WO-01 | marks 8 · recent 7 · none 6 · picked 11 · logged 7 |
 | WO-02, s2 to abc | s2 10 · rir 11 · s3 15 · s4 11 · s5 10 · s5b 9 · s5c 9 · abc 10 |
-| WO-02, s9f to swap | s9f 10 · s9d 8 · s10bw 9 · s10td 8 · s13 6 · s14 11 · s15 8 · s16 12 · note 11 · removed 10 · swap 9 |
-| WO-03 | strip 11 · rest 14 · end 10 |
+| WO-02, s9f to swap | s9f 10 · s9d 8 · s10bw 9 · s10td 8 · s13 6 · s14 11 · s15 8 · s16 12 · note 10 · removed 10 · swap 9 |
+| WO-03 | strip 10 · rest 13 · end 9 |
 | WO-04, WO-05 | 04-new 11 · 04-logged 11 · 04-rest 9 · 04-rir4 11 · 05-weight 10 · 05-reps 9 · 05-rest 9 |
-| WO-13, WO-14 | 13-menu 17 · 13-added 14 · 13-moved 11 · 13-logged 10 · 14-revealed 14 · 14-full 15 |
+| WO-13, WO-14 | 13-menu 16 · 13-added 13 · 13-moved 11 · 13-logged 10 · 14-revealed 13 · 14-full 14 |
 | Motion | MO-log 4 · MO-gestures 1 |
 
 | Board | Element | Difference | Reason | Owner |
@@ -30,7 +30,6 @@ s10bw, s10td, s13, s14, s15, s16, note, removed, swap): "s2 to s16" takes in rir
 | WO-01-picked, logged, WO-02-s2 to s16, removed, swap, WO-04-new, logged, rest, rir4, WO-05-weight, reps, rest | The workout's name and its ⋯ pill | "Push A" 5.7–6.4 pt wider (94.4 against 88.6 on s2), so the pill sits 6.7 pt further right (122.0–161.7 against 115.3–155.0); "Workout" 7.3 wider, its pill 8.0 further right (WO-01-picked, logged). On s16 the toast covers the name and the pill's foot shows it | As WO-02-s2: the optical size | #42 |
 | WO-01-marks, recent, none, WO-02-note, WO-03-strip, rest, end, WO-13-menu, added, WO-14-revealed, full | The bar's name and its ⋯ pill | "Push A" 2.3–2.4 pt wider (56.0 against 53.6), its pill 1.3–2.0 further right; on WO-01 "Workout" 2.7 wider (68.7 against 66.0), its pill 1.3 further right | As WO-02-s2: the optical size | #42 |
 | WO-02-note, WO-03-strip, rest, end, WO-13-menu, added, WO-14-revealed, full | The bar's sub line | "24:13 · 1/14 sets" 3.7 pt wider (138.7–250.7 against 141.0–249.3, centred, WO-03-strip): each word 0.4–0.7 wider and each space 0.3–0.7. The figures match: the sub line draws proportional figures, as the board's `.wtb .mid small` does. WO-01's "0:12" is within 0.7 pt | As WO-02-s2: the optical size | #42 |
-| WO-02-note, WO-03-strip, rest, end, WO-13-menu, added, WO-14-revealed, full | The bar's buttons and sub line, up and down | In the same bar (54–169 pt) the chevron, timer and Finish sit 1.0–1.3 pt higher (Finish's pill 56.0–95.7 against 57.0–96.7) and the sub line's ink 1.3–1.7 higher; the name and the strip do not move | Not measured | #42 |
 | WO-01-marks, recent, none, picked, logged, WO-02-s2 to swap, WO-03-strip, rest, end, WO-04-new, logged, rest, rir4, WO-05-weight, reps, rest, WO-13-menu, added, moved, logged, WO-14-revealed, full | Finish | The label 1.0 pt wider (319.3–360.7 against 320.7–361.0; 0.7 on WO-01-logged), and the pill 1.3 wider at its left (302.3 against 303.7) | As WO-02-s2: the optical size | #42 |
 | WO-01-picked, logged, WO-02-rir, s3, s4, s5, s5b, s5c, abc, s9f, s9d, s10bw, s10td, s13, s14, s15, s16, note, removed, swap, WO-03-strip, rest, end, WO-13-menu, added, WO-14-revealed, full | Exercise names: the headers, the overview's rows and their counts | Headers 4.3–7.7 pt wider ("Bench Press BB" 128.7 against 123.4, "Incline Press DB" 132.7 against 126.4, "Chest Press Machine" 173.7 against 166.0; "Plank" 1.7); overview names 3.0–4.3 wider ("Bench Press BB" 121.0 against 117.4); the counts ("4/4 ✓") 1.0–1.3 wider, starting 1 pt further left. The ⋯ and chevron beside a header do not move | As WO-02-s2: the optical size | #42 |
 | WO-01-picked, WO-02-s2, rir, s3, s14, s16, note, WO-03-strip, rest, WO-13-menu, added, moved, WO-14-revealed, full | The exercise's notes | "Arch, feet planted." 1.3–1.7 pt wider (112.3 against 110.7), "Previous Kändes stark idag." 1.0–1.4 | As WO-02-s2: the optical size | #42 |

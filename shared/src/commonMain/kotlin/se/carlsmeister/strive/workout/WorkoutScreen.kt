@@ -14,6 +14,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
@@ -584,12 +585,20 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
                      onRest: (Int) -> Unit) {
     val alpha by animateFloatAsState(if (showTitle) 1f else 0f, Motion.fade())
     val colors = MaterialTheme.colorScheme
+    val touch = StriveTheme.sizes.touch
     Column(drag.testTag("title-bar").fillMaxWidth().background(if (glassed) StriveTheme.glass.thick else colors.background)) {
         // `.nav`'s `1fr auto 1fr` with its 8 dp gap: the buttons keep their size and the name takes the room left between them.
         CentredBar(
             StriveTheme.spacing.s8,
             Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
-                .padding(start = 12.dp, end = 12.dp, bottom = 6.dp),
+                .padding(start = 12.dp, end = 12.dp, bottom = 6.dp)
+                // `.wtb`'s middle is 46 pt (name 24, gap 2, sub line 20) in a 50 pt bar, so it runs 2 pt into the 6 pt foot, where the
+                // boards put the strip (104 pt). The bar keeps 50 and the buttons centre on the 46; it grows once the middle outgrows the foot.
+                .layout { m, c ->
+                    val bar = m.measure(c)
+                    val height = maxOf(touch.roundToPx(), bar.height - 6.dp.roundToPx())
+                    layout(bar.width, height) { bar.place(0, 0) }
+                },
             start = {
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     IconTarget(stringResource(Res.string.minimise), onMinimise) { Glyph(Glyph.Down, 22.dp, stroke = 2.2f, color = colors.onSurface) }
@@ -601,7 +610,7 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
                     if (alpha > 0f) {
                         WorkoutMenu(w, large = false, nowMs = nowMs)
                         // The board's `.wtb .mid small` resets `tabular-nums`: proportional figures, so the centred line shifts as the clock ticks.
-                        Text(progress(w, nowMs), style = MaterialTheme.typography.bodyMedium.copy(fontFeatureSettings = null), color = colors.onSurfaceVariant)
+                        Text(progress(w, nowMs), style = MaterialTheme.typography.bodyMedium.board(), color = colors.onSurfaceVariant)
                     }
                 }
             },
