@@ -743,7 +743,8 @@ private fun ExerciseHeader(
         "settings" -> SettingsDialog(e) { dialog = null }
         // EX-05 over the workout (O-02): nothing is pushed, so Done leaves the workout where it was.
         "details" -> HeaderSheet(e.name, { dialog = null }, done = stringResource(Res.string.done), full = true) {
-            ExerciseScreen(e.exerciseId, PaddingValues(0.dp), parent = null, onBack = { dialog = null })
+            // The 48 dp foot lies inside the scroll, past the home indicator, as EX-05-sheet draws it.
+            ExerciseScreen(e.exerciseId, PaddingValues(bottom = 48.dp), parent = null, onBack = { dialog = null })
         }
     }
 }

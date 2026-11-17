@@ -256,7 +256,8 @@ private fun SheetRow(label: String, color: Color, style: TextStyle, minHeight: D
  * `.sheet.glass.thick` with its `.sheet-head`: at the bottom, full width, 28 dp top corners, padding 8 / 16 / 16 plus the navigation
  * bar, its parts 12 dp apart: the grabber, the head ([cancel] at the start, [title] on the sheet's centre, [done] in bold at the
  * end), then [content]. It rises as the action sheet does; a tap on the scrim, or back, is [onDismiss]. [full] is `.sheet.full`: its
- * top 60 dp from the window's and no padding at the foot, for content that scrolls inside it (EX-05-sheet).
+ * top 60 dp from the window's and no padding at the foot, not even the navigation bar's: its content scrolls to the window's edge
+ * and brings its own foot inside the scroll (EX-05-sheet).
  */
 @Composable
 internal fun HeaderSheet(
@@ -273,7 +274,8 @@ internal fun HeaderSheet(
     Column(
         Modifier.align(Alignment.BottomCenter).then(if (full) Modifier.padding(top = 60.dp).fillMaxHeight() else Modifier)
             .rise().fillMaxWidth().panel().glass(LocalGlassSource.current, StriveTheme.glass, thick = true, shape = SheetShape)
-            .padding(start = space.s16, top = space.s8, end = space.s16).navigationBarsPadding().padding(bottom = if (full) 0.dp else space.s16),
+            .padding(start = space.s16, top = space.s8, end = space.s16)
+            .then(if (full) Modifier else Modifier.navigationBarsPadding().padding(bottom = space.s16)),
         verticalArrangement = Arrangement.spacedBy(space.s12),
     ) {
         Box(Modifier.align(Alignment.CenterHorizontally).size(36.dp, 5.dp).background(MaterialTheme.colorScheme.outline, ShapeFull))

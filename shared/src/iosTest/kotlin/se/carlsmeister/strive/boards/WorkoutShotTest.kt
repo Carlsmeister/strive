@@ -250,7 +250,7 @@ class WorkoutShotTest {
         waitForIdle()
     }
 
-    /** Bench Press BB's ⋯: Note and Swap tiles; Sticky note; Rest for all sets ›, Create superset, Order and skip; settings, details; Remove. */
+    /** Bench Press BB's ⋯: Note and Swap tiles; Sticky note; Rest for all sets with its chevron, Create superset, Order and skip; settings, details; Remove. */
     @Test
     fun wo09MenuInDarkAndDarkHc() = workoutBoard("WO-09-menu", waitFor = "Exercise details") { exerciseMenu("Bench Press BB") }
 
@@ -275,6 +275,14 @@ class WorkoutShotTest {
         plankAndLungeAdded(graph)
         graph.sessions.setRestAll(today(graph).exercises.first { it.name == "Plank" }.id, 60)
         exerciseMenu("Plank")
+    }
+
+    /** Exercise details from Bench Press BB's ⋯: EX-05 in a full sheet over WO-02-s2, its name in the head with Done. */
+    @Test
+    fun ex05SheetInDarkAndDarkHc() = workoutBoard("EX-05-sheet", waitFor = "Records") {
+        exerciseMenu("Bench Press BB")
+        onNode(hasText(getString(Res.string.exercise_details))).performClick()
+        waitForIdle()
     }
 
     /** A new empty workout at 0:12, Push A discarded: the quick picks are the exercises marked Yes. */

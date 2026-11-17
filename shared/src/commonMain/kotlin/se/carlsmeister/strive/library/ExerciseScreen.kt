@@ -79,9 +79,10 @@ internal fun ExerciseScreen(id: Long, padding: PaddingValues, parent: String?, o
         parent?.let { BackLabel(it, onBack, Modifier.padding(start = space.s8)) }
         val e = exercise ?: return@Column
         if (parent != null) Text(e.name, Modifier.padding(horizontal = space.s16), style = MaterialTheme.typography.headlineMedium)
-        // In the sheet, the head's 12 dp gap already lies above the tabs.
+        // In the sheet, the head's 12 dp gap already lies above the tabs, and the sheet's 12 dp gap follows them (EX-05-sheet).
         SegmentedTabs(Tabs.map { stringResource(it) }, tab, { tab = it },
-            Modifier.fillMaxWidth().padding(start = side, top = if (parent == null) 0.dp else space.s8, end = side, bottom = space.s8))
+            Modifier.fillMaxWidth().padding(start = side, top = if (parent == null) 0.dp else space.s8, end = side,
+                bottom = if (parent == null) space.s12 else space.s8))
         if (tab == 0) {
             About(e, side, Modifier.verticalScroll(rememberScrollState()).padding(bottom = padding.calculateBottomPadding()))
         } else {
