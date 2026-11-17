@@ -457,7 +457,9 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                                 // In a superset only the last exercise's button names the rest, as T4 draws it.
                                 val text = if (superset && n < members.lastIndex) stringResource(Res.string.add_set)
                                     else stringResource(Res.string.add_set_rest, clock(restAfter.toLong()))
-                                AddButton(text, 40.dp, RoundedCornerShape(12.dp), Modifier.edge(superset).padding(top = 6.dp).animateItem(placementSpec = place),
+                                // `.addset`'s 6 collapses the last row's 1.5 margin, which that row already pads below.
+                                val top = if (n == 0 && rows.isNotEmpty()) 4.5.dp else 6.dp
+                                AddButton(text, 40.dp, RoundedCornerShape(12.dp), Modifier.edge(superset).padding(top = top).animateItem(placementSpec = place),
                                     letter = tags[e.id]) { scope.launch { sessions.addSet(e.id) } }
                             }
                         }
