@@ -35,6 +35,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.contentDescription
@@ -298,11 +299,15 @@ private fun NumberField(label: String, text: String, focused: Boolean, fresh: Bo
             horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text.ifEmpty { "–" }, style = MaterialTheme.typography.titleLarge.board(),
+                text.ifEmpty { "–" }, Modifier.alignByBaseline(), style = MaterialTheme.typography.titleLarge.board(),
                 color = if (text.isEmpty()) colors.onSurfaceVariant else colors.onSurface,
             )
-            // `.caret`: 2 × 20 in primary, 1 after the number. Drawn still: the screen keeps one clock (#42).
-            if (focused && !fresh) Box(Modifier.padding(start = 1.dp).size(2.dp, 20.dp).background(colors.primary))
+            // `.caret`: 2 × 20 in primary, 1 after the number, its foot 4 under the baseline (`vertical-align: -4px`).
+            // Drawn still: the screen keeps one clock (#42).
+            val foot = with(LocalDensity.current) { 4.dp.roundToPx() }
+            if (focused && !fresh) Box(
+                Modifier.alignBy { it.measuredHeight - foot }.padding(start = 1.dp).size(2.dp, 20.dp).background(colors.primary),
+            )
         }
         if (steppers) StepKey("+", "$label +") { onStep(1) }
     }
