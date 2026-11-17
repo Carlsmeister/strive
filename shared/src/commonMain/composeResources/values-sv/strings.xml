@@ -217,6 +217,8 @@
     <string name="include">Ta med</string>
     <string name="move_up">Flytta upp %1$s</string>
     <string name="move_down">Flytta ner %1$s</string>
+    <string name="skip_named">Hoppa över %1$s</string>
+    <string name="include_named">Ta med %1$s</string>
     <string name="superset_moves_as_one">Superset · flyttas som en</string>
     <string name="skipped_note">Överhoppade övningar finns kvar i loggen; deras set tas bort vid Avsluta.</string>
     <string name="rest_shorter">15 sekunder kortare</string>

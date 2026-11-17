@@ -181,6 +181,8 @@ import strive.shared.generated.resources.superset_leave
 import strive.shared.generated.resources.superset_moves
 import strive.shared.generated.resources.superset_moves_as_one
 import strive.shared.generated.resources.skipped_note
+import strive.shared.generated.resources.skip_named
+import strive.shared.generated.resources.include_named
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.time_sets
 import strive.shared.generated.resources.unlogged
@@ -786,11 +788,12 @@ private fun OrderDialog(w: Workout, onDone: () -> Unit) {
         // A long workout scrolls inside the list, so Done and the footnote stay on screen.
         ListBlock(rows.mapIndexed { i, row -> {
             val skipped = row.all { it.skipped }
-            val ink = if (skipped) colors.onSurfaceVariant else colors.onSurface
+            // Each name greys by its own skip, as one half of a superset can be skipped from its menu.
+            fun ink(e: SessionExercise) = if (e.skipped) colors.onSurfaceVariant else colors.onSurface
             val name = row.joinToString { it.name }
             Row(Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch).padding(start = 16.dp, top = 4.dp, end = 4.dp, bottom = 4.dp),
                 verticalAlignment = Alignment.CenterVertically) {
-                if (row.size == 1) Text(row[0].name, Modifier.weight(1f), color = ink, style = style)
+                if (row.size == 1) Text(row[0].name, Modifier.weight(1f), color = ink(row[0]), style = style)
                 else {
                     val accent = StriveTheme.accents.superset
                     val edge = StriveTheme.borders.focus
@@ -798,7 +801,7 @@ private fun OrderDialog(w: Workout, onDone: () -> Unit) {
                         row.forEachIndexed { n, e ->
                             Row(Modifier.padding(top = if (n == 0) 0.dp else 6.dp), Arrangement.spacedBy(StriveTheme.spacing.s8), Alignment.CenterVertically) {
                                 Tag("${'A' + n}")
-                                Text(e.name, color = ink, style = style)
+                                Text(e.name, color = ink(e), style = style)
                             }
                         }
                         // `small` with margin-top −2 in the 6 px gap.
@@ -812,7 +815,9 @@ private fun OrderDialog(w: Workout, onDone: () -> Unit) {
                 IconTarget(stringResource(Res.string.move_down, name), { scope.launch { sessions.reorder(moved(rows, i, 1)) } }, enabled = i < rows.lastIndex) {
                     Glyph(Glyph.Down, 18.dp, color = colors.primary)
                 }
-                NavText(stringResource(if (skipped) Res.string.include else Res.string.skip), { scope.launch { row.forEach { sessions.skip(it.id, !skipped) } } })
+                val spoken = stringResource(if (skipped) Res.string.include_named else Res.string.skip_named, name)
+                NavText(stringResource(if (skipped) Res.string.include else Res.string.skip), { scope.launch { row.forEach { sessions.skip(it.id, !skipped) } } },
+                    Modifier.semantics { contentDescription = spoken })
             }
         } }, Modifier.fillMaxWidth().weight(1f, fill = false).clip(MaterialTheme.shapes.large).verticalScroll(rememberScrollState()))
         if (exercises.any { it.skipped }) Text(stringResource(Res.string.skipped_note), Modifier.padding(horizontal = 16.dp),

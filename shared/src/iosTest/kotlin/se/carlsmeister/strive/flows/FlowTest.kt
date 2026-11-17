@@ -137,6 +137,7 @@ import androidx.compose.ui.test.performScrollToKey
 import se.carlsmeister.strive.data.Mark
 import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.workout.grouped
+import kotlin.math.abs
 import kotlin.math.roundToLong
 import strive.shared.generated.resources.add_named
 import strive.shared.generated.resources.collapse
@@ -157,6 +158,8 @@ import strive.shared.generated.resources.kind_warmup
 import strive.shared.generated.resources.kind_normal
 import strive.shared.generated.resources.kind_drop
 import strive.shared.generated.resources.order_skip
+import strive.shared.generated.resources.skip_named
+import strive.shared.generated.resources.skipped_note
 import strive.shared.generated.resources.rest
 import strive.shared.generated.resources.rest_all
 import strive.shared.generated.resources.rest_row
@@ -1875,6 +1878,19 @@ class FlowTest {
         waitUntilTrue {
             open().exercises.let { e -> e.map { it.name } == listOf("Bench Press BB", "Incline Press DB", "Squat BB") && e[0].superset != null && e[0].superset == e[1].superset }
         }
+        // Order and skip with only B skipped, as its own menu can: B's name greys and A's does not; the row's Skip names both.
+        // From A's ⋯, the first: the sheet belongs to the header it opened from, and a skipped B's header leaves the screen.
+        test.onAllNodes(hasContentDescription(s(Res.string.exercise_options)))[0].performClick()
+        tap(s(Res.string.order_skip))
+        val incline = open().exercises[1].id
+        graph.sessions.skip(incline, true)
+        see(s(Res.string.skipped_note))
+        assertTrue(ink("Incline Press DB") < ink("Bench Press BB"), "B's name grey, A's not")
+        test.onNode(hasContentDescription(s(Res.string.skip_named, "Bench Press BB, Incline Press DB"))).assertExists()
+        graph.sessions.skip(incline, false)
+        waitUntilTrue { open().exercises.none { it.skipped } }
+        tap(s(Res.string.done))
+        gone(hasText(s(Res.string.order_skip)))
         // Both stand open; B's ⋯, the last, takes Incline Press out, and a superset of one is none.
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.superset_leave))
@@ -2198,6 +2214,18 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
     suspend fun open(): Workout = graph.sessions.open().first()!!
 
     fun waitUntilTrue(check: suspend () -> Boolean) = wait("the database to agree") { runBlocking { check() } }
+
+    /** How strongly [text] is drawn, the last such text: its pixels' largest distance from the corner's background. Grey ink scores lower. */
+    fun ink(text: String): Float {
+        val px = test.onAllNodes(hasText(text)).onLast().captureToImage().toPixelMap()
+        val bg = px[0, 0]
+        var most = 0f
+        for (x in 0 until px.width) for (y in 0 until px.height) {
+            val c = px[x, y]
+            most = maxOf(most, abs(c.red - bg.red) + abs(c.green - bg.green) + abs(c.blue - bg.blue))
+        }
+        return most
+    }
 
     fun see(text: String, substring: Boolean = false) = wait("see '$text'") { test.onAllNodes(hasText(text, substring)).fetchSemanticsNodes().isNotEmpty() }
 
