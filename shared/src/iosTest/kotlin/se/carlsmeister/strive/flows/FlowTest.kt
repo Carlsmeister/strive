@@ -713,6 +713,18 @@ class FlowTest {
         waitUntilTrue { open().exercises.single().pinned == "" }
     }
 
+    /** A note saved before #58 may hold a newline; the single-line prompt opens it folded to a space, so all of it shows. */
+    @Test
+    fun aLegacyStickyNoteWithANewlineOpensOnOneLine() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        graph.exercises.setNote(open().exercises.single().exerciseId, "Knees out\nBrace")
+        waitUntilTrue { open().exercises.single().pinned == "Knees out\nBrace" }
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.sticky_note))
+        see("Knees out Brace")
+    }
+
     /** WO-07-custom keeps its own look through the shared prompt: no clear glyph once a time is typed. The time still starts a rest. */
     @Test
     fun theCustomRestTimeHasNoClearGlyph() = flow {

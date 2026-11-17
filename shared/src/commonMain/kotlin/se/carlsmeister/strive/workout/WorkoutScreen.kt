@@ -756,7 +756,7 @@ private fun ExerciseHeader(
         }
     }
     when (dialog) {
-        "pin" -> TextPrompt(stringResource(Res.string.sticky_note), e.pinned, body = stringResource(Res.string.sticky_body, e.name), onSave = { n ->
+        "pin" -> TextPrompt(stringResource(Res.string.sticky_note), e.pinned.replace('\n', ' '), body = stringResource(Res.string.sticky_body, e.name), onSave = { n ->
             dialog = null
             scope.launch { graph.exercises.setNote(e.exerciseId, n) }
         }, onDismiss = { dialog = null })
