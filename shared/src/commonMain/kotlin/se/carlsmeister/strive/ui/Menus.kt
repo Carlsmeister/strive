@@ -140,6 +140,9 @@ private fun MenuPanel(modifier: Modifier = Modifier, content: @Composable () -> 
 private const val ROW = "menu-row"
 private const val LINE = "menu-line"
 
+/** The tag on a [MenuRow]'s trailing glyph, for a test to find a glyph that has no text. */
+internal const val MENU_ICON = "menu-icon"
+
 /** Text whose CSS rule sets `font:` (`.mrow`, `.alert h2`, `.asheet .row`), which resets `.strive`'s tabular-nums. */
 internal fun TextStyle.css() = copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox)
 
@@ -190,7 +193,7 @@ internal fun MenuRow(
             }
         }
         Text(text, Modifier.weight(1f), color = ink, style = (if (back) type.labelLarge else type.bodyLarge).css())
-        icon?.let { Icon(it, null, Modifier.size(20.dp), tint = ink) }
+        icon?.let { Icon(it, null, Modifier.size(20.dp).testTag(MENU_ICON), tint = ink) }
         tail?.let {
             val color = if (tailColor == Color.Unspecified) colors.onSurfaceVariant else tailColor
             if (tailBadge) {

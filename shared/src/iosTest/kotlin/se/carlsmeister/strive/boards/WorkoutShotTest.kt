@@ -45,6 +45,8 @@ import strive.shared.generated.resources.change_start
 import strive.shared.generated.resources.rename
 import strive.shared.generated.resources.session_note
 import strive.shared.generated.resources.sticky_note
+import strive.shared.generated.resources.clear_text
+import se.carlsmeister.strive.ui.MENU_ICON
 import org.jetbrains.compose.resources.StringResource
 import kotlin.test.Test
 
@@ -223,11 +225,18 @@ class WorkoutShotTest {
 
     /** WO-02-s2 with the workout's ⋯ open: Rename, Workout note and Change start time, each with its glyph. */
     @Test
-    fun wo08MenuInDarkAndDarkHc() = workoutBoard("WO-08-menu", waitFor = "Change start time") { openWorkoutMenu() }
+    fun wo08MenuInDarkAndDarkHc() = workoutBoard("WO-08-menu", waitFor = "Change start time") {
+        openWorkoutMenu()
+        waitUntil("the three rows' glyphs", 10_000) { onAllNodes(hasTestTag(MENU_ICON), useUnmergedTree = true).fetchSemanticsNodes().size == 3 }
+    }
 
     /** Rename from the workout's ⋯: the prompt holding Push A, its field ringed teal with a clear glyph. */
     @Test
-    fun wo08RenameInDarkAndDarkHc() = workoutBoard("WO-08-rename", waitFor = "Rename") { openWorkoutMenu(Res.string.rename) }
+    fun wo08RenameInDarkAndDarkHc() = workoutBoard("WO-08-rename", waitFor = "Rename") {
+        openWorkoutMenu(Res.string.rename)
+        val clear = hasContentDescription(getString(Res.string.clear_text))
+        waitUntil("the clear glyph", 10_000) { onAllNodes(clear).fetchSemanticsNodes().isNotEmpty() }
+    }
 
     /** Workout note on a workout without one: the placeholder and the caption under the field. */
     @Test

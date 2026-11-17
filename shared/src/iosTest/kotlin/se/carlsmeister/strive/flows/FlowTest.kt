@@ -160,6 +160,8 @@ import strive.shared.generated.resources.set_failure
 import strive.shared.generated.resources.skip
 import strive.shared.generated.resources.skipped
 import strive.shared.generated.resources.sticky_note
+import strive.shared.generated.resources.clear_text
+import strive.shared.generated.resources.custom_time
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.up_by
 import strive.shared.generated.resources.rest_after
@@ -669,6 +671,36 @@ class FlowTest {
             see("Energy, sleep, pain…")
             see("Shown in the summary and in History.")
         }
+    }
+
+    /** The sticky note's clear glyph empties the field, and Save then keeps the note empty. */
+    @Test
+    fun theClearGlyphEmptiesAStickyNote() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.sticky_note))
+        type("Arch, feet planted.")
+        tap(s(Res.string.save))
+        waitUntilTrue { open().exercises.single().pinned == "Arch, feet planted." }
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.sticky_note))
+        tapDesc(s(Res.string.clear_text))
+        gone(hasSetTextAction() and hasText("Arch, feet planted."))
+        tap(s(Res.string.save))
+        waitUntilTrue { open().exercises.single().pinned == "" }
+    }
+
+    /** WO-07-custom keeps its own look through the shared prompt: no clear glyph once a time is typed. The time still starts a rest. */
+    @Test
+    fun theCustomRestTimeHasNoClearGlyph() = flow {
+        startWorkout()
+        tapDesc(s(Res.string.free_rest))
+        tap(s(Res.string.custom_time))
+        type("1:30")
+        assertTrue(test.onAllNodes(hasContentDescription(s(Res.string.clear_text))).fetchSemanticsNodes().isEmpty(), "no clear glyph")
+        tap(s(Res.string.save))
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
     }
 
     @Test

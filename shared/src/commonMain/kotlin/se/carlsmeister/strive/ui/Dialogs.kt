@@ -134,7 +134,8 @@ internal fun AlertPanel(title: String, body: String, confirm: String, onConfirm:
 /**
  * A text to write in the alert's panel, for a name or a note; Save keeps it (WO-08-rename, WO-08-note, WO-09-sticky). [body] is the
  * alert's centred line under the title; the field, 8 dp further down, takes the caret at once, holds [placeholder] while empty and,
- * single-line, ends in a clear glyph. [caption] is `.cap` under it, left-aligned.
+ * [clearable], ends in a clear glyph while it holds text. [caption] is `.cap` under it, left-aligned. [ghost] draws Cancel and Save
+ * unfilled, as WO-08 and WO-09 do; WO-07-custom fills them.
  */
 @Composable
 internal fun TextPrompt(
@@ -146,6 +147,8 @@ internal fun TextPrompt(
     body: String? = null,
     placeholder: String? = null,
     caption: String? = null,
+    ghost: Boolean = true,
+    clearable: Boolean = singleLine,
 ) {
     var text by remember { mutableStateOf(initial) }
     AlertBox(onDismiss) {
@@ -155,11 +158,11 @@ internal fun TextPrompt(
         InputField(
             text, { text = it }, Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s8).focusRequester(focus), placeholder.orEmpty(),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences), singleLine = singleLine,
-            onClear = if (singleLine) ({ text = "" }) else null,
+            onClear = if (clearable) ({ text = "" }) else null,
         )
         // `.alert p.cap`: `.alert p`'s body-medium outranks `.cap`'s font; `.cap` keeps its colour.
         caption?.let { Text(it, Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium.css()) }
-        AlertActions(stringResource(Res.string.save), MaterialTheme.colorScheme.primary, { onSave(text.trim()) }, onDismiss, ghost = true)
+        AlertActions(stringResource(Res.string.save), MaterialTheme.colorScheme.primary, { onSave(text.trim()) }, onDismiss, ghost)
         LaunchedEffect(Unit) { focus.requestFocus() }
     }
 }
