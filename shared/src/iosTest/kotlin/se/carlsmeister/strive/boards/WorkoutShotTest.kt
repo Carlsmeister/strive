@@ -40,6 +40,8 @@ import strive.shared.generated.resources.rest_change
 import strive.shared.generated.resources.set_type
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.workout
+import strive.shared.generated.resources.workout_options
+import strive.shared.generated.resources.change_start
 import kotlin.test.Test
 
 /** The workout's boards (#42), shot from Carl's sample data into [BOARD_SHOTS] for a person to set beside the boards. */
@@ -208,6 +210,15 @@ class WorkoutShotTest {
         val machine = hasText("Chest Press Machine") and hasClickAction()
         waitUntil(timeoutMillis = 10_000) { onAllNodes(machine).fetchSemanticsNodes().isNotEmpty() }
         onAllNodes(machine)[0].performClick()
+        waitForIdle()
+    }
+
+    /** WO-02-s2 with Change start time opened from the workout's ⋯: the wheel at Push A's 17:02. */
+    @Test
+    fun wo08TimeInDarkAndDarkHc() = workoutBoard("WO-08-time", waitFor = "Change start time") {
+        onAllNodes(hasContentDescription(getString(Res.string.workout_options)))[0].performClick()
+        waitForIdle()
+        onNode(hasText(getString(Res.string.change_start))).performClick()
         waitForIdle()
     }
 

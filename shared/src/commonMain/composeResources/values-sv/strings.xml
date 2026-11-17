@@ -194,6 +194,9 @@
     <string name="set_failure">Set %1$s, till failure</string>
     <string name="set_stays">Setet stannar där det är.</string>
     <string name="change_start">Ändra starttid</string>
+    <string name="start_caption">%1$s · klockan räknar härifrån</string>
+    <string name="hour">Timme</string>
+    <string name="minute">Minut</string>
     <string name="sticky_note">Fast anteckning</string>
     <string name="rest_all">Vila för alla set</string>
     <string name="order_skip">Ordning och hoppa över</string>

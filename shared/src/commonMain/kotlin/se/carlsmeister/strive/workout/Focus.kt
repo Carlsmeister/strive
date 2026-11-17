@@ -64,14 +64,12 @@ import se.carlsmeister.strive.ui.MenuSeparator
 import se.carlsmeister.strive.ui.MenuTitle
 import se.carlsmeister.strive.ui.MorePill
 import se.carlsmeister.strive.ui.TextPrompt
+import se.carlsmeister.strive.ui.Wheel
 import se.carlsmeister.strive.ui.Accent
 import se.carlsmeister.strive.ui.edge
 import se.carlsmeister.strive.ui.text
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TimeInput
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -124,6 +122,9 @@ import strive.shared.generated.resources.add_named
 import strive.shared.generated.resources.back_to_focus
 import strive.shared.generated.resources.cancel
 import strive.shared.generated.resources.change_start
+import strive.shared.generated.resources.start_caption
+import strive.shared.generated.resources.hour
+import strive.shared.generated.resources.minute
 import strive.shared.generated.resources.unit_kg
 import strive.shared.generated.resources.unit_lb
 import strive.shared.generated.resources.col_metres
@@ -311,17 +312,25 @@ internal fun WorkoutMenu(w: Workout, large: Boolean, nowMs: Long) {
     }
 }
 
-/** Ändra starttid: the hour and minute on the day the workout started. */
-@OptIn(ExperimentalMaterial3Api::class)
+/** WO-08-time: the hour and minute on the day the workout started, on two wheels. */
 @Composable
 private fun StartPrompt(startedAt: Long, onSave: (Int, Int) -> Unit, onDismiss: () -> Unit) {
     val start = local(startedAt)
-    val state = rememberTimePickerState(start.hour, start.minute, is24Hour = true)
+    var hour by remember { mutableStateOf(start.hour) }
+    var minute by remember { mutableStateOf(start.minute) }
     HeaderSheet(stringResource(Res.string.change_start), onDismiss, cancel = stringResource(Res.string.cancel), done = stringResource(Res.string.save),
-        onDone = { onSave(state.hour, state.minute) }) {
-        TimeInput(state, Modifier.align(Alignment.CenterHorizontally))
+        onDone = { onSave(hour, minute) }) {
+        Text(stringResource(Res.string.start_caption, dayHeading(start)), Modifier.fillMaxWidth(), style = MaterialTheme.typography.bodySmall.board(),
+            color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+        Row(Modifier.padding(top = 8.dp, bottom = 12.dp)) {
+            Wheel(Hours, hour, { hour = it }, stringResource(Res.string.hour), alignEnd = true, Modifier.weight(1f))
+            Wheel(Minutes, minute, { minute = it }, stringResource(Res.string.minute), alignEnd = false, Modifier.weight(1f))
+        }
     }
 }
+
+private val Hours = List(24) { "$it".padStart(2, '0') }
+private val Minutes = List(60) { "$it".padStart(2, '0') }
 
 /** B's large title (decision 40), as D draws it: the name with ⋯, then the day, the time and the sets done, each with its glyph. */
 @Composable

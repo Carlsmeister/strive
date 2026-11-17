@@ -145,6 +145,8 @@ import strive.shared.generated.resources.time_sets
 import strive.shared.generated.resources.what_today
 import strive.shared.generated.resources.back_to_focus
 import strive.shared.generated.resources.change_start
+import strive.shared.generated.resources.hour
+import strive.shared.generated.resources.minute
 import strive.shared.generated.resources.free_rest
 import strive.shared.generated.resources.kind_warmup
 import strive.shared.generated.resources.kind_normal
@@ -181,6 +183,11 @@ import se.carlsmeister.strive.fixture.SampleData
 import strive.shared.generated.resources.bar_left_open
 import strive.shared.generated.resources.tap_to_continue
 import kotlin.time.Clock
+import kotlin.time.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import androidx.compose.ui.test.performScrollToIndex
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource
 import kotlin.test.Test
@@ -1446,15 +1453,51 @@ class FlowTest {
     }
 
     @Test
-    fun theWorkoutMenuChangesTheStartTime() = flow {
-        startWorkout()
+    fun theWorkoutMenuChangesTheStartTime() = startedAt1726 {
+        changeStart("16", "45")
+        waitUntilTrue { open().startedAt == onTheDay(16, 45) }
+    }
+
+    @Test
+    fun theWheelSelectsTheFirstAndLastRow() = startedAt1726 {
+        changeStart("00", "00")
+        waitUntilTrue { open().startedAt == onTheDay(0, 0) }
+        // 23:59 is later than now, so the start stops at now, as withTime clamps it.
+        changeStart("23", "59")
+        waitUntilTrue { open().startedAt == onTheDay(17, 26) }
+    }
+
+    /** A workout started with [wallClock] standing at 17:26 on Monday 9 November, in the simulator's zone. */
+    private fun startedAt1726(block: suspend Flow.() -> Unit) = flow {
+        val now = Instant.fromEpochMilliseconds(onTheDay(17, 26))
+        wallClock = object : Clock {
+            override fun now() = now
+        }
+        try {
+            startWorkout()
+            block()
+        } finally {
+            wallClock = Clock.System
+        }
+    }
+
+    private fun onTheDay(hour: Int, minute: Int) =
+        LocalDateTime(2026, 11, 9, hour, minute).toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+
+    /** Change start time from the workout's menu: the hour and minute rows tapped on their wheels, then Save. */
+    private suspend fun Flow.changeStart(hour: String, minute: String) {
         tap(s(Res.string.workout))
         tap(s(Res.string.change_start))
         shot("17-start-time")
-        val before = open().startedAt
+        for ((column, value) in listOf(s(Res.string.hour) to hour, s(Res.string.minute) to minute)) {
+            val row = hasText(value) and hasClickAction() and hasAnyAncestor(hasContentDescription(column))
+            // A row off the wheel's five is scrolled into view first; a row in view is only tapped.
+            if (test.onAllNodes(row).fetchSemanticsNodes().isEmpty())
+                test.onNode(hasContentDescription(column) and hasScrollToIndexAction()).performScrollToIndex(value.toInt())
+            test.onNode(row).performClick()
+            test.waitForIdle()
+        }
         tap(s(Res.string.save))
-        // Saved as it stood: the same minute, never later than now.
-        waitUntilTrue { open().startedAt / 60_000 == before / 60_000 }
     }
 
     @Test
