@@ -125,6 +125,7 @@ import strive.shared.generated.resources.food_later_title
 import strive.shared.generated.resources.food_log_later
 import se.carlsmeister.strive.boards.BOARD_SHOTS
 import se.carlsmeister.strive.boards.inEnglish
+import se.carlsmeister.strive.boards.inSwedish
 import se.carlsmeister.strive.boards.clearLeftOverLanguage
 import strive.shared.generated.resources.next_screen
 import androidx.compose.runtime.DisposableEffect
@@ -786,17 +787,19 @@ class FlowTest {
         }
     }
 
-    /** The same in the simulator's Swedish: "ett set" is neuter, so both actions read "det" (#58). */
+    /** The same in Swedish: "ett set" is neuter, so both actions read "det" (#58). */
     @Test
-    fun oneUnloggedSetReadsInTheSingularInSwedish() = flow {
-        startWorkout()
-        addExercises("Bench Press BB")
-        tap(s(Res.string.finish))
-        see("1 set är inte loggat")
-        see("Logga det som det står och spara")
-        see("Spara utan det")
-        for (plural in listOf("1 set är inte loggade", "Logga dem som de står och spara", "Spara utan dem")) {
-            assertTrue(test.onAllNodes(hasText(plural)).fetchSemanticsNodes().isEmpty(), "no '$plural'")
+    fun oneUnloggedSetReadsInTheSingularInSwedish() = inSwedish {
+        flow {
+            startWorkout()
+            addExercises("Bench Press BB")
+            tap(s(Res.string.finish))
+            see("1 set är inte loggat")
+            see("Logga det som det står och spara")
+            see("Spara utan det")
+            for (plural in listOf("1 set är inte loggade", "Logga dem som de står och spara", "Spara utan dem")) {
+                assertTrue(test.onAllNodes(hasText(plural)).fetchSemanticsNodes().isEmpty(), "no '$plural'")
+            }
         }
     }
 
@@ -977,7 +980,7 @@ class FlowTest {
     }
 
     /**
-     * WO-16: the discard alert's two labels show in full, never cut off, in English and in the simulator's Swedish. Its buttons are
+     * WO-16: the discard alert's two labels show in full, never cut off, in English and in Swedish. Its buttons are
      * ghost, so they stay side by side as drawn, a label too long for its half wrapping inside it (#58).
      */
     @Test
@@ -1006,7 +1009,7 @@ class FlowTest {
             assertEquals(buttons[0].top, buttons[1].top, "Cancel and Discard workout side by side: $buttons")
         }
         inEnglish { flow(block = check) }
-        flow(block = check)
+        inSwedish { flow(block = check) }
     }
 
     @Test
