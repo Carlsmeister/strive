@@ -64,6 +64,11 @@ import se.carlsmeister.strive.data.memoryDriver
 import se.carlsmeister.strive.db.StriveDatabase
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.exercise_settings
+import strive.shared.generated.resources.exercise_details
+import strive.shared.generated.resources.tab_about
+import strive.shared.generated.resources.tab_history
+import strive.shared.generated.resources.tab_chart
+import strive.shared.generated.resources.tab_records
 import strive.shared.generated.resources.add_count
 import strive.shared.generated.resources.add_exercises
 import strive.shared.generated.resources.add_set
@@ -1475,6 +1480,28 @@ class FlowTest {
         type("Bench at 30°")
         tap(s(Res.string.save))
         see("Bench at 30°")
+    }
+
+    /**
+     * Acceptance 4: Exercise details, two taps from the workout (O-02), opens EX-05 as a sheet over it; Done closes the sheet and the
+     * workout is where it was, with nothing pushed on any back stack.
+     */
+    @Test
+    fun exerciseDetailsOpensAsASheetOverTheWorkout() = pushA {
+        val backs = test.onAllNodes(hasTestTag("back")).fetchSemanticsNodes().size
+        tapDesc(s(Res.string.exercise_options)) // Bench's, the one exercise standing open
+        tap(s(Res.string.exercise_details))
+        for (tab in listOf(Res.string.tab_about, Res.string.tab_history, Res.string.tab_chart, Res.string.tab_records)) see(s(tab))
+        shot("ex05-sheet")
+        // Over the workout, not in place of it: its title and clock stay under the sheet, and the sheet has no back label of its own.
+        see("Push A")
+        see(s(Res.string.finish))
+        assertEquals(backs, test.onAllNodes(hasTestTag("back")).fetchSemanticsNodes().size)
+        tap(s(Res.string.done))
+        gone(hasText(s(Res.string.tab_records)))
+        see(s(Res.string.finish))
+        test.onNode(hasContentDescription(s(Res.string.minimise))).assertExists()
+        assertEquals(backs, test.onAllNodes(hasTestTag("back")).fetchSemanticsNodes().size)
     }
 
     @Test

@@ -205,6 +205,7 @@
     <string name="rest_all">Vila för alla set</string>
     <string name="order_skip">Ordning och hoppa över</string>
     <string name="exercise_settings">Övningens inställningar</string>
+    <string name="exercise_details">Om övningen</string>
     <string name="swap">Byt</string>
     <string name="swap_exercise">Byt övning</string>
     <string name="alternatives">Alternativ</string>

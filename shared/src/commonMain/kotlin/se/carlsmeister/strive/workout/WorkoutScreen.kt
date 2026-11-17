@@ -106,6 +106,8 @@ import se.carlsmeister.strive.ui.AlertButton
 import se.carlsmeister.strive.ui.GlassMenu
 import se.carlsmeister.strive.ui.Overlay
 import se.carlsmeister.strive.ui.HeaderSheet
+import se.carlsmeister.strive.ui.MenuSeparator
+import se.carlsmeister.strive.library.ExerciseScreen
 import se.carlsmeister.strive.ui.SheetAction
 import se.carlsmeister.strive.ui.TextPrompt
 import se.carlsmeister.strive.ui.MenuRow
@@ -148,6 +150,7 @@ import strive.shared.generated.resources.discard_question
 import strive.shared.generated.resources.discard_workout
 import strive.shared.generated.resources.done
 import strive.shared.generated.resources.exercise_options
+import strive.shared.generated.resources.exercise_details
 import strive.shared.generated.resources.exercise_settings
 import strive.shared.generated.resources.finish
 import strive.shared.generated.resources.include
@@ -672,23 +675,30 @@ private fun ExerciseHeader(
                             MenuTile(StriveIcons.Note, stringResource(Res.string.note)) { menu = false; noteOpen = true },
                             MenuTile(StriveIcons.Swap, stringResource(Res.string.swap)) { menu = false; onSwap() },
                         )
+                        MenuSeparator()
                         MenuRow(stringResource(Res.string.sticky_note), { menu = false; dialog = "pin" }, icon = StriveIcons.Pin)
-                        MenuRow(stringResource(Res.string.rest_all), { restMenu = true }, tail = "›")
+                        MenuSeparator()
+                        MenuRow(stringResource(Res.string.rest_all), { restMenu = true }, icon = StriveIcons.ChevR)
                         // Choice 4's Skapa superset; in a superset, the way out of it.
                         if (letter != null) {
-                            MenuRow(stringResource(Res.string.superset_leave), { menu = false; scope.launch { sessions.leaveSuperset(e.id) } })
+                            MenuRow(stringResource(Res.string.superset_leave), { menu = false; scope.launch { sessions.leaveSuperset(e.id) } }, icon = StriveIcons.Link)
                         } else if (w.exercises.size > 1) {
-                            MenuRow(stringResource(Res.string.superset_create), { menu = false; dialog = "superset" })
+                            MenuRow(stringResource(Res.string.superset_create), { menu = false; dialog = "superset" }, icon = StriveIcons.Link)
                         }
-                        MenuRow(stringResource(Res.string.order_skip), { menu = false; dialog = "order" })
+                        MenuRow(stringResource(Res.string.order_skip), { menu = false; dialog = "order" }, icon = StriveIcons.Reorder)
+                        // WO-09-noweight draws no line above Exercise details when the settings row is absent.
                         if (e.type == ExerciseType.WeightReps) {
-                            MenuRow(stringResource(Res.string.exercise_settings), { menu = false; dialog = "settings" })
+                            MenuSeparator()
+                            MenuRow(stringResource(Res.string.exercise_settings), { menu = false; dialog = "settings" }, icon = StriveIcons.Sliders)
                         }
+                        MenuRow(stringResource(Res.string.exercise_details), { menu = false; dialog = "details" }, icon = StriveIcons.Info)
+                        MenuSeparator()
                         // Hidden behind a toast with Undo; the rows go when the toast ends (P4).
                         MenuRow(stringResource(Res.string.remove_exercise), { menu = false; graph.toasts.show(WorkoutToast.Removed(e.name, e.id)) },
                             icon = StriveIcons.Trash, danger = true)
                     } else {
                         MenuRow(stringResource(Res.string.rest_all), { restMenu = false }, back = true)
+                        MenuSeparator()
                         val all = e.sets.map { restOf(it, defaultRest) }.distinct().singleOrNull()
                         for (r in listOf(60, 90, 120, 150, 180)) {
                             MenuRow(clock(r.toLong()), { menu = false; restMenu = false; scope.launch { sessions.setRestAll(e.id, r) } }, checked = all == r)
@@ -731,6 +741,10 @@ private fun ExerciseHeader(
         "order" -> OrderDialog(w) { dialog = null }
         "superset" -> SupersetDialog(w, e) { dialog = null }
         "settings" -> SettingsDialog(e) { dialog = null }
+        // EX-05 over the workout (O-02): nothing is pushed, so Done leaves the workout where it was.
+        "details" -> HeaderSheet(e.name, { dialog = null }, done = stringResource(Res.string.done), full = true) {
+            ExerciseScreen(e.exerciseId, PaddingValues(0.dp), parent = null, onBack = { dialog = null })
+        }
     }
 }
 

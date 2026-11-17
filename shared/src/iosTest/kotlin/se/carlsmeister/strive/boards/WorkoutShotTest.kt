@@ -32,7 +32,10 @@ import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.flows.weightLabel
 import se.carlsmeister.strive.workout.now
 import strive.shared.generated.resources.Res
+import strive.shared.generated.resources.collapse
+import strive.shared.generated.resources.exercise_details
 import strive.shared.generated.resources.exercise_options
+import strive.shared.generated.resources.rest_all
 import strive.shared.generated.resources.next
 import strive.shared.generated.resources.note
 import strive.shared.generated.resources.remove_exercise
@@ -48,6 +51,7 @@ import strive.shared.generated.resources.sticky_note
 import strive.shared.generated.resources.clear_text
 import se.carlsmeister.strive.ui.MENU_ICON
 import org.jetbrains.compose.resources.StringResource
+import kotlin.math.abs
 import kotlin.test.Test
 
 /** The workout's boards (#42), shot from Carl's sample data into [BOARD_SHOTS] for a person to set beside the boards. */
@@ -147,22 +151,7 @@ class WorkoutShotTest {
 
     /** At 1:03:40, all 14 sets logged, then Plank (time) and Walking Lunge (distance) added from last time, Plank in focus. */
     @Test
-    fun wo02S10tdInDarkAndDarkHc() = workoutBoard("WO-02-s10td", waitFor = "14 of 18 sets") { graph ->
-        val names = listOf("Plank", "Walking Lunge")
-        // Last time's sets, which an added exercise takes (P14), come from a finished workout of their own four days back.
-        val day = 86_400_000L
-        val core = graph.sessions.start("Core", now() - 4 * day)
-        graph.sessions.add(core, names.map { exerciseId(graph, it) })
-        for (e in graph.sessions.workout(core).first()!!.exercises) {
-            graph.sessions.addSet(e.id)
-            graph.sessions.workout(core).first()!!.exercises.first { it.id == e.id }.sets.forEach {
-                graph.sessions.saveSet(if (e.name == "Plank") it.copy(seconds = 45, done = true) else it.copy(metres = 20.0, done = true))
-            }
-        }
-        graph.sessions.finish(core, Finish.WithoutThem, now() - 4 * day + 30 * 60_000L)
-        logAll(graph, at = 63 * 60 + 40, "Bench Press BB", "Incline Press DB", "Lateral Raise DB", "Tricep Dips", "Tricep Pushdown")
-        graph.sessions.add(today(graph).id, names.map { exerciseId(graph, it) }, lastTime = true)
-    }
+    fun wo02S10tdInDarkAndDarkHc() = workoutBoard("WO-02-s10td", waitFor = "14 of 18 sets") { graph -> plankAndLungeAdded(graph) }
 
     /** At 1:02:10, every set logged: the count and every exercise's count turn lime, and Finish is filled. */
     @Test
@@ -259,6 +248,33 @@ class WorkoutShotTest {
         waitForIdle()
         onNode(hasText(getString(Res.string.sticky_note))).performClick()
         waitForIdle()
+    }
+
+    /** Bench Press BB's ⋯: Note and Swap tiles; Sticky note; Rest for all sets ›, Create superset, Order and skip; settings, details; Remove. */
+    @Test
+    fun wo09MenuInDarkAndDarkHc() = workoutBoard("WO-09-menu", waitFor = "Exercise details") { exerciseMenu("Bench Press BB") }
+
+    /** Rest for all sets from Bench Press BB's ⋯: the back row, then 1:00 to 3:00 with 2:00, Bench's rest, checked. */
+    @Test
+    fun wo09RestInDarkAndDarkHc() = workoutBoard("WO-09-rest", waitFor = "3:00") {
+        exerciseMenu("Bench Press BB")
+        onNode(hasText(getString(Res.string.rest_all))).performClick()
+        waitUntil("2:00 checked", 10_000) { onAllNodes(hasText("2:00") and isSelected()).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    /** Incline Press DB's ⋯ over WO-02-s5, in superset A: Remove from superset instead of Create superset. */
+    @Test
+    fun wo09SupersetInDarkAndDarkHc() = workoutBoard("WO-09-superset", waitFor = "Remove from superset") { graph ->
+        benchLogged(graph, at = 38 * 60 + 40)
+        exerciseMenu("Incline Press DB")
+    }
+
+    /** Plank's ⋯ over WO-02-s10td, Plank resting 1:00 as this board draws it: a time exercise has no Exercise settings row. */
+    @Test
+    fun wo09NoweightInDarkAndDarkHc() = workoutBoard("WO-09-noweight", waitFor = "Exercise details") { graph ->
+        plankAndLungeAdded(graph)
+        graph.sessions.setRestAll(today(graph).exercises.first { it.name == "Plank" }.id, 60)
+        exerciseMenu("Plank")
     }
 
     /** A new empty workout at 0:12, Push A discarded: the quick picks are the exercises marked Yes. */
@@ -424,6 +440,37 @@ class WorkoutShotTest {
     /** The reference board with logged set 1's badge menu open: the caption says the set stays where it is. */
     @Test
     fun wo13LoggedInDarkAndDarkHc() = workoutBoard("WO-13-logged", waitFor = "The set stays where it is.") { setMenu("1") }
+}
+
+/** WO-02-s10td: at 1:03:40, all 14 sets logged, then Plank (time) and Walking Lunge (distance) added from last time. */
+private suspend fun plankAndLungeAdded(graph: AppGraph) {
+    val names = listOf("Plank", "Walking Lunge")
+    // Last time's sets, which an added exercise takes (P14), come from a finished workout of their own four days back.
+    val day = 86_400_000L
+    val core = graph.sessions.start("Core", now() - 4 * day)
+    graph.sessions.add(core, names.map { exerciseId(graph, it) })
+    for (e in graph.sessions.workout(core).first()!!.exercises) {
+        graph.sessions.addSet(e.id)
+        graph.sessions.workout(core).first()!!.exercises.first { it.id == e.id }.sets.forEach {
+            graph.sessions.saveSet(if (e.name == "Plank") it.copy(seconds = 45, done = true) else it.copy(metres = 20.0, done = true))
+        }
+    }
+    graph.sessions.finish(core, Finish.WithoutThem, now() - 4 * day + 30 * 60_000L)
+    logAll(graph, at = 63 * 60 + 40, "Bench Press BB", "Incline Press DB", "Lateral Raise DB", "Tricep Dips", "Tricep Pushdown")
+    graph.sessions.add(today(graph).id, names.map { exerciseId(graph, it) }, lastTime = true)
+}
+
+/** Opens [name]'s ⋯, the one level with its fold button, and waits for the menu's Exercise details row. */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.exerciseMenu(name: String) {
+    val fold = hasContentDescription(getString(Res.string.collapse, name))
+    waitUntil("$name's header", 10_000) { onAllNodes(fold).fetchSemanticsNodes().isNotEmpty() }
+    val row = onNode(fold).fetchSemanticsNode().boundsInRoot.center.y
+    val pills = onAllNodes(hasContentDescription(getString(Res.string.exercise_options)))
+    val i = pills.fetchSemanticsNodes().withIndex().minBy { abs(it.value.boundsInRoot.center.y - row) }.index
+    pills[i].performClick()
+    val details = getString(Res.string.exercise_details)
+    waitUntil("the menu's $details", 10_000) { onAllNodes(hasText(details)).fetchSemanticsNodes().isNotEmpty() }
 }
 
 /** Adds Bench Press BB's set 4, a copy of set 3, and scrolls to WO-03-strip's page. */
