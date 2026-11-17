@@ -140,6 +140,150 @@ class SessionsTest {
             again.close()
         }
     }
+
+    /** A workout finished at [at] that does [exerciseId] once per note in [notes], each time with [sets] logged. */
+    private suspend fun SqlSessions.finished(
+        at: Long, exerciseId: Long, notes: List<String> = listOf(""), sets: List<WorkoutSet> = listOf(WorkoutSet(0, 80.0, 8)),
+    ): Long {
+        val id = start("Pass", at)
+        add(id, List(notes.size) { exerciseId })
+        for ((e, note) in workout(id).first()!!.exercises.zip(notes)) {
+            repeat(sets.size - 1) { addSet(e.id) }
+            val ids = workout(id).first()!!.exercises.single { it.id == e.id }.sets.map { it.id }
+            sets.zip(ids) { set, setId ->
+                saveSet(set.copy(id = setId, done = true))
+                setKind(setId, set.kind)
+            }
+            setExerciseNote(e.id, note)
+        }
+        finish(id, Finish.WithoutThem, now = at)
+        return id
+    }
+
+    @Test
+    fun thePreviousNoteIsTheLastFinishedSessionsNoteForThatExercise() = runTest {
+        val (db, sessions) = sessions()
+        val bench = db.exercise("Bench Press BB")
+        sessions.finished(1, bench, listOf("old"))
+        sessions.finished(2, bench, listOf("Kändes stark idag."))
+        val open = sessions.start("Pass", 3)
+        assertEquals("Kändes stark idag.", sessions.previousNote(bench, open).first())
+    }
+
+    @Test
+    fun anEmptyNoteLastTimeGivesNoPreviousNote() = runTest {
+        val (db, sessions) = sessions()
+        val bench = db.exercise("Bench Press BB")
+        sessions.finished(1, bench, listOf("old"))
+        sessions.finished(2, bench, listOf(""))
+        val open = sessions.start("Pass", 3)
+        assertNull(sessions.previousNote(bench, open).first())
+    }
+
+    @Test
+    fun theOpenSessionsOwnNoteIsNotItsPrevious() = runTest {
+        val (db, sessions) = sessions()
+        val bench = db.exercise("Bench Press BB")
+        val open = sessions.start("Pass", 3)
+        sessions.add(open, listOf(bench))
+        sessions.setExerciseNote(sessions.open().first()!!.exercises.single().id, "today")
+        assertNull(sessions.previousNote(bench, open).first())
+    }
+
+    @Test
+    fun anExerciseTwiceLastTimeGivesItsFirstNote() = runTest {
+        val (db, sessions) = sessions()
+        val bench = db.exercise("Bench Press BB")
+        sessions.finished(2, bench, listOf("", "second"))
+        val open = sessions.start("Pass", 3)
+        assertEquals("second", sessions.previousNote(bench, open).first())
+    }
+
+    @Test
+    fun anExerciseAddedFromLastTimeTakesItsSetsUnlogged() = runTest {
+        val (db, sessions) = sessions()
+        val bench = db.exercise("Bench Press BB")
+        sessions.finished(1, bench, sets = List(2) { WorkoutSet(0, 70.0, 5) })
+        sessions.finished(
+            2, bench,
+            sets = listOf(
+                WorkoutSet(0, 40.0, 10, kind = SetKind.Warmup, rest = 90),
+                WorkoutSet(0, 80.0, 8, rir = 2, rest = 120),
+                WorkoutSet(0, 60.0, 10, rir = 1, kind = SetKind.Drop, rest = 120),
+            ),
+        )
+        val open = sessions.start("Pass", 3)
+        sessions.add(open, listOf(bench), lastTime = true)
+        val ids = sessions.open().first()!!.exercises.single().sets.map { it.id }
+        assertEquals(
+            listOf(
+                WorkoutSet(ids[0], 40.0, 10, kind = SetKind.Warmup, rest = 90),
+                WorkoutSet(ids[1], 80.0, 8, rest = 120),
+                WorkoutSet(ids[2], 60.0, 10, kind = SetKind.Drop, rest = 120),
+            ),
+            sessions.open().first()!!.exercises.single().sets,
+        )
+    }
+
+    @Test
+    fun anExerciseNeverDoneIsAddedWithOneEmptySet() = runTest {
+        val (db, sessions) = sessions()
+        sessions.finished(1, db.exercise("Bench Press BB"))
+        val open = sessions.start("Pass", 3)
+        sessions.add(open, listOf(db.exercise("Squat BB")), lastTime = true)
+        val set = sessions.open().first()!!.exercises.single().sets.single()
+        assertEquals(WorkoutSet(set.id), set)
+    }
+
+    @Test
+    fun withoutLastTimeAnExerciseIsAddedWithOneEmptySet() = runTest {
+        val (db, sessions) = sessions()
+        val bench = db.exercise("Bench Press BB")
+        sessions.finished(1, bench)
+        val open = sessions.start("Pass", 3)
+        sessions.add(open, listOf(bench))
+        val set = sessions.open().first()!!.exercises.single().sets.single()
+        assertEquals(WorkoutSet(set.id), set)
+    }
+
+    @Test
+    fun aWhitespaceNoteLastTimeGivesNoPreviousNote() = runTest {
+        val (db, sessions) = sessions()
+        val bench = db.exercise("Bench Press BB")
+        sessions.finished(1, bench, listOf("old"))
+        sessions.finished(2, bench, listOf(" \n\t\r"))
+        val open = sessions.start("Pass", 3)
+        assertNull(sessions.previousNote(bench, open).first())
+    }
+
+    @Test
+    fun anExerciseSkippedLastTimeTakesTheSetsOfTheTimeBefore() = runTest {
+        val (db, sessions) = sessions()
+        val bench = db.exercise("Bench Press BB")
+        sessions.finished(1, bench, sets = List(2) { WorkoutSet(0, 70.0, 5) })
+        val skipped = sessions.start("Pass", 2)
+        sessions.add(skipped, listOf(bench))
+        sessions.skip(sessions.open().first()!!.exercises.single().id, true)
+        sessions.finish(skipped, Finish.WithoutThem, now = 2)
+        val open = sessions.start("Pass", 3)
+        sessions.add(open, listOf(bench), lastTime = true)
+        assertEquals(List(2) { 70.0 to 5 }, sessions.open().first()!!.exercises.single().sets.map { it.weight to it.reps })
+    }
+
+    @Test
+    fun anExerciseTwiceLastTimeGivesTheSetsOfItsFirst() = runTest {
+        val (db, sessions) = sessions()
+        val bench = db.exercise("Bench Press BB")
+        val last = sessions.start("Pass", 2)
+        sessions.add(last, listOf(bench, bench))
+        val (first, second) = sessions.open().first()!!.exercises
+        sessions.saveSet(first.sets.single().copy(weight = 70.0, reps = 5, done = true))
+        sessions.saveSet(second.sets.single().copy(weight = 90.0, reps = 3, done = true))
+        sessions.finish(last, Finish.WithoutThem, now = 2)
+        val open = sessions.start("Pass", 3)
+        sessions.add(open, listOf(bench), lastTime = true)
+        assertEquals(listOf(70.0 to 5), sessions.open().first()!!.exercises.single().sets.map { it.weight to it.reps })
+    }
 }
 class SessionChangesTest {
     private fun StriveDatabase.exercise(name: String): Long {

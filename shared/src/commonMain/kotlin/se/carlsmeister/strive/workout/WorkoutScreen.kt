@@ -1,7 +1,25 @@
 package se.carlsmeister.strive.workout
 
+import androidx.compose.animation.core.Animatable
+import se.carlsmeister.strive.theme.calm
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animate
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -11,6 +29,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -33,7 +52,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import se.carlsmeister.strive.ui.InputField
+import se.carlsmeister.strive.ui.MorePill
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.wrapContentSize
+import strive.shared.generated.resources.note_plan
+import strive.shared.generated.resources.note_previous
+import strive.shared.generated.resources.note_today
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -50,7 +78,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -81,6 +111,11 @@ import se.carlsmeister.strive.ui.TextPrompt
 import se.carlsmeister.strive.ui.MenuRow
 import se.carlsmeister.strive.ui.MenuTile
 import se.carlsmeister.strive.ui.MenuTiles
+import se.carlsmeister.strive.ui.Toast
+import strive.shared.generated.resources.exercise_removed
+import strive.shared.generated.resources.restored
+import strive.shared.generated.resources.swapped_for
+import strive.shared.generated.resources.undo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
@@ -146,9 +181,15 @@ internal fun rememberNow(): Long {
     return t
 }
 
-/** "12:34 · 3/9 set", the progress line under the workout's name in the title bar and the bar it minimises to. */
+/**
+ * "12:34 · 3/9 sets", the progress line under the workout's name in the title bar and the bar it minimises to; the time alone while the
+ * workout has no working sets (P10, WO-01: "0:12").
+ */
 @Composable
-internal fun progress(w: Workout, now: Long) = stringResource(Res.string.time_sets, clock((now - w.startedAt) / 1_000), w.countedLogged, w.countedSets)
+internal fun progress(w: Workout, now: Long): String {
+    val time = clock((now - w.startedAt) / 1_000)
+    return if (w.countedSets == 0) time else stringResource(Res.string.time_sets, time, w.countedLogged, w.countedSets)
+}
 
 /**
  * The active workout as design D draws it (decision 39, #17 choices 1–6, F1): one bar on top, the large title, the focus card, then
@@ -160,10 +201,14 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     val graph = LocalAppGraph.current
     val sessions = graph.sessions
     val workout by remember { sessions.open() }.collectAsState(null)
+    // The graph's toasts, not the screen's: a removal still lands after the workout is minimised (P4, P5).
+    val toasts = graph.toasts
+    val hidden by toasts.hidden.collectAsState()
     // After Avsluta the open workout is gone while this screen is still sliding away; keep showing the last one.
     val last = remember { mutableStateOf<Workout?>(null) }
     workout?.let { last.value = it }
-    val w = last.value ?: return
+    // An exercise waiting on Undo is gone from everything the screen shows and counts.
+    val w = (last.value ?: return).without(hidden)
     val scope = rememberCoroutineScope()
     val haptics = LocalHapticFeedback.current
     val haze = rememberHazeState()
@@ -199,7 +244,9 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
     val previous = remember(history, w.exercises.map { it.exerciseId }) { w.exercises.associate { it.exerciseId to previous(history, it.exerciseId) } }
 
     fun log(set: WorkoutSet) {
-        haptics.performHapticFeedback(HapticFeedbackType.Confirm) // Q23: a short haptic confirms ✓
+        // Q23 and MO-log: a light haptic confirms a log; success is a record's. Compose 1.12.1 sends ToggleOn to iOS's light impact
+        // and Confirm to its success notification. Recheck on a Compose bump.
+        haptics.performHapticFeedback(HapticFeedbackType.ToggleOn)
         scope.launch { sessions.saveSet(set) }
         // The rest starts when a set is logged (Q10, Q17); in a superset, once every set in its round is, in either order (choice 6).
         val after = active.map { e -> e.copy(sets = e.sets.map { if (it.id == set.id) set else it }) }
@@ -218,22 +265,75 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
         if (set.loggable(e.type)) log(set.copy(rir = focusRir, done = true)) else edit(set.id)
     }
 
+    // A removal waiting on Undo lands before the workout is finished or discarded, so neither sees the exercise (P4).
+    fun finishAs(how: Finish) = scope.launch { toasts.settle(); sessions.finish(w.id, how, now()); onFinished(w.id) }
+    fun discard() = scope.launch { toasts.settle(); sessions.discard(w.id); onMinimise() }
+
     fun finish() {
         when {
             w.sets == 0 -> discarding = true
-            w.logged == w.sets -> scope.launch { sessions.finish(w.id, Finish.WithoutThem, now()); onFinished(w.id) }
+            w.logged == w.sets -> finishAs(Finish.WithoutThem)
             else -> finishing = true
         }
     }
 
-    Box(Modifier.fillMaxSize()) { CompositionLocalProvider(LocalGlassSource provides haze) {
+    // P9: a drag down the title bar, in px, as draggable reports it. The screen follows it 1:1 and eases toward the bar (to .9, corners
+    // to 28) as it nears a third of the screen; let go, it minimises or springs back. Read only in layout and draw, so a drag recomposes
+    // nothing.
+    val density = LocalDensity.current
+    var pulled by remember { mutableFloatStateOf(0f) }
+    var leaving by remember { mutableStateOf(false) }
+    var screenHeight by remember { mutableIntStateOf(0) }
+    val pull = rememberDraggableState { delta -> pulled = (pulled + delta).coerceAtLeast(0f) }
+    // P9's flick, WO-04's 1000 pt/s, in px/s like the release velocity; pt are dp here.
+    val flick = with(density) { 1000.dp.toPx() }
+    // The finger's speed, tracked on the box that does not move. Draggable's own velocity is taken in the title bar's coordinates, and
+    // the bar moves with the finger, so it read about 0 for a flick (measured: 0.0 px/s for 405 px in 80 ms).
+    val finger = remember { VelocityTracker() }
+    val dragToMinimise = Modifier.draggable(pull, Orientation.Vertical, onDragStopped = {
+        // Once, on release: velocity is px/s and positive downward, as are pulled and the height.
+        val velocity = finger.calculateVelocity().y
+        if (minimises(pulled, screenHeight.toFloat(), velocity, flick)) {
+            leaving = true
+            onMinimise()
+        } else pull.drag {
+            // Inside the drag's lock, so a finger that lands mid-spring takes the screen over from it.
+            animate(pulled, 0f, velocity, Motion.settle()) { value, _ -> dragBy(value - pulled) }
+        }
+    })
+
+    // Behind the screen as it is pulled down, black, as behind an iOS card; gone once it leaves, so the tabs show as it sinks.
+    Box(
+        Modifier.fillMaxSize().drawBehind { if (pulled > 0f && !leaving) drawRect(Color.Black) }.pointerInput(Unit) {
+            // Watches every touch on its way in and consumes none, so the screen under it works as before.
+            awaitPointerEventScope { while (true) awaitPointerEvent(PointerEventPass.Initial).changes.firstOrNull()?.let(finger::addPointerInputChange) }
+        },
+    ) {
+    Box(
+        Modifier.fillMaxSize().onSizeChanged { screenHeight = it.height }.graphicsLayer {
+            val toward = if (screenHeight == 0) 0f else (pulled / (screenHeight / 3f)).coerceAtMost(1f)
+            translationY = pulled
+            // From the top edge, so the bar stays under the finger. Under Reduce Motion it does not scale (P9).
+            transformOrigin = TransformOrigin(0.5f, 0f)
+            if (!reduceMotion) { scaleX = 1f - 0.1f * toward; scaleY = scaleX }
+            shape = RoundedCornerShape(28.dp.toPx() * toward)
+            clip = toward > 0f
+        }.background(MaterialTheme.colorScheme.background),
+    ) { CompositionLocalProvider(LocalGlassSource provides haze) {
         Column(Modifier.fillMaxSize()) {
             // The name rides in the bar only while the large header is out of sight (decision 40).
             val scrolled by remember { derivedStateOf { list.firstVisibleItemIndex > 0 } }
-            // Once the focus card scrolls away it folds into a strip under the bar (D-scroll).
-            val stripShown by remember { derivedStateOf { list.firstVisibleItemIndex > 1 } }
+            // Once the focus card scrolls away it folds into a strip under the bar (D-scroll): as soon as what is left of the card
+            // fits under the strip, which covers it (WO-02-note, WO-03-strip). The list starts under the bar, as the strip does.
+            val stripShown by remember {
+                derivedStateOf {
+                    val card = list.layoutInfo.visibleItemsInfo.firstOrNull { it.key == "focus" }
+                    list.firstVisibleItemIndex > 1 ||
+                        card != null && card.offset + card.size - list.layoutInfo.viewportStartOffset <= with(density) { StripHeight.roundToPx() }
+                }
+            }
             val strip = stripShown && focus != null
-            TitleBar(w, nowMs, showTitle = w.exercises.isEmpty() || scrolled, glassed = scrolled, hairline = !strip, onMinimise, ::finish) {
+            TitleBar(w, nowMs, showTitle = w.exercises.isEmpty() || scrolled, glassed = scrolled, hairline = !strip, onMinimise, ::finish, dragToMinimise) {
                 graph.rest.value = Rest(now(), it)
             }
             Box(Modifier.weight(1f)) {
@@ -241,18 +341,23 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                     // Its own background inside the source: haze blurs only what the source draws, and glass over a transparent
                     // source showed the list's text sharp through its tint.
                     Modifier.fillMaxSize().hazeSource(haze).background(MaterialTheme.colorScheme.background), list,
-                    contentPadding = PaddingValues(start = StriveTheme.spacing.s16, end = StriveTheme.spacing.s16, bottom = 320.dp),
+                    contentPadding = PaddingValues(StriveTheme.spacing.s16, StriveTheme.spacing.s8, StriveTheme.spacing.s16, 320.dp),
                 ) {
                     if (w.exercises.isEmpty()) {
                         item(key = "empty") {
-                            QuickStart(picks.first, picks.second, onAddExercises) { id -> scope.launch { sessions.add(w.id, listOf(id)) } }
+                            // A quick pick comes with last time's sets, so its first set logs in one tap (P14).
+                            QuickStart(picks.first, picks.second, onAddExercises) { id -> scope.launch { sessions.add(w.id, listOf(id), lastTime = true) } }
                         }
                     } else {
                         item(key = "header") { LargeHeader(w, nowMs) }
                         focus?.let { (e, i) ->
                             item(key = "focus") {
-                                Box(Modifier.padding(top = 14.dp)) {
-                                    FocusCard(e, e.sets[i], badges(e.sets)[i], previous[e.exerciseId]?.getOrNull(i), focusRest,
+                                Box(Modifier.padding(top = StriveTheme.spacing.s16)) {
+                                    // Resting: a rest with time left began on one of this exercise's sets. The rest card clears an
+                                    // ended rest only while it shows, so a rest under the dock can outlive its time.
+                                    val resting = rest?.takeIf { it.left(nowMs) > 0 }?.setId?.let { id -> e.sets.any { it.id == id } } == true
+                                    val meta = focusMeta(e, e.sets[i].id, inSuperset = tags[e.id] != null, resting, focusRest)
+                                    FocusCard(e, e.sets[i], badges(e.sets)[i], previousOf(e.sets, i, previous[e.exerciseId]), meta,
                                         focusRir, focusMore, { focusRir = it }, { focusMore = it },
                                         onEdit = { edit(e.sets[i].id) }, onLog = { logFocus() }, tag = tags[e.id])
                                 }
@@ -261,7 +366,10 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                     }
                     // Each exercise alone, or a superset's together in one list in the order you lift (#17 choice 6, G2 with G1's edge line).
                     val shown = blocks(w.exercises)
-                    fun folded(b: List<SessionExercise>) = b.all { it.skipped } || (folds[b.first().id] ?: (focus != null && b.none { it.id == focus.first.id }))
+                    // With every set logged nothing is being done, so every exercise folds into the overview, a workout of one
+                    // exercise too (WO-02-s13, WO-01-logged).
+                    fun folded(b: List<SessionExercise>) = b.all { it.skipped } ||
+                        (folds[b.first().id] ?: (focus == null || b.none { it.id == focus.first.id }))
                     shown.forEachIndexed { index, b ->
                         if (folded(b)) {
                             // Folded, a superset's exercises are rows in the card the folded exercises share.
@@ -269,8 +377,8 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                             val last = shown.getOrNull(index + 1)?.let(::folded) != true
                             b.forEachIndexed { n, e ->
                                 item(key = "o${e.id}") {
-                                    Box(Modifier.padding(top = if (first && n == 0) 14.dp else 0.dp).animateItem(placementSpec = place)) {
-                                        ExerciseOverview(e, first && n == 0, last && n == b.lastIndex, tags[e.id]) {
+                                    Box(Modifier.padding(top = if (first && n == 0) StriveTheme.spacing.s16 else 0.dp).animateItem(placementSpec = place)) {
+                                        ExerciseOverview(e, first && n == 0, last && n == b.lastIndex, tags[e.id], complete = w.complete) {
                                             folds[b.first().id] = false
                                             if (e.skipped) scope.launch { sessions.skip(e.id, false) }
                                         }
@@ -286,26 +394,32 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                         if (superset) {
                             item(key = "g${b.first().id}") {
                                 val roundRest = rows.firstOrNull()?.last()?.let { (e, i) -> restOf(e.sets[i], defaultRest) } ?: defaultRest
-                                SupersetLabel(roundRest, Modifier.animateItem(placementSpec = place).padding(top = StriveTheme.spacing.s16).edge())
+                                SupersetLabel(roundRest, Modifier.animateItem(placementSpec = place).padding(top = StriveTheme.spacing.s16 + StriveTheme.spacing.s8).edge())
                             }
                         }
-                        for (e in members) {
+                        members.forEachIndexed { n, e ->
                             item(key = "h${e.id}") {
+                                // A lone exercise is its own section: the `.body`'s 16 gap comes before its header's own 16. A superset's
+                                // headers stack under its label: the first 6 below it, the others at once (WO-02-s4).
+                                val top = if (!superset) StriveTheme.spacing.s16 * 2 else if (n == 0) 6.dp else 0.dp
                                 ExerciseHeader(w, e, defaultRest, tags[e.id], onFold = { folds[b.first().id] = true }, onSwap = { onSwap(e) },
-                                    Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place).edge(superset))
+                                    Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = place).edge(superset).padding(top = top))
                             }
                         }
                         // One row of column labels over a superset whose exercises record the same values.
-                        if (members.map { it.type }.distinct().size == 1) item(key = "c${b.first().id}") { Box(Modifier.edge(superset)) { ColumnLabels(members[0].type) } }
+                        if (members.map { it.type }.distinct().size == 1) item(key = "c${b.first().id}") { Box(Modifier.edge(superset)) { ColumnLabels(members[0].type, members[0].perSide) } }
                         rows.forEachIndexed { r, round ->
-                            for ((e, i) in round) {
+                            round.forEachIndexed { k, (e, i) ->
                                 val s = e.sets[i]
                                 val badge = badges.getValue(e.id)[i]
                                 item(key = s.id) {
-                                    Box(Modifier.edge(superset).bleed(6.dp).padding(vertical = 1.5.dp).animateItem(placementSpec = place)) {
+                                    // `.srow`'s 1.5 margins collapse between a round's rows, so only the first takes one on top.
+                                    val top = if (k == 0) 1.5.dp else 0.dp
+                                    Box(Modifier.edge(superset).bleed(6.dp).padding(top = top, bottom = 1.5.dp).animateItem(placementSpec = place)) {
                                         SwipeToDelete(RowShape, onDelete = { scope.launch { sessions.deleteSet(s.id) } }) {
                                             SetRow(
-                                                "set ${e.name} ${i + 1}", badge, s, e.type, current = s.id == current, prev = previous[e.exerciseId]?.getOrNull(i),
+                                                "set ${e.name} ${i + 1}", badge, s, e.type, current = s.id == current, prev = previousOf(e.sets, i, previous[e.exerciseId]),
+                                                number = numberAsWorking(e.sets, i),
                                                 onKind = { kind -> scope.launch { sessions.setKind(s.id, kind) } },
                                                 onOpen = { f -> tap { edit(s.id, f) } },
                                                 onCheck = {
@@ -343,16 +457,20 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                                 // In a superset only the last exercise's button names the rest, as T4 draws it.
                                 val text = if (superset && n < members.lastIndex) stringResource(Res.string.add_set)
                                     else stringResource(Res.string.add_set_rest, clock(restAfter.toLong()))
-                                AddButton(text, 40.dp, RoundedCornerShape(12.dp), Modifier.edge(superset).padding(top = 6.dp).animateItem(placementSpec = place),
+                                // `.addset`'s 6 collapses the last row's 1.5 margin, which that row already pads below.
+                                val top = if (n == 0 && rows.isNotEmpty()) 4.5.dp else 6.dp
+                                AddButton(text, 40.dp, RoundedCornerShape(12.dp), Modifier.edge(superset).padding(top = top).animateItem(placementSpec = place),
                                     letter = tags[e.id]) { scope.launch { sessions.addSet(e.id) } }
                             }
                         }
                     }
                     item(key = "end") {
-                        Column(Modifier.fillMaxWidth().padding(top = 28.dp), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
+                        // `.vstack`'s 12 over `.body`'s 16 gap under the exercises; the empty workout's Discard follows on the gap alone.
+                        val top = if (w.exercises.isEmpty()) StriveTheme.spacing.s16 else 28.dp
+                        Column(Modifier.fillMaxWidth().padding(top = top), verticalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
                             if (w.exercises.isNotEmpty()) AddButton(stringResource(Res.string.add_exercises), 50.dp, MaterialTheme.shapes.large, onClick = onAddExercises)
                             TextButton({ discarding = true }, Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch)) {
-                                Text(stringResource(Res.string.discard_workout), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.error)
+                                Text(stringResource(Res.string.discard_workout), style = MaterialTheme.typography.titleMedium.board(), color = MaterialTheme.colorScheme.error)
                             }
                         }
                     }
@@ -366,8 +484,16 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
         val open = editing?.let { id -> w.exercises.firstNotNullOfOrNull { e -> e.sets.indexOfFirst { it.id == id }.takeIf { it >= 0 }?.let { e to it } } }
         val restNow = rest
         if (open == null && restNow != null) {
+            // MO-log: the card rises 16 pt and fades in on the calm spring from 150 ms after the log; under Reduce Motion it fades in
+            // where it sits. One delay that ends, on the frame clock, so the UI tests still go idle. Only a rest just started rises: back
+            // after the dock or with the workout reopened from the bar, the card stands where it was.
+            val rise = remember(restNow.startedAt) { Animatable(if (now() - restNow.startedAt < RISE_WINDOW_MS) 0f else 1f) }
+            LaunchedEffect(rise) { if (rise.value < 1f) { delay(150); rise.animateTo(1f, if (reduceMotion) Motion.fade() else Motion.calm()) } }
             RestCard(restNow, nowMs, haze, onChange = { graph.rest.value = it },
-                Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = StriveTheme.spacing.s16))
+                Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = StriveTheme.spacing.s16).graphicsLayer {
+                    alpha = rise.value.coerceIn(0f, 1f)
+                    if (!reduceMotion) translationY = (1f - rise.value) * 16.dp.toPx()
+                })
         }
         if (open != null) {
             // A tap anywhere outside the dock closes it (#17 D3).
@@ -383,9 +509,11 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             if (open != null) shown.value = open
             val (e, i) = shown.value ?: return@Overlay
             val set = e.sets.getOrNull(i) ?: return@Overlay
-            Dock(e, set, badges(e.sets)[i], defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
+            Dock(e, set, defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
                 field = editField, logs = !editRest)
         }
+        val toast by toasts.shown.collectAsState()
+        ToastOverlay(toast, toasts::undo)
 
         // In the screen's glass source, so the sheet and the alert blur the list behind them.
         if (finishing) {
@@ -393,10 +521,10 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             ActionSheet(
                 pluralStringResource(Res.plurals.unlogged, left, left),
                 listOf(
-                    SheetAction(stringResource(Res.string.log_and_save)) { finishing = false; scope.launch { sessions.finish(w.id, Finish.LogAsTheyStand, now()); onFinished(w.id) } },
-                    SheetAction(stringResource(Res.string.save_without)) { finishing = false; scope.launch { sessions.finish(w.id, Finish.WithoutThem, now()); onFinished(w.id) } },
+                    SheetAction(stringResource(Res.string.log_and_save)) { finishing = false; finishAs(Finish.LogAsTheyStand) },
+                    SheetAction(stringResource(Res.string.save_without)) { finishing = false; finishAs(Finish.WithoutThem) },
                     // Red, with no alert after it: Avsluta was the intentional action, not discarding (#16).
-                    SheetAction(stringResource(Res.string.discard_workout), destructive = true) { finishing = false; scope.launch { sessions.discard(w.id); onMinimise() } },
+                    SheetAction(stringResource(Res.string.discard_workout), destructive = true) { finishing = false; discard() },
                 ),
                 stringResource(Res.string.keep_going), onDismiss = { finishing = false },
             )
@@ -404,10 +532,39 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
         if (discarding) {
             Alert(
                 stringResource(Res.string.discard_question), stringResource(Res.string.discard_body), stringResource(Res.string.discard_workout),
-                onConfirm = { discarding = false; scope.launch { sessions.discard(w.id); onMinimise() } }, onDismiss = { discarding = false },
+                onConfirm = { discarding = false; discard() }, onDismiss = { discarding = false },
             )
         }
-    } }
+    } } }
+}
+
+/**
+ * The workout's one toast (P4): Restored under the bar (WO-02-s16), Removed with its Undo and Swapped 40 above the bottom (WO-02-removed,
+ * WO-02-swap). Its hold runs on the graph, so this only draws it.
+ */
+@Composable
+private fun BoxScope.ToastOverlay(toast: WorkoutToast?, onUndo: () -> Unit) {
+    // Keeps showing the toast it had while it fades away.
+    val shown = remember { mutableStateOf(toast) }
+    if (toast != null) shown.value = toast
+    val t = shown.value
+    // Composed with no toast too, so the first one fades in.
+    Overlay(
+        toast != null,
+        // Under the 52 pt bar, as the board's 106 is past its 54 pt status bar.
+        if (t is WorkoutToast.Restored) Modifier.align(Alignment.TopCenter).windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+            .padding(start = StriveTheme.spacing.s16, top = 52.dp, end = StriveTheme.spacing.s16).fillMaxWidth()
+        else Modifier.align(Alignment.BottomCenter).padding(bottom = 40.dp),
+        fadeIn(Motion.fade()), fadeOut(Motion.fade()),
+    ) {
+        when (t) {
+            null -> {}
+            WorkoutToast.Restored -> Toast(stringResource(Res.string.restored), Modifier.fillMaxWidth(), StriveIcons.Check, iconSize = 18.dp)
+            is WorkoutToast.Removed -> Toast(stringResource(Res.string.exercise_removed, t.name), icon = StriveIcons.Trash,
+                action = stringResource(Res.string.undo), onAction = onUndo)
+            is WorkoutToast.Swapped -> Toast(stringResource(Res.string.swapped_for, t.name), icon = StriveIcons.Swap)
+        }
+    }
 }
 
 /** D's add button: a dark surface with a teal +, for "Lägg till set (2:00)" and "Lägg till övningar"; in a superset, with its letter. */
@@ -426,16 +583,25 @@ private fun AddButton(text: String, height: androidx.compose.ui.unit.Dp, shape: 
  * progress join the middle and the bar turns to glass.
  */
 @Composable
-private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boolean, hairline: Boolean, onMinimise: () -> Unit, onFinish: () -> Unit,
+private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boolean, hairline: Boolean, onMinimise: () -> Unit, onFinish: () -> Unit, drag: Modifier,
                      onRest: (Int) -> Unit) {
     val alpha by animateFloatAsState(if (showTitle) 1f else 0f, Motion.fade())
     val colors = MaterialTheme.colorScheme
-    Column(Modifier.fillMaxWidth().background(if (glassed) StriveTheme.glass.thick else colors.background)) {
+    val touch = StriveTheme.sizes.touch
+    Column(drag.testTag("title-bar").fillMaxWidth().background(if (glassed) StriveTheme.glass.thick else colors.background)) {
         // `.nav`'s `1fr auto 1fr` with its 8 dp gap: the buttons keep their size and the name takes the room left between them.
         CentredBar(
             StriveTheme.spacing.s8,
             Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
-                .padding(start = 12.dp, end = 12.dp, bottom = 6.dp),
+                .padding(start = 12.dp, end = 12.dp, bottom = 6.dp)
+                // `.wtb`'s middle is 46 pt (name 24, gap 2, sub line 20) in a 50 pt bar, so it runs 2 pt into the 6 pt foot, where the
+                // boards put the strip (104 pt). The bar keeps 50 and the buttons centre on the 46. A taller middle (a larger text size)
+                // grows the bar and still runs only those 2 pt in, so the foot keeps the board's visible 4 pt.
+                .layout { m, c ->
+                    val bar = m.measure(c)
+                    val height = maxOf(touch.roundToPx(), bar.height - 2.dp.roundToPx())
+                    layout(bar.width, height) { bar.place(0, 0) }
+                },
             start = {
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     IconTarget(stringResource(Res.string.minimise), onMinimise) { Glyph(Glyph.Down, 22.dp, stroke = 2.2f, color = colors.onSurface) }
@@ -446,7 +612,8 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
                 Column(Modifier.alpha(alpha), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     if (alpha > 0f) {
                         WorkoutMenu(w, large = false, nowMs = nowMs)
-                        Text(progress(w, nowMs), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                        // The board's `.wtb .mid small` resets `tabular-nums`: proportional figures, so the centred line shifts as the clock ticks.
+                        Text(progress(w, nowMs), style = MaterialTheme.typography.bodyMedium.board(), color = colors.onSurfaceVariant)
                     }
                 }
             },
@@ -465,11 +632,15 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
 }
 
 /**
- * The exercise's name, which folds it (Carl, point 3), with its ⋯ (choice 4's M2 with two tiles) and a chevron; under them the sticky
- * note in grey and today's note once one is opened (choice 6).
+ * The exercise's name, which folds it (Carl, point 3), with its ⋯ (choice 4's M2 with two tiles) and a chevron; under them the notes in
+ * grey, pin, Plan and Previous (last time's note, #42 P2), and today's note once one is opened (choice 6). [plan] is the template's
+ * cue, which nothing writes until #44 (P3).
  */
 @Composable
-private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, letter: String?, onFold: () -> Unit, onSwap: () -> Unit, modifier: Modifier) {
+private fun ExerciseHeader(
+    w: Workout, e: SessionExercise, defaultRest: Int, letter: String?, onFold: () -> Unit, onSwap: () -> Unit, modifier: Modifier,
+    plan: String? = null,
+) {
     val graph = LocalAppGraph.current
     val sessions = graph.sessions
     val scope = rememberCoroutineScope()
@@ -479,19 +650,15 @@ private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, let
     var dialog by remember { mutableStateOf<String?>(null) }
     var noteOpen by remember { mutableStateOf(false) }
     var note by remember(e.id) { mutableStateOf(e.note) }
+    val previousNote by remember(e.exerciseId, w.id) { sessions.previousNote(e.exerciseId, w.id) }.collectAsState(null)
     val fold = stringResource(Res.string.collapse, e.name)
-    Column(modifier.padding(top = StriveTheme.spacing.s16), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(3.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(StriveTheme.spacing.s8)) {
             letter?.let { Tag(it) }
             Text(e.name, Modifier.weight(1f).clickable(onClickLabel = fold, onClick = onFold).padding(vertical = 6.dp),
-                style = MaterialTheme.typography.titleMedium, color = colors.primary)
+                style = MaterialTheme.typography.titleMedium.board(), color = colors.primary)
             Box {
-                val label = stringResource(Res.string.exercise_options)
-                Box(
-                    Modifier.size(40.dp, 32.dp).clip(CircleShape).background(colors.primaryContainer).clickable(onClickLabel = label) { menu = true }
-                        .semantics { contentDescription = label },
-                    contentAlignment = Alignment.Center,
-                ) { Text("⋯", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = colors.onPrimaryContainer) }
+                MorePill(stringResource(Res.string.exercise_options), { menu = true })
                 GlassMenu(menu, { menu = false; restMenu = false }) {
                     if (!restMenu) {
                         MenuTiles(
@@ -510,7 +677,8 @@ private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, let
                         if (e.type == ExerciseType.WeightReps) {
                             MenuRow(stringResource(Res.string.exercise_settings), { menu = false; dialog = "settings" })
                         }
-                        MenuRow(stringResource(Res.string.remove_exercise), { menu = false; scope.launch { sessions.removeExercise(e.id) } },
+                        // Hidden behind a toast with Undo; the rows go when the toast ends (P4).
+                        MenuRow(stringResource(Res.string.remove_exercise), { menu = false; graph.toasts.show(WorkoutToast.Removed(e.name, e.id)) },
                             icon = StriveIcons.Trash, danger = true)
                     } else {
                         MenuRow(stringResource(Res.string.rest_all), { restMenu = false }, back = true)
@@ -521,24 +689,31 @@ private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, let
                     }
                 }
             }
+            // `.fold` draws 32 × 32; taps land across 44 pt centred on it, hanging over its neighbours as the house ⋯ pill's do.
             Box(
-                Modifier.size(32.dp).clip(CircleShape).background(colors.surfaceContainerHigh).clickable(onClickLabel = fold, onClick = onFold)
-                    .semantics { contentDescription = fold },
+                Modifier.size(32.dp).requiredSize(StriveTheme.sizes.touch).clickable(onClickLabel = fold, onClick = onFold)
+                    .semantics { contentDescription = fold }.wrapContentSize().size(32.dp).clip(CircleShape).background(colors.surfaceContainerHigh),
                 contentAlignment = Alignment.Center,
             ) { Glyph(Glyph.Up, 14.dp, color = colors.onSurface, stroke = 2.6f) }
         }
         if (e.pinned.isNotEmpty()) {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
                 Glyph(Glyph.Pin, 14.dp, color = colors.onSurfaceVariant, stroke = 1.8f)
-                Text(e.pinned, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                Text(e.pinned, style = MaterialTheme.typography.bodySmall.board(), color = colors.onSurfaceVariant)
             }
         }
+        plan?.let { ExerciseNote(stringResource(Res.string.note_plan), it) }
+        previousNote?.let { ExerciseNote(stringResource(Res.string.note_previous), it) }
         if (noteOpen || note.isNotEmpty()) {
-            OutlinedTextField(
-                note, { note = it; scope.launch { sessions.setExerciseNote(e.id, it) } }, Modifier.fillMaxWidth(),
-                placeholder = { Text(stringResource(Res.string.note)) }, textStyle = MaterialTheme.typography.bodyMedium,
+            val focus = remember { FocusRequester() }
+            InputField(
+                note, { note = it; scope.launch { sessions.setExerciseNote(e.id, it) } },
+                Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 4.dp).focusRequester(focus),
+                placeholder = stringResource(Res.string.note_today),
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             )
+            // Opened from the menu, the field takes the caret at once (WO-02-note).
+            LaunchedEffect(noteOpen) { if (noteOpen) focus.requestFocus() }
         }
     }
     when (dialog) {
@@ -549,6 +724,17 @@ private fun ExerciseHeader(w: Workout, e: SessionExercise, defaultRest: Int, let
         "order" -> OrderDialog(w) { dialog = null }
         "superset" -> SupersetDialog(w, e) { dialog = null }
         "settings" -> SettingsDialog(e) { dialog = null }
+    }
+}
+
+/** `.exnote` with its bold label: "Plan Skulderbladen ihop.", "Previous Kändes stark idag." */
+@Composable
+private fun ExerciseNote(label: String, text: String) {
+    val grey = MaterialTheme.colorScheme.onSurfaceVariant
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        val style = MaterialTheme.typography.bodySmall.board()
+        Text(label, Modifier.alignByBaseline(), style = style.copy(fontSize = 12.sp, lineHeight = 16.sp), fontWeight = FontWeight.SemiBold, color = grey)
+        Text(text, Modifier.alignByBaseline(), style = style, color = grey)
     }
 }
 
@@ -620,6 +806,18 @@ private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
         Segments(bars.map { it?.let { b -> kilos(b, swedish) } ?: none }, bars.indexOf(bar).takeIf { it >= 0 }, { i -> i?.let { bar = bars[it] } }, clearable = false)
     }
 }
+
+/**
+ * The strip's height under the bar, `.stripwrap` on WO-03-strip (104 to 169.7 pt). shortcut: a constant, not the strip measured; measure
+ * it if the strip's type or padding change.
+ */
+private val StripHeight = 66.dp
+
+/**
+ * How new a rest must be for its card to rise. A log shows the card within a frame, so this only has to be shorter than reopening the
+ * dock takes.
+ */
+private const val RISE_WINDOW_MS = 500L
 
 /** The focus strip under the bar while the focus card is out of sight (D-scroll), on the bar's glass. */
 @Composable

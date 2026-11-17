@@ -16,7 +16,10 @@ import se.carlsmeister.strive.data.tidy
 import se.carlsmeister.strive.data.warmupOrder
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 class KeypadTest {
     private fun Field.type(keys: String, decimals: Boolean = true, separator: Char = ',') =
@@ -125,8 +128,20 @@ class FormatTest {
         assertEquals("82,5 × 8 @2", setText(WorkoutSet(0, weight = 82.5, reps = 8, rir = 2), ExerciseType.WeightReps, swedish = true))
         assertEquals("82.5 × 8", setText(WorkoutSet(0, weight = 82.5, reps = 8), ExerciseType.WeightReps, swedish = false))
         assertEquals("12", setText(WorkoutSet(0, reps = 12), ExerciseType.BodyweightReps, swedish = true))
+        // A bodyweight set's added weight comes first with its plus (WO-02-s10bw).
+        assertEquals("+10 × 9 @2", setText(WorkoutSet(0, weight = 10.0, reps = 9, rir = 2), ExerciseType.BodyweightReps, swedish = false))
         assertEquals("1:30", setText(WorkoutSet(0, seconds = 90), ExerciseType.Time, swedish = true))
         assertEquals("–", setText(WorkoutSet(0), ExerciseType.WeightReps, swedish = true))
+    }
+
+    /** The focus card leaves out a bodyweight set's added weight when there is none: "8 reps", not "– kg × 8 reps". */
+    @Test
+    fun aBodyweightSetWithoutAddedWeightShowsItsRepsAloneOnTheCard() {
+        assertEquals(listOf(IndexedValue(1, "8")), cardCells(WorkoutSet(0, reps = 8), ExerciseType.BodyweightReps, swedish = false))
+        assertEquals(listOf(IndexedValue(0, "+10"), IndexedValue(1, "9")),
+            cardCells(WorkoutSet(0, weight = 10.0, reps = 9), ExerciseType.BodyweightReps, swedish = false))
+        // A weight exercise keeps its empty weight, which Log waits for.
+        assertEquals(listOf(IndexedValue(0, null), IndexedValue(1, "8")), cardCells(WorkoutSet(0, reps = 8), ExerciseType.WeightReps, swedish = false))
     }
 
     @Test
@@ -160,9 +175,11 @@ class SwipeTest {
     fun aFlickRightHidesDeleteAgain() = assertEquals(0f, target(-264f, velocity = 2000f))
 
     @Test
-    fun withoutAFlickTheRowGoesToTheNearerOfShutAndOpen() {
-        assertEquals(open, target(-200f))
-        assertEquals(0f, target(-100f))
+    fun withoutAFlickTheRowRestsOpenOnlyOnceDeleteIsFullyShown() {
+        // MO-gestures: under 88 pt it springs back closed; from 88 pt to half the row it rests open on Delete.
+        assertEquals(0f, target(-200f))
+        assertEquals(open, target(-264f))
+        assertEquals(open, target(-400f))
     }
 }
 
@@ -202,7 +219,14 @@ class SetKindTest {
         val sets = listOf(s(1, SetKind.Warmup), s(2), s(3), s(4, SetKind.Drop), s(5, SetKind.Failure), s(6))
         // A failure set is a working set (Q31): it shows its own number, in its colour, not F (Carl, 2026-11-03).
         assertEquals(listOf("W", "1", "2", "D", "3", "4"), badges(sets))
-        assertEquals(4, working(sets))
+    }
+
+    @Test
+    fun setNOfMCountsEverySetButWarmUps() {
+        // WO-02-abc: Tricep Pushdown's 1, 2 and D read "set 1 of 3"; Bench Press's W, 1, 2 and 3 "set 2 of 3" (O-25's count).
+        assertEquals(3, working(listOf(s(1), s(2), s(3, SetKind.Drop))))
+        assertEquals(3, working(listOf(s(1, SetKind.Warmup), s(2), s(3), s(4))))
+        assertEquals(5, working(listOf(s(1, SetKind.Warmup), s(2), s(3), s(4, SetKind.Drop), s(5, SetKind.Failure), s(6))))
     }
 
     @Test
@@ -360,6 +384,10 @@ class SupersetTest {
             tidy(slots(1L to 4L, 2L to null, 3L to 4L, 4L to 4L, 5L to null, 6L to 4L)))
 }
 
+/** Push A with one exercise, Bench Press BB, of [sets]. */
+private fun workout(vararg sets: WorkoutSet, skipped: Boolean = false) =
+    Workout(1, "Push A", 0, null, "", null, listOf(SessionExercise(1, 1, "Bench Press BB", ExerciseType.WeightReps, null, "", sets.toList(), skipped = skipped)))
+
 class ProgressCountTest {
     /** O-25: the progress line counts every set but warm-ups, so Push A at 24:13 reads 1 of 14 (design 1, polish 2). */
     @Test
@@ -373,16 +401,9 @@ class ProgressCountTest {
         assertEquals(2 to 4, w.countedLogged to w.countedSets)
     }
 
-    private fun workout(vararg sets: WorkoutSet, skipped: Boolean = false) =
-        Workout(1, "Push A", 0, null, "", null, listOf(SessionExercise(1, 1, "Bench Press BB", ExerciseType.WeightReps, null, "", sets.toList(), skipped = skipped)))
-
     @Test
     fun aWarmUpNotLoggedIsLeftOutOfTheTotal() =
         assertEquals(0 to 1, workout(WorkoutSet(1, kind = SetKind.Warmup), WorkoutSet(2)).let { it.countedLogged to it.countedSets })
-
-    @Test
-    fun aLoggedWarmUpIsLeftOutOfTheLoggedCount() =
-        assertEquals(0 to 1, workout(WorkoutSet(1, done = true, kind = SetKind.Warmup), WorkoutSet(2)).let { it.countedLogged to it.countedSets })
 
     @Test
     fun aDropSetCounts() =
@@ -395,6 +416,19 @@ class ProgressCountTest {
     @Test
     fun aSkippedExercisesSetsAreLeftOut() =
         assertEquals(0 to 0, workout(WorkoutSet(1, done = true), WorkoutSet(2), skipped = true).let { it.countedLogged to it.countedSets })
+
+    /**
+     * P11: the workout is complete once every working set is logged. Warm-ups and skipped exercises do not count either way, so an
+     * unlogged warm-up or a skipped exercise's unlogged sets leave it complete; a workout with no working sets is not.
+     */
+    @Test
+    fun aWorkoutIsCompleteWhenEveryWorkingSetIsLogged() {
+        val skipped = SessionExercise(2, 2, "Tricep Dips", ExerciseType.BodyweightReps, null, "", listOf(WorkoutSet(9)), skipped = true)
+        val done = workout(WorkoutSet(1, kind = SetKind.Warmup), WorkoutSet(2, done = true), WorkoutSet(3, done = true, kind = SetKind.Drop))
+        assertTrue(done.copy(exercises = done.exercises + skipped).complete)
+        assertFalse(workout(WorkoutSet(1, done = true), WorkoutSet(2)).complete)
+        assertFalse(workout(WorkoutSet(1, done = true, kind = SetKind.Warmup)).complete)
+    }
 
     @Test
     fun aWorkoutOfOnlyWarmUpsCountsZeroOfZero() =
@@ -410,4 +444,77 @@ class BarStateTest {
 
     @Test
     fun aRestAtZeroReadsOpen() = assertEquals(BarState.Open, barState(leftOpen = false, restLeft = 0))
+}
+
+class WorkoutLogicTest {
+    private fun s(id: Long, kind: SetKind = SetKind.Normal) = WorkoutSet(id, kind = kind)
+    private val three = SessionExercise(1, 1, "Bench Press BB", ExerciseType.WeightReps, 2.5, "", listOf(s(1), s(2), s(3)))
+
+    @Test
+    fun theLastSetReadsLastSet() = assertEquals(FocusMeta.LastSet, focusMeta(three, 3, inSuperset = false, resting = false, restSeconds = 120))
+
+    @Test
+    fun theLastSetReadsHoldLastSetWhileResting() =
+        assertEquals(FocusMeta.HoldLastSet, focusMeta(three, 3, inSuperset = false, resting = true, restSeconds = 120))
+
+    @Test
+    fun aSupersetSetReadsRestAfterTheRound() =
+        assertEquals(FocusMeta.RestAfterRound(90), focusMeta(three, 1, inSuperset = true, resting = false, restSeconds = 90))
+
+    @Test
+    fun aPlainSetReadsRestAfter() = assertEquals(FocusMeta.RestAfter(120), focusMeta(three, 2, inSuperset = false, resting = false, restSeconds = 120))
+
+    @Test
+    fun theLastSetInASupersetReadsLastSet() =
+        assertEquals(FocusMeta.LastSet, focusMeta(three, 3, inSuperset = true, resting = false, restSeconds = 90))
+
+    @Test
+    fun aWarmUpTakesTheNumberOfTheSetAfterIt() {
+        assertEquals(1, numberAsWorking(listOf(s(1, SetKind.Warmup), s(2), s(3)), 0))
+        assertEquals(3, numberAsWorking(listOf(s(1), s(2), s(3)), 2))
+        assertEquals(2, numberAsWorking(listOf(s(1), s(2, SetKind.Drop), s(3)), 1))
+    }
+
+    /** WO-13-moved: a second warm-up moved up above set 2 has no Previous, and set 2 keeps last time's set 2. */
+    @Test
+    fun previousFollowsTheSetsNumberNotItsPlace() {
+        val last = listOf(s(11, SetKind.Warmup), s(12), s(13), s(14))
+        val today = listOf(s(1, SetKind.Warmup), s(2), s(5, SetKind.Warmup), s(3), s(4))
+        assertEquals(listOf(11L, 12L, null, 13L, 14L), today.indices.map { previousOf(today, it, last)?.id })
+    }
+
+    /** A failure set counts with the working sets; a drop set matches last time's drop sets in order. */
+    @Test
+    fun previousMatchesFailureByNumberAndDropSetsInOrder() {
+        val last = listOf(s(11), s(12, SetKind.Drop), s(13), s(14, SetKind.Drop))
+        val today = listOf(s(1), s(2, SetKind.Failure), s(3, SetKind.Drop), s(4, SetKind.Drop), s(5, SetKind.Drop))
+        assertEquals(listOf(11L, 13L, 12L, 14L, null), today.indices.map { previousOf(today, it, last)?.id })
+    }
+
+    @Test
+    fun aDragOfAThirdOfTheHeightMinimises() = assertTrue(minimises(281.4f, 844f, 0f, 1000f))
+
+    @Test
+    fun aFlickMinimises() = assertTrue(minimises(40f, 844f, 1200f, 1000f))
+
+    @Test
+    fun aShortSlowDragDoesNotMinimise() = assertFalse(minimises(200f, 844f, 300f, 1000f))
+
+    @Test
+    fun anExerciseHiddenLeavesTheCount() {
+        // Bench (W + 3), a superset (3 + 3), then 2 sets with one to failure and 3 with one drop: 14 counted sets.
+        fun x(id: Long, vararg kinds: SetKind) =
+            SessionExercise(id, id, "X$id", ExerciseType.WeightReps, 2.5, "", kinds.mapIndexed { i, k -> s(id * 10 + i, k) })
+        val n = SetKind.Normal
+        val w = Workout(1, "Push A", 0, null, "", null, listOf(
+            x(1, SetKind.Warmup, n, n, n), x(2, n, n, n), x(3, n, n, n), x(4, n, SetKind.Failure), x(5, n, n, SetKind.Drop),
+        ))
+        assertEquals(14, w.countedSets)
+        assertEquals(14 - 3, w.without(setOf(1L)).countedSets)
+        assertSame(w, w.without(emptySet()))
+    }
+
+    @Test
+    fun aLoggedWarmUpIsLeftOutOfTheLoggedCount() =
+        assertEquals(0 to 1, workout(WorkoutSet(1, done = true, kind = SetKind.Warmup), WorkoutSet(2)).let { it.countedLogged to it.countedSets })
 }

@@ -41,6 +41,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -144,7 +145,9 @@ internal fun TextStyle.css() = copy(fontFeatureSettings = null, lineHeightStyle 
 
 /**
  * `.mrow`: [text] left, a 20 dp [icon] or a [tail] right. [danger] is `.mrow.danger`, in error. A non-null [checked] adds `.lead`'s
- * 20 dp column holding `Check` in primary when true; [back] is a submenu's back row, in label-large with `Back` in that column.
+ * 20 dp column holding an 18 dp `Check` (`ic-check s18`) at its start in primary when true; [back] is a submenu's back row, in
+ * label-large with `Back` in that column.
+ * [tailBadge] draws the tail as a set's badge, 32 by 24 in 600 13 (WO-13-menu).
  * It presses as a list row does: surface-container-highest, no scale.
  */
 @Composable
@@ -157,6 +160,7 @@ internal fun MenuRow(
     danger: Boolean = false,
     checked: Boolean? = null,
     back: Boolean = false,
+    tailBadge: Boolean = false,
 ) {
     val colors = MaterialTheme.colorScheme
     val type = MaterialTheme.typography
@@ -178,26 +182,32 @@ internal fun MenuRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (lead) {
-            Box(Modifier.size(20.dp)) {
+            Box(Modifier.size(20.dp), contentAlignment = Alignment.CenterStart) {
                 when {
                     back -> Icon(StriveIcons.Back, null, Modifier.size(20.dp), tint = ink)
-                    checked == true -> Icon(StriveIcons.Check, null, Modifier.size(20.dp), tint = colors.primary)
+                    checked == true -> Icon(StriveIcons.Check, null, Modifier.size(18.dp), tint = colors.primary)
                 }
             }
         }
         Text(text, Modifier.weight(1f), color = ink, style = (if (back) type.labelLarge else type.bodyLarge).css())
         icon?.let { Icon(it, null, Modifier.size(20.dp), tint = ink) }
         tail?.let {
-            Text(it, color = if (tailColor == Color.Unspecified) colors.onSurfaceVariant else tailColor, style = type.bodyMedium.css(),
-                maxLines = 1, softWrap = false)
+            val color = if (tailColor == Color.Unspecified) colors.onSurfaceVariant else tailColor
+            if (tailBadge) {
+                Box(Modifier.size(32.dp, 24.dp).background(colors.surfaceContainerHigh, MaterialTheme.shapes.small), contentAlignment = Alignment.Center) {
+                    Text(it, color = color, style = type.bodySmall.css(), fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                }
+            } else {
+                Text(it, color = color, style = type.bodyMedium.css(), maxLines = 1, softWrap = false)
+            }
         }
     }
 }
 
 /** `.mtitle`: a section's title in label-medium, on-surface-variant. */
 @Composable
-internal fun MenuTitle(text: String) = Text(
-    text, Modifier.fillMaxWidth().padding(start = StriveTheme.spacing.s16, top = StriveTheme.spacing.s8, end = StriveTheme.spacing.s16),
+internal fun MenuTitle(text: String, modifier: Modifier = Modifier) = Text(
+    text, modifier.fillMaxWidth().padding(start = StriveTheme.spacing.s16, top = StriveTheme.spacing.s8, end = StriveTheme.spacing.s16),
     color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.labelMedium.css(),
 )
 

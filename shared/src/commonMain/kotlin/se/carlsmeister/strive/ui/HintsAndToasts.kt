@@ -28,6 +28,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import se.carlsmeister.strive.theme.CssLineBox
@@ -36,8 +39,8 @@ import se.carlsmeister.strive.theme.StriveTheme
 
 /**
  * `.toast`: a capsule in inverse-surface confirming what just happened, on one line; an [icon] first (16 dp, in the text's colour
- * unless [iconTint]) and an [action] last, tapped across a touch while the capsule keeps its height. Only the toast itself: no host,
- * queue or timer until a screen shows one.
+ * unless [iconTint], at [iconSize]) and an [action] last, tapped across a touch while the capsule keeps its height. Only the toast
+ * itself: the workout's hold and Undo live in `WorkoutToasts`.
  */
 @Composable
 internal fun Toast(
@@ -47,21 +50,36 @@ internal fun Toast(
     iconTint: Color = Color.Unspecified,
     action: String? = null,
     onAction: () -> Unit = {},
+    iconSize: Dp = 16.dp,
 ) {
     val colors = MaterialTheme.colorScheme
     // `.toast` sets `font:`, which resets `.strive`'s tabular-nums.
     val style = MaterialTheme.typography.titleSmall.copy(fontFeatureSettings = null, lineHeightStyle = CssLineBox)
     Row(
         modifier.inverseBox(ShapeFull).semantics { liveRegion = LiveRegionMode.Polite }.padding(horizontal = 16.dp, vertical = 10.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        // Centred, for a toast drawn wider than its content (WO-02-s16's `justify-content: center`).
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (icon != null) Icon(icon, contentDescription = null, Modifier.size(16.dp), tint = iconTint.takeOrElse { colors.inverseOnSurface })
-        Text(text, color = colors.inverseOnSurface, style = style, maxLines = 1, softWrap = false)
-        if (action != null) Box(Modifier.touchTall().pressable(true, onAction), contentAlignment = Alignment.Center) {
+        if (icon != null) Icon(icon, contentDescription = null, Modifier.size(iconSize), tint = iconTint.takeOrElse { colors.inverseOnSurface })
+        // Weighted, so the action is measured first at full size and a long name ends in an ellipsis instead.
+        Text(text, Modifier.weight(1f, fill = false), color = colors.inverseOnSurface, style = style, maxLines = 1, softWrap = false,
+            overflow = TextOverflow.Ellipsis)
+        // WO-02-removed's Undo: `margin: 0 -6 0 6` around `padding: 0 6`, so its tap area runs 6 into the capsule's end padding.
+        if (action != null) Box(
+            Modifier.padding(start = 6.dp).overhangEnd(6.dp).touchTall().widthIn(min = StriveTheme.sizes.touch).pressable(true, onAction)
+                .padding(horizontal = 6.dp),
+            contentAlignment = Alignment.Center,
+        ) {
             Text(action, color = colors.inversePrimary, style = style, maxLines = 1, softWrap = false)
         }
     }
+}
+
+/** Lays the content out [by] narrower than it draws, so it hangs that far past its end into the padding beside it. */
+private fun Modifier.overhangEnd(by: Dp) = layout { measurable, constraints ->
+    val placeable = measurable.measure(constraints)
+    layout((placeable.width - by.roundToPx()).coerceAtLeast(0), placeable.height) { placeable.place(0, 0) }
 }
 
 /**

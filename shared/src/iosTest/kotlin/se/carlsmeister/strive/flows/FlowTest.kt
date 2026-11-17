@@ -22,6 +22,8 @@ import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
@@ -30,6 +32,7 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToString
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.onLast
+import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.test.assert
@@ -38,6 +41,7 @@ import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.height
 import androidx.compose.material3.ButtonDefaults
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -92,8 +96,11 @@ import strive.shared.generated.resources.minimise
 import strive.shared.generated.resources.next
 import strive.shared.generated.resources.no_workouts
 import strive.shared.generated.resources.note
+import strive.shared.generated.resources.exercise_removed
 import strive.shared.generated.resources.remove_exercise
 import strive.shared.generated.resources.rename
+import strive.shared.generated.resources.restored
+import strive.shared.generated.resources.undo
 import strive.shared.generated.resources.rir
 import strive.shared.generated.resources.save
 import strive.shared.generated.resources.save_change
@@ -132,11 +139,13 @@ import strive.shared.generated.resources.now_set
 import strive.shared.generated.resources.now_set_kind
 import strive.shared.generated.resources.quick_picks
 import strive.shared.generated.resources.sets_progress
+import strive.shared.generated.resources.time_sets
 import strive.shared.generated.resources.what_today
 import strive.shared.generated.resources.back_to_focus
 import strive.shared.generated.resources.change_start
 import strive.shared.generated.resources.free_rest
 import strive.shared.generated.resources.kind_warmup
+import strive.shared.generated.resources.kind_normal
 import strive.shared.generated.resources.kind_drop
 import strive.shared.generated.resources.order_skip
 import strive.shared.generated.resources.rest
@@ -150,9 +159,13 @@ import strive.shared.generated.resources.sticky_note
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.up_by
 import strive.shared.generated.resources.rest_after
+import strive.shared.generated.resources.last_set
+import strive.shared.generated.resources.hold_last_set
 import strive.shared.generated.resources.kind_failure
 import strive.shared.generated.resources.now_kind
 import strive.shared.generated.resources.rest_change
+import strive.shared.generated.resources.dock_rest_after
+import strive.shared.generated.resources.dock_set
 import strive.shared.generated.resources.superset_count
 import strive.shared.generated.resources.superset_create
 import strive.shared.generated.resources.superset_leave
@@ -162,9 +175,12 @@ import se.carlsmeister.strive.workout.wallClock
 import se.carlsmeister.strive.workout.now
 import androidx.compose.ui.test.hasAnyAncestor
 import se.carlsmeister.strive.data.Rest
+import se.carlsmeister.strive.fixture.SampleData
 import strive.shared.generated.resources.bar_left_open
 import strive.shared.generated.resources.tap_to_continue
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.TimeSource
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -180,20 +196,41 @@ class FlowTest {
         // iOS runs every test class in one process: a clock another test left pinned would freeze this flow's rest timers.
         check(wallClock === Clock.System) { "a test left the clock pinned" }
         clearLeftOverLanguage()
-        runSkikoComposeUiTest(Size(1284f, 2778f), Density(3f)) {
-            val back = DirectNavigationEventInput()
-            setContent {
-                // The system's back, as a gesture or button sends it, through the host's own dispatcher.
-                val dispatcher = LocalNavigationEventDispatcherOwner.current!!.navigationEventDispatcher
-                DisposableEffect(dispatcher) {
-                    dispatcher.addInput(back)
-                    onDispose { dispatcher.removeInput(back) }
+        try {
+            runSkikoComposeUiTest(Size(1284f, 2778f), Density(3f)) {
+                val back = DirectNavigationEventInput()
+                setContent {
+                    // The system's back, as a gesture or button sends it, through the host's own dispatcher.
+                    val dispatcher = LocalNavigationEventDispatcherOwner.current!!.navigationEventDispatcher
+                    DisposableEffect(dispatcher) {
+                        dispatcher.addInput(back)
+                        onDispose { dispatcher.removeInput(back) }
+                    }
+                    CompositionLocalProvider(LocalDarkTheme provides dark, LocalHighContrast provides highContrast, LocalReduceMotionSetting provides reduceMotion) {
+                        App(graph)
+                    }
                 }
-                CompositionLocalProvider(LocalDarkTheme provides dark, LocalHighContrast provides highContrast, LocalReduceMotionSetting provides reduceMotion) {
-                    App(graph)
-                }
+                Flow(this, graph, back).block()
             }
-            Flow(this, graph, back).block()
+        } finally {
+            graph.close() // the toasts' timers run on the graph's scope (P5)
+        }
+    }
+
+    /**
+     * The sample's Push A (Bench Press BB's warm-up and set 1 logged, set 2 next, four exercises after it), opened from its bar. The
+     * sample pins the clock, so it is let go after.
+     */
+    private fun pushA(dark: Boolean? = null, highContrast: Boolean? = null, reduceMotion: Boolean? = null, block: suspend Flow.() -> Unit) =
+        flow(dark = dark, highContrast = highContrast, reduceMotion = reduceMotion) {
+        try {
+            SampleData.load(graph)
+            bar()
+            test.onNode(clickLabel(s(Res.string.back_to_workout))).performClick()
+            see(s(Res.string.finish))
+            block()
+        } finally {
+            wallClock = Clock.System
         }
     }
 
@@ -218,6 +255,8 @@ class FlowTest {
         keys("8")
         tap(s(Res.string.next))
         tap(s(Res.string.log_next))
+        // Its only set logged, the workout is complete and Bench Press folds into the overview (WO-01-logged).
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         shot("dark-05-sets")
@@ -232,10 +271,21 @@ class FlowTest {
 
     @Test
     fun aNewWorkoutStartsEmpty() = flow {
-        startWorkout()
-        see(s(Res.string.what_today))
-        see("0/0", substring = true)
-        shot("01-empty-workout")
+        // A clock that stands still, so the bar's time reads "0:00" for as long as the test looks.
+        val start = Clock.System.now()
+        wallClock = object : Clock {
+            override fun now() = start
+        }
+        try {
+            startWorkout()
+            see(s(Res.string.what_today))
+            // With no working sets the bar reads the time alone (P10), not "0:00 · 0/0 sets".
+            see("0:00")
+            gone(hasText("0/0", substring = true))
+            shot("01-empty-workout")
+        } finally {
+            wallClock = Clock.System
+        }
     }
 
     @Test
@@ -348,6 +398,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().exercises.single().sets.size == 2 }
         tapDesc(s(Res.string.log_set, 2))
@@ -364,6 +415,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         openSet(0)
         tapDesc("${s(Res.string.field_reps)} +")
         tap(s(Res.string.save_change))
@@ -422,6 +474,19 @@ class FlowTest {
         waitUntilTrue { open().exercises.single().sets.isEmpty() }
     }
 
+    /**
+     * A quick flick left shorter than 88 pt rests open on Delete: 150 px (50 pt) in 50 ms is about 3 000 px/s, past the 300 pt/s
+     * (900 px/s) flick, and short of the 88 pt that opens on distance alone. Only the release velocity can open it.
+     */
+    @Test
+    fun aQuickShortFlickLeftShowsDelete() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        setRows()[0].performTouchInput { swipeLeft(startX = centerX, endX = centerX - 150f, durationMillis = 50) }
+        idle() // settled: shut, or open on Delete
+        see(s(Res.string.delete))
+    }
+
     @Test
     fun aTapOnARowSwipedOpenShutsItInsteadOfOpeningTheDock() = flow {
         startWorkout()
@@ -436,6 +501,7 @@ class FlowTest {
 
     @Test
     fun theExerciseMenuAddsANoteAndRemovesTheExercise() = flow {
+        graph.toastHoldMillis = 300 // the removal lands when the toast ends
         startWorkout()
         addExercises("Bench Press BB")
         tapDesc(s(Res.string.exercise_options))
@@ -444,7 +510,75 @@ class FlowTest {
         waitUntilTrue { open().exercises.single().note == "Elbows in" }
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.remove_exercise))
+        see(s(Res.string.exercise_removed, "Bench Press BB"))
         waitUntilTrue { open().exercises.isEmpty() }
+    }
+
+    /**
+     * Criterion 4: Undo on the removed toast puts the exercise back on screen where it was, its logged sets shown and the focus on its
+     * set 2 again; and once the toast's hold has passed, the exercise is still in the database, so Undo cancelled the removal (P4).
+     */
+    @Test
+    fun undoBringsARemovedExerciseBackInPlace() = pushA {
+        // A hold that ends, read at the show: long enough to tap Undo, short enough to wait past.
+        val hold = 5_000.milliseconds
+        graph.toastHoldMillis = hold.inWholeMilliseconds
+        tapDesc(s(Res.string.exercise_options)) // Bench's, the one exercise standing open
+        tap(s(Res.string.remove_exercise))
+        val shown = TimeSource.Monotonic.markNow()
+        see(s(Res.string.exercise_removed, "Bench Press BB"))
+        gone(hasText("Bench Press BB"))
+        tap(s(Res.string.undo))
+        gone(hasText(s(Res.string.exercise_removed, "Bench Press BB")))
+
+        // On screen: Bench's header first, above every other exercise; its warm-up and set 1 logged; the focus on its set 2.
+        val header = hasText("Bench Press BB") and hasClickAction()
+        wait("Bench's header") { test.onAllNodes(header).fetchSemanticsNodes().isNotEmpty() }
+        val top = test.onNode(header).fetchSemanticsNode().boundsInRoot.top
+        assertTrue(test.onAllNodes(hasText("Incline Press DB", substring = true)).fetchSemanticsNodes().all { it.boundsInRoot.top > top })
+        for (row in 1..2) test.onNode(hasContentDescription(s(Res.string.logged)) and hasAnyAncestor(hasTestTag("set Bench Press BB $row"))).assertExists()
+        test.onNode(hasText(s(Res.string.log_set, "2")) and hasAnyAncestor(hasTestTag("focus"))).assertExists()
+        test.onNode(hasText("Bench Press BB", substring = true, ignoreCase = true) and hasAnyAncestor(hasTestTag("focus"))).assertExists()
+
+        // Past the hold, the removal it would have made never lands.
+        wait("the toast's hold to pass") { shown.elapsedNow() > hold + 1_000.milliseconds }
+        val bench = open().exercises.first()
+        assertEquals("Bench Press BB", bench.name)
+        assertEquals(2, bench.sets.count { it.done }) // the warm-up and set 1
+        see("Bench Press BB")
+    }
+
+    /** Hardening H1: a name too long for the toast's line gives way to Undo, which keeps its full tap target and still undoes. */
+    @Test
+    fun undoStaysTappableWhenTheRemovedNameIsTooLongForTheToast() = flow {
+        val name = "Standing Bent-Over Two-Arm Triceps Extension"
+        graph.toastHoldMillis = Long.MAX_VALUE // only Undo ends this toast
+        startWorkout()
+        addExercises(name)
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.remove_exercise))
+        see(s(Res.string.exercise_removed, name))
+        val undo = test.onNode(hasText(s(Res.string.undo)) and hasClickAction()).fetchSemanticsNode()
+        val touch = with(test.density) { 44.dp.toPx() }
+        assertTrue(undo.boundsInRoot.width >= touch, "Undo is ${undo.boundsInRoot.width} px wide, under 44 pt")
+        tap(s(Res.string.undo))
+        gone(hasText(s(Res.string.exercise_removed, name)))
+        assertEquals(listOf(name), open().exercises.map { it.name })
+        see(name, substring = true)
+    }
+
+    /** Review Focus 1 (P4): finishing while the removed toast still holds settles the removal first, so the summary leaves the exercise out. */
+    @Test
+    fun finishingDuringTheUndoToastLeavesTheExerciseOut() = pushA {
+        graph.toastHoldMillis = Long.MAX_VALUE // only the finish ends this toast
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.remove_exercise))
+        see(s(Res.string.exercise_removed, "Bench Press BB"))
+        tap(s(Res.string.finish))
+        tap(s(Res.string.save_without)) // the other exercises' sets are not all logged
+        see(s(Res.string.done))
+        gone(hasText("Bench Press BB", substring = true))
+        assertTrue(graph.sessions.history().first().first().exercises.none { it.name == "Bench Press BB" })
     }
 
     /**
@@ -539,6 +673,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         tap(s(Res.string.finish))
@@ -554,6 +689,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         tap(s(Res.string.finish))
@@ -689,6 +825,72 @@ class FlowTest {
         see(s(Res.string.what_today))
     }
 
+    /** Past a third of the screen, a drag down the title bar minimises (criterion 8, P9). */
+    @Test
+    fun draggingTheTitleBarDownMinimises() = flow {
+        startWorkout()
+        dragTheTitleBarDown(0.4f, millis = 600) // about 1 850 px/s, under the flick: only the distance minimises
+        barAboveTheTabs()
+    }
+
+    /**
+     * Short of a third, a flick minimises (criterion 8): 15 % in 80 ms is about 5 200 px/s at 3x, past the flick's 1000 pt/s (3 000 px/s).
+     * It passes only if the release velocity reaches `minimises` downward-positive and in px, as the drag does.
+     */
+    @Test
+    fun flickingTheTitleBarDownMinimises() = flow {
+        startWorkout()
+        dragTheTitleBarDown(0.15f, millis = 80)
+        barAboveTheTabs()
+    }
+
+    /** Under Reduce Motion the screen does not scale and minimising cross-fades (P9), but the drag still minimises. */
+    @Test
+    fun draggingTheTitleBarDownMinimisesUnderReduceMotion() = flow(reduceMotion = true) {
+        startWorkout()
+        dragTheTitleBarDown(0.4f, millis = 600)
+        barAboveTheTabs()
+    }
+
+    /** Short of a third and slow, the drag springs back: the workout stays, its title bar where it started. */
+    @Test
+    fun aShortDragOnTheTitleBarSpringsBack() = flow {
+        startWorkout()
+        val top = test.onNodeWithTag("title-bar").getBoundsInRoot().top
+        dragTheTitleBarDown(0.15f, millis = 1500)
+        idle()
+        seeDesc(s(Res.string.minimise))
+        assertEquals(top, test.onNodeWithTag("title-bar").getBoundsInRoot().top)
+    }
+
+    /**
+     * The bar is 50 pt with its title and without, as `.wtb`'s min-height: the title's 46 pt middle runs into the 6 pt foot, so the
+     * title fading in on scroll never moves the list.
+     */
+    @Test
+    fun theTitleBarIsFiftyPointsWithOrWithoutItsTitle() = flow {
+        startWorkout() // empty, so the title shows
+        val title = clickLabel(s(Res.string.workout_options)) and hasAnyAncestor(hasTestTag("title-bar"))
+        wait("the title") { test.onAllNodes(title).fetchSemanticsNodes().isNotEmpty() }
+        val shown = test.onNodeWithTag("title-bar").getBoundsInRoot().height
+        addExercises("Bench Press BB") // at the list's top the title fades out
+        gone(title)
+        val bar = test.onNodeWithTag("title-bar").getBoundsInRoot()
+        // With no middle the 44 pt buttons fill the bar down to its foot, so ⌄'s top is where the top inset ends.
+        val inset = test.onNodeWithContentDescription(s(Res.string.minimise)).getBoundsInRoot().top - bar.top
+        assertEquals(shown.value, bar.height.value, 0.01f)
+        assertEquals(50f, (bar.height - inset).value, 0.01f)
+    }
+
+    /** Only the title bar minimises: the same drag on the list at its top scrolls, or bounces, and never minimises (Review Focus 4). */
+    @Test
+    fun aDownwardScrollOnTheListNeverMinimises() = pushA {
+        val screen = test.onRoot().fetchSemanticsNode().size.height.toFloat()
+        test.onNodeWithTag("focus").performTouchInput { swipeDown(startY = centerY, endY = centerY + screen * 0.4f, durationMillis = 600) }
+        idle()
+        seeDesc(s(Res.string.minimise))
+    }
+
     /** The rest's time in the bar while it runs, and both gone at zero. The ring is a drawing with no text: the WO-17-rest shot shows it. */
     @Test
     fun theBarShowsTheRestAsARingAndTimeAndDropsThemAtZero() = flow {
@@ -808,6 +1010,104 @@ class FlowTest {
             test.mainClock.autoAdvance = true
         }
     }
+
+    /**
+     * MO-log's key frames, 0, 100, 450 and 500 ms after set 2's ✓ in Push A, and the pop's peak at 170, compared by eye with the motion board, so drawn in English
+     * as the board is. At 100 ms the ✓ has pressed to .96 and has not yet popped back.
+     */
+    @Test
+    fun moLogFramesInDarkHc() = inEnglish {
+        pushA(dark = true, highContrast = true) {
+            test.mainClock.autoAdvance = false
+            test.onNode(setTwosCheckMatcher()).performClick()
+            test.savePng(BOARD_SHOTS, "MO-log-0-dark-hc")
+            test.mainClock.advanceTimeBy(100)
+            val pressed = setTwosCheck()
+            test.savePng(BOARD_SHOTS, "MO-log-100-dark-hc")
+            // Not one of the board's frames: the pop's 1.14 peak and the full lime edge, which follow the 100 ms press.
+            test.mainClock.advanceTimeBy(70)
+            test.savePng(BOARD_SHOTS, "MO-log-170-dark-hc")
+            test.mainClock.advanceTimeBy(280)
+            test.savePng(BOARD_SHOTS, "MO-log-450-dark-hc")
+            test.mainClock.advanceTimeBy(50)
+            test.savePng(BOARD_SHOTS, "MO-log-500-dark-hc")
+            test.mainClock.autoAdvance = true
+            idle()
+            val settled = setTwosCheck()
+            assertTrue(pressed.width < settled.width, "the ✓ at 100 ms is ${pressed.width} px wide, settled ${settled.width}")
+        }
+    }
+
+    /**
+     * MO-log under Reduce Motion: no press and no pop, so the ✓ is its settled size at 100 ms. Its size, not its place: the focus card
+     * above it loses set 2's "up 2.5 kg" line, so the row moves up whatever the motion does.
+     */
+    @Test
+    fun underReduceMotionTheCheckDoesNotScale() = pushA(reduceMotion = true) {
+        test.mainClock.autoAdvance = false
+        test.onNode(setTwosCheckMatcher()).performClick()
+        test.mainClock.advanceTimeBy(100)
+        val early = setTwosCheck()
+        test.mainClock.autoAdvance = true
+        idle()
+        waitUntilTrue { open().exercises.first().sets[2].done }
+        assertEquals(setTwosCheck().size, early.size)
+    }
+
+    /**
+     * MO-log on the log that completes Push A: the count still rolls, now in P11's lime with its check. Compared in pixels, since the
+     * count reads as one text: 100 ms in, the roll is drawn mid-way, unlike the settled count.
+     */
+    @Test
+    fun theCountRollsOnTheLogThatCompletesTheWorkout() = inEnglish {
+        pushA(dark = true, highContrast = true) {
+            val last = open().exercises.first().sets.last()
+            for (set in open().exercises.flatMap { it.sets }) if (!set.done && set.id != last.id) graph.sessions.saveSet(set.copy(done = true))
+            see(s(Res.string.sets_progress, 13, 14))
+            test.mainClock.autoAdvance = false
+            test.onNode(hasContentDescription(s(Res.string.log_set, "3")) and hasAnyAncestor(hasTestTag("set Bench Press BB 4"))).performClick()
+            test.mainClock.advanceTimeBy(100)
+            val count = hasText(s(Res.string.sets_progress, 14, 14))
+            val rolling = test.onNode(count).captureToImage().toPixelMap()
+            test.savePng(BOARD_SHOTS, "MO-log-complete-100-dark-hc")
+            test.mainClock.autoAdvance = true
+            idle()
+            val settled = test.onNode(count).captureToImage().toPixelMap()
+            assertTrue(rolling.width != settled.width || rolling.height != settled.height || !rolling.buffer.contentEquals(settled.buffer),
+                "the count at 100 ms is drawn as it settles: it did not roll")
+        }
+    }
+
+    /** MO-log's rise belongs to the log: the rest card coming back as the dock closes stands where it was from its first frame. */
+    @Test
+    fun theRestCardDoesNotRiseAgainWhenTheDockCloses() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
+        tapContaining(s(Res.string.add_set))
+        waitUntilTrue { open().sets == 2 }
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
+        // The card counts in real time; stretched, it cannot run out on a slow machine.
+        graph.rest.value = graph.rest.value!!.copy(seconds = 3_600)
+        idle()
+        val settled = test.onNodeWithTag("rest-card").fetchSemanticsNode().boundsInRoot
+        tapDesc(s(Res.string.rest_change, "1"))
+        gone(hasTestTag("rest-card"))
+        test.mainClock.autoAdvance = false
+        test.onNode(hasText(s(Res.string.save)) and hasClickAction()).performClick()
+        test.mainClock.advanceTimeByFrame()
+        val back = test.onNodeWithTag("rest-card").fetchSemanticsNode().boundsInRoot
+        test.mainClock.autoAdvance = true
+        assertEquals(settled, back)
+    }
+
+    /** Bench Press BB's set 2 ✓ in Push A (its third row, after the warm-up), before and after it is logged. */
+    private suspend fun Flow.setTwosCheckMatcher() =
+        (hasContentDescription(s(Res.string.log_set, "2")) or hasContentDescription(s(Res.string.logged))) and
+            hasAnyAncestor(hasTestTag("set Bench Press BB 3"))
+
+    private suspend fun Flow.setTwosCheck() = test.onNode(setTwosCheckMatcher()).fetchSemanticsNode().boundsInRoot
 
     @Test
     fun aDoubleTapOnContinueOpensTheWorkoutOnce() = flow {
@@ -971,11 +1271,16 @@ class FlowTest {
         addExercises("Bench Press BB", "Chest Dips", "Squat BB", "Pull Up", "Incline Press DB")
         logFirstSet("80", "8")
         tap(s(Res.string.skip)) // the rest card
-        // Folded exercises are short; open three so the list is long enough to scroll the card away.
-        for (name in listOf("Squat BB", "Pull Up", "Incline Press DB")) tapDesc(s(Res.string.expand, name))
+        tapSegment("2") // RIR picked on the card, which the strip does not draw but VoiceOver reads
+        // Folded exercises are short; open three so the list is long enough to scroll the card away. Bottom up, so an opened
+        // exercise never pushes the next one to open below the window, where the list does not draw it.
+        for (name in listOf("Incline Press DB", "Pull Up", "Squat BB")) tapDesc(s(Res.string.expand, name))
         test.onNode(hasScrollToIndexAction()).performScrollToKey("end")
         wait("the strip") { test.onAllNodes(hasTestTag("focus-strip")).fetchSemanticsNodes().isNotEmpty() }
         shot("11-strip")
+        wait("the strip's RIR for VoiceOver") {
+            test.onAllNodes(hasTestTag("focus-strip") and hasContentDescription("RIR 2", substring = true)).fetchSemanticsNodes().isNotEmpty()
+        }
         // No Logga on the strip (point 7): the whole strip scrolls back up to the card.
         gone(hasText(s(Res.string.log_set, 1), substring = true) and hasClickAction() and !hasContentDescription(s(Res.string.log_set, 1)))
         test.onNode(clickLabel(s(Res.string.back_to_focus))).performClick()
@@ -987,12 +1292,28 @@ class FlowTest {
     fun theFocusCardShowsLastTimeTheChangeAndTheRest() = flow {
         designD()
         see(s(Res.string.up_by, "5"))
-        see(s(Res.string.rest_after, "2:00"))
+        // Set 2 of 2 is Bench Press's last, so the meta row says so where it said the rest (#42 P6).
+        see(s(Res.string.last_set))
         see("80 × 8 @3", substring = true)
         // A logged set shows its RIR after the reps (point 2), and a rest line sits between the sets (point 8).
         see("8 @2")
         see(s(Res.string.rest_row, "2:00"))
         shot("14-d-pass")
+    }
+
+    /** The meta row: "last set" on an exercise's last set, "hold · last set" on it while a rest runs, otherwise the rest after it (#42 P6). */
+    @Test
+    fun theFocusCardReadsLastSetAndHoldLastSetWhileResting() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        see(s(Res.string.last_set))
+        tapContaining(s(Res.string.add_set))
+        waitUntilTrue { open().sets == 2 }
+        see(s(Res.string.rest_after, "2:00"))
+        // Logging set 1 starts its rest, with set 2, the last, in focus.
+        logFirstSet("80", "8")
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
+        see(s(Res.string.hold_last_set))
     }
 
     @Test
@@ -1010,6 +1331,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
         tap(s(Res.string.skip))
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         repeat(2) { tapContaining(s(Res.string.add_set)) }
         waitUntilTrue { open().sets == 3 }
         tapDesc(s(Res.string.set_type, "3"))
@@ -1019,6 +1341,21 @@ class FlowTest {
         // Working sets are numbered among themselves: 1, W, 2.
         seeDesc(s(Res.string.set_type, "W"))
         seeDesc(s(Res.string.set_type, "2"))
+    }
+
+    /** P8: the set type menu reads Warm-up, Working set, Drop set, To failure, each with the badge the set would take: W, 4, D, 4. */
+    @Test
+    fun theSetMenuNamesTheSetsOwnNumber() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        repeat(3) { graph.sessions.addSet(open().exercises.single().id) }
+        waitUntilTrue { open().sets == 4 }
+        tapDesc(s(Res.string.set_type, "4"))
+        wait("the menu") { test.onAllNodes(hasTestTag("glass-menu")).fetchSemanticsNodes().size == 1 }
+        val rows = test.onAllNodes(hasAnyAncestor(hasTestTag("glass-menu")) and hasClickAction()).fetchSemanticsNodes()
+            .map { row -> row.config[SemanticsProperties.Text].joinToString(" ") { it.text } }
+        val kinds = listOf(Res.string.kind_warmup to "W", Res.string.kind_normal to "4", Res.string.kind_drop to "D", Res.string.kind_failure to "4")
+        assertEquals(kinds.map { (kind, tail) -> "${s(kind)} $tail" }, rows)
     }
 
     @Test
@@ -1051,7 +1388,7 @@ class FlowTest {
         waitUntilTrue { open().exercises[1].skipped && open().sets == 1 }
         shot("20-order-sheet")
         tap(s(Res.string.done))
-        see(s(Res.string.skipped))
+        see("Squat BB · ${s(Res.string.skipped)}") // WO-02-s14's overview row
         // Swap Bench Press, the one still open, for another exercise.
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.swap))
@@ -1123,6 +1460,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8", rir = "3")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         openSet(1)
@@ -1133,10 +1471,10 @@ class FlowTest {
         tap(s(Res.string.done))
         startWorkout()
         addExercises("Bench Press BB")
-        logFirstSet("85", "8", rir = "2")
-        // Added while Bench Press is the only exercise, so the new set copies 85 × 8 there.
-        tapContaining(s(Res.string.add_set))
+        // Picked, Bench Press comes with last time's two sets (P14); D draws today's set 2 at 85, so it is written there.
         waitUntilTrue { open().exercises.first().sets.size == 2 }
+        logFirstSet("85", "8", rir = "2")
+        graph.sessions.saveSet(open().exercises.first().sets[1].copy(weight = 85.0))
         addExercises("Incline Press DB", "Lateral Raise DB")
         tap(s(Res.string.skip)) // the rest card; D draws the top of the workout without it
         gone(hasTestTag("rest-card"))
@@ -1155,6 +1493,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         logFirstSet("40", "10")
         tap(s(Res.string.skip)) // the rest card
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         tapDesc(s(Res.string.set_type, "1"))
         tap(s(Res.string.kind_warmup))
         waitUntilTrue { open().exercises.single().sets[0].kind == SetKind.Warmup }
@@ -1191,6 +1530,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
         tap(s(Res.string.skip))
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         repeat(2) { tapContaining(s(Res.string.add_set)) }
         waitUntilTrue { open().sets == 3 }
         tapDesc(s(Res.string.set_type, "2"))
@@ -1223,6 +1563,7 @@ class FlowTest {
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
         tap(s(Res.string.skip))
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         repeat(2) { tapContaining(s(Res.string.add_set)) }
         waitUntilTrue { open().sets == 3 }
         tapDesc(s(Res.string.set_type, "2"))
@@ -1241,6 +1582,22 @@ class FlowTest {
         shot("drop-set-$palette")
     }
 
+    /** P7: the dock opened from the rest line after set 1 is titled for that rest, not for the set (WO-04-rest). */
+    @Test
+    fun theDockFromARestLineIsTitledRestAfterTheSet() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        logFirstSet("80", "8")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
+        tapContaining(s(Res.string.add_set))
+        waitUntilTrue { open().sets == 2 }
+        test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
+        graph.rest.value = graph.rest.value!!.copy(seconds = 3_600)
+        tapDesc(s(Res.string.rest_change, "1"))
+        see(s(Res.string.dock_rest_after, "Bench Press BB", 1))
+        gone(hasText(s(Res.string.dock_set, "Bench Press BB", 1)))
+    }
+
     @Test
     fun aRestLineChangesItsRestAndTheRestCardFollowsInDark() = flow(dark = true) { restLineShots("dark") }
 
@@ -1252,6 +1609,7 @@ class FlowTest {
         startWorkout()
         addExercises("Bench Press BB")
         logFirstSet("80", "8")
+        tapDesc(s(Res.string.expand, "Bench Press BB"))
         tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(hasTestTag("rest-card")).fetchSemanticsNodes().isNotEmpty() }
@@ -1352,6 +1710,83 @@ class FlowTest {
         test.onNode(clickLabel(s(Res.string.add_named, "Bench Press BB"))).performClick()
         waitUntilTrue { open().exercises.map { it.name } == listOf("Bench Press BB") }
         see(s(Res.string.sets_progress, 0, 1))
+    }
+
+    /**
+     * Acceptance criterion 2: two exercises with last time's sets, three working sets each, at most three taps a set. Inside a set's block
+     * every click goes through the local `countedTap` and no other clicking helper; unfolding Incline Press DB is a tap of its set 1.
+     * Adding the exercises and scrolling an exercise into view come between the blocks. Each set is logged by its own row's check, so
+     * Bench Press BB's warm-up stays unlogged and uncounted (O-25).
+     */
+    @Test
+    fun twoExercisesThreeSetsEachTakeAtMostThreeTapsASet() = flow {
+        try {
+            SampleData.load(graph)
+            graph.sessions.discard(open().id)
+            startWorkout()
+            // Quick picks show only while the workout is empty, so the second exercise comes through the picker.
+            test.onNode(clickLabel(s(Res.string.add_named, "Bench Press BB"))).performClick()
+            waitUntilTrue { open().exercises.size == 1 }
+            addExercises("Incline Press DB")
+            // Last time's sets come with them (P14): Bench Press BB's warm-up and three, Incline Press DB's three.
+            assertEquals(listOf(4, 3), open().exercises.map { it.sets.size })
+
+            var taps = 0
+            fun countedTap(matcher: SemanticsMatcher) {
+                test.onNode(matcher).performClick()
+                taps++
+                idle()
+            }
+            var logged = 0
+            suspend fun inView(name: String) {
+                test.onNode(hasScrollToIndexAction()).performScrollToKey("h${open().exercises.first { it.name == name }.id}")
+                idle()
+            }
+            // The header's count, or the bar's while the header is scrolled away.
+            suspend fun countReads(n: Int) {
+                val header = s(Res.string.sets_progress, n, 6)
+                val bar = s(Res.string.time_sets, "", n, 6)
+                wait("the count to read $n of 6") {
+                    test.onAllNodes(hasText(header)).fetchSemanticsNodes().isNotEmpty() ||
+                        test.onAllNodes(hasText(bar, substring = true)).fetchSemanticsNodes().isNotEmpty()
+                }
+            }
+            /** Logs one working set by its row's check; a [folded] exercise is unfolded first, and that tap counts too. */
+            suspend fun workingSet(name: String, row: Int, number: Int, folded: Boolean = false) {
+                val id = open().exercises.first { it.name == name }.id
+                val check = hasContentDescription(s(Res.string.log_set, "$number")) and hasAnyAncestor(hasTestTag("set $name $row"))
+                if (folded) {
+                    // Its overview row 100 pt down the list, clear of the strip on top and the rest card below.
+                    test.onNode(hasScrollToIndexAction()).performScrollToKey("o$id")
+                    test.onNode(hasScrollToIndexAction()).performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, -100f * 3) }
+                    idle()
+                } else {
+                    inView(name)
+                    wait("$name's set $number") { test.onAllNodes(check).fetchSemanticsNodes().isNotEmpty() }
+                }
+                // The block: every tap on screen from here until the set is logged. Scrolling is not a tap.
+                taps = 0
+                if (folded) {
+                    countedTap(hasContentDescription(s(Res.string.expand, name)))
+                    inView(name)
+                    wait("$name's set $number") { test.onAllNodes(check).fetchSemanticsNodes().isNotEmpty() }
+                }
+                countedTap(check)
+                assertTrue(taps <= 3, "$name's set $number took $taps taps")
+                countReads(++logged)
+            }
+
+            for (n in 1..3) workingSet("Bench Press BB", row = n + 1, number = n)
+            // Bench Press BB's warm-up is still the next set, so Incline Press DB waits folded: its set 1 takes the unfold and the check.
+            for (n in 1..3) workingSet("Incline Press DB", row = n, number = n, folded = n == 1)
+
+            test.onNode(hasScrollToIndexAction()).performScrollToKey("header")
+            idle()
+            see(s(Res.string.sets_progress, 6, 6))
+            assertEquals(false, open().exercises.first().sets.first().done)
+        } finally {
+            wallClock = Clock.System
+        }
     }
 
     @Test
@@ -1475,6 +1910,7 @@ class FlowTest {
                 see(s(Res.string.tap_to_continue))
                 see(s(Res.string.bar_left_open, s(Res.string.workout), ""), substring = true) // the title up to its time
                 test.onNode(clickLabel(s(Res.string.back_to_workout))).performClick()
+                see(s(Res.string.restored))
                 seeDesc(s(Res.string.logged, 1))
                 // Opened once, it reads as any open workout again.
                 tapDesc(s(Res.string.minimise))
@@ -1584,6 +2020,20 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
     suspend fun bar() {
         val label = s(Res.string.back_to_workout)
         test.waitUntil(timeoutMillis = TIMEOUT) { test.onAllNodes(clickLabel(label)).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    /** The bar a minimised workout sits in, and that it sits above the tabs (criterion 8's QA). */
+    suspend fun barAboveTheTabs() {
+        bar()
+        val bar = test.onNode(clickLabel(s(Res.string.back_to_workout))).getBoundsInRoot()
+        val home = test.onAllNodes(hasText(s(Res.string.tab_home)) and hasClickAction()).onLast().getBoundsInRoot()
+        assertTrue(bar.bottom <= home.top, "the bar's bottom ${bar.bottom} is above the tabs' top ${home.top}")
+    }
+
+    /** Drags the workout's title bar down by [share] of the screen's height over [millis]. */
+    fun dragTheTitleBarDown(share: Float, millis: Long) {
+        val screen = test.onRoot().fetchSemanticsNode().size.height.toFloat()
+        test.onNodeWithTag("title-bar").performTouchInput { swipeDown(startY = centerY, endY = centerY + screen * share, durationMillis = millis) }
     }
 
     /** Renames the open workout, minimises it if it shows, and returns the bar's height once the bar shows the new name. */

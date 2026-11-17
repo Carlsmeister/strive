@@ -35,14 +35,23 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
@@ -53,6 +62,7 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import se.carlsmeister.strive.data.ExerciseType
 import se.carlsmeister.strive.data.SessionExercise
+import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.WorkoutSet
 import se.carlsmeister.strive.data.loggable
 import se.carlsmeister.strive.library.kilos
@@ -76,7 +86,10 @@ import strive.shared.generated.resources.rir
 import strive.shared.generated.resources.rest
 import strive.shared.generated.resources.save
 import strive.shared.generated.resources.save_change
-import strive.shared.generated.resources.set_number
+import strive.shared.generated.resources.dock_drop
+import strive.shared.generated.resources.dock_rest_after
+import strive.shared.generated.resources.dock_set
+import strive.shared.generated.resources.dock_warmup
 
 /** The values a set of each type records, in the order Nästa walks them (Q16). */
 private enum class Value(val label: StringResource, val decimals: Boolean) {
@@ -122,7 +135,7 @@ private fun Value.parse(f: Field) = if (this == Value.Rest) restSeconds(f.text)?
  * from a rest line it changes without logging: [logs] false, and its button says Spara.
  */
 @Composable
-internal fun Dock(exercise: SessionExercise, set: WorkoutSet, badge: String, defaultRest: Int, haze: HazeState, onSave: (WorkoutSet) -> Unit, onClose: () -> Unit,
+internal fun Dock(exercise: SessionExercise, set: WorkoutSet, defaultRest: Int, haze: HazeState, onSave: (WorkoutSet) -> Unit, onClose: () -> Unit,
                   field: Int? = null, logs: Boolean = true) {
     val space = StriveTheme.spacing
     val swedish = Locale.current.language == "sv"
@@ -166,9 +179,9 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, badge: String, def
     @Composable
     fun field(i: Int, modifier: Modifier, steppers: Boolean) = Column(modifier, verticalArrangement = Arrangement.spacedBy(space.s4)) {
         val v = fields[i]
-        Text(stringResource(v.label), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(v.label), style = MaterialTheme.typography.labelMedium.board(), color = MaterialTheme.colorScheme.onSurfaceVariant)
         NumberField(
-            stringResource(v.label), texts[i].text, focused = focus == i, steppers = steppers,
+            stringResource(v.label), texts[i].text, focused = focus == i, fresh = texts[i].fresh, steppers = steppers,
             onTap = { focus = i; edit(i, texts[i].copy(fresh = true)) },
             onStep = { by -> step(i, by) },
         )
@@ -184,8 +197,7 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, badge: String, def
         Modifier.fillMaxWidth()
             .onSizeChanged { height = it.height.toFloat() }
             .graphicsLayer { translationY = drag.value }
-            .clip(DockShape)
-            .glass(haze, StriveTheme.glass, thick = true)
+            .glass(haze, StriveTheme.glass, thick = true, shape = DockShape)
             // Taps on the dock itself stay in it; only a tap outside closes it. Not clickable, which would merge the dock into one
             // element for VoiceOver and hide the grabber's Stäng behind an empty action.
             .pointerInput(Unit) { detectTapGestures { } }
@@ -194,20 +206,31 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, badge: String, def
             .animateContentSize(if (StriveTheme.reduceMotion) Motion.fade() else Motion.settle()),
         verticalArrangement = Arrangement.spacedBy(space.s12),
     ) {
-        Box(
-            Modifier.align(Alignment.CenterHorizontally).size(StriveTheme.sizes.touch, space.s24)
-                .draggable(dragState, Orientation.Vertical, onDragStopped = { velocity ->
-                    if (drag.value > height / 3 || velocity > 1000f) onClose() else drag.animateTo(0f, Motion.settle())
-                })
-                // VoiceOver cannot drag a grabber; it gets Stäng as the grabber's action instead.
-                .semantics { contentDescription = close; onClick { onClose(); true } },
-            contentAlignment = Alignment.Center,
-        ) { Box(Modifier.size(36.dp, 5.dp).background(MaterialTheme.colorScheme.outline, ShapeFull)) }
+        // `.dk-title`'s margin-top: -6px sits the title 6 under the grabber, inside the dock's 12 gap.
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(space.s12 - 6.dp)) {
+            Box(
+                Modifier.size(StriveTheme.sizes.touch, space.s24)
+                    .draggable(dragState, Orientation.Vertical, onDragStopped = { velocity ->
+                        if (drag.value > height / 3 || velocity > 1000f) onClose() else drag.animateTo(0f, Motion.settle())
+                    })
+                    // VoiceOver cannot drag a grabber; it gets Stäng as the grabber's action instead.
+                    .semantics { contentDescription = close; onClick { onClose(); true } },
+                contentAlignment = Alignment.Center,
+            ) { Box(Modifier.size(36.dp, 5.dp).background(MaterialTheme.colorScheme.outline, ShapeFull)) }
 
-        Text(
-            "${exercise.name} · ${stringResource(Res.string.set_number, badge)}", Modifier.fillMaxWidth(),
-            style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
-        )
+            // P7. A warm-up or drop set has no number, so the dock names its kind, also from the rest line after it.
+            val n = numberAsWorking(exercise.sets, exercise.sets.indexOfFirst { it.id == set.id })
+            val title = when {
+                set.kind == SetKind.Warmup -> stringResource(Res.string.dock_warmup, exercise.name)
+                set.kind == SetKind.Drop -> stringResource(Res.string.dock_drop, exercise.name)
+                !logs -> stringResource(Res.string.dock_rest_after, exercise.name, n)
+                else -> stringResource(Res.string.dock_set, exercise.name, n)
+            }
+            Text(
+                title, Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.labelMedium.board(), color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
+            )
+        }
 
         val f = focus
         val rest = fields.lastIndex
@@ -220,14 +243,16 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, badge: String, def
             Row(horizontalArrangement = Arrangement.spacedBy(space.s8), verticalAlignment = Alignment.Bottom) {
                 if (exercise.type.hasRir()) {
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(space.s4)) {
-                        Text(stringResource(Res.string.rir), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        RirSegments(rir, more, onRir = { rir = it }, onMore = { more = it })
+                        Text(stringResource(Res.string.rir), style = MaterialTheme.typography.labelMedium.board(), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        // The board's inline `height: 52px`, level with the rest field beside it.
+                        RirSegments(rir, more, onRir = { rir = it }, onMore = { more = it }, Modifier.height(52.dp))
                     }
                 }
                 field(rest, Modifier.weight(1f), steppers = true)
             }
-            if (more) RirMore(rir, onRir = { rir = it }, onMore = { more = it })
-            Button(::log, Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch), shape = MaterialTheme.shapes.large) {
+            // The 4 to 10 row stays open on the value picked (WO-04-rir4); 4+ closes it.
+            if (more) RirMore(rir, onRir = { rir = it }, onMore = {})
+            Button(::log, Modifier.fillMaxWidth().heightIn(min = ButtonHeight), shape = MaterialTheme.shapes.large) {
                 Text(stringResource(if (!logs) Res.string.save else if (set.done) Res.string.save_change else Res.string.log))
             }
         } else {
@@ -240,41 +265,68 @@ internal fun Dock(exercise: SessionExercise, set: WorkoutSet, badge: String, def
             )
             val last = f == fields.lastIndex
             Button(
-                { if (last) log() else focus = f + 1 }, Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch),
+                { if (last) log() else focus = f + 1 }, Modifier.fillMaxWidth().heightIn(min = ButtonHeight),
                 shape = MaterialTheme.shapes.large,
             ) { Text(stringResource(if (!last) Res.string.next else if (logs) Res.string.log_next else Res.string.save)) }
         }
     }
 }
 
-/** A grey field with the number large (#16 I3); − and + beside it while the keypad is closed. */
+/**
+ * `.nf`: a field 52 tall on surface-container-highest, ringed in primary while focused (#16 I3); − and + beside the number while the
+ * keypad is closed. Focused and fresh, the number sits on a primary wash, as the first key replaces it (`.v.fresh`); focused and typed
+ * into, a caret follows it.
+ */
 @Composable
-private fun NumberField(label: String, text: String, focused: Boolean, steppers: Boolean, onTap: () -> Unit, onStep: (Int) -> Unit) {
+private fun NumberField(label: String, text: String, focused: Boolean, fresh: Boolean, steppers: Boolean, onTap: () -> Unit, onStep: (Int) -> Unit) {
     val colors = MaterialTheme.colorScheme
+    val space = StriveTheme.spacing
     Row(
         Modifier.fillMaxWidth().heightIn(min = StriveTheme.sizes.touch + 8.dp)
             .background(colors.surfaceContainerHighest, MaterialTheme.shapes.medium)
             .border(StriveTheme.borders.focus, if (focused) colors.primary else Color.Transparent, MaterialTheme.shapes.medium)
-            .padding(StriveTheme.spacing.s4),
+            // The whole 52 tall field takes the tap and carries the label; − and + inside it keep their own targets.
+            .clickable(onClick = onTap).semantics { contentDescription = label }
+            // CSS's 2 border sits outside the 4 padding, transparent while not focused.
+            .padding(space.s4 + StriveTheme.borders.focus),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (steppers) StepKey("−", "$label −") { onStep(-1) }
-        Text(
-            text.ifEmpty { "–" },
-            Modifier.weight(1f).clickable(onClick = onTap).semantics { contentDescription = label }.padding(vertical = StriveTheme.spacing.s4),
-            style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center,
-            color = if (text.isEmpty()) colors.onSurfaceVariant else colors.onSurface,
-        )
+        Row(
+            Modifier.weight(1f)
+                .then(if (focused && fresh) Modifier.padding(horizontal = 6.dp).background(colors.primary.copy(alpha = .28f), RoundedCornerShape(6.dp)) else Modifier)
+                .padding(vertical = space.s4),
+            horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text.ifEmpty { "–" }, Modifier.alignByBaseline(), style = MaterialTheme.typography.titleLarge.board(),
+                color = if (text.isEmpty()) colors.onSurfaceVariant else colors.onSurface,
+            )
+            // `.caret`: 2 × 20 in primary, 1 after the number, its foot 4 under the baseline (`vertical-align: -4px`).
+            // Drawn still: the screen keeps one clock (#42).
+            val foot = with(LocalDensity.current) { 4.dp.roundToPx() }
+            if (focused && !fresh) Box(
+                Modifier.alignBy { it.measuredHeight - foot }.padding(start = 1.dp).size(2.dp, 20.dp).background(colors.primary),
+            )
+        }
         if (steppers) StepKey("+", "$label +") { onStep(1) }
     }
 }
 
+/** `.stepk`: drawn 36 round, tapped across 44 around it without moving anything drawn. */
 @Composable
-private fun StepKey(label: String, description: String, onClick: () -> Unit) = Box(
-    Modifier.size(36.dp).background(MaterialTheme.colorScheme.surface, ShapeFull).clickable(onClick = onClick)
-        .semantics { contentDescription = description },
-    contentAlignment = Alignment.Center,
-) { Text(label, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary) }
+private fun StepKey(label: String, description: String, onClick: () -> Unit) {
+    val touch = StriveTheme.sizes.touch
+    Box(
+        Modifier.layout { m, _ ->
+            val tap = m.measure(Constraints.fixed(touch.roundToPx(), touch.roundToPx()))
+            val drawn = 36.dp.roundToPx()
+            layout(drawn, drawn) { tap.place((drawn - tap.width) / 2, (drawn - tap.height) / 2) }
+        }.clickable(onClick = onClick).semantics { contentDescription = description }
+            .padding((touch - 36.dp) / 2).background(MaterialTheme.colorScheme.surface, ShapeFull),
+        contentAlignment = Alignment.Center,
+    ) { Text(label, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary) }
+}
 
 /** RIR 0 · 1 · 2 · 3 · 4+; 4+ opens 4 to 10, and then shows the value picked (#17, change to Q13.3). */
 @Composable
@@ -327,7 +379,8 @@ private fun Keypad(separator: Char?, onKey: (Char) -> Unit, onStep: (Int) -> Uni
             Row(horizontalArrangement = Arrangement.spacedBy(space.s8)) {
                 for (k in row) {
                     if (k == ' ') Spacer(Modifier.weight(1f))
-                    else Key(k.toString(), Modifier.weight(1f), background = glass, shape = ShapeFull) { onKey(k) }
+                    // `.kp .digits .kk`: thick glass, edged by a hairline in the material's edge colour.
+                    else Key(k.toString(), Modifier.weight(1f).border(StriveTheme.borders.hairline, StriveTheme.glass.edge, ShapeFull), background = glass, shape = ShapeFull) { onKey(k) }
                 }
             }
         }
@@ -353,4 +406,25 @@ private fun Key(
     )
 }
 
-internal val DockShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+/**
+ * The dock's 28 dp top corners. `.dock` keeps only `.glass`'s top border, so the outline runs 1 dp past the sides and the foot:
+ * glass draws its hairline inside the outline, and there it falls off screen everywhere but the top.
+ */
+internal val DockShape = object : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+        val r = with(density) { 28.dp.toPx() }
+        val e = with(density) { 1.dp.toPx() }
+        return Outline.Generic(Path().apply {
+            moveTo(-e, size.height + e)
+            lineTo(-e, r)
+            arcTo(Rect(0f, 0f, 2 * r, 2 * r), 180f, 90f, false)
+            arcTo(Rect(size.width - 2 * r, 0f, size.width, 2 * r), 270f, 90f, false)
+            lineTo(size.width + e, r)
+            lineTo(size.width + e, size.height + e)
+            close()
+        })
+    }
+}
+
+/** `.btn`'s min-height. */
+private val ButtonHeight = 50.dp

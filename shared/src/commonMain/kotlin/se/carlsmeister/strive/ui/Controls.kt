@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -21,6 +23,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.style.TextAlign
 import se.carlsmeister.strive.theme.Scheme
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -80,6 +83,7 @@ internal fun InputField(
     modifier: Modifier = Modifier,
     placeholder: String = "",
     leading: ImageVector? = null,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
 ) {
     val colors = MaterialTheme.colorScheme
     val shape = MaterialTheme.shapes.medium
@@ -93,7 +97,7 @@ internal fun InputField(
         if (edit.text == value) edit else TextFieldValue(value, TextRange(value.length)),
         { edit = it; if (it.text != value) onValueChange(it.text) },
         modifier.onFocusChanged { focused = it.isFocused },
-        textStyle = style, singleLine = true, cursorBrush = SolidColor(colors.primary),
+        textStyle = style, singleLine = true, cursorBrush = SolidColor(colors.primary), keyboardOptions = keyboardOptions,
     ) { field ->
         // Border-box, as CSS: the 2 dp ring sits inside the 44 dp and the 12 dp padding starts inside the ring.
         Row(
@@ -108,7 +112,8 @@ internal fun InputField(
             // shortcut: an empty BasicTextField measures 1.3 dp taller than a filled one on Skiko (Compose Multiplatform 1.12.1), and
             // the pin hides that; drop it when an upgrade makes the empty and filled fields equally tall without it.
             Box(Modifier.weight(1f).padding(vertical = 10.dp).height(with(LocalDensity.current) { style.lineHeight.toDp() })) {
-                if (value.isEmpty()) Text(placeholder, color = colors.onSurfaceVariant, style = style, maxLines = 1)
+                // The board's `.caret` is an inline box before `.ph`, so a focused field's placeholder starts after it; the cursor takes no room.
+                if (value.isEmpty()) Text(placeholder, Modifier.padding(start = if (focused) 3.dp else 0.dp), color = colors.onSurfaceVariant, style = style, maxLines = 1)
                 field()
             }
         }
@@ -210,8 +215,9 @@ internal fun Segments(options: List<String>, selected: Int?, onSelect: (Int?) ->
                       compact: Boolean = false) {
     val space = StriveTheme.spacing
     val gap = if (compact) 3.dp else 2.dp
+    // Its own height unless the caller sets a taller one, which the segments then fill (`.seg`'s grid stretches them).
     Row(
-        modifier.background(
+        modifier.height(IntrinsicSize.Min).background(
             if (compact) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surfaceContainerHighest,
             if (compact) RoundedCornerShape(12.dp) else MaterialTheme.shapes.medium,
         ).padding(gap),
@@ -220,7 +226,7 @@ internal fun Segments(options: List<String>, selected: Int?, onSelect: (Int?) ->
         options.forEachIndexed { i, label ->
             val on = i == selected
             Box(
-                Modifier.weight(1f).then(if (compact) Modifier.height(34.dp) else Modifier.heightIn(min = StriveTheme.sizes.touch - 4.dp))
+                Modifier.weight(1f).fillMaxHeight().then(if (compact) Modifier.height(34.dp) else Modifier.heightIn(min = StriveTheme.sizes.touch - 4.dp))
                     // Teal, what the tokens keep for chosen: the catalogue's surface is darker than the track in dark mode.
                     .background(if (on) MaterialTheme.colorScheme.primary else Color.Transparent, if (compact) RoundedCornerShape(9.dp) else MaterialTheme.shapes.small)
                     .clickable { onSelect(if (on && clearable) null else i) }

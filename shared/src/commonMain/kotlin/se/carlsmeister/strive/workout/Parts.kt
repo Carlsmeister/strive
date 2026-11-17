@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +40,10 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -85,13 +92,14 @@ internal fun IconTarget(label: String, onClick: () -> Unit, content: @Composable
 
 /**
  * Where a row let go of settles, as Mail's rows do: past half its width it is deleted, a flick left shows Ta bort and a flick right
- * hides it, and otherwise it goes to the nearer of shut and open. Speed alone never deletes, so a quick short swipe is safe.
+ * hides it, and otherwise it rests open only once Ta bort is fully shown (MO-gestures: under 88 pt it springs back closed). Speed
+ * alone never deletes, so a quick short swipe is safe.
  */
 internal fun swipeTarget(offset: Float, velocity: Float, width: Float, open: Float, flick: Float): Float = when {
     offset < -width / 2 -> -width
     velocity < -flick -> open
     velocity > flick -> 0f
-    offset < open / 2 -> open
+    offset <= open -> open
     else -> 0f
 }
 
@@ -118,27 +126,48 @@ internal fun SwipeToDelete(shape: Shape, onDelete: () -> Unit, content: @Composa
     val drag = rememberDraggableState { delta -> offset = (offset + delta).coerceIn(-width.toFloat(), 0f) }
     val scope = rememberCoroutineScope()
     val row = remember { SwipeRow(moved = { offset != 0f }, shut = { scope.launch { animate(offset, 0f, 0f, Motion.settle()) { v, _ -> offset = v } } }) }
-    Box(Modifier.fillMaxWidth().onSizeChanged { width = it.width }.clip(shape)) {
-        // Only while the row moves: at rest the red would show through the antialiased corners as a pink rim.
+    val haptics = LocalHapticFeedback.current
+    // The finger's speed, tracked on the box that does not move. Draggable's own velocity is taken on the row, which moves with the
+    // finger, so a quick short flick read about 0 and never opened (as on the title bar, #42 Task 10).
+    val finger = remember { VelocityTracker() }
+    Box(
+        Modifier.fillMaxWidth().onSizeChanged { width = it.width }.clip(shape).pointerInput(Unit) {
+            // Watches every touch on its way in and consumes none, so the row under it works as before.
+            awaitPointerEventScope { while (true) awaitPointerEvent(PointerEventPass.Initial).changes.firstOrNull()?.let(finger::addPointerInputChange) }
+        },
+    ) {
+        Box(
+            Modifier.offset { IntOffset(offset.roundToInt(), 0) }
+                .draggable(drag, Orientation.Horizontal, onDragStopped = {
+                    val velocity = finger.calculateVelocity().x
+                    val target = swipeTarget(offset, velocity, width.toFloat(), open, flick)
+                    // The finger's speed carries into the spring, so letting go has no seam (apple-motion).
+                    animate(offset, target, velocity, Motion.settle()) { value, _ -> offset = value }
+                    if (target == -width.toFloat()) {
+                        // MO-gestures' medium haptic: Compose 1.12.1 sends LongPress to iOS's default impact, medium (and
+                        // GestureThresholdActivate to light). Recheck on a Compose bump.
+                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onDelete()
+                    }
+                }),
+        ) { row.content() }
+        // Over the row and only as wide as it uncovers, so its edge is square against the row (WO-14), and a tap or VoiceOver finds the
+        // button where it shows. Only while the row moves: at rest the red would show through the antialiased corners as a pink rim.
         // The error token is pale pink in dark mode; its container is the deep red that reads as delete there.
         val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
         val red = if (dark) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.error
         val onRed = if (dark) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onError
-        if (offset < 0f) Box(Modifier.matchParentSize().background(red), contentAlignment = Alignment.CenterEnd) {
-            // Only the part the row uncovers is the button, so a tap or VoiceOver finds it where it shows.
-            Box(Modifier.width(StriveTheme.sizes.touch * 2).fillMaxHeight().clickable(onClick = onDelete), contentAlignment = Alignment.Center) {
-                Text(stringResource(Res.string.delete), color = onRed, style = MaterialTheme.typography.labelLarge)
+        // Past half the red fills the row and Delete hugs its left (WO-14-full).
+        val full = offset < -width / 2f
+        if (offset < 0f) Box(Modifier.matchParentSize(), contentAlignment = Alignment.CenterEnd) {
+            Box(
+                Modifier.width(with(density) { (-offset).toDp() }).fillMaxHeight().background(red).clickable(onClick = onDelete),
+                contentAlignment = if (full) Alignment.CenterStart else Alignment.Center,
+            ) {
+                Text(stringResource(Res.string.delete), Modifier.padding(start = if (full) 16.dp else 0.dp), color = onRed,
+                    style = MaterialTheme.typography.labelLarge, maxLines = 1, softWrap = false)
             }
         }
-        Box(
-            Modifier.offset { IntOffset(offset.roundToInt(), 0) }
-                .draggable(drag, Orientation.Horizontal, onDragStopped = { velocity ->
-                    val target = swipeTarget(offset, velocity, width.toFloat(), open, flick)
-                    // The finger's speed carries into the spring, so letting go has no seam (apple-motion).
-                    animate(offset, target, velocity, Motion.settle()) { value, _ -> offset = value }
-                    if (target == -width.toFloat()) onDelete()
-                }),
-        ) { row.content() }
     }
 }
 

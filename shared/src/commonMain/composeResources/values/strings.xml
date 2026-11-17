@@ -97,6 +97,10 @@
     <string name="rename">Rename</string>
     <string name="session_note">Workout note</string>
     <string name="remove_exercise">Remove exercise</string>
+    <string name="exercise_removed">%1$s removed</string>
+    <string name="swapped_for">Swapped for %1$s</string>
+    <string name="restored">Restored. Every logged set is here.</string>
+    <string name="undo">Undo</string>
     <string name="add_set">Add set</string>
     <string name="add_exercises">Add exercises</string>
     <string name="add_count">Add (%1$d)</string>
@@ -121,7 +125,6 @@
     <string name="field_seconds">Time, s</string>
     <string name="field_metres">Distance, m</string>
     <string name="rir">RIR</string>
-    <string name="set_number">Set %1$s</string>
     <string name="time_sets">%1$s · %2$d/%3$d sets</string>
     <string name="log_set">Log set %1$s</string>
     <string name="logged">Logged</string>
@@ -157,6 +160,9 @@
     <string name="col_reps">Reps</string>
     <string name="col_seconds">Time</string>
     <string name="col_metres">m</string>
+    <string name="col_added">+kg</string>
+    <string name="col_seconds_side">Time / side</string>
+    <string name="type_a_time">Type a time to log</string>
     <string name="collapse">Collapse %1$s</string>
     <string name="expand">Expand %1$s</string>
     <string name="what_today">What are you training today?</string>
@@ -183,6 +189,7 @@
     <string name="kind_failure">To failure</string>
     <string name="set_type">Set type for set %1$s</string>
     <string name="set_failure">Set %1$s, to failure</string>
+    <string name="set_stays">The set stays where it is.</string>
     <string name="change_start">Change start time</string>
     <string name="sticky_note">Sticky note</string>
     <string name="rest_all">Rest for all sets</string>
@@ -210,4 +217,16 @@
     <string name="superset_rest">Superset · rest %1$s after each round</string>
     <string name="superset_create">Create superset</string>
     <string name="superset_leave">Remove from superset</string>
+    <string name="log_warmup">Log warm-up</string>
+    <string name="log_drop">Log drop set</string>
+    <string name="rest_after_round">rest %1$s after the round</string>
+    <string name="last_set">last set</string>
+    <string name="hold_last_set">hold · last set</string>
+    <string name="note_previous">Previous</string>
+    <string name="note_plan">Plan</string>
+    <string name="note_today">Note for today</string>
+    <string name="dock_set">%1$s · Set %2$d</string>
+    <string name="dock_warmup">%1$s · Warm-up</string>
+    <string name="dock_drop">%1$s · Drop set</string>
+    <string name="dock_rest_after">%1$s · Rest after set %2$d</string>
 </resources>

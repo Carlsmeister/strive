@@ -97,6 +97,10 @@
     <string name="rename">Byt namn</string>
     <string name="session_note">Passanteckning</string>
     <string name="remove_exercise">Ta bort övningen</string>
+    <string name="exercise_removed">%1$s borttagen</string>
+    <string name="swapped_for">Bytt mot %1$s</string>
+    <string name="restored">Återställt. Alla loggade set finns kvar.</string>
+    <string name="undo">Ångra</string>
     <string name="add_set">Lägg till set</string>
     <string name="add_exercises">Lägg till övningar</string>
     <string name="add_count">Lägg till (%1$d)</string>
@@ -121,7 +125,6 @@
     <string name="field_seconds">Tid, s</string>
     <string name="field_metres">Distans, m</string>
     <string name="rir">RIR</string>
-    <string name="set_number">Set %1$s</string>
     <string name="time_sets">%1$s · %2$d/%3$d set</string>
     <string name="log_set">Logga set %1$s</string>
     <string name="logged">Loggat</string>
@@ -157,6 +160,9 @@
     <string name="col_reps">Reps</string>
     <string name="col_seconds">Tid</string>
     <string name="col_metres">m</string>
+    <string name="col_added">+kg</string>
+    <string name="col_seconds_side">Tid / sida</string>
+    <string name="type_a_time">Skriv en tid för att logga</string>
     <string name="collapse">Fäll ihop %1$s</string>
     <string name="expand">Fäll ut %1$s</string>
     <string name="what_today">Vad kör du idag?</string>
@@ -183,6 +189,7 @@
     <string name="kind_failure">Till failure</string>
     <string name="set_type">Settyp för set %1$s</string>
     <string name="set_failure">Set %1$s, till failure</string>
+    <string name="set_stays">Setet stannar där det är.</string>
     <string name="change_start">Ändra starttid</string>
     <string name="sticky_note">Fast anteckning</string>
     <string name="rest_all">Vila för alla set</string>
@@ -210,4 +217,16 @@
     <string name="superset_rest">Superset · vila %1$s efter varvet</string>
     <string name="superset_create">Skapa superset</string>
     <string name="superset_leave">Ta bort ur superset</string>
+    <string name="log_warmup">Logga uppvärmning</string>
+    <string name="log_drop">Logga dropset</string>
+    <string name="rest_after_round">vila %1$s efter varvet</string>
+    <string name="last_set">sista setet</string>
+    <string name="hold_last_set">håll · sista setet</string>
+    <string name="note_previous">Förra</string>
+    <string name="note_plan">Plan</string>
+    <string name="note_today">Anteckning för idag</string>
+    <string name="dock_set">%1$s · Set %2$d</string>
+    <string name="dock_warmup">%1$s · Uppvärmning</string>
+    <string name="dock_drop">%1$s · Dropset</string>
+    <string name="dock_rest_after">%1$s · Vila efter set %2$d</string>
 </resources>

@@ -86,8 +86,45 @@ internal fun badges(sets: List<WorkoutSet>): List<String> {
     return sets.map { if (it.kind.numbered) n++; it.kind.letter ?: "$n" }
 }
 
-/** How many working sets, failure sets among them: the "of 4" in "set 2 of 4". */
-internal fun working(sets: List<WorkoutSet>) = sets.count { it.kind.numbered }
+/** The "of 3" in "set 2 of 3": every set but the warm-ups, drop sets among them, as O-25 counts them (WO-02-abc). */
+internal fun working(sets: List<WorkoutSet>) = sets.count { it.kind != SetKind.Warmup }
+
+/** The number the set at [index] has, or would have as a working set: 1 + the numbered sets before it (#42 P6–P8). */
+internal fun numberAsWorking(sets: List<WorkoutSet>, index: Int) = 1 + sets.take(index).count { it.kind.numbered }
+
+/**
+ * Last time's set for the set at [index]: the working set of the same number, or the warm-up or drop set of the same count among its
+ * kind, so a warm-up moved up does not shift every Previous below it (WO-13-moved).
+ */
+internal fun previousOf(sets: List<WorkoutSet>, index: Int, last: List<WorkoutSet>?): WorkoutSet? {
+    val kind = sets[index].kind
+    fun same(other: SetKind) = if (kind.numbered) other.numbered else other == kind
+    return last?.filter { same(it.kind) }?.getOrNull(sets.take(index).count { same(it.kind) })
+}
+
+/** The focus card's meta row (#42 P6). */
+internal sealed interface FocusMeta {
+    data class RestAfter(val seconds: Int) : FocusMeta
+    data class RestAfterRound(val seconds: Int) : FocusMeta
+    data object LastSet : FocusMeta
+    data object HoldLastSet : FocusMeta
+}
+
+/** "last set" on the exercise's last set ("hold · last set" while a rest runs), before the superset's "after the round", before plain. */
+internal fun focusMeta(e: SessionExercise, setId: Long, inSuperset: Boolean, resting: Boolean, restSeconds: Int): FocusMeta = when {
+    e.sets.lastOrNull()?.id == setId -> if (resting) FocusMeta.HoldLastSet else FocusMeta.LastSet
+    inSuperset -> FocusMeta.RestAfterRound(restSeconds)
+    else -> FocusMeta.RestAfter(restSeconds)
+}
+
+/** P11: every working set logged, the moment the count and the overview turn lime (WO-02-s13). */
+internal val Workout.complete get() = countedSets > 0 && countedLogged == countedSets
+
+/** A drag down the title bar minimises once it reaches a third of the screen or flicks at [flick] or faster (#42 P9). */
+internal fun minimises(dragged: Float, height: Float, velocity: Float, flick: Float) = dragged >= height / 3 || velocity >= flick
+
+/** The workout without the session exercises [ids], hidden until the remove toast ends (#42 P4). */
+internal fun Workout.without(ids: Set<Long>): Workout = if (ids.isEmpty()) this else copy(exercises = exercises.filterNot { it.id in ids })
 
 /** The exercises in blocks, in order: a superset's exercises together (#17 choice 6), every other exercise alone. */
 internal fun blocks(exercises: List<SessionExercise>): List<List<SessionExercise>> {
@@ -160,7 +197,8 @@ internal fun setText(s: WorkoutSet, type: ExerciseType, swedish: Boolean): Strin
     val main = when (type) {
         ExerciseType.WeightReps -> if (s.weight == null && s.reps == null) null
             else "${s.weight?.let { kilos(it, swedish) } ?: "–"} × ${s.reps ?: "–"}"
-        ExerciseType.BodyweightReps, ExerciseType.Reps -> s.reps?.toString()
+        ExerciseType.BodyweightReps -> s.reps?.let { reps -> s.weight?.let { "+${kilos(it, swedish)} × $reps" } ?: "$reps" }
+        ExerciseType.Reps -> s.reps?.toString()
         ExerciseType.Time -> s.seconds?.let { clock(it.toLong()) }
         ExerciseType.Distance -> s.metres?.let { "${kilos(it, swedish)} m" }
     } ?: return "–"

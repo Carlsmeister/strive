@@ -64,6 +64,13 @@ class SampleDataTest {
     }
 
     @Test
+    fun lastMondaysBenchCarriesItsNote() = runTest {
+        val today = SampleData.load(graph)
+        val bench = graph.exercises.all().first().first { it.name == "Bench Press BB" }
+        assertEquals("Kändes stark idag.", graph.sessions.previousNote(bench.id, today).first())
+    }
+
+    @Test
     fun carlsExerciseMarksReadBack() = runTest {
         SampleData.load(graph)
         val marks = graph.exercises.all().first().filter { it.mark != null }.associate { it.name to it.mark }
