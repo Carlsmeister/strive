@@ -49,8 +49,8 @@ Carl typed.
   weights; this is #58's ruling. Swapping to an exercise in another unit moves the logged sets
   over unchanged (`swapExercise` in `Session.sq`). Changing the app default rereads every
   exercise whose unit is null, which is every exercise logged before #58. None has happened:
-  nothing writes `weight_unit`, and no seeded exercise has a unit. The issue filed with #58's
-  PR covers the three paths.
+  nothing writes `weight_unit`, and no seeded exercise has a unit. #87
+  covers the three paths.
 - **#63 must pin null units to the old default before it changes the default,** in the same
   transaction: `UPDATE exercise SET unit = :old WHERE unit IS NULL`. Without it, the first
   switch to lb turns every logged 100 kg into 100 lb.
