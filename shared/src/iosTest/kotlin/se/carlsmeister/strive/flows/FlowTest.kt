@@ -962,24 +962,37 @@ class FlowTest {
         assertTrue(test.onAllNodes(hasText(s(Res.string.keep_going))).fetchSemanticsNodes().isNotEmpty(), "the sheet, still open")
     }
 
-    /** In the simulator's language, the discard alert's two labels are each one line and inside their buttons: stacked if need be. */
+    /**
+     * WO-16: the discard alert's two labels show in full, never cut off, in English and in the simulator's Swedish. Its buttons are
+     * ghost, so they stay side by side as drawn, a label too long for its half wrapping inside it (#58).
+     */
     @Test
-    fun theDiscardAlertsLabelsStayOnOneLine() = flow {
-        startWorkout()
-        addExercises("Bench Press BB")
-        tap(s(Res.string.discard_workout))
-        see(s(Res.string.discard_question))
-        val inAlert = hasAnyAncestor(hasTestTag("glass-alert"))
-        for (label in listOf(s(Res.string.cancel), s(Res.string.discard_workout))) {
-            val text = test.onNode(hasText(label) and inAlert, useUnmergedTree = true).fetchSemanticsNode()
-            val layouts = mutableListOf<TextLayoutResult>()
-            text.config[SemanticsActions.GetTextLayoutResult].action!!(layouts)
-            val button = test.onNode(hasText(label) and hasClickAction() and inAlert).fetchSemanticsNode().boundsInRoot
-            // Its drawn height, not the layout's line count: the layout the action hands back measured the label at its widest.
-            val oneLine = layouts.single().layoutInput.let { with(it.density) { it.style.lineHeight.toPx() } }
-            assertTrue(text.boundsInRoot.height <= oneLine + 1, "'$label' one line (${oneLine}px) tall: ${text.boundsInRoot}")
-            assertTrue(text.boundsInRoot.width <= button.width, "'$label' (${text.boundsInRoot}) inside its button ($button)")
+    fun theDiscardAlertsLabelsShowInFull() {
+        val check: suspend Flow.() -> Unit = {
+            startWorkout()
+            addExercises("Bench Press BB")
+            tap(s(Res.string.discard_workout))
+            see(s(Res.string.discard_question))
+            val inAlert = hasAnyAncestor(hasTestTag("glass-alert"))
+            val buttons = listOf(s(Res.string.cancel), s(Res.string.discard_workout)).map { label ->
+                val text = test.onNode(hasText(label) and inAlert, useUnmergedTree = true).fetchSemanticsNode()
+                val layouts = mutableListOf<TextLayoutResult>()
+                text.config[SemanticsActions.GetTextLayoutResult].action!!(layouts)
+                val layout = layouts.single()
+                val button = test.onNode(hasText(label) and hasClickAction() and inAlert).fetchSemanticsNode().boundsInRoot
+                val drawn = text.boundsInRoot
+                assertTrue(drawn.left >= button.left - 1 && drawn.right <= button.right + 1 && drawn.top >= button.top - 1 &&
+                    drawn.bottom <= button.bottom + 1, "'$label' ($drawn) inside its button ($button)")
+                // Enough drawn lines for the whole label: the action's layout may be the label at its widest, on one line.
+                val oneLine = with(layout.layoutInput.density) { layout.layoutInput.style.lineHeight.toPx() }
+                val lines = kotlin.math.round(drawn.height / oneLine)
+                assertTrue(lines * drawn.width >= layout.size.width - 1, "'$label' ($drawn, $lines lines) holds all ${layout.size.width}px of it")
+                button
+            }
+            assertEquals(buttons[0].top, buttons[1].top, "Cancel and Discard workout side by side: $buttons")
         }
+        inEnglish { flow(block = check) }
+        flow(block = check)
     }
 
     @Test

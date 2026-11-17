@@ -178,7 +178,8 @@ internal fun AlertText(text: String, style: TextStyle) = Text(text, Modifier.fil
 /**
  * `.alert .acts`, 8 dp further down: Cancel and [confirm] side by side, equal and 8 dp apart. When either label would not fit its
  * half on one line, measured, it is `.acts.stack`: both full width, 8 dp apart, [confirm] first and Cancel under it (no board draws
- * the stacked order). [ghost] is `.btn.ghost`: no fill.
+ * the stacked order). [ghost] is `.btn.ghost`: no fill, and never stacked; a label too long for its half wraps in it, both buttons
+ * as tall as the taller, as WO-16 draws "Discard workout".
  */
 @Composable
 private fun AlertActions(confirm: String, color: Color, onConfirm: () -> Unit, onCancel: () -> Unit, ghost: Boolean = false) = Layout(
@@ -192,9 +193,11 @@ private fun AlertActions(confirm: String, color: Color, onConfirm: () -> Unit, o
     val width = constraints.maxWidth
     val half = (width - gap) / 2
     fun Measurable.at(w: Int) = measure(constraints.copy(minWidth = w, maxWidth = w, minHeight = 0))
-    if (maxOf(cancel.maxIntrinsicWidth(Constraints.Infinity), ok.maxIntrinsicWidth(Constraints.Infinity)) <= half) {
-        val (c, o) = cancel.at(half) to ok.at(half)
-        layout(width, maxOf(c.height, o.height)) { c.placeRelative(0, 0); o.placeRelative(width - half, 0) }
+    if (ghost || maxOf(cancel.maxIntrinsicWidth(Constraints.Infinity), ok.maxIntrinsicWidth(Constraints.Infinity)) <= half) {
+        // `.acts` is a flex row: both stretch to the taller.
+        val h = maxOf(cancel.minIntrinsicHeight(half), ok.minIntrinsicHeight(half))
+        val (c, o) = cancel.measure(Constraints.fixed(half, h)) to ok.measure(Constraints.fixed(half, h))
+        layout(width, h) { c.placeRelative(0, 0); o.placeRelative(width - half, 0) }
     } else {
         val (o, c) = ok.at(width) to cancel.at(width)
         layout(width, o.height + gap + c.height) { o.placeRelative(0, 0); c.placeRelative(0, o.height + gap) }

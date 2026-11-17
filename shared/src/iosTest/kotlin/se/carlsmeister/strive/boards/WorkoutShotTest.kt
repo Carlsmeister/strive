@@ -499,17 +499,19 @@ class WorkoutShotTest {
     @Test
     fun wo13LoggedInDarkAndDarkHc() = workoutBoard("WO-13-logged", waitFor = "The set stays where it is.") { setMenu("1") }
 
-    /** WO-02-s9d with Finish tapped: the one set left reads in the singular (#58). */
+    /** WO-02-s9d with Tricep Pushdown moved first, then Finish: the one set left reads in the singular (#58). */
     @Test
     fun wo15OneInDarkAndDarkHc() = workoutBoard("WO-15-one", waitFor = "Log it as it is and save") { graph ->
         pushdownLeft(graph, at = 58 * 60 + 20, logged = 2)
+        pushdownFirst(graph)
         tapFinish()
     }
 
-    /** At 56:10, Tricep Pushdown's set 2 in focus and its drop set after it: two left. */
+    /** At 56:10, Tricep Pushdown moved first, its set 2 in focus and its drop set after it: two left, then Finish. */
     @Test
     fun wo15SeveralInDarkAndDarkHc() = workoutBoard("WO-15-several", waitFor = "Log them as they are and save") { graph ->
         pushdownLeft(graph, at = 56 * 60 + 10, logged = 1)
+        pushdownFirst(graph)
         tapFinish()
     }
 
@@ -539,6 +541,15 @@ private suspend fun pushdownLeft(graph: AppGraph, at: Int, logged: Int) {
     logAll(graph, at = at, "Bench Press BB", "Incline Press DB", "Lateral Raise DB", "Tricep Dips")
     val pushdown = today(graph).exercises.first { it.name == "Tricep Pushdown" }
     listOf(12 to 2, 11 to 1).take(logged).forEachIndexed { i, (reps, rir) -> graph.sessions.saveSet(pushdown.sets[i].copy(reps = reps, rir = rir, done = true)) }
+}
+
+/**
+ * Tricep Pushdown moved to the top, as Order and skip would: the WO-15 boards draw its header straight under the focus card, and the
+ * done exercises' overview card, which the app keeps in list order, now follows it under the sheet.
+ */
+private suspend fun pushdownFirst(graph: AppGraph) {
+    val (pushdown, rest) = today(graph).exercises.partition { it.name == "Tricep Pushdown" }
+    graph.sessions.reorder((pushdown + rest).map { it.id })
 }
 
 /** No marks and no history, so the empty workout shows the card alone (WO-01-none). */
