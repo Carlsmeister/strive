@@ -595,10 +595,11 @@ private fun TitleBar(w: Workout, nowMs: Long, showTitle: Boolean, glassed: Boole
             Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
                 .padding(start = 12.dp, end = 12.dp, bottom = 6.dp)
                 // `.wtb`'s middle is 46 pt (name 24, gap 2, sub line 20) in a 50 pt bar, so it runs 2 pt into the 6 pt foot, where the
-                // boards put the strip (104 pt). The bar keeps 50 and the buttons centre on the 46; it grows once the middle outgrows the foot.
+                // boards put the strip (104 pt). The bar keeps 50 and the buttons centre on the 46. A taller middle (a larger text size)
+                // grows the bar and still runs only those 2 pt in, so the foot keeps the board's visible 4 pt.
                 .layout { m, c ->
                     val bar = m.measure(c)
-                    val height = maxOf(touch.roundToPx(), bar.height - 6.dp.roundToPx())
+                    val height = maxOf(touch.roundToPx(), bar.height - 2.dp.roundToPx())
                     layout(bar.width, height) { bar.place(0, 0) }
                 },
             start = {

@@ -41,6 +41,7 @@ import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.height
 import androidx.compose.material3.ButtonDefaults
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -860,6 +861,25 @@ class FlowTest {
         idle()
         seeDesc(s(Res.string.minimise))
         assertEquals(top, test.onNodeWithTag("title-bar").getBoundsInRoot().top)
+    }
+
+    /**
+     * The bar is 50 pt with its title and without, as `.wtb`'s min-height: the title's 46 pt middle runs into the 6 pt foot, so the
+     * title fading in on scroll never moves the list.
+     */
+    @Test
+    fun theTitleBarIsFiftyPointsWithOrWithoutItsTitle() = flow {
+        startWorkout() // empty, so the title shows
+        val title = clickLabel(s(Res.string.workout_options)) and hasAnyAncestor(hasTestTag("title-bar"))
+        wait("the title") { test.onAllNodes(title).fetchSemanticsNodes().isNotEmpty() }
+        val shown = test.onNodeWithTag("title-bar").getBoundsInRoot().height
+        addExercises("Bench Press BB") // at the list's top the title fades out
+        gone(title)
+        val bar = test.onNodeWithTag("title-bar").getBoundsInRoot()
+        // With no middle the 44 pt buttons fill the bar down to its foot, so ⌄'s top is where the top inset ends.
+        val inset = test.onNodeWithContentDescription(s(Res.string.minimise)).getBoundsInRoot().top - bar.top
+        assertEquals(shown.value, bar.height.value, 0.01f)
+        assertEquals(50f, (bar.height - inset).value, 0.01f)
     }
 
     /** Only the title bar minimises: the same drag on the list at its top scrolls, or bounces, and never minimises (Review Focus 4). */
