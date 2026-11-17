@@ -78,6 +78,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
@@ -685,7 +687,7 @@ private fun ExerciseHeader(
                         // Choice 4's Skapa superset; in a superset, the way out of it.
                         if (letter != null) {
                             MenuRow(stringResource(Res.string.superset_leave), { menu = false; scope.launch { sessions.leaveSuperset(e.id) } }, icon = StriveIcons.Link)
-                        } else if (w.exercises.size > 1) {
+                        } else if (supersetPartners(w, e).isNotEmpty()) {
                             MenuRow(stringResource(Res.string.superset_create), { menu = false; dialog = "superset" }, icon = StriveIcons.Link)
                         }
                         MenuRow(stringResource(Res.string.order_skip), { menu = false; dialog = "order" }, icon = StriveIcons.Reorder)
@@ -805,13 +807,18 @@ private fun SupersetDialog(w: Workout, e: SessionExercise, onDone: () -> Unit) {
     AlertBox(onDone) {
         AlertText(stringResource(Res.string.superset_create), MaterialTheme.typography.titleMedium)
         AlertText(stringResource(Res.string.superset_moves, e.name), MaterialTheme.typography.bodyMedium)
-        ListBlock(w.exercises.filter { it.id != e.id && !it.skipped }.map { other ->
+        // A long list scrolls inside its block, so Cancel stays on screen; a short one is as tall as its rows.
+        ListBlock(supersetPartners(w, e).map { other ->
             { ListRow(other.name, onClick = { scope.launch { sessions.superset(e.id, other.id) }; onDone() }) }
-        }, Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s4))
+        }, Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s4).weight(1f, fill = false).clip(MaterialTheme.shapes.large)
+            .verticalScroll(rememberScrollState()))
         AlertButton(stringResource(Res.string.cancel), MaterialTheme.colorScheme.primary, onDone,
             Modifier.fillMaxWidth().padding(top = StriveTheme.spacing.s8), ghost = true)
     }
 }
+
+/** The exercises [e] can make a superset with: the workout's others that are not skipped. The menu offers the row only if there is one. */
+private fun supersetPartners(w: Workout, e: SessionExercise) = w.exercises.filter { it.id != e.id && !it.skipped }
 
 /** Övningens inställningar (Q15, Q7, Q22): the step − and + use, and the bar. */
 @Composable

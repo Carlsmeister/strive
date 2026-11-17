@@ -186,6 +186,8 @@ import androidx.compose.ui.graphics.Color
 import se.carlsmeister.strive.workout.wallClock
 import se.carlsmeister.strive.workout.now
 import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.assertHeightIsAtLeast
+import androidx.compose.ui.test.assertIsDisplayed
 import se.carlsmeister.strive.data.Rest
 import se.carlsmeister.strive.fixture.SampleData
 import strive.shared.generated.resources.bar_left_open
@@ -1518,6 +1520,9 @@ class FlowTest {
         see("Squat BB · ${s(Res.string.skipped)}") // WO-02-s14's overview row
         // Swap Bench Press, the one still open, for another exercise.
         tapDesc(s(Res.string.exercise_options))
+        // With Squat skipped, Bench has no exercise to make a superset with, so the menu offers none.
+        see(s(Res.string.order_skip))
+        assertTrue(test.onAllNodes(hasText(s(Res.string.superset_create))).fetchSemanticsNodes().isEmpty(), "no Create superset row")
         tap(s(Res.string.swap))
         search("Incline Press DB")
         tap("Incline Press DB")
@@ -1874,6 +1879,23 @@ class FlowTest {
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.superset_leave))
         waitUntilTrue { open().exercises.all { it.superset == null } }
+    }
+
+    /** Twenty other exercises outgrow the screen: the list scrolls inside the alert and Cancel stays whole on screen. */
+    @Test
+    fun theSupersetAlertScrollsALongListAndKeepsCancelOnScreen() = flow {
+        startWorkout()
+        val ids = graph.exercises.all().first { it.size >= 21 }.take(21).map { it.id }
+        graph.sessions.add(open().id, ids)
+        waitUntilTrue { open().exercises.size == 21 }
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.superset_create))
+        val cancel = test.onNode(hasText(s(Res.string.cancel)) and hasAnyAncestor(hasTestTag("glass-alert")))
+        cancel.assertIsDisplayed()
+        cancel.assertHeightIsAtLeast(44.dp)
+        val root = test.onAllNodes(isRoot())[0].fetchSemanticsNode().boundsInRoot // the screen; the alert's window is a second root
+        assertTrue(cancel.fetchSemanticsNode().boundsInRoot.bottom <= root.bottom, "Cancel ends on screen")
+        shot("21-superset-alert-long")
     }
 
     @Test
