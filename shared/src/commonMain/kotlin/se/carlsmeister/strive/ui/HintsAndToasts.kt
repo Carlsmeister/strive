@@ -29,6 +29,7 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -61,7 +62,9 @@ internal fun Toast(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) Icon(icon, contentDescription = null, Modifier.size(iconSize), tint = iconTint.takeOrElse { colors.inverseOnSurface })
-        Text(text, color = colors.inverseOnSurface, style = style, maxLines = 1, softWrap = false)
+        // Weighted, so the action is measured first at full size and a long name ends in an ellipsis instead.
+        Text(text, Modifier.weight(1f, fill = false), color = colors.inverseOnSurface, style = style, maxLines = 1, softWrap = false,
+            overflow = TextOverflow.Ellipsis)
         // WO-02-removed's Undo: `margin: 0 -6 0 6` around `padding: 0 6`, so its tap area runs 6 into the capsule's end padding.
         if (action != null) Box(
             Modifier.padding(start = 6.dp).overhangEnd(6.dp).touchTall().widthIn(min = StriveTheme.sizes.touch).pressable(true, onAction)
@@ -76,7 +79,7 @@ internal fun Toast(
 /** Lays the content out [by] narrower than it draws, so it hangs that far past its end into the padding beside it. */
 private fun Modifier.overhangEnd(by: Dp) = layout { measurable, constraints ->
     val placeable = measurable.measure(constraints)
-    layout(placeable.width - by.roundToPx(), placeable.height) { placeable.place(0, 0) }
+    layout((placeable.width - by.roundToPx()).coerceAtLeast(0), placeable.height) { placeable.place(0, 0) }
 }
 
 /**

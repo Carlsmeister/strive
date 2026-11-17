@@ -547,6 +547,25 @@ class FlowTest {
         see("Bench Press BB")
     }
 
+    /** Hardening H1: a name too long for the toast's line gives way to Undo, which keeps its full tap target and still undoes. */
+    @Test
+    fun undoStaysTappableWhenTheRemovedNameIsTooLongForTheToast() = flow {
+        val name = "Standing Bent-Over Two-Arm Triceps Extension"
+        graph.toastHoldMillis = Long.MAX_VALUE // only Undo ends this toast
+        startWorkout()
+        addExercises(name)
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.remove_exercise))
+        see(s(Res.string.exercise_removed, name))
+        val undo = test.onNode(hasText(s(Res.string.undo)) and hasClickAction()).fetchSemanticsNode()
+        val touch = with(test.density) { 44.dp.toPx() }
+        assertTrue(undo.boundsInRoot.width >= touch, "Undo is ${undo.boundsInRoot.width} px wide, under 44 pt")
+        tap(s(Res.string.undo))
+        gone(hasText(s(Res.string.exercise_removed, name)))
+        assertEquals(listOf(name), open().exercises.map { it.name })
+        see(name, substring = true)
+    }
+
     /** Review Focus 1 (P4): finishing while the removed toast still holds settles the removal first, so the summary leaves the exercise out. */
     @Test
     fun finishingDuringTheUndoToastLeavesTheExerciseOut() = pushA {
