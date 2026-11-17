@@ -535,7 +535,6 @@ class WorkoutShotTest {
     }
 }
 
-/** WO-02-s10td: at 1:03:40, all 14 sets logged, then Plank (time) and Walking Lunge (distance) added from last time. */
 /** Everything logged up to Tricep Pushdown, then its first [logged] sets, the workout's clock at [at] seconds (WO-02-s9d, WO-15). */
 private suspend fun pushdownLeft(graph: AppGraph, at: Int, logged: Int) {
     logAll(graph, at = at, "Bench Press BB", "Incline Press DB", "Lateral Raise DB", "Tricep Dips")
@@ -568,6 +567,7 @@ private suspend fun ComposeUiTest.tapFinish() {
     waitForIdle()
 }
 
+/** WO-02-s10td: at 1:03:40, all 14 sets logged, then Plank (time) and Walking Lunge (distance) added from last time. */
 private suspend fun plankAndLungeAdded(graph: AppGraph) {
     val names = listOf("Plank", "Walking Lunge")
     // Last time's sets, which an added exercise takes (P14), come from a finished workout of their own four days back.

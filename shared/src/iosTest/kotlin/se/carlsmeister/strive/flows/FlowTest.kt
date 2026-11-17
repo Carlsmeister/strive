@@ -786,6 +786,20 @@ class FlowTest {
         }
     }
 
+    /** The same in the simulator's Swedish: "ett set" is neuter, so both actions read "det" (#58). */
+    @Test
+    fun oneUnloggedSetReadsInTheSingularInSwedish() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        tap(s(Res.string.finish))
+        see("1 set är inte loggat")
+        see("Logga det som det står och spara")
+        see("Spara utan det")
+        for (plural in listOf("1 set är inte loggade", "Logga dem som de står och spara", "Spara utan dem")) {
+            assertTrue(test.onAllNodes(hasText(plural)).fetchSemanticsNodes().isEmpty(), "no '$plural'")
+        }
+    }
+
     @Test
     fun finishingWithSetsLeftCanDiscardTheWorkout() = flow {
         startWorkout()
