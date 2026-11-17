@@ -65,6 +65,7 @@ import se.carlsmeister.strive.db.StriveDatabase
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.exercise_settings
 import strive.shared.generated.resources.unit_lb
+import strive.shared.generated.resources.unit_kg
 import strive.shared.generated.resources.step
 import strive.shared.generated.resources.bar
 import strive.shared.generated.resources.saved_for
@@ -845,7 +846,10 @@ class FlowTest {
         see(weightLabel("lb", "2"))
     }
 
-    /** Done saves the unit only when Unit was changed: a new step alone leaves the exercise on the app default (#58). */
+    /**
+     * Done saves the unit only when Unit was changed: a new step alone, with a tap on the kg already shown, leaves the exercise on the app
+     * default (#58).
+     */
     @Test
     fun changingOnlyTheStepKeepsTheUnitUnset() = flow {
         startWorkout()
@@ -853,6 +857,7 @@ class FlowTest {
         val bench = open().exercises.single().exerciseId
         tapDesc(s(Res.string.exercise_options))
         tap(s(Res.string.exercise_settings))
+        tapSegment(s(Res.string.unit_kg))
         tap(s(Res.string.step))
         tap("5 kg")
         tap(s(Res.string.done))
@@ -872,6 +877,42 @@ class FlowTest {
             see("Olympic 20 kg")
             see("EZ 7.5 kg")
             see("None 0 kg")
+        }
+    }
+
+    /** In lb the bars are lb bars (EL-07-lb): Olympic 20 kg becomes Olympic 45 lb, saved in the exercise's new unit. */
+    @Test
+    fun switchingToLbPicksTheLbBar() = inEnglish {
+        flow {
+            startWorkout()
+            addExercises("Bench Press BB")
+            val bench = open().exercises.single().exerciseId
+            tapDesc(s(Res.string.exercise_options))
+            tap(s(Res.string.exercise_settings))
+            tapSegment("lb")
+            tap("Bar")
+            see("Olympic 45 lb")
+            see("EZ 15 lb")
+            tap("Olympic 45 lb") // the menu's row, drawn last: it closes the menu
+            tap(s(Res.string.done))
+            waitUntilTrue { graph.exercises.byId(bench).first()!!.let { it.bar == 45.0 && it.unit == WeightUnit.Lb } }
+            tapDesc(s(Res.string.exercise_options))
+            tap(s(Res.string.exercise_settings))
+            wait("the Bar row at 45 lb") { test.onAllNodes(hasText("Bar") and hasText("Olympic 45 lb")).fetchSemanticsNodes().isNotEmpty() }
+        }
+    }
+
+    /** A saved bar the list does not name (10 kg on some seeded barbells) stays in the pull-down, checked, so it can be kept. */
+    @Test
+    fun aBarOutsideTheListStaysChecked() = flow {
+        startWorkout()
+        addExercises("Bench Press BB")
+        graph.exercises.setSettings(open().exercises.single().exerciseId, step = 2.5, bar = 10.0, unit = null)
+        tapDesc(s(Res.string.exercise_options))
+        tap(s(Res.string.exercise_settings))
+        tap(s(Res.string.bar))
+        wait("10 kg checked") {
+            test.onAllNodes(hasText("10 kg") and SemanticsMatcher.expectValue(SemanticsProperties.Selected, true)).fetchSemanticsNodes().isNotEmpty()
         }
     }
 

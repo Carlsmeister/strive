@@ -41,12 +41,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -862,13 +862,20 @@ private fun supersetPartners(w: Workout, e: SessionExercise) = w.exercises.filte
 /** The step − and + use (Q15). */
 private val Steps = listOf(1.0, 1.25, 2.0, 2.5, 4.0, 5.0)
 
-/** The bars by name (Q22, WO-12), None as 0. */
-private val Bars: List<Pair<Double?, StringResource>> =
-    listOf(20.0 to Res.string.bar_olympic, 15.0 to Res.string.bar_short, 7.5 to Res.string.bar_ez, 25.0 to Res.string.bar_hex, null to Res.string.bar_none)
+/** A bar by name (Q22, WO-12) with its weight in kg and in lb (EL-07-lb); None weighs nothing and saves no bar. */
+private class NamedBar(val name: StringResource, val kg: Double?, val lb: Double?) {
+    fun weight(unit: WeightUnit) = if (unit == WeightUnit.Lb) lb else kg
+}
+
+private val Bars = listOf(
+    NamedBar(Res.string.bar_olympic, 20.0, 45.0), NamedBar(Res.string.bar_short, 15.0, 35.0), NamedBar(Res.string.bar_ez, 7.5, 15.0),
+    NamedBar(Res.string.bar_hex, 25.0, 55.0), NamedBar(Res.string.bar_none, null, null),
+)
 
 /**
  * Exercise settings (WO-12): the exercise's name in the head; Step and Bar as pull-downs, Unit as kg | lb, and what saving means. Done saves
- * the three; the unit stays unset, the app default, unless a segment was tapped. A tap on the scrim closes without saving.
+ * the three, the bar in the unit shown; the unit stays as it was (unset follows the app default) unless the one shown changed. A tap on
+ * the scrim closes without saving.
  */
 @Composable
 private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
@@ -881,17 +888,22 @@ private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
     var unit by remember { mutableStateOf(e.unit) }
     // Ruling 3: the Bar row is there for an exercise that had a bar at open, so choosing None keeps it until the sheet closes.
     val hasBar = remember { e.bar != null }
+    // A saved bar no name weighs (10 kg on some seeded barbells) leads the pull-down, so it shows checked and can be kept.
+    val odd = remember { e.bar?.takeIf { b -> Bars.none { it.weight(e.unitIn(default)) == b } } }
     val shown = unit ?: default
     val unitText = stringResource(shown.label)
     fun amount(v: Double) = "${kilos(v, swedish)} $unitText"
-    HeaderSheet(e.name, onDismiss = onDone, done = stringResource(Res.string.done),
-        onDone = { scope.launch { graph.exercises.setSettings(e.exerciseId, step, bar, unit) }; onDone() }) {
+    HeaderSheet(e.name, onDismiss = onDone, done = stringResource(Res.string.done), onDone = {
+        val saved = if (shown != e.unitIn(default)) shown else e.unit
+        scope.launch { graph.exercises.setSettings(e.exerciseId, step, bar, saved) }
+        onDone()
+    }) {
         val rows = listOfNotNull<@Composable () -> Unit>(
             { PullDownRow(stringResource(Res.string.step), Steps, step, { amount(it) }) { step = it } },
             if (hasBar) {
                 {
-                    PullDownRow(stringResource(Res.string.bar), Bars.map { it.first }, bar, { b ->
-                        Bars.firstOrNull { it.first == b }?.let { stringResource(it.second, amount(b ?: 0.0)) } ?: amount(b ?: 0.0)
+                    PullDownRow(stringResource(Res.string.bar), (listOfNotNull(odd) + Bars.map { it.weight(shown) }).distinct(), bar, { b ->
+                        Bars.firstOrNull { it.weight(shown) == b }?.let { stringResource(it.name, amount(b ?: 0.0)) } ?: amount(b ?: 0.0)
                     }) { bar = it }
                 }
             } else null,
@@ -901,7 +913,14 @@ private fun SettingsDialog(e: SessionExercise, onDone: () -> Unit) {
                     Text(stringResource(Res.string.unit), Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.bodyLarge.board())
                     Segments(WeightUnit.entries.map { stringResource(it.label) }, WeightUnit.entries.indexOf(shown),
-                        { i -> i?.let { unit = WeightUnit.entries[it] } }, Modifier.width(132.dp), clearable = false)
+                        { i ->
+                            i?.let {
+                                val to = WeightUnit.entries[it]
+                                // The same bar by name in the new unit (Olympic 20 kg is Olympic 45 lb); one without a name keeps its number.
+                                bar = Bars.firstOrNull { b -> b.weight(shown) == bar }?.weight(to) ?: bar
+                                unit = to
+                            }
+                        }, Modifier.width(132.dp), clearable = false)
                 }
             },
         )
