@@ -111,8 +111,6 @@
     <string name="discard_body">Every set in it is deleted.</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
-    <string name="log_and_save">Log them as they are and save</string>
-    <string name="save_without">Save without them</string>
     <string name="keep_going">Continue workout</string>
     <string name="delete">Delete</string>
     <string name="log">Log</string>
@@ -147,6 +145,8 @@
     <string name="bar_left_open">%1$s · left open · %2$s</string>
     <string name="tap_to_continue">Tap to continue</string>
     <string name="history_sets">%1$d sets</string>
+    <plurals name="log_and_save"><item quantity="one">Log it as it is and save</item><item quantity="other">Log them as they are and save</item></plurals>
+    <plurals name="save_without"><item quantity="one">Save without it</item><item quantity="other">Save without them</item></plurals>
     <plurals name="unlogged"><item quantity="one">%1$d set not logged</item><item quantity="other">%1$d sets not logged</item></plurals>
     <plurals name="week_workouts"><item quantity="one">Week %1$d · %2$d workout</item><item quantity="other">Week %1$d · %2$d workouts</item></plurals>
     <string-array name="weekdays"><item>Monday</item><item>Tuesday</item><item>Wednesday</item><item>Thursday</item><item>Friday</item><item>Saturday</item><item>Sunday</item></string-array>

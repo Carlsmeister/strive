@@ -163,7 +163,6 @@ import strive.shared.generated.resources.exercise_settings
 import strive.shared.generated.resources.finish
 import strive.shared.generated.resources.include
 import strive.shared.generated.resources.keep_going
-import strive.shared.generated.resources.log_and_save
 import strive.shared.generated.resources.minimise
 import strive.shared.generated.resources.move_down
 import strive.shared.generated.resources.move_up
@@ -179,7 +178,6 @@ import strive.shared.generated.resources.order_skip
 import strive.shared.generated.resources.remove_exercise
 import strive.shared.generated.resources.rest_all
 import strive.shared.generated.resources.rest_change
-import strive.shared.generated.resources.save_without
 import strive.shared.generated.resources.skip
 import strive.shared.generated.resources.step
 import strive.shared.generated.resources.sticky_note
@@ -193,6 +191,8 @@ import strive.shared.generated.resources.skip_named
 import strive.shared.generated.resources.include_named
 import strive.shared.generated.resources.swap
 import strive.shared.generated.resources.time_sets
+import strive.shared.generated.resources.log_and_save
+import strive.shared.generated.resources.save_without
 import strive.shared.generated.resources.unlogged
 
 /** The clock, ticking on the second. */
@@ -552,8 +552,8 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             ActionSheet(
                 pluralStringResource(Res.plurals.unlogged, left, left),
                 listOf(
-                    SheetAction(stringResource(Res.string.log_and_save)) { finishing = false; finishAs(Finish.LogAsTheyStand) },
-                    SheetAction(stringResource(Res.string.save_without)) { finishing = false; finishAs(Finish.WithoutThem) },
+                    SheetAction(pluralStringResource(Res.plurals.log_and_save, left)) { finishing = false; finishAs(Finish.LogAsTheyStand) },
+                    SheetAction(pluralStringResource(Res.plurals.save_without, left)) { finishing = false; finishAs(Finish.WithoutThem) },
                     // Red, with no alert after it: Avsluta was the intentional action, not discarding (#16).
                     SheetAction(stringResource(Res.string.discard_workout), destructive = true) { finishing = false; discard() },
                 ),
@@ -563,7 +563,7 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
         if (discarding) {
             Alert(
                 stringResource(Res.string.discard_question), stringResource(Res.string.discard_body), stringResource(Res.string.discard_workout),
-                onConfirm = { discarding = false; discard() }, onDismiss = { discarding = false },
+                onConfirm = { discarding = false; discard() }, onDismiss = { discarding = false }, ghost = true,
             )
         }
         if (ordering) OrderDialog(w) { ordering = false }

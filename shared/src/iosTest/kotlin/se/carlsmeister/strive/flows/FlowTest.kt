@@ -293,7 +293,7 @@ class FlowTest {
         tap(s(Res.string.finish))
         see(s(Res.string.keep_going))
         shot("dark-06-sheet")
-        tap(s(Res.string.log_and_save))
+        tap(getPluralString(Res.plurals.log_and_save, 1))
         see(s(Res.string.done))
         tapSegment("7")
         shot("dark-07-summary")
@@ -605,7 +605,9 @@ class FlowTest {
         tap(s(Res.string.remove_exercise))
         see(s(Res.string.exercise_removed, "Bench Press BB"))
         tap(s(Res.string.finish))
-        tap(s(Res.string.save_without)) // the other exercises' sets are not all logged
+        // The other exercises' sets are not all logged.
+        val left = open().exercises.filter { it.name != "Bench Press BB" }.sumOf { e -> e.sets.count { !it.done } }
+        tap(getPluralString(Res.plurals.save_without, left))
         see(s(Res.string.done))
         gone(hasText("Bench Press BB", substring = true))
         assertTrue(graph.sessions.history().first().first().exercises.none { it.name == "Bench Press BB" })
@@ -751,7 +753,7 @@ class FlowTest {
         tap(s(Res.string.finish))
         see(getPluralString(Res.plurals.unlogged, 1, 1))
         shot("06-finish-sheet")
-        tap(s(Res.string.log_and_save))
+        tap(getPluralString(Res.plurals.log_and_save, 1))
         see(s(Res.string.done))
         assertEquals(2, graph.sessions.history().first().single().logged)
     }
@@ -765,9 +767,23 @@ class FlowTest {
         tapContaining(s(Res.string.add_set))
         waitUntilTrue { open().sets == 2 }
         tap(s(Res.string.finish))
-        tap(s(Res.string.save_without))
+        tap(getPluralString(Res.plurals.save_without, 1))
         see(s(Res.string.done))
         assertEquals(1, graph.sessions.history().first().single().sets)
+    }
+
+    /** WO-15-one: one set left unlogged, the Finish sheet reads in the singular (#58). */
+    @Test
+    fun oneUnloggedSetReadsInTheSingular() = inEnglish {
+        flow {
+            startWorkout()
+            addExercises("Bench Press BB")
+            tap(s(Res.string.finish))
+            see("1 set not logged")
+            see("Log it as it is and save")
+            see("Save without it")
+            assertTrue(test.onAllNodes(hasText("them", substring = true)).fetchSemanticsNodes().isEmpty(), "no plural label")
+        }
     }
 
     @Test

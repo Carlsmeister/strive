@@ -15,6 +15,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performScrollToKey
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
@@ -33,6 +34,8 @@ import se.carlsmeister.strive.flows.weightLabel
 import se.carlsmeister.strive.workout.now
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.collapse
+import strive.shared.generated.resources.discard_workout
+import strive.shared.generated.resources.finish
 import strive.shared.generated.resources.exercise_details
 import strive.shared.generated.resources.exercise_options
 import strive.shared.generated.resources.exercise_settings
@@ -140,12 +143,7 @@ class WorkoutShotTest {
 
     /** At 58:20, everything logged but Tricep Pushdown's drop set, which is in focus. */
     @Test
-    fun wo02S9dInDarkAndDarkHc() = workoutBoard("WO-02-s9d", waitFor = "DROP SET") { graph ->
-        logAll(graph, at = 58 * 60 + 20, "Bench Press BB", "Incline Press DB", "Lateral Raise DB", "Tricep Dips")
-        val pushdown = today(graph).exercises.first { it.name == "Tricep Pushdown" }
-        graph.sessions.saveSet(pushdown.sets[0].copy(reps = 12, rir = 2, done = true))
-        graph.sessions.saveSet(pushdown.sets[1].copy(reps = 11, rir = 1, done = true))
-    }
+    fun wo02S9dInDarkAndDarkHc() = workoutBoard("WO-02-s9d", waitFor = "DROP SET") { graph -> pushdownLeft(graph, at = 58 * 60 + 20, logged = 2) }
 
     /** At 48:55, Bench Press BB and the A/B superset logged, Tricep Dips' set 1 in focus: a bodyweight exercise's added weight. */
     @Test
@@ -360,12 +358,7 @@ class WorkoutShotTest {
 
     /** No marks and no history: the card alone, no quick picks. */
     @Test
-    fun wo01NoneInDarkAndDarkHc() = emptyWorkoutBoard("WO-01-none", "What are you training today?", at = 12) { graph ->
-        unmarkAll(graph)
-        graph.sessions.history().first().forEach { graph.sessions.discard(it.id) }
-        // The card's question shows before and after, so the first mode waits for the picks to go.
-        waitUntil(timeoutMillis = 10_000) { onAllNodes(hasText("Quick picks")).fetchSemanticsNodes().isEmpty() }
-    }
+    fun wo01NoneInDarkAndDarkHc() = emptyWorkoutBoard("WO-01-none", "What are you training today?", at = 12) { graph -> noPicks(graph) }
 
     /** Bench Press BB from its quick pick at 0:31, with last time's sets (P14): the warm-up in focus. */
     @Test
@@ -505,9 +498,65 @@ class WorkoutShotTest {
     /** The reference board with logged set 1's badge menu open: the caption says the set stays where it is. */
     @Test
     fun wo13LoggedInDarkAndDarkHc() = workoutBoard("WO-13-logged", waitFor = "The set stays where it is.") { setMenu("1") }
+
+    /** WO-02-s9d with Finish tapped: the one set left reads in the singular (#58). */
+    @Test
+    fun wo15OneInDarkAndDarkHc() = workoutBoard("WO-15-one", waitFor = "Log it as it is and save") { graph ->
+        pushdownLeft(graph, at = 58 * 60 + 20, logged = 2)
+        tapFinish()
+    }
+
+    /** At 56:10, Tricep Pushdown's set 2 in focus and its drop set after it: two left. */
+    @Test
+    fun wo15SeveralInDarkAndDarkHc() = workoutBoard("WO-15-several", waitFor = "Log them as they are and save") { graph ->
+        pushdownLeft(graph, at = 56 * 60 + 10, logged = 1)
+        tapFinish()
+    }
+
+    /** WO-02-s2 with the list's Discard workout tapped, the list back at its top: both of the alert's buttons unfilled. */
+    @Test
+    fun wo16DiscardInDarkAndDarkHc() = workoutBoard("WO-16-discard", waitFor = "Discard the workout?") {
+        val list = onNode(hasScrollToIndexAction())
+        list.performScrollToKey("end")
+        waitForIdle()
+        onAllNodes(hasText(getString(Res.string.discard_workout)) and hasClickAction())[0].performClick()
+        waitForIdle()
+        list.performScrollToIndex(0)
+        waitForIdle()
+    }
+
+    /** WO-01-none with Finish tapped: a workout with no sets asks the same. */
+    @Test
+    fun wo16EmptyInDarkAndDarkHc() = emptyWorkoutBoard("WO-16-empty", "Discard the workout?", at = 12) { graph ->
+        noPicks(graph)
+        tapFinish()
+    }
 }
 
 /** WO-02-s10td: at 1:03:40, all 14 sets logged, then Plank (time) and Walking Lunge (distance) added from last time. */
+/** Everything logged up to Tricep Pushdown, then its first [logged] sets, the workout's clock at [at] seconds (WO-02-s9d, WO-15). */
+private suspend fun pushdownLeft(graph: AppGraph, at: Int, logged: Int) {
+    logAll(graph, at = at, "Bench Press BB", "Incline Press DB", "Lateral Raise DB", "Tricep Dips")
+    val pushdown = today(graph).exercises.first { it.name == "Tricep Pushdown" }
+    listOf(12 to 2, 11 to 1).take(logged).forEachIndexed { i, (reps, rir) -> graph.sessions.saveSet(pushdown.sets[i].copy(reps = reps, rir = rir, done = true)) }
+}
+
+/** No marks and no history, so the empty workout shows the card alone (WO-01-none). */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.noPicks(graph: AppGraph) {
+    unmarkAll(graph)
+    graph.sessions.history().first().forEach { graph.sessions.discard(it.id) }
+    // The card's question shows before and after, so the first mode waits for the picks to go.
+    waitUntil(timeoutMillis = 10_000) { onAllNodes(hasText("Quick picks")).fetchSemanticsNodes().isEmpty() }
+}
+
+/** Taps Finish in the workout's bar. */
+@OptIn(ExperimentalTestApi::class)
+private suspend fun ComposeUiTest.tapFinish() {
+    onNode(hasText(getString(Res.string.finish)) and hasClickAction()).performClick()
+    waitForIdle()
+}
+
 private suspend fun plankAndLungeAdded(graph: AppGraph) {
     val names = listOf("Plank", "Walking Lunge")
     // Last time's sets, which an added exercise takes (P14), come from a finished workout of their own four days back.

@@ -111,8 +111,6 @@
     <string name="discard_body">Alla set i det raderas.</string>
     <string name="cancel">Avbryt</string>
     <string name="save">Spara</string>
-    <string name="log_and_save">Logga dem som de står och spara</string>
-    <string name="save_without">Spara utan dem</string>
     <string name="keep_going">Fortsätt passet</string>
     <string name="delete">Ta bort</string>
     <string name="log">Logga</string>
@@ -147,6 +145,8 @@
     <string name="bar_left_open">%1$s · lämnat öppet · %2$s</string>
     <string name="tap_to_continue">Tryck för att fortsätta</string>
     <string name="history_sets">%1$d set</string>
+    <plurals name="log_and_save"><item quantity="one">Logga det som det står och spara</item><item quantity="other">Logga dem som de står och spara</item></plurals>
+    <plurals name="save_without"><item quantity="one">Spara utan det</item><item quantity="other">Spara utan dem</item></plurals>
     <plurals name="unlogged"><item quantity="one">%1$d set är inte loggat</item><item quantity="other">%1$d set är inte loggade</item></plurals>
     <plurals name="week_workouts"><item quantity="one">Vecka %1$d · %2$d pass</item><item quantity="other">Vecka %1$d · %2$d pass</item></plurals>
     <string-array name="weekdays"><item>Måndag</item><item>Tisdag</item><item>Onsdag</item><item>Torsdag</item><item>Fredag</item><item>Lördag</item><item>Söndag</item></string-array>

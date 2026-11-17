@@ -118,18 +118,21 @@ private fun AlertFrame(modifier: Modifier, content: @Composable ColumnScope.() -
     content = content,
 )
 
-/** An alert: only for an uncommon action that cannot be undone (#16). */
+/** An alert: only for an uncommon action that cannot be undone (#16). [ghost] leaves both buttons unfilled, as WO-16 draws them. */
 @Composable
-internal fun Alert(title: String, body: String, confirm: String, onConfirm: () -> Unit, onDismiss: () -> Unit, destructive: Boolean = true) =
-    DialogWindow(onDismiss) { AlertPanel(title, body, confirm, onConfirm, onDismiss, destructive, Modifier.align(Alignment.Center).padding(StriveTheme.spacing.s24)) }
+internal fun Alert(title: String, body: String, confirm: String, onConfirm: () -> Unit, onDismiss: () -> Unit, destructive: Boolean = true,
+                   ghost: Boolean = false) =
+    DialogWindow(onDismiss) {
+        AlertPanel(title, body, confirm, onConfirm, onDismiss, destructive, Modifier.align(Alignment.Center).padding(StriveTheme.spacing.s24), ghost)
+    }
 
 /** [Alert]'s panel without its window: the title, one line of body, and Cancel beside the confirming button. */
 @Composable
 internal fun AlertPanel(title: String, body: String, confirm: String, onConfirm: () -> Unit, onDismiss: () -> Unit, destructive: Boolean = true,
-                        modifier: Modifier = Modifier) = AlertFrame(modifier) {
+                        modifier: Modifier = Modifier, ghost: Boolean = false) = AlertFrame(modifier) {
     AlertText(title, MaterialTheme.typography.titleMedium)
     AlertText(body, MaterialTheme.typography.bodyMedium)
-    AlertActions(confirm, if (destructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary, onConfirm, onDismiss)
+    AlertActions(confirm, if (destructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary, onConfirm, onDismiss, ghost)
 }
 
 /**
