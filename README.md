@@ -13,7 +13,8 @@ shell is built to the boards SH-01, SH-03, SH-05 and WO-17 (#57): the floating t
 bubbles, the minimised workout's bar and Food's placeholder. The built screens' menus, dialogs,
 sheets, segmented controls and back labels are the system's components. Plates are built (#48):
 the plates per side under the next set, the dock's bar line and bar menu, plate keys for typing a
-weight, the warm-up ladder, and the gym's default plates and bars in Settings. Editing them is #63.
+weight, an added warm-up taking the next rung of the ladder, and the gym's plates and bars stored
+with Carl's defaults. The Settings screen that shows and edits them is #63.
 Not yet: the rest timer's lock-screen notification and Live Activity (#43), templates, hints,
 records, programmes, runs and export.
 Home, Plan and You remain placeholders, Plan and You only leading to the library and History, and
