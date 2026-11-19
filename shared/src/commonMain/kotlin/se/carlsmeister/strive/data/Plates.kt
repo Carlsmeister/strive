@@ -1,6 +1,15 @@
 package se.carlsmeister.strive.data
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import org.jetbrains.compose.resources.StringResource
 import se.carlsmeister.strive.library.kilos
+import strive.shared.generated.resources.Res
+import strive.shared.generated.resources.bar_ez
+import strive.shared.generated.resources.bar_hex
+import strive.shared.generated.resources.bar_none
+import strive.shared.generated.resources.bar_olympic
+import strive.shared.generated.resources.bar_short
 import kotlin.math.roundToLong
 
 /** How a total loads on the bar (#48): the plates for one side, heaviest first, or that it cannot be made. */
@@ -88,3 +97,44 @@ internal fun nextRung(rungs: List<Rung>, warmups: List<Double>): Rung? {
     val done = warmups.maxOfOrNull { it.hundredths() } ?: 0
     return rungs.firstOrNull { it.weight.hundredths() > done }
 }
+
+/** The gym's plates setting for this unit. #63's control must write these keys: weights joined by "," with "." decimals. */
+internal val WeightUnit.platesKey get() = "plates_$key"
+
+/** Every kg plate but 15; EL-07-lb's lb plates. */
+internal val WeightUnit.defaultPlates
+    get() = if (this == WeightUnit.Lb) listOf(45.0, 35.0, 25.0, 10.0, 5.0, 2.5) else listOf(25.0, 20.0, 10.0, 5.0, 2.5, 1.25)
+
+/** The Plates key's plates per unit; one the gym lacks is greyed. */
+internal val WeightUnit.plateKeys
+    get() = if (this == WeightUnit.Lb) listOf(45.0, 35.0, 25.0, 10.0, 5.0, 2.5) else listOf(25.0, 20.0, 15.0, 10.0, 5.0, 2.5, 1.25)
+
+/** The gym's plates in [unit]: the stored list, or the default when nothing parsable is stored. */
+internal fun Settings.plates(unit: WeightUnit): Flow<List<Double>> = weights(unit.platesKey, unit.defaultPlates)
+
+/** The gym's bars setting for this unit, in the plates' format. None is always offered and never stored. */
+internal val WeightUnit.barsKey get() = "bars_$key"
+
+/** Carl's gym: Olympic, Short, EZ and Hex. */
+internal val WeightUnit.defaultBars get() = Bars.mapNotNull { it.weight(this) }
+
+/** The gym's bars in [unit], read as [plates] reads its plates. */
+internal fun Settings.bars(unit: WeightUnit): Flow<List<Double>> = weights(unit.barsKey, unit.defaultBars)
+
+// A bad entry is skipped and an unusable value falls back, so a corrupt setting never reaches the plate maths.
+private fun Settings.weights(key: String, default: List<Double>) = get(key).map { value ->
+    value?.split(',')?.mapNotNull { it.trim().toDoubleOrNull()?.takeIf { w -> w.isFinite() && w > 0 } }?.ifEmpty { null } ?: default
+}
+
+/** A bar by name (Q22, WO-12) with its weight in kg and in lb (EL-07-lb); None weighs nothing and saves no bar. */
+internal class NamedBar(val name: StringResource, val kg: Double?, val lb: Double?) {
+    fun weight(unit: WeightUnit) = if (unit == WeightUnit.Lb) lb else kg
+}
+
+internal val Bars = listOf(
+    NamedBar(Res.string.bar_olympic, 20.0, 45.0), NamedBar(Res.string.bar_short, 15.0, 35.0), NamedBar(Res.string.bar_ez, 7.5, 15.0),
+    NamedBar(Res.string.bar_hex, 25.0, 55.0), NamedBar(Res.string.bar_none, null, null),
+)
+
+/** The named bar that weighs [weight] in [unit], or null when none does ("Bar 10"). */
+internal fun namedBar(weight: Double, unit: WeightUnit): NamedBar? = Bars.firstOrNull { it.weight(unit) == weight }

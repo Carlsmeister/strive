@@ -138,6 +138,9 @@ import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.data.WorkoutSet
+import se.carlsmeister.strive.data.Bars
+import se.carlsmeister.strive.data.bars
+import se.carlsmeister.strive.data.defaultBars
 import se.carlsmeister.strive.data.defaultUnit
 import se.carlsmeister.strive.data.unitIn
 import se.carlsmeister.strive.data.loggable
@@ -168,11 +171,6 @@ import strive.shared.generated.resources.move_down
 import strive.shared.generated.resources.move_up
 import strive.shared.generated.resources.unit
 import strive.shared.generated.resources.saved_for
-import strive.shared.generated.resources.bar_olympic
-import strive.shared.generated.resources.bar_short
-import strive.shared.generated.resources.bar_ez
-import strive.shared.generated.resources.bar_hex
-import strive.shared.generated.resources.bar_none
 import strive.shared.generated.resources.note
 import strive.shared.generated.resources.order_skip
 import strive.shared.generated.resources.remove_exercise
@@ -862,16 +860,6 @@ private fun supersetPartners(w: Workout, e: SessionExercise) = w.exercises.filte
 /** The step − and + use (Q15). */
 private val Steps = listOf(1.0, 1.25, 2.0, 2.5, 4.0, 5.0)
 
-/** A bar by name (Q22, WO-12) with its weight in kg and in lb (EL-07-lb); None weighs nothing and saves no bar. */
-private class NamedBar(val name: StringResource, val kg: Double?, val lb: Double?) {
-    fun weight(unit: WeightUnit) = if (unit == WeightUnit.Lb) lb else kg
-}
-
-private val Bars = listOf(
-    NamedBar(Res.string.bar_olympic, 20.0, 45.0), NamedBar(Res.string.bar_short, 15.0, 35.0), NamedBar(Res.string.bar_ez, 7.5, 15.0),
-    NamedBar(Res.string.bar_hex, 25.0, 55.0), NamedBar(Res.string.bar_none, null, null),
-)
-
 /**
  * Exercise settings (WO-12): the exercise's name in the head; Step and Bar as pull-downs, Unit as kg | lb, and what saving means. Done saves
  * the three, the bar in the unit shown; the unit stays as it was (unset follows the app default) unless the one shown changed. A tap on
@@ -887,9 +875,11 @@ private fun SettingsDialog(e: SessionExercise, default: WeightUnit, onDone: () -
     var unit by remember { mutableStateOf(e.unit) }
     // Ruling 3: the Bar row is there for an exercise that had a bar at open, so choosing None keeps it until the sheet closes.
     val hasBar = remember { e.bar != null }
-    // A saved bar no name weighs (10 kg on some seeded barbells) leads the pull-down, so it shows checked and can be kept.
-    val odd = remember { e.bar?.takeIf { b -> Bars.none { it.weight(e.unitIn(default)) == b } } }
     val shown = unit ?: default
+    val gymBars by remember(shown) { graph.settings.bars(shown) }.collectAsState(shown.defaultBars)
+    // A bar the gym's list lacks (10 kg on some seeded barbells) leads the pull-down, so it shows checked and can be kept. Judged again
+    // whenever the list arrives or the unit changes it, against the bar as it then stands, so a late list cannot drop it.
+    val odd = remember(gymBars) { bar?.takeIf { it !in gymBars } }
     val unitText = stringResource(shown.label)
     fun amount(v: Double) = "${kilos(v, swedish)} $unitText"
     HeaderSheet(e.name, onDismiss = onDone, done = stringResource(Res.string.done), onDone = {
@@ -901,7 +891,7 @@ private fun SettingsDialog(e: SessionExercise, default: WeightUnit, onDone: () -
             { PullDownRow(stringResource(Res.string.step), Steps, step, { amount(it) }) { step = it } },
             if (hasBar) {
                 {
-                    PullDownRow(stringResource(Res.string.bar), (listOfNotNull(odd) + Bars.map { it.weight(shown) }).distinct(), bar, { b ->
+                    PullDownRow(stringResource(Res.string.bar), (listOfNotNull(odd) + gymBars + null).distinct(), bar, { b ->
                         Bars.firstOrNull { it.weight(shown) == b }?.let { stringResource(it.name, amount(b ?: 0.0)) } ?: amount(b ?: 0.0)
                     }) { bar = it }
                 }

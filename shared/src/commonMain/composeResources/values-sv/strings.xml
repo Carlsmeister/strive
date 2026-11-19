@@ -218,6 +218,7 @@
     <string name="bar_ez">EZ %1$s</string>
     <string name="bar_hex">Hex %1$s</string>
     <string name="bar_none">Ingen %1$s</string>
+    <string name="bar_pill">Stång %1$s</string>
     <string name="skip">Hoppa över</string>
     <string name="skipped">Hoppas över</string>
     <string name="include">Ta med</string>

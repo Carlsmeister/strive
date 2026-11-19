@@ -218,6 +218,7 @@
     <string name="bar_ez">EZ %1$s</string>
     <string name="bar_hex">Hex %1$s</string>
     <string name="bar_none">None %1$s</string>
+    <string name="bar_pill">Bar %1$s</string>
     <string name="skip">Skip</string>
     <string name="skipped">Skipped</string>
     <string name="include">Include</string>
