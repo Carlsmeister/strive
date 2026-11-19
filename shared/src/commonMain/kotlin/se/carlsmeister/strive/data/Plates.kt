@@ -147,5 +147,5 @@ internal val Bars = listOf(
     NamedBar(Res.string.bar_none, null, null, null),
 )
 
-/** The named bar that weighs [weight] in [unit] (None for no bar), or null when none does ("Bar 10"). */
+/** The named bar that weighs [weight] in [unit] (None for no bar), or null when none does and the bar reads by its weight ("10 kg"). */
 internal fun namedBar(weight: Double?, unit: WeightUnit): NamedBar? = Bars.firstOrNull { it.weight(unit) == weight }

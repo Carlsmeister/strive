@@ -41,9 +41,9 @@ inside a string, for the same two lists.
   stores a null `exercise.bar`.
 - **A bar is stored as a weight, never a name.** `exercise.bar` holds the number, and
   `namedBar()` names it from the named bar in `Bars` that weighs it in the exercise's unit:
-  20 kg reads "Olympic 20 kg". A weight no named bar has reads "Bar 10". Switching an
-  exercise's unit in WO-12 keeps a named bar by name (Olympic 20 kg becomes Olympic 45 lb);
-  an unnamed one keeps its number.
+  20 kg reads "Olympic 20 kg". A weight no named bar has reads by its weight alone: "10 kg".
+  Switching an exercise's unit in WO-12 keeps a named bar by name (Olympic 20 kg becomes
+  Olympic 45 lb); an unnamed one keeps its number.
 - **#63's control writes these keys,** in this format. Nothing writes them yet, so every gym
   reads the defaults.
 
@@ -53,8 +53,8 @@ maths and the ladder need the number, and the name follows from it.
 
 ## Consequences
 
-- **Easier:** #63 writes four strings and needs no migration. A typo in a stored list costs
-  one plate, not the screen.
+- **Easier:** #63 writes four strings and needs no migration. An entry that does not parse
+  costs one plate, not the screen.
 - **Not built: plate counts.** `load()` assumes unlimited plates of each size. A count per
   plate needs a new format, and a new record superseding this one.
 - **An empty list cannot be stored.** It reads as the default, so a gym with no plates in a
