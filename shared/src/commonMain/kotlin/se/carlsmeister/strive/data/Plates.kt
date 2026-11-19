@@ -123,7 +123,7 @@ internal fun Settings.bars(unit: WeightUnit): Flow<List<Double>> = weights(unit.
 
 // A bad entry is skipped and an unusable value falls back, so a corrupt setting never reaches the plate maths.
 private fun Settings.weights(key: String, default: List<Double>) = get(key).map { value ->
-    value?.split(',')?.mapNotNull { it.trim().toDoubleOrNull()?.takeIf { w -> w.isFinite() && w > 0 } }?.ifEmpty { null } ?: default
+    value?.split(',')?.mapNotNull { it.trim().toDoubleOrNull()?.takeIf { w -> w.isFinite() && w.hundredths() > 0 } }?.ifEmpty { null } ?: default
 }
 
 /** A bar by name (Q22, WO-12) with its weight in kg and in lb (EL-07-lb); None weighs nothing and saves no bar. */
@@ -136,5 +136,5 @@ internal val Bars = listOf(
     NamedBar(Res.string.bar_hex, 25.0, 55.0), NamedBar(Res.string.bar_none, null, null),
 )
 
-/** The named bar that weighs [weight] in [unit], or null when none does ("Bar 10"). */
-internal fun namedBar(weight: Double, unit: WeightUnit): NamedBar? = Bars.firstOrNull { it.weight(unit) == weight }
+/** The named bar that weighs [weight] in [unit] (None for no bar), or null when none does ("Bar 10"). */
+internal fun namedBar(weight: Double?, unit: WeightUnit): NamedBar? = Bars.firstOrNull { it.weight(unit) == weight }

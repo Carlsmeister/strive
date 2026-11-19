@@ -53,6 +53,13 @@ class SettingsTest {
         assertEquals(WeightUnit.Kg.defaultPlates, settings.plates(WeightUnit.Kg).first())
         settings.put("plates_kg", "abc,25,-5,0")
         assertEquals(listOf(25.0), settings.plates(WeightUnit.Kg).first())
+        settings.put("plates_kg", "abc,-5")
+        assertEquals(WeightUnit.Kg.defaultPlates, settings.plates(WeightUnit.Kg).first())
+        settings.put("plates_kg", "NaN,Infinity,25")
+        assertEquals(listOf(25.0), settings.plates(WeightUnit.Kg).first())
+        // Under a hundredth the plate maths drops a plate, so a list of only those is no list.
+        settings.put("plates_kg", "0.001")
+        assertEquals(WeightUnit.Kg.defaultPlates, settings.plates(WeightUnit.Kg).first())
     }
 
     @Test

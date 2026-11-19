@@ -138,7 +138,7 @@ import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.data.WorkoutSet
-import se.carlsmeister.strive.data.Bars
+import se.carlsmeister.strive.data.namedBar
 import se.carlsmeister.strive.data.bars
 import se.carlsmeister.strive.data.defaultBars
 import se.carlsmeister.strive.data.defaultUnit
@@ -877,9 +877,11 @@ private fun SettingsDialog(e: SessionExercise, default: WeightUnit, onDone: () -
     val hasBar = remember { e.bar != null }
     val shown = unit ?: default
     val gymBars by remember(shown) { graph.settings.bars(shown) }.collectAsState(shown.defaultBars)
-    // A bar the gym's list lacks (10 kg on some seeded barbells) leads the pull-down, so it shows checked and can be kept. Judged again
-    // whenever the list arrives or the unit changes it, against the bar as it then stands, so a late list cannot drop it.
-    val odd = remember(gymBars) { bar?.takeIf { it !in gymBars } }
+    // A saved bar the gym's list lacks (10 kg on some seeded barbells) leads the pull-down, so it shows checked and can be kept. It is the
+    // bar saved at open, judged against the list of its own unit as that list arrives, so neither a late list nor a pick can drop it.
+    val savedUnit = e.unitIn(default)
+    val savedUnitBars by remember(savedUnit) { graph.settings.bars(savedUnit) }.collectAsState(savedUnit.defaultBars)
+    val odd = e.bar?.takeIf { it !in savedUnitBars }
     val unitText = stringResource(shown.label)
     fun amount(v: Double) = "${kilos(v, swedish)} $unitText"
     HeaderSheet(e.name, onDismiss = onDone, done = stringResource(Res.string.done), onDone = {
@@ -892,7 +894,7 @@ private fun SettingsDialog(e: SessionExercise, default: WeightUnit, onDone: () -
             if (hasBar) {
                 {
                     PullDownRow(stringResource(Res.string.bar), (listOfNotNull(odd) + gymBars + null).distinct(), bar, { b ->
-                        Bars.firstOrNull { it.weight(shown) == b }?.let { stringResource(it.name, amount(b ?: 0.0)) } ?: amount(b ?: 0.0)
+                        namedBar(b, shown)?.let { stringResource(it.name, amount(b ?: 0.0)) } ?: amount(b ?: 0.0)
                     }) { bar = it }
                 }
             } else null,
@@ -906,7 +908,7 @@ private fun SettingsDialog(e: SessionExercise, default: WeightUnit, onDone: () -
                             i?.let {
                                 val to = WeightUnit.entries[it]
                                 // The same bar by name in the new unit (Olympic 20 kg is Olympic 45 lb); one without a name keeps its number.
-                                bar = Bars.firstOrNull { b -> b.weight(shown) == bar }?.weight(to) ?: bar
+                                bar = namedBar(bar, shown)?.weight(to) ?: bar
                                 unit = to
                             }
                         }, Modifier.width(132.dp), clearable = false)
