@@ -88,6 +88,28 @@ class PlatesTest {
     }
 
     @Test
+    fun aZeroStepFallsBackToTwoAndAHalf() {
+        val atTwoAndAHalf = listOf(Rung(42.5, 5), Rung(57.5, 3), Rung(70.0, 1))
+        assertEquals(atTwoAndAHalf, ladder(85.0, null, 0.0, kg))
+        // 0.001 rounds to 0 hundredths.
+        assertEquals(atTwoAndAHalf, ladder(85.0, null, 0.001, kg))
+    }
+
+    @Test
+    fun sparsePlatesRoundEachRungDownToTheHeaviestTheyLoad() {
+        // Side amounts 65, 95 and 117.5 kg fall to 50, 75 and 100 on 25s alone.
+        assertEquals(
+            listOf(Rung(20.0, 10), Rung(120.0, 5), Rung(170.0, 3), Rung(220.0, 1)),
+            ladder(300.0, 20.0, 2.5, listOf(25.0)),
+        )
+    }
+
+    @Test
+    fun anAbsurdWeightCannotBeLoaded() {
+        assertEquals(Load.CannotLoad, load(99999999.0, 20.0, kg))
+    }
+
+    @Test
     fun nextRungSkipsWhatIsDone() {
         val rungs = ladder(80.0, 20.0, 2.5, kg)
         assertEquals(Rung(55.0, 3), nextRung(rungs, listOf(40.0)))

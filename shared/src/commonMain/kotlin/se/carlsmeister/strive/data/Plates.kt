@@ -13,24 +13,38 @@ internal sealed interface Load {
 // Weights are worked in hundredths so sums and percentages never drift.
 private fun Double.hundredths() = (this * 100).roundToLong()
 
+// No gym loads 1000 kg a side: above it a typed total is a typo, and its table would not fit in memory.
+private const val MAX_SIDE = 100_000L
+private const val NONE = Int.MAX_VALUE
+
+/** Min-count coin change up to [side] hundredths: fewest[a] plates make a (NONE if none do), pick[a] is the plate taken first. */
+private class Sides(side: Int, available: List<Double>) {
+    val fewest = IntArray(side + 1) { NONE }.also { it[0] = 0 }
+    val pick = IntArray(side + 1)
+
+    init {
+        val sizes = available.map { it.hundredths().toInt() }.filter { it > 0 }.distinct().sortedDescending()
+        for (a in 1..side) for (p in sizes) {
+            if (p <= a && fewest[a - p] != NONE && fewest[a - p] + 1 < fewest[a]) {
+                fewest[a] = fewest[a - p] + 1
+                pick[a] = p
+            }
+        }
+    }
+
+    /** The heaviest side these plates make at or under [amount]; 0, the bare bar, always is. */
+    fun heaviestUpTo(amount: Long) = (amount.coerceAtMost(fewest.lastIndex.toLong()).toInt() downTo 0).first { fewest[it] != NONE }
+}
+
 /** The fewest plates per side that make [total] on [bar]; ties go to the heavier plate first. */
 internal fun load(total: Double, bar: Double, available: List<Double>): Load {
     // shortcut: unlimited plates of each size; track counts when #63's editor stores them.
     val both = total.hundredths() - bar.hundredths()
-    if (both < 0 || both % 2 != 0L) return Load.CannotLoad
+    if (both < 0 || both % 2 != 0L || both / 2 > MAX_SIDE) return Load.CannotLoad
     val side = (both / 2).toInt()
-    val sizes = available.map { it.hundredths().toInt() }.filter { it > 0 }.distinct().sortedDescending()
-    // Min-count coin change: fewest[a] plates make a, and pick[a] is the plate taken first.
-    val fewest = IntArray(side + 1) { Int.MAX_VALUE }.also { it[0] = 0 }
-    val pick = IntArray(side + 1)
-    for (a in 1..side) for (p in sizes) {
-        if (p <= a && fewest[a - p] != Int.MAX_VALUE && fewest[a - p] + 1 < fewest[a]) {
-            fewest[a] = fewest[a - p] + 1
-            pick[a] = p
-        }
-    }
-    if (fewest[side] == Int.MAX_VALUE) return Load.CannotLoad
-    val plates = generateSequence(side) { it - pick[it] }.takeWhile { it > 0 }.map { pick[it] / 100.0 }
+    val sides = Sides(side, available)
+    if (sides.fewest[side] == NONE) return Load.CannotLoad
+    val plates = generateSequence(side) { it - sides.pick[it] }.takeWhile { it > 0 }.map { sides.pick[it] / 100.0 }
     return Load.Plates(plates.toList().sortedDescending())
 }
 
@@ -52,10 +66,18 @@ internal data class Rung(val weight: Double, val reps: Int)
  */
 internal fun ladder(firstWorking: Double, bar: Double?, step: Double, plates: List<Double>): List<Rung> {
     val first = firstWorking.hundredths()
+    val barH = bar?.hundredths()
+    // One table up to the top rung's side serves every rung.
+    val sides = barH?.let { Sides(((first * 85 / 100 - it) / 2).coerceIn(0, MAX_SIDE).toInt(), plates) }
+    // A step that rounds to nothing falls back to the 2.5 default.
+    val stepH = step.hundredths().takeIf { it > 0 } ?: 250
     val rungs = listOf(50 to 5, 70 to 3, 85 to 1).mapNotNull { (percent, reps) ->
         val raw = first * percent / 100
-        val weight = if (bar == null) raw - raw % step.hundredths()
-        else (raw downTo bar.hundredths()).firstOrNull { load(it / 100.0, bar, plates) is Load.Plates }
+        val weight = when {
+            barH == null || sides == null -> raw - raw % stepH
+            raw < barH -> null
+            else -> barH + 2 * sides.heaviestUpTo((raw - barH) / 2)
+        }
         weight?.takeIf { it > 0 }?.let { Rung(it / 100.0, reps) }
     }
     return if (bar == null) rungs else listOf(Rung(bar, 10)) + rungs
