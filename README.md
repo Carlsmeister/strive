@@ -11,8 +11,11 @@ and History (#42). The system layer from the approved design (#56) is built: mom
 Unbounded for celebration numbers, 79 icons, buttons, cards, controls, lists and title bars. The
 shell is built to the boards SH-01, SH-03, SH-05 and WO-17 (#57): the floating tab bar, Start's
 bubbles, the minimised workout's bar and Food's placeholder. The built screens' menus, dialogs,
-sheets, segmented controls and back labels are the system's components. Not yet: the rest timer's
-lock-screen notification and Live Activity (#43), templates, hints, records, plates, programmes, runs and export.
+sheets, segmented controls and back labels are the system's components. Plates are built (#48):
+the plates per side under the next set, the dock's bar line and bar menu, plate keys for typing a
+weight, the warm-up ladder, and the gym's default plates and bars in Settings. Editing them is #63.
+Not yet: the rest timer's lock-screen notification and Live Activity (#43), templates, hints,
+records, programmes, runs and export.
 Home, Plan and You remain placeholders, Plan and You only leading to the library and History, and
 Run still opens a placeholder.
 CI checks every pull request (#32). The design is prototyped in `docs/design/`.
