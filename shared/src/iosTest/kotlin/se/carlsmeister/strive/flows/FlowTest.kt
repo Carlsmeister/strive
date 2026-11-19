@@ -920,6 +920,25 @@ class FlowTest {
         }
     }
 
+    /** #48 (WO-04-new): the dock's bar line loads the weight field on the exercise's bar, and its pill's menu changes that bar. */
+    @Test
+    fun theBarMenuChangesTheExercisesBar() = inEnglish {
+        pushA {
+            val bench = open().exercises.first { it.name == "Bench Press BB" }.exerciseId
+            test.onNodeWithTag("set Bench Press BB 3").performSemanticsAction(SemanticsActions.OnClick)
+            idle()
+            see("25 + 5 + 1.25")
+            see("Bar 20")
+            tapDesc("Bar: Olympic, 20 kg")
+            see("None 0 kg")
+            shot("bar-menu")
+            tap("Short 15 kg")
+            see("25 + 5 + 2.5 + 1.25") // 33.75 a side
+            see("Bar 15")
+            waitUntilTrue { graph.exercises.byId(bench).first()!!.bar == 15.0 }
+        }
+    }
+
     /** WO-12's Bar pull-down names each bar with its weight in the exercise's unit, None 0 among them. */
     @Test
     fun theBarPullDownNamesTheBars() = inEnglish {

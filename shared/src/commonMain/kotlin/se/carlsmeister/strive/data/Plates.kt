@@ -7,6 +7,10 @@ import se.carlsmeister.strive.library.kilos
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.bar_ez
 import strive.shared.generated.resources.bar_hex
+import strive.shared.generated.resources.bar_name_ez
+import strive.shared.generated.resources.bar_name_hex
+import strive.shared.generated.resources.bar_name_olympic
+import strive.shared.generated.resources.bar_name_short
 import strive.shared.generated.resources.bar_none
 import strive.shared.generated.resources.bar_olympic
 import strive.shared.generated.resources.bar_short
@@ -129,14 +133,18 @@ private fun Settings.weights(key: String, default: List<Double>) = get(key).map 
     value?.split(',')?.mapNotNull { it.trim().toDoubleOrNull()?.takeIf { w -> w.isFinite() && w.hundredths() > 0 } }?.ifEmpty { null } ?: default
 }
 
-/** A bar by name (Q22, WO-12) with its weight in kg and in lb (EL-07-lb); None weighs nothing and saves no bar. */
-internal class NamedBar(val name: StringResource, val kg: Double?, val lb: Double?) {
+/**
+ * A bar by name (Q22, WO-12) with its weight in kg and in lb (EL-07-lb); None weighs nothing and saves no bar. [name] reads "Olympic 20 kg",
+ * [short] the bare "Olympic" the dock's bar pill describes; None has none, as no pill shows without a bar.
+ */
+internal class NamedBar(val name: StringResource, val short: StringResource?, val kg: Double?, val lb: Double?) {
     fun weight(unit: WeightUnit) = if (unit == WeightUnit.Lb) lb else kg
 }
 
 internal val Bars = listOf(
-    NamedBar(Res.string.bar_olympic, 20.0, 45.0), NamedBar(Res.string.bar_short, 15.0, 35.0), NamedBar(Res.string.bar_ez, 7.5, 15.0),
-    NamedBar(Res.string.bar_hex, 25.0, 55.0), NamedBar(Res.string.bar_none, null, null),
+    NamedBar(Res.string.bar_olympic, Res.string.bar_name_olympic, 20.0, 45.0), NamedBar(Res.string.bar_short, Res.string.bar_name_short, 15.0, 35.0),
+    NamedBar(Res.string.bar_ez, Res.string.bar_name_ez, 7.5, 15.0), NamedBar(Res.string.bar_hex, Res.string.bar_name_hex, 25.0, 55.0),
+    NamedBar(Res.string.bar_none, null, null, null),
 )
 
 /** The named bar that weighs [weight] in [unit] (None for no bar), or null when none does ("Bar 10"). */

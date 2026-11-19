@@ -219,6 +219,12 @@
     <string name="bar_hex">Hex %1$s</string>
     <string name="bar_none">Ingen %1$s</string>
     <string name="bar_pill">Stång %1$s</string>
+    <string name="bar_pill_description">Stång: %1$s, %2$s</string>
+    <string name="bar_pill_description_unnamed">Stång: %1$s</string>
+    <string name="bar_name_olympic">Olympisk</string>
+    <string name="bar_name_short">Kort</string>
+    <string name="bar_name_ez">EZ</string>
+    <string name="bar_name_hex">Hex</string>
     <string name="plates_per_side">%1$s per sida</string>
     <string name="plates_bar_only">Bara stången</string>
     <string name="plates_cannot_load">Går inte att lasta med dina skivor</string>

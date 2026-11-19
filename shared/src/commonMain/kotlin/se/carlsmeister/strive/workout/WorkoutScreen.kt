@@ -552,7 +552,10 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             if (open != null) shown.value = open
             val (e, i) = shown.value ?: return@Overlay
             val set = e.sets.getOrNull(i) ?: return@Overlay
-            Dock(e, e.unitIn(defaultUnit), set, defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
+            val unit = e.unitIn(defaultUnit)
+            val plates by remember(unit) { graph.settings.plates(unit) }.collectAsState(unit.defaultPlates)
+            Dock(e, unit, set, defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
+                plates = plates, onBar = { b -> scope.launch { graph.exercises.setSettings(e.exerciseId, e.step, b, e.unit) } },
                 field = editField, logs = !editRest)
         }
         val toast by toasts.shown.collectAsState()
@@ -907,9 +910,7 @@ private fun SettingsDialog(e: SessionExercise, default: WeightUnit, onDone: () -
             { PullDownRow(stringResource(Res.string.step), Steps, step, { amount(it) }) { step = it } },
             if (hasBar) {
                 {
-                    PullDownRow(stringResource(Res.string.bar), (listOfNotNull(odd) + gymBars + null).distinct(), bar, { b ->
-                        namedBar(b, shown)?.let { stringResource(it.name, amount(b ?: 0.0)) } ?: amount(b ?: 0.0)
-                    }) { bar = it }
+                    PullDownRow(stringResource(Res.string.bar), (listOfNotNull(odd) + gymBars + null).distinct(), bar, { b -> barText(b, shown) }) { bar = it }
                 }
             } else null,
             {

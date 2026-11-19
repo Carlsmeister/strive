@@ -65,7 +65,9 @@ import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.data.WorkoutSet
+import se.carlsmeister.strive.data.load
 import se.carlsmeister.strive.data.loggable
+import se.carlsmeister.strive.data.plateKeys
 import se.carlsmeister.strive.library.kilos
 import se.carlsmeister.strive.theme.Motion
 import se.carlsmeister.strive.theme.settle
@@ -134,11 +136,12 @@ private fun Value.parse(f: Field) = if (this == Value.Rest) restSeconds(f.text)?
 /**
  * The logging dock (#17 S3, D3, K3): closed until a set is tapped, closed again by its grabber or a tap outside. The fields show
  * − and + until one is tapped; then the keypad takes over and Nästa walks the fields, becoming Logga › on the last (Q16). Opened
- * from a rest line it changes without logging: [logs] false, and its button says Spara.
+ * from a rest line it changes without logging: [logs] false, and its button says Spara. With a bar, the bar line loads the weight field
+ * from the gym's [plates] and its menu changes the bar through [onBar] (#48, WO-04-new).
  */
 @Composable
 internal fun Dock(exercise: SessionExercise, unit: WeightUnit, set: WorkoutSet, defaultRest: Int, haze: HazeState, onSave: (WorkoutSet) -> Unit, onClose: () -> Unit,
-                  field: Int? = null, logs: Boolean = true) {
+                  plates: List<Double>, onBar: (Double?) -> Unit, field: Int? = null, logs: Boolean = true) {
     val space = StriveTheme.spacing
     val swedish = Locale.current.language == "sv"
     val separator = if (swedish) ',' else '.'
@@ -245,6 +248,13 @@ internal fun Dock(exercise: SessionExercise, unit: WeightUnit, set: WorkoutSet, 
         // The keypad open: rest is the third field, where Nästa goes. Closed: RIR and rest share a row (#17, addition to choice 2).
         Row(horizontalArrangement = Arrangement.spacedBy(space.s12)) {
             for (i in fields.indices) if (f != null || i != rest) field(i, Modifier.weight(1f), steppers = f == null)
+        }
+
+        val bar = exercise.bar
+        if (bar != null && exercise.type == ExerciseType.WeightReps) {
+            // An empty or half-typed weight loads as the bar alone.
+            val weight = texts[fields.indexOf(Value.Weight)].value ?: bar
+            BarLine(remember(weight, bar, plates) { load(weight, bar, plates) }, unit.plateKeys, bar, unit, newest = null, onBar = onBar)
         }
 
         if (f == null) {
