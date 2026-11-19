@@ -1,5 +1,6 @@
 package se.carlsmeister.strive.data
 
+import se.carlsmeister.strive.db.SetsOf
 import se.carlsmeister.strive.db.StriveDatabase
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
@@ -7,6 +8,7 @@ import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
@@ -104,6 +106,20 @@ internal fun warmupOrder(sets: List<WorkoutSet>, id: Long): List<Long> {
     return (rest.take(at) + set + rest.drop(at)).map { it.id }
 }
 
+/**
+ * Q22's next rung for set [id] made a warm-up (ruling 5): on the ladder to the exercise's first other working set, the first rung above
+ * its other warm-ups. Null without a working weight or a rung left, so the set keeps the values it has.
+ */
+private fun nextWarmup(sets: List<SetsOf>, id: Long, plates: List<Double>): Rung? {
+    val others = sets.filter { it.id != id }
+    val firstWorking = others.firstOrNull { it.kind != SetKind.Warmup.key }?.weight ?: return null
+    val exercise = sets.first()
+    return nextRung(
+        ladder(firstWorking, exercise.bar, exercise.step ?: 2.5, plates),
+        others.filter { it.kind == SetKind.Warmup.key }.mapNotNull { it.weight },
+    )
+}
+
 /** An exercise's place in a workout: its id and its superset, null for none. */
 internal data class Slot(val id: Long, val group: Long?)
 
@@ -175,7 +191,10 @@ internal interface Sessions {
 
     suspend fun deleteSet(id: Long)
 
-    /** Changes a set's type; an unlogged set made a warm-up moves up to be the next set to do (#17 choice 4). */
+    /**
+     * Changes a set's type; an unlogged set made a warm-up moves up to be the next set to do (#17 choice 4) and takes Q22's next rung
+     * (O-03). A logged set, or one already a warm-up, keeps its values.
+     */
     suspend fun setKind(id: Long, kind: SetKind)
 
     suspend fun setRestAll(sessionExerciseId: Long, seconds: Int)
@@ -207,7 +226,11 @@ internal interface Sessions {
     suspend fun discard(id: Long)
 }
 
-internal class SqlSessions(private val database: StriveDatabase, private val io: CoroutineContext = Dispatchers.IO) : Sessions {
+internal class SqlSessions(
+    private val database: StriveDatabase,
+    private val io: CoroutineContext = Dispatchers.IO,
+    private val settings: Settings = SqlSettings(database, io),
+) : Sessions {
     private val queries = database.sessionQueries
 
     /** A write off the main thread; Unit, whatever the query returns. */
@@ -274,12 +297,17 @@ internal class SqlSessions(private val database: StriveDatabase, private val io:
 
     override suspend fun deleteSet(id: Long) = write { queries.deleteSet(id) }
 
-    override suspend fun setKind(id: Long, kind: SetKind) = write {
+    override suspend fun setKind(id: Long, kind: SetKind) = withContext(io) {
+        val set = queries.setsOf(id).executeAsList().first { it.id == id }
+        // Ruling 11: only an unlogged set whose kind changes to Warmup climbs the ladder. The plates are read before the write.
+        val climbs = kind == SetKind.Warmup && !set.done && set.kind != SetKind.Warmup.key
+        val plates = if (climbs) settings.plates(WeightUnit.of(set.unit) ?: settings.defaultUnit().first()).first() else null
         queries.transaction {
             queries.setKind(kind.key, id)
             if (kind == SetKind.Warmup) {
-                val sets = queries.setsOf(id).executeAsList().map { WorkoutSet(it.id, done = it.done) }
-                warmupOrder(sets, id).forEachIndexed { i, set -> queries.setPosition(i.toLong(), set) }
+                val sets = queries.setsOf(id).executeAsList()
+                plates?.let { nextWarmup(sets, id, it) }?.let { queries.setLoad(it.weight, it.reps.toLong(), id) }
+                warmupOrder(sets.map { WorkoutSet(it.id, done = it.done) }, id).forEachIndexed { i, s -> queries.setPosition(i.toLong(), s) }
             }
         }
     }

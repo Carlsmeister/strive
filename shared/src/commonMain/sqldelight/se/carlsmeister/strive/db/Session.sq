@@ -157,8 +157,18 @@ WHERE ws.session_exercise_id = (
 updateSet:
 UPDATE workout_set SET weight = ?, reps = ?, seconds = ?, metres = ?, rir = ?, done = ?, rest_seconds = ? WHERE id = ?;
 
+-- The set's exercise's sets in order, with what Q22's warm-up ladder needs: each set's weight, kind and done, and the exercise's bar,
+-- step and unit.
 setsOf:
-SELECT id, done FROM workout_set WHERE session_exercise_id = (SELECT session_exercise_id FROM workout_set WHERE id = ?) ORDER BY position;
+SELECT ws.id, ws.weight, ws.kind, ws.done, e.bar, e.step, e.unit
+FROM workout_set ws
+JOIN session_exercise se ON se.id = ws.session_exercise_id
+JOIN exercise e ON e.id = se.exercise_id
+WHERE ws.session_exercise_id = (SELECT session_exercise_id FROM workout_set WHERE id = ?)
+ORDER BY ws.position;
+
+setLoad:
+UPDATE workout_set SET weight = ?, reps = ? WHERE id = ?;
 
 setKind:
 UPDATE workout_set SET kind = ? WHERE id = ?;
