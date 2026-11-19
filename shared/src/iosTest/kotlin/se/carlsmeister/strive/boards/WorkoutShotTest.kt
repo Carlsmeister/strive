@@ -45,6 +45,7 @@ import strive.shared.generated.resources.note
 import strive.shared.generated.resources.remove_exercise
 import strive.shared.generated.resources.rest_change
 import strive.shared.generated.resources.order_skip
+import strive.shared.generated.resources.plates_key
 import strive.shared.generated.resources.set_type
 import strive.shared.generated.resources.superset_create
 import strive.shared.generated.resources.swap
@@ -426,6 +427,36 @@ class WorkoutShotTest {
         dock("Curl DB", row = 3, weightLabel("lb", "5"))
     }
 
+    /**
+     * The dock on a heavy bar (#48): Deadlift BB, bar 20, added and moved first, as the board's focus card has it next. Its sets 1 and
+     * 2 logged at 220 × 3, set 3 at 222.5 × 3 with the default rest, the dock's 2:00 (the card's "rest 3:00 after" is "last set" on an
+     * exercise's last set, deviations-48); "up 2.5 kg" and "Previous 220 × 3 @2" come from a pull day two days back. The dock covers
+     * the list, which the board draws as WO-02-s2's.
+     */
+    @Test
+    fun wo04HeavyInDarkAndDarkHc() = workoutBoard("WO-04-heavy", waitFor = "Deadlift BB · Set 3") { graph ->
+        val deadlift = exerciseId(graph, "Deadlift BB")
+        graph.exercises.setSettings(deadlift, step = 2.5, bar = 20.0, unit = WeightUnit.Kg)
+        val day = 86_400_000L
+        val pull = graph.sessions.start("Pull", now() - 2 * day)
+        graph.sessions.add(pull, listOf(deadlift))
+        val last = graph.sessions.workout(pull).first()!!.exercises.single()
+        repeat(2) { graph.sessions.addSet(last.id) }
+        graph.sessions.workout(pull).first()!!.exercises.single().sets.forEach {
+            graph.sessions.saveSet(it.copy(weight = 220.0, reps = 3, rir = 2, done = true))
+        }
+        graph.sessions.finish(pull, Finish.WithoutThem, now() - 2 * day + 45 * 60_000L)
+        graph.sessions.add(today(graph).id, listOf(deadlift))
+        val added = today(graph).exercises.first { it.exerciseId == deadlift }
+        repeat(2) { graph.sessions.addSet(added.id) }
+        today(graph).exercises.first { it.id == added.id }.sets.forEachIndexed { i, s ->
+            graph.sessions.saveSet(s.copy(weight = if (i < 2) 220.0 else 222.5, reps = 3, rir = if (i < 2) 2 else null, done = i < 2))
+        }
+        moveFirst(graph, "Deadlift BB")
+        waitUntil(timeoutMillis = 10_000) { onAllNodes(hasTestTag("set Deadlift BB 3")).fetchSemanticsNodes().isNotEmpty() }
+        dock("Deadlift BB", row = 3, weightLabel("kg"))
+    }
+
     /** The dock on the logged set 1. */
     @Test
     fun wo04LoggedInDarkAndDarkHc() = workoutBoard("WO-04-logged", waitFor = "Save change") { benchDock(row = 2) }
@@ -451,6 +482,18 @@ class WorkoutShotTest {
     /** The keypad on the weight, 8 then 5 typed. */
     @Test
     fun wo05WeightInDarkAndDarkHc() = workoutBoard("WO-05-weight", waitFor = "85") { benchKeypad(nexts = 0) }
+
+    /** WO-05-weight with Plates tapped (#48): 85 seeds 25 + 5 + 2.5, ⌫ takes the 2.5 off and 1.25 goes on, so the weight reads 82.5. */
+    @Test
+    fun wo05PlatesInDarkAndDarkHc() = workoutBoard("WO-05-plates", waitFor = "123") {
+        benchKeypad(nexts = 0)
+        onNode(hasText(getString(Res.string.plates_key)) and hasClickAction()).performClick()
+        waitForIdle()
+        onNode(hasTestTag("key-⌫")).performClick()
+        waitForIdle()
+        onNode(hasTestTag("key-1.25")).performClick()
+        waitForIdle()
+    }
 
     /** The keypad on the reps, fresh: 85 typed into the weight, then Next. */
     @Test
@@ -496,6 +539,10 @@ class WorkoutShotTest {
         graph.sessions.addSet(bench.id)
         graph.sessions.setKind(today(graph).exercises.first { it.id == bench.id }.sets.last().id, SetKind.Warmup)
     }
+
+    /** The reference board with the warm-up's W badge menu open (#48), Warm-up ticked. */
+    @Test
+    fun wo13WarmupInDarkAndDarkHc() = workoutBoard("WO-13-warmup", waitFor = "Working set") { setMenu("W") }
 
     /** The reference board with logged set 1's badge menu open: the caption says the set stays where it is. */
     @Test
