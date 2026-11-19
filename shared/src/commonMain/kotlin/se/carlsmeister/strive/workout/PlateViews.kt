@@ -49,6 +49,7 @@ import se.carlsmeister.strive.theme.StriveIcons
 import se.carlsmeister.strive.theme.StriveTheme
 import se.carlsmeister.strive.ui.GlassMenu
 import se.carlsmeister.strive.ui.MenuRow
+import se.carlsmeister.strive.ui.touchTall
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.bar_pill
 import strive.shared.generated.resources.bar_pill_description
@@ -149,9 +150,9 @@ internal fun BarLine(perSide: Load, keys: List<Double>, bar: Double, unit: Weigh
         val description = namedBar(bar, unit)?.short?.let { stringResource(Res.string.bar_pill_description, stringResource(it), amount) }
             ?: stringResource(Res.string.bar_pill_description_unnamed, amount)
         Box {
-            // `.barmenu` is drawn 36 tall; its tap takes the line's full 44.
+            // `.barmenu` is drawn 36 tall and tapped a touch tall.
             Box(
-                Modifier.height(StriveTheme.sizes.touch).clickable { open = true }.semantics { contentDescription = description },
+                Modifier.touchTall().clickable { open = true }.semantics { contentDescription = description },
                 contentAlignment = Alignment.Center,
             ) {
                 Row(
@@ -164,7 +165,7 @@ internal fun BarLine(perSide: Load, keys: List<Double>, bar: Double, unit: Weigh
             }
             GlassMenu(open, { open = false }) {
                 // A bar the gym's list lacks (10 kg on some seeded barbells) leads, so it shows checked, as WO-12's pull-down does.
-                for (b in listOfNotNull(bar.takeIf { it !in bars }) + bars + null) {
+                for (b in (listOfNotNull(bar.takeIf { it !in bars }) + bars + null).distinct()) {
                     MenuRow(barText(b, unit), { open = false; onBar(b) }, checked = b == bar)
                 }
             }

@@ -252,7 +252,7 @@ internal fun Dock(exercise: SessionExercise, unit: WeightUnit, set: WorkoutSet, 
 
         val bar = exercise.bar
         if (bar != null && exercise.type == ExerciseType.WeightReps) {
-            // An empty or half-typed weight loads as the bar alone.
+            // An empty or unparsable weight loads as the bar alone; a partly typed one loads as the number it reads so far.
             val weight = texts[fields.indexOf(Value.Weight)].value ?: bar
             BarLine(remember(weight, bar, plates) { load(weight, bar, plates) }, unit.plateKeys, bar, unit, newest = null, onBar = onBar)
         }
