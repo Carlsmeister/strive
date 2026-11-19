@@ -17,6 +17,7 @@ import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
@@ -66,6 +67,7 @@ import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.exercise_settings
 import strive.shared.generated.resources.unit_lb
 import strive.shared.generated.resources.unit_kg
+import strive.shared.generated.resources.digits_key
 import strive.shared.generated.resources.plates_empty
 import strive.shared.generated.resources.plates_key
 import strive.shared.generated.resources.step
@@ -960,6 +962,16 @@ class FlowTest {
             plateKeys("20", "10", "1.25")
             weightReads("82.5")
             sleeveReads("20, 10, 1.25")
+            // ⌫ takes the outermost plate off; 15, not in the default kg gym, is greyed and takes no tap.
+            plateKeys("⌫")
+            weightReads("80")
+            sleeveReads("20, 10")
+            test.onNodeWithTag("key-15").assertIsNotEnabled()
+            plateKeys("1.25")
+            // 123 goes back to the digits and keeps the weight the plates made.
+            tap(s(Res.string.digits_key))
+            seeTag("key-1")
+            weightReads("82.5")
             tap(s(Res.string.next))
             tap(s(Res.string.next))
             tap(s(Res.string.log_next))
@@ -981,6 +993,7 @@ class FlowTest {
             for (p in listOf("45", "35", "25", "10", "5", "2.5")) seeTag("key-$p")
             for (p in listOf("20", "15", "1.25")) gone(hasTestTag("key-$p"))
             test.onNodeWithContentDescription(s(Res.string.close)).performSemanticsAction(SemanticsActions.OnClick)
+            // Waits for Bench Press's dock, and its bar line, to close; the no-bar check is Curl DB's below.
             gone(hasTestTag("bar-sleeve"))
             tapDesc(s(Res.string.expand, "Curl DB"))
             test.onNodeWithTag("set Curl DB 1").performClick()

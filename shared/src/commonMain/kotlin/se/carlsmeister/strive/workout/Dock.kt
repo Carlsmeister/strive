@@ -204,7 +204,7 @@ internal fun Dock(exercise: SessionExercise, unit: WeightUnit, set: WorkoutSet, 
         val label = v.label?.let { stringResource(it) } ?: weight
         Text(label, style = MaterialTheme.typography.labelMedium.board(), color = MaterialTheme.colorScheme.onSurfaceVariant)
         NumberField(
-            label, texts[i].text, focused = focus == i, fresh = texts[i].fresh, steppers = steppers,
+            label, texts[i].text, focused = focus == i, fresh = texts[i].fresh, steppers = steppers, plain = keyed != null,
             onTap = { focus = i; edit(i, texts[i].copy(fresh = true)) },
             onStep = { by -> step(i, by) },
         )
@@ -324,10 +324,12 @@ internal fun Dock(exercise: SessionExercise, unit: WeightUnit, set: WorkoutSet, 
 /**
  * `.nf`: a field 52 tall on surface-container-highest, ringed in primary while focused (#16 I3); − and + beside the number while the
  * keypad is closed. Focused and fresh, the number sits on a primary wash, as the first key replaces it (`.v.fresh`); focused and typed
- * into, a caret follows it.
+ * into, a caret follows it. [plain] shows neither: the plate keys write the number whole (WO-05-plates).
  */
 @Composable
-private fun NumberField(label: String, text: String, focused: Boolean, fresh: Boolean, steppers: Boolean, onTap: () -> Unit, onStep: (Int) -> Unit) {
+private fun NumberField(
+    label: String, text: String, focused: Boolean, fresh: Boolean, steppers: Boolean, onTap: () -> Unit, onStep: (Int) -> Unit, plain: Boolean = false,
+) {
     val colors = MaterialTheme.colorScheme
     val space = StriveTheme.spacing
     Row(
@@ -343,7 +345,7 @@ private fun NumberField(label: String, text: String, focused: Boolean, fresh: Bo
         if (steppers) StepKey("−", "$label −") { onStep(-1) }
         Row(
             Modifier.weight(1f)
-                .then(if (focused && fresh) Modifier.padding(horizontal = 6.dp).background(colors.primary.copy(alpha = .28f), RoundedCornerShape(6.dp)) else Modifier)
+                .then(if (focused && fresh && !plain) Modifier.padding(horizontal = 6.dp).background(colors.primary.copy(alpha = .28f), RoundedCornerShape(6.dp)) else Modifier)
                 .padding(vertical = space.s4),
             horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -354,7 +356,7 @@ private fun NumberField(label: String, text: String, focused: Boolean, fresh: Bo
             // `.caret`: 2 × 20 in primary, 1 after the number, its foot 4 under the baseline (`vertical-align: -4px`).
             // Drawn still: the screen keeps one clock (#42).
             val foot = with(LocalDensity.current) { 4.dp.roundToPx() }
-            if (focused && !fresh) Box(
+            if (focused && !fresh && !plain) Box(
                 Modifier.alignBy { it.measuredHeight - foot }.padding(start = 1.dp).size(2.dp, 20.dp).background(colors.primary),
             )
         }
