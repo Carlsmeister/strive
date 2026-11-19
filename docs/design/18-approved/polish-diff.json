@@ -398,7 +398,7 @@
    "screen": "WO-04",
    "built": "Built in #48: the dock's bar line (sleeve, plates per side, the 'Bar 20' pill and its bar menu) and the keypad's Plates key with its plate keys, Empty and ⌫ (PlateViews.kt, Dock.kt)",
    "board": "Dock shows a plate line under the fields ('25 + 5 + 1.25 per side · Bar 20'); the weight keypad has a 'Plates' key that opens a plate picker (keys 25 20 15 10 5 2.5 1.25 ⌫ Empty, 'Next')",
-   "kotlin": "Dock.kt:314",
+   "kotlin": "Dock.kt:271, Dock.kt:434, PlateViews.kt:126",
    "boards": [
     "WO-04-new",
     "WO-04-rest",
@@ -410,7 +410,7 @@
    "screen": "WO-04",
    "built": "Built in #48: the plate line under the next set (PlateViews.kt); logged sets show none (ruling 6, deviations-48)",
    "board": "Rows show the plate line ('25 + 5 + 1.25 per side', '10 per side') under the focus set and logged barbell sets",
-   "kotlin": "Focus.kt:412",
+   "kotlin": "WorkoutScreen.kt:480, PlateViews.kt:96",
    "boards": [
     "WO-03-strip",
     "WO-03-end",

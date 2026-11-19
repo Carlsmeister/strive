@@ -1482,9 +1482,12 @@ Decisions #14 and #17 leave to the design or to Carl. Options only; none is reso
 - **O-02 · Exercise detail from the workout.** Q15 opens it from the exercise name; Carl's point 3
   made the name fold the exercise. Options: an info button by the name; a row in the ⋯ menu; a long
   press on the name.
-- **O-03 · An added warm-up set's weight** (#48, #4 Open). Answered in #48 by Q22's ladder (bar × 10,
-  50 % × 5, 70 % × 3, 85 % × 1): an unlogged set made a warm-up takes the next rung above the exercise's other
-  warm-ups, rounded down to what the gym's plates load; with no rung left it keeps the copied weight.
+- **O-03 · An added warm-up set's weight** (#48, #4 Open). Answered in #48 by Q22's ladder to the first
+  working set's weight: the bar × 10, then 50 % × 5, 70 % × 3 and 85 % × 1, each rounded down to what the gym's
+  plates load on the bar (to a multiple of the step without one), a rung under the bar dropped. A set made a warm-up
+  takes the first rung above the exercise's other warm-ups. It keeps its values when it is logged or already a
+  warm-up, when there is no working weight, when the working weight is lighter than the bar (no ladder), or when
+  no rung is left.
 - **O-04 · Onboarding's pages and in-context hints** (#25). Three to five pages; ask units and body data
   in onboarding or at first need; which first-use hints exist.
 - **O-05 · The live run's largest number** (#18: "the one number Carl names"). Distance, time, current
