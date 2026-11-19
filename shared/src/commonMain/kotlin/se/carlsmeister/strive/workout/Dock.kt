@@ -53,7 +53,9 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
@@ -65,7 +67,9 @@ import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.data.WorkoutSet
+import se.carlsmeister.strive.data.Load
 import se.carlsmeister.strive.data.load
+import se.carlsmeister.strive.data.weightOf
 import se.carlsmeister.strive.data.loggable
 import se.carlsmeister.strive.data.plateKeys
 import se.carlsmeister.strive.library.kilos
@@ -77,6 +81,12 @@ import se.carlsmeister.strive.ui.Segments
 import se.carlsmeister.strive.theme.glass
 import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.close
+import strive.shared.generated.resources.digits_key
+import strive.shared.generated.resources.plate_add
+import strive.shared.generated.resources.plate_missing
+import strive.shared.generated.resources.plate_remove
+import strive.shared.generated.resources.plates_empty
+import strive.shared.generated.resources.plates_key
 import strive.shared.generated.resources.field_metres
 import strive.shared.generated.resources.field_reps
 import strive.shared.generated.resources.field_seconds
@@ -154,6 +164,8 @@ internal fun Dock(exercise: SessionExercise, unit: WeightUnit, set: WorkoutSet, 
     var focus by remember(set.id) { mutableStateOf(field) }
     var rir by remember(set.id) { mutableStateOf(set.rir) }
     var more by remember(set.id) { mutableStateOf((set.rir ?: 0) >= 4) }
+    // Ruling 8 (#48): the plates keyed per side in plate mode, innermost first; null outside it. Another field or another bar leaves plate mode.
+    var keyed by remember(set.id, focus, exercise.bar) { mutableStateOf<List<Double>?>(null) }
 
     fun stepOf(v: Value) = when (v) {
         Value.Weight -> exercise.step ?: 2.5
@@ -254,7 +266,9 @@ internal fun Dock(exercise: SessionExercise, unit: WeightUnit, set: WorkoutSet, 
         if (bar != null && exercise.type == ExerciseType.WeightReps) {
             // An empty or unparsable weight loads as the bar alone; a partly typed one loads as the number it reads so far.
             val weight = texts[fields.indexOf(Value.Weight)].value ?: bar
-            BarLine(remember(weight, bar, plates) { load(weight, bar, plates) }, unit.plateKeys, bar, unit, newest = null, onBar = onBar)
+            val fewest = remember(weight, bar, plates) { load(weight, bar, plates) }
+            // In plate mode the sleeve draws the plates as keyed, the last one keyed `primary`.
+            BarLine(keyed?.let { Load.Plates(it) } ?: fewest, unit.plateKeys, bar, unit, newest = keyed?.lastIndex, onBar = onBar)
         }
 
         if (f == null) {
@@ -275,10 +289,27 @@ internal fun Dock(exercise: SessionExercise, unit: WeightUnit, set: WorkoutSet, 
             }
         } else {
             val v = fields[f]
+            // Plates are keyed on the weight of an exercise with a bar.
+            val plateBar = exercise.bar?.takeIf { v == Value.Weight && exercise.type == ExerciseType.WeightReps }
+            fun seed(bar: Double) = (load(texts[f].value ?: bar, bar, plates) as? Load.Plates)?.perSide ?: emptyList()
+            fun keyPlates(list: List<Double>) {
+                val bar = plateBar ?: return
+                keyed = list
+                edit(f, Field(kilos(weightOf(bar, list), swedish), fresh = false))
+            }
             Keypad(
                 separator = separator.takeIf { v.decimals },
+                plateKeys = unit.plateKeys.takeIf { plateBar != null },
+                gym = plates,
+                unit = unitText,
+                plateMode = keyed != null,
+                onPlateMode = { on -> keyed = if (on && plateBar != null) seed(plateBar) else null },
+                onPlate = { p -> keyPlates(keyed.orEmpty() + p) },
+                onPlateBack = { keyPlates(keyed.orEmpty().dropLast(1)) },
+                onEmpty = { keyPlates(emptyList()) },
                 onKey = { k -> edit(f, if (v == Value.Rest) restKey(texts[f], k) else texts[f].key(k, v.decimals, separator)) },
-                onStep = { by -> step(f, by) },
+                // A step in plate mode reloads the stepped weight with the fewest plates, so the sleeve keeps drawing the field.
+                onStep = { by -> step(f, by); if (keyed != null && plateBar != null) keyed = seed(plateBar) },
                 onHide = { focus = null },
             )
             val last = f == fields.lastIndex
@@ -380,48 +411,86 @@ internal fun RirMore(rir: Int?, onRir: (Int?) -> Unit, onMore: (Boolean) -> Unit
     Segments((4..10).map { "$it" }, selected = rir?.minus(4)?.takeIf { it >= 0 }, onSelect = { i -> onRir(i?.plus(4)); onMore(false) },
         modifier = Modifier.fillMaxWidth(), compact = compact)
 
-/** K3 (#17 choice 2): small actions on top, digits on glass keys. Skivor joins with the plates (#48). */
+/**
+ * K3 (#17 choice 2): small actions on top, digits on glass keys. With [plateKeys] (the weight of an exercise with a bar), Plates swaps the
+ * digits for the unit's plate keys, ⌫ and Empty, and 123 swaps them back (#48, WO-05-plates); a plate not in the [gym] is greyed.
+ */
 @Composable
-private fun Keypad(separator: Char?, onKey: (Char) -> Unit, onStep: (Int) -> Unit, onHide: () -> Unit) {
+private fun Keypad(
+    separator: Char?, plateKeys: List<Double>?, gym: List<Double>, unit: String, plateMode: Boolean, onPlateMode: (Boolean) -> Unit,
+    onPlate: (Double) -> Unit, onPlateBack: () -> Unit, onEmpty: () -> Unit, onKey: (Char) -> Unit, onStep: (Int) -> Unit, onHide: () -> Unit,
+) {
     val space = StriveTheme.spacing
-    val glass = StriveTheme.glass.thick
+    val type = MaterialTheme.typography
+    val swedish = Locale.current.language == "sv"
     Column(verticalArrangement = Arrangement.spacedBy(space.s8)) {
         Row(horizontalArrangement = Arrangement.spacedBy(space.s8), verticalAlignment = Alignment.CenterVertically) {
-            Key(stringResource(Res.string.hide), Modifier.widthIn(min = StriveTheme.sizes.touch * 2), small = true, onClick = onHide)
+            // `.kk.small`: at least 88 wide.
+            val small = Modifier.widthIn(min = StriveTheme.sizes.touch * 2)
+            Key(stringResource(Res.string.hide), small, style = type.labelMedium, onClick = onHide)
+            if (plateKeys != null) {
+                Key(stringResource(if (plateMode) Res.string.digits_key else Res.string.plates_key), small, style = type.labelMedium) { onPlateMode(!plateMode) }
+            }
             Spacer(Modifier.weight(1f))
             Key("−", Modifier.width(StriveTheme.sizes.touch + space.s16), tinted = true) { onStep(-1) }
             Key("+", Modifier.width(StriveTheme.sizes.touch + space.s16), tinted = true) { onStep(1) }
         }
-        val rows = listOf("123", "456", "789", "${separator ?: ' '}0⌫")
-        for (row in rows) {
-            Row(horizontalArrangement = Arrangement.spacedBy(space.s8)) {
-                for (k in row) {
-                    if (k == ' ') Spacer(Modifier.weight(1f))
-                    // `.kp .digits .kk`: thick glass, edged by a hairline in the material's edge colour.
-                    else Key(k.toString(), Modifier.weight(1f).border(StriveTheme.borders.hairline, StriveTheme.glass.edge, ShapeFull), background = glass, shape = ShapeFull) { onKey(k) }
+        if (plateKeys != null && plateMode) {
+            // `.kp .digits.plates`: four columns, the plates heaviest first then ⌫ (null), and Empty across all four.
+            for (row in (plateKeys + null).chunked(4)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(space.s8)) {
+                    for (p in row) {
+                        if (p == null) Key("⌫", Modifier.weight(1f), style = type.titleMedium, glass = true, description = stringResource(Res.string.plate_remove), onClick = onPlateBack)
+                        else {
+                            val text = kilos(p, swedish)
+                            val has = p in gym
+                            Key(
+                                text, Modifier.weight(1f), style = type.titleMedium, glass = true, enabled = has,
+                                description = stringResource(if (has) Res.string.plate_add else Res.string.plate_missing, text, unit),
+                            ) { onPlate(p) }
+                        }
+                    }
+                    repeat(4 - row.size) { Spacer(Modifier.weight(1f)) }
+                }
+            }
+            Key(stringResource(Res.string.plates_empty), Modifier.fillMaxWidth(), style = type.titleMedium, glass = true, onClick = onEmpty)
+        } else {
+            val rows = listOf("123", "456", "789", "${separator ?: ' '}0⌫")
+            for (row in rows) {
+                Row(horizontalArrangement = Arrangement.spacedBy(space.s8)) {
+                    for (k in row) {
+                        if (k == ' ') Spacer(Modifier.weight(1f))
+                        else Key(k.toString(), Modifier.weight(1f), glass = true) { onKey(k) }
+                    }
                 }
             }
         }
     }
 }
 
+/** A keypad key; [glass] is `.kp .digits .kk`: thick glass, edged by a hairline in the material's edge colour. A key not [enabled] is greyed. */
 @Composable
 private fun Key(
     label: String,
     modifier: Modifier = Modifier,
-    small: Boolean = false,
+    style: TextStyle = MaterialTheme.typography.titleLarge,
     tinted: Boolean = false,
-    background: Color = MaterialTheme.colorScheme.surfaceContainerHighest,
-    shape: androidx.compose.ui.graphics.Shape = MaterialTheme.shapes.medium,
+    glass: Boolean = false,
+    enabled: Boolean = true,
+    description: String? = null,
     onClick: () -> Unit,
 ) = Box(
-    modifier.height(StriveTheme.sizes.touch).background(background, shape).clickable(onClick = onClick).testTag("key-$label"),
+    modifier.height(StriveTheme.sizes.touch).then(if (enabled) Modifier else Modifier.alpha(StriveTheme.states.disabledOpacity))
+        .then(
+            if (glass) Modifier.border(StriveTheme.borders.hairline, StriveTheme.glass.edge, ShapeFull).background(StriveTheme.glass.thick, ShapeFull)
+            else Modifier.background(MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.shapes.medium),
+        )
+        .clickable(enabled = enabled, onClick = onClick)
+        .then(if (description != null) Modifier.semantics { contentDescription = description } else Modifier)
+        .testTag("key-$label"),
     contentAlignment = Alignment.Center,
 ) {
-    Text(
-        label, style = if (small) MaterialTheme.typography.labelMedium else MaterialTheme.typography.titleLarge,
-        color = if (tinted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-    )
+    Text(label, style = style, color = if (tinted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
 }
 
 /**

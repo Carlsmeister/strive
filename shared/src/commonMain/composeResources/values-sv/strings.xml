@@ -228,6 +228,12 @@
     <string name="plates_per_side">%1$s per sida</string>
     <string name="plates_bar_only">Bara stången</string>
     <string name="plates_cannot_load">Går inte att lasta med dina skivor</string>
+    <string name="plates_key">Skivor</string>
+    <string name="digits_key">123</string>
+    <string name="plates_empty">Tom</string>
+    <string name="plate_add">Lägg på %1$s %2$s per sida</string>
+    <string name="plate_missing">%1$s %2$s, finns inte i ditt gym</string>
+    <string name="plate_remove">Ta bort yttersta skivan</string>
     <string name="skip">Hoppa över</string>
     <string name="skipped">Hoppas över</string>
     <string name="include">Ta med</string>

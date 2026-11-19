@@ -66,6 +66,8 @@ import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.exercise_settings
 import strive.shared.generated.resources.unit_lb
 import strive.shared.generated.resources.unit_kg
+import strive.shared.generated.resources.plates_empty
+import strive.shared.generated.resources.plates_key
 import strive.shared.generated.resources.step
 import strive.shared.generated.resources.bar
 import strive.shared.generated.resources.saved_for
@@ -936,6 +938,57 @@ class FlowTest {
             see("25 + 5 + 2.5 + 1.25") // 33.75 a side
             see("Bar 15")
             waitUntilTrue { graph.exercises.byId(bench).first()!!.bar == 15.0 }
+        }
+    }
+
+    /**
+     * #48 acceptance 3 (WO-05-plates): plates keyed on the Olympic bar make the weight and draw in keyed order, heaviest innermost; keyed
+     * 20, 10, 1.25 stays so, though the fewest plates would draw 25, 5, 1.25, and logs 82.5.
+     */
+    @Test
+    fun plateKeysBuildTheWeightInKeyedOrder() = inEnglish {
+        pushA {
+            test.onNodeWithTag("set Bench Press BB 3").performSemanticsAction(SemanticsActions.OnClick)
+            idle()
+            tapDesc(weightLabel("kg"))
+            tap(s(Res.string.plates_key))
+            tap(s(Res.string.plates_empty))
+            plateKeys("25", "25", "1.25")
+            weightReads("122.5")
+            sleeveReads("25, 25, 1.25")
+            tap(s(Res.string.plates_empty))
+            plateKeys("20", "10", "1.25")
+            weightReads("82.5")
+            sleeveReads("20, 10, 1.25")
+            tap(s(Res.string.next))
+            tap(s(Res.string.next))
+            tap(s(Res.string.log_next))
+            waitUntilTrue { open().exercises.first { it.name == "Bench Press BB" }.sets[2].let { it.done && it.weight == 82.5 } }
+        }
+    }
+
+    /** Review focus 3: a bar-less exercise has no bar line and no Plates key; an lb barbell keys lb plates. */
+    @Test
+    fun noBarMeansNoBarLineAndNoPlatesKey() = inEnglish {
+        flow {
+            startWorkout()
+            val bench = graph.exercises.all().first { it.isNotEmpty() }.first { it.name == "Bench Press BB" }
+            graph.exercises.setSettings(bench.id, step = 5.0, bar = 45.0, unit = WeightUnit.Lb)
+            addExercises("Bench Press BB", "Curl DB")
+            openSet(0)
+            tapDesc(weightLabel("lb"))
+            tap(s(Res.string.plates_key))
+            for (p in listOf("45", "35", "25", "10", "5", "2.5")) seeTag("key-$p")
+            for (p in listOf("20", "15", "1.25")) gone(hasTestTag("key-$p"))
+            test.onNodeWithContentDescription(s(Res.string.close)).performSemanticsAction(SemanticsActions.OnClick)
+            gone(hasTestTag("bar-sleeve"))
+            tapDesc(s(Res.string.expand, "Curl DB"))
+            test.onNodeWithTag("set Curl DB 1").performClick()
+            idle()
+            tapDesc(weightLabel("kg", "2"))
+            seeTag("key-1")
+            gone(hasText(s(Res.string.plates_key)))
+            gone(hasTestTag("bar-sleeve"))
         }
     }
 
@@ -2530,6 +2583,25 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
     fun keys(typed: String) = typed.forEach {
         test.onNodeWithTag("key-$it").performClick()
         idle()
+    }
+
+    /** Taps the keypad's plate keys, tagged by their weight. */
+    fun plateKeys(vararg plates: String) = plates.forEach {
+        test.onNodeWithTag("key-$it").performClick()
+        idle()
+    }
+
+    fun seeTag(tag: String) = wait("see tag '$tag'") { test.onAllNodes(hasTestTag(tag)).fetchSemanticsNodes().isNotEmpty() }
+
+    /** The dock's weight field reads [text]. */
+    suspend fun weightReads(text: String) {
+        val label = weightLabel("kg")
+        wait("the weight to read $text") { test.onAllNodes(hasContentDescription(label) and hasText(text)).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    /** The bar line's sleeve draws [plates], innermost first. */
+    fun sleeveReads(plates: String) = wait("the sleeve to draw $plates") {
+        test.onAllNodes(hasTestTag("bar-sleeve") and hasContentDescription(plates)).fetchSemanticsNodes().isNotEmpty()
     }
 
     fun type(text: String) {

@@ -228,6 +228,12 @@
     <string name="plates_per_side">%1$s per side</string>
     <string name="plates_bar_only">Bar only</string>
     <string name="plates_cannot_load">Not loadable with your plates</string>
+    <string name="plates_key">Plates</string>
+    <string name="digits_key">123</string>
+    <string name="plates_empty">Empty</string>
+    <string name="plate_add">Add %1$s %2$s per side</string>
+    <string name="plate_missing">%1$s %2$s, not in your gym</string>
+    <string name="plate_remove">Remove the outermost plate</string>
     <string name="skip">Skip</string>
     <string name="skipped">Skipped</string>
     <string name="include">Include</string>
