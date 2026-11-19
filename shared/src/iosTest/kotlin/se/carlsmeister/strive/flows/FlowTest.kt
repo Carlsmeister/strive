@@ -911,6 +911,15 @@ class FlowTest {
         assertNull(graph.exercises.byId(bench).first()!!.unit)
     }
 
+    /** #48 acceptance 2 (WO-02-s2): 82.5 kg on Bench Press BB's Olympic bar reads its plates under the next set, and only there. */
+    @Test
+    fun theNextSetShowsItsPlatesPerSide() = inEnglish {
+        pushA {
+            see("25 + 5 + 1.25 per side")
+            assertEquals(1, test.onAllNodes(hasTestTag("plates-line")).fetchSemanticsNodes().size)
+        }
+    }
+
     /** WO-12's Bar pull-down names each bar with its weight in the exercise's unit, None 0 among them. */
     @Test
     fun theBarPullDownNamesTheBars() = inEnglish {

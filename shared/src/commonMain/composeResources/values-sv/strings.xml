@@ -219,6 +219,9 @@
     <string name="bar_hex">Hex %1$s</string>
     <string name="bar_none">Ingen %1$s</string>
     <string name="bar_pill">Stång %1$s</string>
+    <string name="plates_per_side">%1$s per sida</string>
+    <string name="plates_bar_only">Bara stången</string>
+    <string name="plates_cannot_load">Går inte att lasta med dina skivor</string>
     <string name="skip">Hoppa över</string>
     <string name="skipped">Hoppas över</string>
     <string name="include">Ta med</string>

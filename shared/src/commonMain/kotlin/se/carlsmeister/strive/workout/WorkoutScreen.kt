@@ -141,6 +141,10 @@ import se.carlsmeister.strive.data.WorkoutSet
 import se.carlsmeister.strive.data.namedBar
 import se.carlsmeister.strive.data.bars
 import se.carlsmeister.strive.data.defaultBars
+import se.carlsmeister.strive.data.defaultPlates
+import se.carlsmeister.strive.data.load
+import se.carlsmeister.strive.data.plateKeys
+import se.carlsmeister.strive.data.plates
 import se.carlsmeister.strive.data.defaultUnit
 import se.carlsmeister.strive.data.unitIn
 import se.carlsmeister.strive.data.loggable
@@ -464,6 +468,16 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                                                 letter = tags[e.id],
                                             )
                                         }
+                                    }
+                                }
+                                // The plates line shows under the next set only, as every board draws it (#48 ruling 6).
+                                val weight = s.weight
+                                val bar = e.bar
+                                if (s.id == current && bar != null && weight != null && e.type == ExerciseType.WeightReps) item(key = "p${s.id}") {
+                                    val unit = e.unitIn(defaultUnit)
+                                    val plates by remember(unit) { graph.settings.plates(unit) }.collectAsState(unit.defaultPlates)
+                                    Box(Modifier.edge(superset).animateItem(placementSpec = place)) {
+                                        PlatesLine(remember(weight, bar, plates) { load(weight, bar, plates) }, unit.plateKeys)
                                     }
                                 }
                             }
