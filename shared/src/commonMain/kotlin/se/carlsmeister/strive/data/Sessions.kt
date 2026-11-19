@@ -193,7 +193,8 @@ internal interface Sessions {
 
     /**
      * Changes a set's type; an unlogged set made a warm-up moves up to be the next set to do (#17 choice 4) and takes Q22's next rung
-     * (O-03). A logged set, or one already a warm-up, keeps its values.
+     * (O-03) when there is one; otherwise, with no working weight or no rung left, it keeps its values. A logged set, or one already a
+     * warm-up, keeps its values.
      */
     suspend fun setKind(id: Long, kind: SetKind)
 
@@ -298,7 +299,8 @@ internal class SqlSessions(
     override suspend fun deleteSet(id: Long) = write { queries.deleteSet(id) }
 
     override suspend fun setKind(id: Long, kind: SetKind) = withContext(io) {
-        val set = queries.setsOf(id).executeAsList().first { it.id == id }
+        // A set deleted while its kind changed is left gone.
+        val set = queries.setsOf(id).executeAsList().firstOrNull { it.id == id } ?: return@withContext
         // Ruling 11: only an unlogged set whose kind changes to Warmup climbs the ladder. The plates are read before the write.
         val climbs = kind == SetKind.Warmup && !set.done && set.kind != SetKind.Warmup.key
         val plates = if (climbs) settings.plates(WeightUnit.of(set.unit) ?: settings.defaultUnit().first()).first() else null
@@ -306,7 +308,9 @@ internal class SqlSessions(
             queries.setKind(kind.key, id)
             if (kind == SetKind.Warmup) {
                 val sets = queries.setsOf(id).executeAsList()
-                plates?.let { nextWarmup(sets, id, it) }?.let { queries.setLoad(it.weight, it.reps.toLong(), id) }
+                // Rechecked here: a set deleted or logged since the read above keeps what it has.
+                val now = sets.firstOrNull { it.id == id } ?: return@transaction
+                if (!now.done) plates?.let { nextWarmup(sets, id, it) }?.let { queries.setLoad(it.weight, it.reps.toLong(), id) }
                 warmupOrder(sets.map { WorkoutSet(it.id, done = it.done) }, id).forEachIndexed { i, s -> queries.setPosition(i.toLong(), s) }
             }
         }

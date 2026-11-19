@@ -340,6 +340,28 @@ class SessionsTest {
     }
 
     @Test
+    fun anLbWarmupClimbsOnLbPlates() = runTest {
+        val (db, sessions) = sessions()
+        val press = db.exercise("Bench Press BB")
+        SqlExercises(db).setSettings(press, step = 5.0, bar = 45.0, unit = WeightUnit.Lb)
+        sessions.add(sessions.start("Pass", 0), listOf(press))
+        val e = sessions.open().first()!!.exercises.single()
+        sessions.saveSet(e.sets.single().copy(weight = 135.0, reps = 5))
+        repeat(2) { sessions.addSet(e.id) }
+        val (_, second, third) = sessions.open().first()!!.exercises.single().sets
+        suspend fun read(id: Long) = sessions.open().first()!!.exercises.single().sets.single { it.id == id }.let { it.weight to it.reps }
+
+        sessions.setKind(second.id, SetKind.Warmup)
+        // No other warm-up: the first rung, the 45 lb bar × 10.
+        assertEquals(45.0 to 10, read(second.id))
+
+        sessions.setKind(third.id, SetKind.Warmup)
+        // Above the W 45: 50 % of 135 is 67.5, 11.25 a side. The lb plates (45, 35, 25, 10, 5, 2.5) load 10 a side, 65; the kg
+        // defaults would load 10 + 1.25, 67.5.
+        assertEquals(65.0 to 5, read(third.id))
+    }
+
+    @Test
     fun aWarmupPickedAgainKeepsItsWeight() = runTest {
         val (db, sessions) = sessions()
         val warmup = sessions.bench(db, WorkoutSet(0, 40.0, 10, kind = SetKind.Warmup), WorkoutSet(0, 80.0, 8), WorkoutSet(0, 82.5, 8)).sets[0]

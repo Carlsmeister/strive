@@ -79,6 +79,8 @@ class PlatesTest {
     fun aRungLighterThanTheBarIsDropped() {
         // 50 % = 15 is under the bar and dropped; 21 rounds down to 20; 25.5 to 25.
         assertEquals(listOf(Rung(20.0, 10), Rung(20.0, 3), Rung(25.0, 1)), ladder(30.0, 20.0, 2.5, kg))
+        // A working 15 on a 20 bar: a 20 × 10 warm-up would outweigh it, so there is no ladder.
+        assertEquals(emptyList(), ladder(15.0, 20.0, 2.5, kg))
     }
 
     @Test

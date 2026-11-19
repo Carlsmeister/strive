@@ -71,11 +71,14 @@ internal data class Rung(val weight: Double, val reps: Int)
 
 /**
  * Q22's warm-up ladder to [firstWorking]: the bar × 10, then 50 % × 5, 70 % × 3 and 85 % × 1, each rounded
- * down to what [plates] load on [bar], or to a multiple of [step] when there is no bar. A rung under the bar is dropped.
+ * down to what [plates] load on [bar], or to a multiple of [step] when there is no bar. A rung under the bar is dropped, and a
+ * [firstWorking] lighter than the bar has no ladder at all.
  */
 internal fun ladder(firstWorking: Double, bar: Double?, step: Double, plates: List<Double>): List<Rung> {
     val first = firstWorking.hundredths()
     val barH = bar?.hundredths()
+    // A working weight under the bar has no ladder: even the bar alone would outweigh it.
+    if (barH != null && first < barH) return emptyList()
     // One table up to the top rung's side serves every rung.
     val sides = barH?.let { Sides(((first * 85 / 100 - it) / 2).coerceIn(0, MAX_SIDE).toInt(), plates) }
     // A step that rounds to nothing falls back to the 2.5 default.
