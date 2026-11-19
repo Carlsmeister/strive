@@ -16,6 +16,7 @@ never edited after it is accepted; a new record supersedes it and says so.
 - [0005. Dependency injection: by hand](0005-dependency-injection.md) (#33)
 - [0006. The system layer](0006-system-layer.md) (#56)
 - [0007. Weight unit](0007-weight-unit.md) (#58)
+- [0008. The gym's plates and bars](0008-plates-and-bars-settings.md) (#48)
 
 ## Template
 

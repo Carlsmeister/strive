@@ -105,7 +105,7 @@ internal fun nextRung(rungs: List<Rung>, warmups: List<Double>): Rung? {
     return rungs.firstOrNull { it.weight.hundredths() > done }
 }
 
-/** The gym's plates setting for this unit. #63's control must write these keys: weights joined by "," with "." decimals. */
+/** The gym's plates setting for this unit. #63's control must write these keys in the format ADR 0008 records. */
 internal val WeightUnit.platesKey get() = "plates_$key"
 
 /** Every kg plate but 15; EL-07-lb's lb plates. */
