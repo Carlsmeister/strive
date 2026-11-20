@@ -68,6 +68,8 @@ import strive.shared.generated.resources.exercise_settings
 import strive.shared.generated.resources.unit_lb
 import strive.shared.generated.resources.unit_kg
 import strive.shared.generated.resources.digits_key
+import strive.shared.generated.resources.plates_bar_only
+import strive.shared.generated.resources.plates_cannot_load
 import strive.shared.generated.resources.plates_empty
 import strive.shared.generated.resources.plates_key
 import strive.shared.generated.resources.step
@@ -976,6 +978,22 @@ class FlowTest {
             tap(s(Res.string.next))
             tap(s(Res.string.log_next))
             waitUntilTrue { open().exercises.first { it.name == "Bench Press BB" }.sets[2].let { it.done && it.weight == 82.5 } }
+        }
+    }
+
+    /** Hardening F1: 23 on the Olympic bar cannot be made, so plate mode's empty seed still reads the cannot-load line, never "Bar only". */
+    @Test
+    fun plateModeOnAWeightThePlatesCannotMakeSaysSo() = inEnglish {
+        pushA {
+            test.onNodeWithTag("set Bench Press BB 3").performSemanticsAction(SemanticsActions.OnClick)
+            idle()
+            tapDesc(weightLabel("kg"))
+            keys("23")
+            weightReads("23")
+            tap(s(Res.string.plates_key))
+            seeTag("key-25")
+            see(s(Res.string.plates_cannot_load))
+            gone(hasText(s(Res.string.plates_bar_only)))
         }
     }
 

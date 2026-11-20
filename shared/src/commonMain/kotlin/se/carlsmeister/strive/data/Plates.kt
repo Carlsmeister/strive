@@ -24,7 +24,7 @@ internal sealed interface Load {
 }
 
 // Weights are worked in hundredths so sums and percentages never drift.
-private fun Double.hundredths() = (this * 100).roundToLong()
+internal fun Double.hundredths() = (this * 100).roundToLong()
 
 // No gym loads 1000 kg a side: above it a typed total is a typo, and its table would not fit in memory.
 private const val MAX_SIDE = 100_000L

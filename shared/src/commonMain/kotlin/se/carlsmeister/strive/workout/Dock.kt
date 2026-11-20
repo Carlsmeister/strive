@@ -68,6 +68,7 @@ import se.carlsmeister.strive.data.SetKind
 import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.data.WorkoutSet
 import se.carlsmeister.strive.data.Load
+import se.carlsmeister.strive.data.hundredths
 import se.carlsmeister.strive.data.load
 import se.carlsmeister.strive.data.weightOf
 import se.carlsmeister.strive.data.loggable
@@ -267,8 +268,10 @@ internal fun Dock(exercise: SessionExercise, unit: WeightUnit, set: WorkoutSet, 
             // An empty or unparsable weight loads as the bar alone; a partly typed one loads as the number it reads so far.
             val weight = texts[fields.indexOf(Value.Weight)].value ?: bar
             val fewest = remember(weight, bar, plates) { load(weight, bar, plates) }
-            // In plate mode the sleeve draws the plates as keyed, the last one keyed `primary`.
-            BarLine(keyed?.let { Load.Plates(it) } ?: fewest, unit.plateKeys, bar, unit, newest = keyed?.lastIndex, onBar = onBar)
+            // In plate mode the sleeve draws the plates as keyed, the last one keyed `primary`, while they make the field's weight; the
+            // empty seed of a weight the plates cannot make (ruling 8) draws the fewest load, which says so.
+            val drawn = keyed?.takeIf { weightOf(bar, it).hundredths() == weight.hundredths() }
+            BarLine(drawn?.let { Load.Plates(it) } ?: fewest, unit.plateKeys, bar, unit, newest = drawn?.lastIndex, onBar = onBar)
         }
 
         if (f == null) {
