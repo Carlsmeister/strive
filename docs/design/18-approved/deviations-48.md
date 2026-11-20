@@ -7,9 +7,9 @@ beside them. dark-HC is compared first, then dark. The pull request quotes this 
 **Remaining differences per board**, after Task 7 compared the seven boards of the issue (WO-02-s2, WO-03-strip, WO-03-end,
 WO-04-new, WO-04-heavy, WO-05-plates, WO-13-warmup) and the two that draw its plates elsewhere (WO-13-moved, WO-01-picked),
 dark-HC then dark. A board counts lines, not elements: one for each line below that names it. Lines owned "Not a difference" and
-lines whose board is "None" are not counted. A difference under 1 pt is not listed. One line shows in dark alone, the glass's teal
-glow; every other line holds in both modes. Positions are in pt on the 390 × 844 board, read off the renders and shots side by
-side, so within about 1 pt. 38 in all.
+lines whose board is "None" are not counted. A difference under 1 pt is not listed. Two lines show in dark alone, the glass's teal
+glow and the list's text through WO-05-plates' dock; every other line holds in both modes. Positions are in pt on the 390 × 844 board, read off the renders and shots side by
+side, so within about 1 pt. 39 in all.
 
 **What this file leaves to deviations-42.** Six of the nine boards (WO-01-picked, WO-02-s2, WO-03-strip, WO-03-end, WO-04-new,
 WO-13-moved) are #42's too, and every deviations-42 row on them not marked "Closed by #48" still stands there and is counted there
@@ -23,7 +23,7 @@ for element, and are counted here in the first line below (text widths and place
 | Boards | Remaining differences |
 |---|---|
 | WO-01, WO-02, WO-03 | 01-picked 3 · 02-s2 3 · 03-strip 3 · 03-end 2 |
-| WO-04, WO-05 | 04-new 4 · 04-heavy 8 · 05-plates 5 |
+| WO-04, WO-05 | 04-new 4 · 04-heavy 8 · 05-plates 6 |
 | WO-13 | 13-moved 4 · 13-warmup 6 |
 
 The plates line, the dock's bar line, the Plates key and its plate mode, and WO-13-moved's 55 × 3 rung match their boards: the
@@ -39,6 +39,7 @@ sleeve's plates, sizes and colours (the last keyed plate `primary` on WO-05-plat
 | WO-04-new, WO-04-heavy, WO-05-plates | The dock's foot | The dock sits 34–35 pt lower (WO-04-heavy's top 497 against 463, WO-05-plates' 370 against 335), so the shot shows more above it: Bench Press BB's or Deadlift BB's header on WO-04-new and heavy, the RIR row on WO-05-plates. Inside the dock every gap and height matches with the shot moved up 34 | The test window has no home-indicator inset; on a phone `navigationBarsPadding` adds it (deviations-42) | Test harness (no home-indicator inset) |
 | WO-04-heavy, WO-05-plates | The dock's top edge | Both draw the light hairline along the dock's top on the same path, but the board's fades down the 28 pt corners towards the screen's edge and the shot's holds. In dark-HC, the left corner's stroke stays above luma 45 all the way down in the shot (WO-05-plates 374.7–396.7 pt, WO-04-heavy 502.7–524.7) and drops under it after 8–15 pt on the board (340.3–355.3, 468.3–483.3) | As deviations-42's WO-04-new, which counts it there: the board's `.dock` keeps only `.glass`'s top border, which Chrome tapers round the radius; `glass` strokes its hairline at one width and one colour | #42 |
 | WO-04-new, WO-04-heavy, WO-05-plates, WO-13-warmup | The glass's teal glow, dark only | Shows through the dock and the set type menu, narrower and weaker than the board's | As deviations-42: the shared `Modifier.glass` | Carl to settle |
+| WO-05-plates | The dock's foot under Next, dark only | The list's "Rest 2:00" shows legibly through the dock's glass at the window's foot (about 836–844 pt), where the board's dock is plain glass with nothing legible behind it. The dark-HC shot shows none | The shared `Modifier.glass` lets list text show through, as on #42's WO-05-weight (dark) | Carl to settle |
 | WO-04-heavy | The header's count | "3 of 17 sets" where the board reads "1 of 14 sets" | The board keeps WO-02-s2's header; Deadlift BB adds three sets, two logged | #48 |
 | WO-04-heavy | The focus card's meta row | "last set" where the board reads "rest 3:00 after", and its dock reads Rest 2:00 | The board contradicts itself, and set 3 of 3 is Deadlift BB's last set, which reads "last set" (#42, polish-diff's WO-03). The shot keeps the default rest, 2:00, as the dock draws it | #48 |
 | WO-04-heavy | The focus card's Log button | "Log set 3" where the board reads "Log set 2" | The board keeps WO-02-s2's label on Deadlift BB's set 3 | #48 |
