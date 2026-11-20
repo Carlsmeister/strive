@@ -8,15 +8,15 @@ beside them. dark-HC is compared first, then dark. The pull request quotes this 
 then dark. A board counts lines, not elements: one for each line below that names it. Lines owned "Not a difference" and lines
 whose board is "None" are not counted. A difference under 1 pt is not listed. Two lines hold for every board, and each board counts
 them: the optical size (text a little wide, deviations-42) and the glass's teal glow, which shows in dark alone. Every other
-line holds in both modes, bar the one that says dark only. Positions are in pt on the 390 × 844 board, measured on the renders and shots side by side, so within about 1 pt. 97 in all.
+line holds in both modes, bar the one that says dark only. Positions are in pt on the 390 × 844 board, measured on the renders and shots side by side, so within about 1 pt. 97 in all at #58. #48 closed 10 of them, marked "Closed by #48" and no longer counted, so 87 remain.
 
 | Boards | Remaining differences |
 |---|---|
 | WO-04 | lb 6 |
-| WO-08 | menu 5 · rename 4 · note-empty 5 · note 5 · time 3 |
-| WO-09 | menu 5 · rest 5 · superset 5 · noweight 5 · sticky 4 |
-| WO-10, WO-11, WO-12 | WO-10 4 · 10-one 4 · 11 3 · 11-skip 4 · 12-bb 4 · 12-db 5 |
-| WO-15, WO-16 | 15-one 4 · 15-several 5 · 16-discard 4 · 16-empty 4 |
+| WO-08 | menu 4 · rename 3 · note-empty 4 · note 4 · time 3 |
+| WO-09 | menu 4 · rest 4 · superset 5 · noweight 5 · sticky 3 |
+| WO-10, WO-11, WO-12 | WO-10 3 · 10-one 3 · 11 3 · 11-skip 4 · 12-bb 4 · 12-db 5 |
+| WO-15, WO-16 | 15-one 4 · 15-several 5 · 16-discard 3 · 16-empty 4 |
 | EX-05 | sheet 4 |
 
 | Board | Element | Difference | Reason | Owner |
@@ -34,15 +34,15 @@ line holds in both modes, bar the one that says dark only. Positions are in pt o
 | WO-10-one | The exercise menu's place | Opens upward over the title and NOW card (78–455 pt) where the board draws it downward over Bench Press BB's header (425–800); x 71–333.5 against 110–373.5 | As WO-09-menu | #86 |
 | WO-08-menu, rename, note-empty, note, WO-09-menu, rest, sticky, WO-10, WO-16-discard | Bench Press BB's Plan note | "Plan Skulderbladen ihop." is not drawn, so the rows below it sit about 20 pt higher (the warm-up row about 575 against 595) | As deviations-42's WO-02-s2: no template cue exists in the data (P3) | #44 |
 | WO-12-bb | Bench Press BB's Plan note, at the sheet's top edge | Not drawn; "Previous Kändes stark idag." shows in its place above the sheet | As above | #44 |
-| WO-08-menu, rename, note-empty, note, WO-09-menu, rest, sticky, WO-10, WO-16-discard | Plates line under set 2 | "25 + 5 + 1.25 per side" with its sleeve is not drawn; the next Rest 2:00 shows where the board ends | As deviations-42's WO-02-s2: plates are out of scope | #48 |
-| WO-10-one | Plates line under the warm-up | The sleeve is not drawn, so the rows below it sit about 31 pt higher | As deviations-42's WO-01-picked | #48 |
+| WO-08-menu, rename, note-empty, note, WO-09-menu, rest, sticky, WO-10, WO-16-discard | Plates line under set 2 | **Closed by #48:** drawn as the board draws it. Was: "25 + 5 + 1.25 per side" with its sleeve is not drawn; the next Rest 2:00 shows where the board ends | As deviations-42's WO-02-s2: plates are out of scope | Closed by #48 |
+| WO-10-one | Plates line under the warm-up | **Closed by #48:** "10 per side" drawn as the board draws it. Was: The sleeve is not drawn, so the rows below it sit about 31 pt higher | As deviations-42's WO-01-picked | Closed by #48 |
 | WO-08-note-empty, WO-08-note | The note field's mic glyph | Not drawn | **Planner ruling 4:** it would be a dead control; the keyboard's own dictation key does the job | #58 |
 | WO-08-time, WO-11, WO-11-skip, WO-12-bb, WO-12-db, WO-15-one, WO-15-several | The sheet's foot | The sheet sits about 35 pt lower (WO-08-time top 497.9 against 462.5), so the shot shows what the board's sheet covers: Bench Press BB's header (WO-08-time, WO-11, WO-12-bb), WO-12-db's "Rest 1:30", the Pushdown's set 1 row and the overview's dots (WO-15) | As deviations-42's dock and rest card: no home-indicator inset; `HeaderSheet` and `ActionSheet` pad `navigationBarsPadding()` | Test harness (no home-indicator inset) |
 | WO-08-time | The wheel's selection band | One band across both columns: each column's band is squared at its inner corners, and both columns are padded 22 pt, as drawn | Built to the board | Not a difference |
 | None (no board draws a note holding a newline) | The sticky note field | Single-line, as WO-09-sticky draws it; a saved note holding a newline opens with the newline folded to a space, so the whole note shows on one line | The board draws a one-line field | #58 |
 | WO-11-skip | The header's "1 of 12 sets", behind the sheet | The board reads "1 of 14" | The board reuses WO-11's background unchanged; WO-02-s14 draws "1 of 12" for the same state, with Tricep Dips skipped | #58 |
 | WO-12-db | The header's "0 of 3 sets" | The board reads "0 of 9 sets" but draws only Curl DB with 3 sets | Board inconsistency: the shot adds only Curl DB, as drawn | #58 |
-| None (no board draws a bar set to None) | WO-12's Bar row | Shows when the exercise has a bar when the sheet opens. Picking None 0 saves no bar, and the row is gone the next time the sheet opens, as WO-12-db omits it for Curl DB | **Planner ruling 3:** bars become editable in #48 | #48 |
+| None (no board draws a bar set to None) | WO-12's Bar row | Shows when the exercise has a bar when the sheet opens. Picking None 0 saves no bar, and the row is gone the next time the sheet opens, as WO-12-db omits it for Curl DB | **Planner ruling 3.** #48 stores the gym's bars in Settings with defaults, and the pull-down lists them; the screen that edits them is EL-07's | #63 |
 | None (no board draws WO-12's pull-downs) | Step and Bar pull-downs | Open as the shared 264 pt `GlassMenu`; in lb the Bar pull-down lists EL-07-lb's bars (Olympic 45, Short 35, EZ 15, Hex 55, None 0 lb) | EL-07-lb is the approved source for lb bars; the menu's place is GlassMenu's | #86 |
 | WO-15-several | The focus card's "SET 2 OF 3" | The board reads "SET 2 OF 2" | The app counts the drop set as a working set (O-25); the board draws the drop-set row and "of 2" together, which contradicts O-25 and its own "12 of 14 sets" | #58 |
 | WO-09-superset, WO-09-noweight, WO-15-one, WO-15-several | The focus card and everything under it | Sit 16 pt higher (focus card 190 against 206; WO-09-noweight's Plank header 427 against 443) | The board's markup puts the done exercises' `.ov` above the focus card without `flex: none`, so it shrinks to nothing but keeps its 16 pt gap. The rendered board is the spec: each shot's arrange moves the next exercise first (Incline Press DB and Lateral Raise DB, Plank, Tricep Pushdown), as Order and skip would, so its header sits under the focus card as drawn. App unaffected | #58 |

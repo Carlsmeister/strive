@@ -138,6 +138,13 @@ import se.carlsmeister.strive.data.SessionExercise
 import se.carlsmeister.strive.data.Workout
 import se.carlsmeister.strive.data.WeightUnit
 import se.carlsmeister.strive.data.WorkoutSet
+import se.carlsmeister.strive.data.namedBar
+import se.carlsmeister.strive.data.bars
+import se.carlsmeister.strive.data.defaultBars
+import se.carlsmeister.strive.data.defaultPlates
+import se.carlsmeister.strive.data.load
+import se.carlsmeister.strive.data.plateKeys
+import se.carlsmeister.strive.data.plates
 import se.carlsmeister.strive.data.defaultUnit
 import se.carlsmeister.strive.data.unitIn
 import se.carlsmeister.strive.data.loggable
@@ -168,11 +175,6 @@ import strive.shared.generated.resources.move_down
 import strive.shared.generated.resources.move_up
 import strive.shared.generated.resources.unit
 import strive.shared.generated.resources.saved_for
-import strive.shared.generated.resources.bar_olympic
-import strive.shared.generated.resources.bar_short
-import strive.shared.generated.resources.bar_ez
-import strive.shared.generated.resources.bar_hex
-import strive.shared.generated.resources.bar_none
 import strive.shared.generated.resources.note
 import strive.shared.generated.resources.order_skip
 import strive.shared.generated.resources.remove_exercise
@@ -468,6 +470,16 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
                                         }
                                     }
                                 }
+                                // The plates line shows under the next set only, as every board draws it (#48 ruling 6).
+                                val weight = s.weight
+                                val bar = e.bar
+                                if (s.id == current && bar != null && weight != null && e.type == ExerciseType.WeightReps) item(key = "p${s.id}") {
+                                    val unit = e.unitIn(defaultUnit)
+                                    val plates by remember(unit) { graph.settings.plates(unit) }.collectAsState(unit.defaultPlates)
+                                    Box(Modifier.edge(superset).animateItem(placementSpec = place)) {
+                                        PlatesLine(remember(weight, bar, plates) { load(weight, bar, plates) }, unit.plateKeys)
+                                    }
+                                }
                             }
                             // The rest after a round is its last set's (Q3); a tap changes it in the dock, as T4's rest line does.
                             if (r < rows.lastIndex) {
@@ -540,7 +552,10 @@ internal fun WorkoutScreen(onMinimise: () -> Unit, onAddExercises: () -> Unit, o
             if (open != null) shown.value = open
             val (e, i) = shown.value ?: return@Overlay
             val set = e.sets.getOrNull(i) ?: return@Overlay
-            Dock(e, e.unitIn(defaultUnit), set, defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
+            val unit = e.unitIn(defaultUnit)
+            val plates by remember(unit) { graph.settings.plates(unit) }.collectAsState(unit.defaultPlates)
+            Dock(e, unit, set, defaultRest, haze, onSave = { if (editRest) saveRest(it) else log(it); edit(null) }, onClose = { edit(null) },
+                plates = plates, onBar = { b -> scope.launch { graph.exercises.setSettings(e.exerciseId, e.step, b, e.unit) } },
                 field = editField, logs = !editRest)
         }
         val toast by toasts.shown.collectAsState()
@@ -862,16 +877,6 @@ private fun supersetPartners(w: Workout, e: SessionExercise) = w.exercises.filte
 /** The step − and + use (Q15). */
 private val Steps = listOf(1.0, 1.25, 2.0, 2.5, 4.0, 5.0)
 
-/** A bar by name (Q22, WO-12) with its weight in kg and in lb (EL-07-lb); None weighs nothing and saves no bar. */
-private class NamedBar(val name: StringResource, val kg: Double?, val lb: Double?) {
-    fun weight(unit: WeightUnit) = if (unit == WeightUnit.Lb) lb else kg
-}
-
-private val Bars = listOf(
-    NamedBar(Res.string.bar_olympic, 20.0, 45.0), NamedBar(Res.string.bar_short, 15.0, 35.0), NamedBar(Res.string.bar_ez, 7.5, 15.0),
-    NamedBar(Res.string.bar_hex, 25.0, 55.0), NamedBar(Res.string.bar_none, null, null),
-)
-
 /**
  * Exercise settings (WO-12): the exercise's name in the head; Step and Bar as pull-downs, Unit as kg | lb, and what saving means. Done saves
  * the three, the bar in the unit shown; the unit stays as it was (unset follows the app default) unless the one shown changed. A tap on
@@ -887,9 +892,13 @@ private fun SettingsDialog(e: SessionExercise, default: WeightUnit, onDone: () -
     var unit by remember { mutableStateOf(e.unit) }
     // Ruling 3: the Bar row is there for an exercise that had a bar at open, so choosing None keeps it until the sheet closes.
     val hasBar = remember { e.bar != null }
-    // A saved bar no name weighs (10 kg on some seeded barbells) leads the pull-down, so it shows checked and can be kept.
-    val odd = remember { e.bar?.takeIf { b -> Bars.none { it.weight(e.unitIn(default)) == b } } }
     val shown = unit ?: default
+    val gymBars by remember(shown) { graph.settings.bars(shown) }.collectAsState(shown.defaultBars)
+    // A saved bar the gym's list lacks (10 kg on some seeded barbells) leads the pull-down, so it shows checked and can be kept. It is the
+    // bar saved at open, judged against the list of its own unit as that list arrives, so neither a late list nor a pick can drop it.
+    val savedUnit = e.unitIn(default)
+    val savedUnitBars by remember(savedUnit) { graph.settings.bars(savedUnit) }.collectAsState(savedUnit.defaultBars)
+    val odd = e.bar?.takeIf { it !in savedUnitBars }
     val unitText = stringResource(shown.label)
     fun amount(v: Double) = "${kilos(v, swedish)} $unitText"
     HeaderSheet(e.name, onDismiss = onDone, done = stringResource(Res.string.done), onDone = {
@@ -901,9 +910,7 @@ private fun SettingsDialog(e: SessionExercise, default: WeightUnit, onDone: () -
             { PullDownRow(stringResource(Res.string.step), Steps, step, { amount(it) }) { step = it } },
             if (hasBar) {
                 {
-                    PullDownRow(stringResource(Res.string.bar), (listOfNotNull(odd) + Bars.map { it.weight(shown) }).distinct(), bar, { b ->
-                        Bars.firstOrNull { it.weight(shown) == b }?.let { stringResource(it.name, amount(b ?: 0.0)) } ?: amount(b ?: 0.0)
-                    }) { bar = it }
+                    PullDownRow(stringResource(Res.string.bar), (listOfNotNull(odd) + gymBars + null).distinct(), bar, { b -> barText(b, shown) }) { bar = it }
                 }
             } else null,
             {
@@ -916,7 +923,7 @@ private fun SettingsDialog(e: SessionExercise, default: WeightUnit, onDone: () -
                             i?.let {
                                 val to = WeightUnit.entries[it]
                                 // The same bar by name in the new unit (Olympic 20 kg is Olympic 45 lb); one without a name keeps its number.
-                                bar = Bars.firstOrNull { b -> b.weight(shown) == bar }?.weight(to) ?: bar
+                                bar = namedBar(bar, shown)?.weight(to) ?: bar
                                 unit = to
                             }
                         }, Modifier.width(132.dp), clearable = false)

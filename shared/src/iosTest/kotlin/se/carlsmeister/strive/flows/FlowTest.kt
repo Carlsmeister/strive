@@ -17,6 +17,7 @@ import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
@@ -66,6 +67,11 @@ import strive.shared.generated.resources.Res
 import strive.shared.generated.resources.exercise_settings
 import strive.shared.generated.resources.unit_lb
 import strive.shared.generated.resources.unit_kg
+import strive.shared.generated.resources.digits_key
+import strive.shared.generated.resources.plates_bar_only
+import strive.shared.generated.resources.plates_cannot_load
+import strive.shared.generated.resources.plates_empty
+import strive.shared.generated.resources.plates_key
 import strive.shared.generated.resources.step
 import strive.shared.generated.resources.bar
 import strive.shared.generated.resources.saved_for
@@ -909,6 +915,112 @@ class FlowTest {
         tap(s(Res.string.done))
         waitUntilTrue { graph.exercises.byId(bench).first()!!.step == 5.0 }
         assertNull(graph.exercises.byId(bench).first()!!.unit)
+    }
+
+    /** #48 acceptance 2 (WO-02-s2): 82.5 kg on Bench Press BB's Olympic bar reads its plates under the next set, and only there. */
+    @Test
+    fun theNextSetShowsItsPlatesPerSide() = inEnglish {
+        pushA {
+            see("25 + 5 + 1.25 per side")
+            assertEquals(1, test.onAllNodes(hasTestTag("plates-line")).fetchSemanticsNodes().size)
+        }
+    }
+
+    /** #48 (WO-04-new): the dock's bar line loads the weight field on the exercise's bar, and its pill's menu changes that bar. */
+    @Test
+    fun theBarMenuChangesTheExercisesBar() = inEnglish {
+        pushA {
+            val bench = open().exercises.first { it.name == "Bench Press BB" }.exerciseId
+            test.onNodeWithTag("set Bench Press BB 3").performSemanticsAction(SemanticsActions.OnClick)
+            idle()
+            see("25 + 5 + 1.25")
+            see("Bar 20")
+            tapDesc("Bar: Olympic, 20 kg")
+            see("None 0 kg")
+            shot("bar-menu")
+            tap("Short 15 kg")
+            see("25 + 5 + 2.5 + 1.25") // 33.75 a side
+            see("Bar 15")
+            waitUntilTrue { graph.exercises.byId(bench).first()!!.bar == 15.0 }
+        }
+    }
+
+    /**
+     * #48 acceptance 3 (WO-05-plates): plates keyed on the Olympic bar make the weight and draw in keyed order, heaviest innermost; keyed
+     * 20, 10, 1.25 stays so, though the fewest plates would draw 25, 5, 1.25, and logs 82.5.
+     */
+    @Test
+    fun plateKeysBuildTheWeightInKeyedOrder() = inEnglish {
+        pushA {
+            test.onNodeWithTag("set Bench Press BB 3").performSemanticsAction(SemanticsActions.OnClick)
+            idle()
+            tapDesc(weightLabel("kg"))
+            tap(s(Res.string.plates_key))
+            tap(s(Res.string.plates_empty))
+            plateKeys("25", "25", "1.25")
+            weightReads("122.5")
+            sleeveReads("25, 25, 1.25")
+            tap(s(Res.string.plates_empty))
+            plateKeys("20", "10", "1.25")
+            weightReads("82.5")
+            sleeveReads("20, 10, 1.25")
+            // ⌫ takes the outermost plate off; 15, not in the default kg gym, is greyed and takes no tap.
+            plateKeys("⌫")
+            weightReads("80")
+            sleeveReads("20, 10")
+            test.onNodeWithTag("key-15").assertIsNotEnabled()
+            plateKeys("1.25")
+            // 123 goes back to the digits and keeps the weight the plates made.
+            tap(s(Res.string.digits_key))
+            seeTag("key-1")
+            weightReads("82.5")
+            tap(s(Res.string.next))
+            tap(s(Res.string.next))
+            tap(s(Res.string.log_next))
+            waitUntilTrue { open().exercises.first { it.name == "Bench Press BB" }.sets[2].let { it.done && it.weight == 82.5 } }
+        }
+    }
+
+    /** Hardening F1: 23 on the Olympic bar cannot be made, so plate mode's empty seed still reads the cannot-load line, never "Bar only". */
+    @Test
+    fun plateModeOnAWeightThePlatesCannotMakeSaysSo() = inEnglish {
+        pushA {
+            test.onNodeWithTag("set Bench Press BB 3").performSemanticsAction(SemanticsActions.OnClick)
+            idle()
+            tapDesc(weightLabel("kg"))
+            keys("23")
+            weightReads("23")
+            tap(s(Res.string.plates_key))
+            seeTag("key-25")
+            see(s(Res.string.plates_cannot_load))
+            gone(hasText(s(Res.string.plates_bar_only)))
+        }
+    }
+
+    /** Review focus 3: a bar-less exercise has no bar line and no Plates key; an lb barbell keys lb plates. */
+    @Test
+    fun noBarMeansNoBarLineAndNoPlatesKey() = inEnglish {
+        flow {
+            startWorkout()
+            val bench = graph.exercises.all().first { it.isNotEmpty() }.first { it.name == "Bench Press BB" }
+            graph.exercises.setSettings(bench.id, step = 5.0, bar = 45.0, unit = WeightUnit.Lb)
+            addExercises("Bench Press BB", "Curl DB")
+            openSet(0)
+            tapDesc(weightLabel("lb"))
+            tap(s(Res.string.plates_key))
+            for (p in listOf("45", "35", "25", "10", "5", "2.5")) seeTag("key-$p")
+            for (p in listOf("20", "15", "1.25")) gone(hasTestTag("key-$p"))
+            test.onNodeWithContentDescription(s(Res.string.close)).performSemanticsAction(SemanticsActions.OnClick)
+            // Waits for Bench Press's dock, and its bar line, to close; the no-bar check is Curl DB's below.
+            gone(hasTestTag("bar-sleeve"))
+            tapDesc(s(Res.string.expand, "Curl DB"))
+            test.onNodeWithTag("set Curl DB 1").performClick()
+            idle()
+            tapDesc(weightLabel("kg", "2"))
+            seeTag("key-1")
+            gone(hasText(s(Res.string.plates_key)))
+            gone(hasTestTag("bar-sleeve"))
+        }
     }
 
     /** WO-12's Bar pull-down names each bar with its weight in the exercise's unit, None 0 among them. */
@@ -2502,6 +2614,25 @@ private class Flow(val test: SkikoComposeUiTest, val graph: AppGraph, private va
     fun keys(typed: String) = typed.forEach {
         test.onNodeWithTag("key-$it").performClick()
         idle()
+    }
+
+    /** Taps the keypad's plate keys, tagged by their weight. */
+    fun plateKeys(vararg plates: String) = plates.forEach {
+        test.onNodeWithTag("key-$it").performClick()
+        idle()
+    }
+
+    fun seeTag(tag: String) = wait("see tag '$tag'") { test.onAllNodes(hasTestTag(tag)).fetchSemanticsNodes().isNotEmpty() }
+
+    /** The dock's weight field reads [text]. */
+    suspend fun weightReads(text: String) {
+        val label = weightLabel("kg")
+        wait("the weight to read $text") { test.onAllNodes(hasContentDescription(label) and hasText(text)).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    /** The bar line's sleeve draws [plates], innermost first. */
+    fun sleeveReads(plates: String) = wait("the sleeve to draw $plates") {
+        test.onAllNodes(hasTestTag("bar-sleeve") and hasContentDescription(plates)).fetchSemanticsNodes().isNotEmpty()
     }
 
     fun type(text: String) {

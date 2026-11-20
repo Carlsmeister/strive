@@ -298,6 +298,77 @@ class SessionsTest {
         sessions.add(sessions.start("Pass", 2), listOf(curl))
         assertEquals(WeightUnit.Lb, sessions.open().first()!!.exercises.single().unit)
     }
+
+    /** Bench Press BB on its 20 bar in an open workout with [sets] in this order, their kinds stored past the ladder. */
+    private suspend fun SqlSessions.bench(db: StriveDatabase, vararg sets: WorkoutSet): SessionExercise {
+        add(start("Pass", 0), listOf(db.exercise("Bench Press BB")))
+        val e = open().first()!!.exercises.single()
+        repeat(sets.size - 1) { addSet(e.id) }
+        sets.zip(open().first()!!.exercises.single().sets.map { it.id }) { set, id ->
+            saveSet(set.copy(id = id))
+            db.sessionQueries.setKind(set.kind.key, id)
+        }
+        return open().first()!!.exercises.single()
+    }
+
+    /** W 40 × 10 and 80 × 8 logged, then 82.5 × 8 and 80 × 7 to do. */
+    private val ladderFixture = arrayOf(
+        WorkoutSet(0, 40.0, 10, done = true, kind = SetKind.Warmup), WorkoutSet(0, 80.0, 8, done = true), WorkoutSet(0, 82.5, 8),
+        WorkoutSet(0, 80.0, 7),
+    )
+
+    @Test
+    fun anAddedWarmupTakesTheNextRungOfTheLadder() = runTest {
+        val (db, sessions) = sessions()
+        val bench = sessions.bench(db, *ladderFixture)
+        sessions.addSet(bench.id)
+        val added = sessions.open().first()!!.exercises.single().sets.last().id
+        sessions.setKind(added, SetKind.Warmup)
+        val sets = sessions.open().first()!!.exercises.single().sets
+        // 20 × 10 and 40 × 5 are passed by the W 40; 70 % of 80 is 56, down to 55 on the bar.
+        assertEquals(bench.sets.map { it.id }.let { listOf(it[0], it[1], added, it[2], it[3]) }, sets.map { it.id })
+        assertEquals(Triple(55.0, 3, SetKind.Warmup), sets[2].let { Triple(it.weight, it.reps, it.kind) })
+    }
+
+    @Test
+    fun aLoggedSetMadeAWarmupKeepsItsWeight() = runTest {
+        val (db, sessions) = sessions()
+        val logged = sessions.bench(db, *ladderFixture).sets[1]
+        sessions.setKind(logged.id, SetKind.Warmup)
+        // Unguarded, the ladder to 82.5 would write 57.5 × 3.
+        assertEquals(logged.copy(kind = SetKind.Warmup), sessions.open().first()!!.exercises.single().sets[1])
+    }
+
+    @Test
+    fun anLbWarmupClimbsOnLbPlates() = runTest {
+        val (db, sessions) = sessions()
+        val press = db.exercise("Bench Press BB")
+        SqlExercises(db).setSettings(press, step = 5.0, bar = 45.0, unit = WeightUnit.Lb)
+        sessions.add(sessions.start("Pass", 0), listOf(press))
+        val e = sessions.open().first()!!.exercises.single()
+        sessions.saveSet(e.sets.single().copy(weight = 135.0, reps = 5))
+        repeat(2) { sessions.addSet(e.id) }
+        val (_, second, third) = sessions.open().first()!!.exercises.single().sets
+        suspend fun read(id: Long) = sessions.open().first()!!.exercises.single().sets.single { it.id == id }.let { it.weight to it.reps }
+
+        sessions.setKind(second.id, SetKind.Warmup)
+        // No other warm-up: the first rung, the 45 lb bar × 10.
+        assertEquals(45.0 to 10, read(second.id))
+
+        sessions.setKind(third.id, SetKind.Warmup)
+        // Above the W 45: 50 % of 135 is 67.5, 11.25 a side. The lb plates (45, 35, 25, 10, 5, 2.5) load 10 a side, 65; the kg
+        // defaults would load 10 + 1.25, 67.5.
+        assertEquals(65.0 to 5, read(third.id))
+    }
+
+    @Test
+    fun aWarmupPickedAgainKeepsItsWeight() = runTest {
+        val (db, sessions) = sessions()
+        val warmup = sessions.bench(db, WorkoutSet(0, 40.0, 10, kind = SetKind.Warmup), WorkoutSet(0, 80.0, 8), WorkoutSet(0, 82.5, 8)).sets[0]
+        sessions.setKind(warmup.id, SetKind.Warmup)
+        // Unguarded, with no other warm-up it would take the first rung, 20 × 10.
+        assertEquals(warmup, sessions.open().first()!!.exercises.single().sets[0])
+    }
 }
 class SessionChangesTest {
     private fun StriveDatabase.exercise(name: String): Long {

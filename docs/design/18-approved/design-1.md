@@ -226,7 +226,7 @@ which is how 16 broken flows passed. Limits, said plainly:
     a metric picker) and Records with their own empty lines, where built shows "No workouts yet" on all three.
   - WO-01: the empty workout's bar shows the time only (built "0:12 · 0/0 sets"). WO-02 and WO-03: "last set" on an
     exercise's last set ("hold · last set" while resting) where built says "rest 2:00 after"; "Plan" and "Previous" note
-    rows under the pinned note. WO-04 and WO-05: the plate readout and the Plates key (plates are not built).
+    rows under the pinned note. WO-04 and WO-05: the plate readout and the Plates key (built in #48).
   - WO-06 and WO-07: a free rest titled "Free rest", the menu's title row and "Replaces the rest running"; the custom time
     hint and Start. WO-08: the note's placeholder and hint; the start time as a bottom sheet with a wheel (built: a centred
     Dialog with TimeInput). WO-10: an alert-style dialog with "The one you pick moves next to Bench Press BB.". WO-11: a

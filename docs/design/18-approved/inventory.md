@@ -196,8 +196,8 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   2026-11-03 (kind colours); #42, #45 (hints), #46 (stars), #48 (plates). Canvas D-pass, D-next.
   Catalogue: logging dock, workout title bar, superset.
 - **Built:** partly: `workout/WorkoutScreen.kt`, `workout/Focus.kt` (LargeHeader, FocusCard, SetRow,
-  RestLine, ExerciseOverview), `workout/Parts.kt` (SwipeToDelete). Not built: plates line (#48),
-  record stars (#46), the plan's cue (#44), the progression rule (#45: "up/down" now compares the
+  RestLine, ExerciseOverview), `workout/Parts.kt` (SwipeToDelete), `workout/PlateViews.kt` (Sleeve, PlatesLine: the
+  plates per side under the next set of an exercise with a bar, #48). Not built: record stars (#46), the plan's cue (#44), the progression rule (#45: "up/down" now compares the
   planned weight with last time), opening exercise detail from the workout (O-02).
 
 **WO-03 · Active workout, scrolled**
@@ -226,7 +226,8 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   catalogue: logging dock (deviation: RIR segments about 29 × 44 pt).
 - **Built:** partly: `workout/Dock.kt` (Dock, NumberField, RirRow, RirSegments, RirMore); an lb exercise logs
   in lb (the exercise's unit, `data/Units.kt`), and the weight label adds its step when there is no bar ("Weight, lb ·
-  step 5"). Not built: the bar and plates (#48).
+  step 5"). The bar line (#48): `workout/PlateViews.kt` (BarLine) draws the sleeve, the plates per side and the
+  "Bar 20" pill, whose menu picks from the gym's bars stored in Settings.
 
 **WO-05 · Keypad**
 - **Purpose:** Strive's own number keypad inside the dock.
@@ -238,7 +239,9 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
   25 · 20 · 15 · 10 · 5 · 2,5 · 1,25, Empty and ⌫, plates drawn as keyed, heaviest innermost;
   a field opened fresh is replaced by the first key.
 - **Source:** #17 Q16, choice 2 (K3), its correction, choice 3; catalogue: logging dock (keypad, plates).
-- **Built:** partly: `workout/Dock.kt` (Keypad, Key). Not built: Plates keys (#48).
+- **Built:** `workout/Dock.kt` (Keypad, Key): the Plates key and its plate keys, Empty and ⌫ on the weight of an exercise
+  with a bar, a plate the gym lacks greyed (#48). The gym's plates are stored in Settings with defaults (#48); the
+  screen that edits them is EL-07 (#63).
 
 **WO-06 · Rest timer card (T5)**
 - **Purpose:** count down rest wherever the list is scrolled.
@@ -306,7 +309,8 @@ PRs #49–#54; the round-two canvas https://claude.ai/artifact/6hPecJvYLJcGA7Wk3
 - **Source:** #17 Q7, Q15, Q22, Q23.
 - **Built:** `workout/WorkoutScreen.kt` (SettingsDialog: step, bar and unit), `ui/Dialogs.kt` (HeaderSheet). The unit is
   stored on the exercise (`data/Exercises.kt`), and totals across exercises convert (`data/Units.kt`). The Bar row
-  shows only for an exercise that has a bar; editing bars is #48.
+  shows only for an exercise that has a bar and lists the gym's bars, stored in Settings with defaults (#48); the
+  screen that edits them is EL-07 (#63).
 
 **WO-13 · Set type menu**
 - **Purpose:** change a set's kind from its badge.
@@ -1478,8 +1482,12 @@ Decisions #14 and #17 leave to the design or to Carl. Options only; none is reso
 - **O-02 · Exercise detail from the workout.** Q15 opens it from the exercise name; Carl's point 3
   made the name fold the exercise. Options: an info button by the name; a row in the ⋯ menu; a long
   press on the name.
-- **O-03 · An added warm-up set's weight** (#48, #4 Open). Copy the last set's weight (today); Q22's
-  ladder (bar × 10, 50 % × 5, 70 % × 3, 85 % × 1); empty with a hint.
+- **O-03 · An added warm-up set's weight** (#48, #4 Open). Answered in #48 by Q22's ladder to the first
+  working set's weight: the bar × 10, then 50 % × 5, 70 % × 3 and 85 % × 1, each rounded down to what the gym's
+  plates load on the bar (to a multiple of the step without one), a rung under the bar dropped. A set made a warm-up
+  takes the first rung above the exercise's other warm-ups. It keeps its values when it is logged or already a
+  warm-up, when there is no working weight, when the working weight is lighter than the bar (no ladder), or when
+  no rung is left.
 - **O-04 · Onboarding's pages and in-context hints** (#25). Three to five pages; ask units and body data
   in onboarding or at first need; which first-use hints exist.
 - **O-05 · The live run's largest number** (#18: "the one number Carl names"). Distance, time, current
